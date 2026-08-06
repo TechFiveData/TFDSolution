@@ -1,0 +1,134 @@
+﻿
+@{
+    ViewBag.Title = "Email Template";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="breadcrumbs">
+    <div class="col-sm-4">
+        <div class="page-header float-left">
+            <div class="page-title">
+                <h1>Email Templates</h1>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-8">
+        <div class="page-header float-right">
+            <div class="page-title">
+                <ol class="breadcrumb text-right">
+                    <li><a href="@Url.Action("Index","Home")">Home</a></li>
+                    <li class="active">Email Templates</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="animated fadeIn">
+    <div class="row">
+        <div class="col-md-12 p-0">
+            <div class="card">
+                <div class="card-header">
+                    <div class="col-lg-9"></div>
+                    <div class="col-lg-3 text-right">
+                        <a class="btn btn-sm" href="javascript:void(0);"><i class="fa fa-refresh"></i>&nbsp; Refresh</a>
+                        <a class="btn btn-sm" id="btnAddNew" href="@Url.Action("EmailTemplateAction","Configuration", new { @templateId = 0})" title="Add New Email Template"><i class="fa fa-plus"></i>&nbsp; New</a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12 form-group">
+                            <table id="tblEmailTemplate" class="display cell-border nowrap" cellspacing="0" width="100%"></table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">   
+    $(document).ready(function () {
+        BindPendings();        
+    });
+    function BindPendings() {
+        try {
+            $.ajax({
+                type: "GET",
+                url: "@Url.Action("getEmailTemplates", "Configuration")",
+                contentType: "application/json; charset=utf-8",
+                success: SuccesssBindGrid,
+                failure: function (response) {
+                    ShowToastNotification("error", response.d);
+                },
+                error: function (response) {
+                    ShowToastNotification("error", "Error fetching data!");
+                }
+            });
+        } catch (e) {
+        }
+    }
+    function EditTemplate(tempId) {
+        var editlink1 = '@Url.Action("EmailTemplateAction", "Configuration", new { templateId = "_uId"})';
+        editlink1 = editlink1.replace("amp;", "");
+        editlink1 = editlink1.replace("amp;", "");
+        editlink1 = editlink1.replace("_uId", encodeURIComponent(tempId));
+        location.href = editlink1;
+    }
+    function SuccesssBindGrid(dataset) {
+        dataset = Array.isArray(dataset) ? dataset : [];
+        // Initialize DataTable
+        let formTable = new DataTable("#tblEmailTemplate", {
+            "destroy": true,
+            searching: true,
+            paging: true,
+            scrollCollapse: true,
+            info: true,
+            // scrollY: '500px',
+            data: dataset,
+            columns: [
+                { title: '#', data: 'SrNo' },
+                {
+                    title: 'Template Title',
+                    data: 'TemplateName',
+                    render: function (data, type, row, meta) {
+                        return "<a title='View Record' onclick='EditTemplate(" + row["TemplateId"] + ")' href='javascript:void(0);';>" + row["TemplateName"] + "</a>";
+                    },
+                },
+                {
+                    title: 'Active',
+                    className: 'text-center',
+                    render: function (data, type, row, meta) {
+                        return (row.IsActive === true) ? '<span class="fa fa-check text-success"></span>' : '<span class="fa fa-remove text-danger"></span>';
+                    }
+                },
+                {
+                    title: "Created On",
+                    render: function (data, type, row, meta) {
+                        if (row["CreatedOn"] != null) {
+                            var editlink = formatDateTime(parseMSDate(row["CreatedOn"]));
+                            return "<span>" + editlink + "</span>";
+                        }
+                        else {
+                            return "<span></span>";
+                        }
+                    },
+                },
+                {
+                    title: "Updated On",
+                    render: function (data, type, row, meta) {
+                        if (row["UpdatedOn"] != null) {
+                            var editlink = formatDateTime(parseMSDate(row["UpdatedOn"]));
+                            return "<span>" + editlink + "</span>";
+                        }
+                        else {
+                            return "<span></span>";
+                        }
+                    },
+                }
+            ],
+            language: {
+                emptyTable: "No records found", // Message when no data is available
+                zeroRecords: "No matching records found"
+            }
+        });
+    }
+</script>

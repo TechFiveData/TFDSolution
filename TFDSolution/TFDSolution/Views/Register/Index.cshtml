@@ -1,0 +1,199 @@
+﻿@model TFDSolution.Models.RegisterModel
+@{
+    ViewBag.Title = "Index";
+    Layout = "";
+}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    @{
+        var ImagesBase = Url.Content("~/Images");
+        var ContentBase = Url.Content("~/Content");
+    }
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="@ContentBase/Site.css">
+    <link rel="stylesheet" href="@ContentBase/theme//theme1/login.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TFD | Registration</title>
+    <link rel="stylesheet" href="@ContentBase/theme//theme1/register.css">
+    <link href="@ContentBase/bootstrap.min.css" rel="stylesheet" />
+    <link href="@ContentBase/main/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        .loginbody {
+            min-height: 100vh;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            background-size: cover;
+            background-position: center center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+        .header-block {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 40px;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+            background-color: #27a9d7;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.10);
+            z-index: 9999;
+        }
+        footer {
+            background-color: #f8f9fa;
+            padding: 6px 0;
+            text-align: center;
+            font-size: 14px;
+            border-top: 1px solid #ddd;
+            width: 100%;
+            bottom: 0;
+            position: absolute;
+        }
+    </style>
+</head>
+
+<body class="loginbody" style="background-image: Url('@ImagesBase/theme1.jpg')">
+    <div class="header-block">
+        <span>LotusNext ERP</span>
+    </div>
+    <style>
+        .validation-summary-errors {
+            color: red;
+        }
+    </style>
+    <div class="section1"></div>
+    <div class="section2">
+        <div class="main">
+            <h4 style="border-bottom: 1px double #f39b3b; padding-bottom: 15px">Registration Here</h4>
+            @using (Html.BeginForm("Index", "Register", FormMethod.Post, new { @id = "registerForm" }))
+            {
+                @Html.ValidationSummary(false, null, new { @class = "validation-summary-errors-alerts" })
+                <div class="row">
+                    <div class="col-md-12">
+                        <label for="FirstName">First Name:<span class="text-danger p-1">(*)</span></label>
+                        @Html.TextBoxFor(a => a.FirstName, new { @Required = "Required", @clas = "form-control" })
+                        @Html.ValidationMessageFor(a => a.FirstName, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <label for="LastName">Last Name:<span class="text-danger p-1">(*)</span></label>
+                        @Html.TextBoxFor(a => a.LastName, new { @Required = "Required" })
+                        @Html.ValidationMessageFor(a => a.LastName, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <label for="EmailId">Email:<span class="text-danger p-1">(*)</span></label>
+                        @Html.TextBoxFor(a => a.EmailId, new { @Required = "Required" })
+                        @Html.ValidationMessageFor(a => a.EmailId, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <label for="EmailId">User Name:<span class="text-danger p-1">(*)</span></label>
+                        @Html.TextBoxFor(a => a.UserName, new { @Required = "Required" })
+                        @Html.ValidationMessageFor(a => a.UserName, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <label for="Password">Password:<span class="text-danger p-1">(*)</span></label>
+                        <input type="Password" id="Password" name="Password"
+                               pattern="^(?=.*\d)(?=.*[a-zA-Z])(?=.*[^a-zA-Z0-9])\S{8,}$"
+                               title="Password must contain at least one number,
+    one alphabet, one symbol, and be at
+    least 8 characters long" required />
+                        @Html.ValidationMessageFor(a => a.Password, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <label for="ConfirmPassword">Re-type Password:<span class="text-danger p-1">(*)</span></label>
+                        <input type="password" id="ConfirmPassword" name="ConfirmPassword" required />
+                        @Html.ValidationMessageFor(a => a.ConfirmPassword, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <label for="mobile">Contact:<span class="text-danger p-1">(*)</span></label>
+                        <input type="text" id="mobile" name="mobile" maxlength="10" required />
+                    </div>
+                </div>
+
+                @*<label for="gender">Gender:</label>
+                    <select id="gender" name="gender" required>
+                        <option value="male">
+                            Male
+                        </option>
+                        <option value="female">
+                            Female
+                        </option>
+                        <option value="other">
+                            Other
+                        </option>
+                    </select>*@
+                <div class="row">
+                    <div class="col-md-12">
+                        <button type="submit">Submit</button>
+                    </div>
+
+                </div>
+            }
+            <div class="row">
+                <div class="col-md-12" style="padding:3px 22px;">
+                    Already registered?
+                    <a href="@Url.Action("Index","Login")" style="text-decoration: none;">
+                        Go to Login
+                    </a>
+                    |
+                    <a href="javacript:void(0);" onclick="resetForm();" style="text-decoration: none;">
+                        Reset
+                    </a>
+                </div>
+            </div>
+        </div>
+        @*<div class="footer-block">
+                <div class="row copyright">
+                    <div class="footer-menu">
+                        <a href="">Home</a>
+                        <a href="">F.A.Q</a>
+                        <a href="">Cookies Policy</a>
+                        <a href="">Terms Of Service</a>
+                        <a href="">Support</a>
+                    </div>
+                    <p>Copyright &copy; @DateTime.Now.Year.ToString()</p>
+                </div>
+            </div>*@
+    </div>
+    <script>
+        function resetForm() {
+            if (confirm("Are you sure you want to reset form?")) {
+                document.getElementById("registerForm").reset();
+            }
+        }
+    </script>
+    <footer class="footer mt-auto bg-dark text-white">
+        <div class="container text-center">
+            <p class="mb-0">
+                &copy; @DateTime.Now.Year <strong>Lotus Next ERP</strong>. All rights reserved.
+            </p>
+            @*<p class="small">
+                    <a href="/Home/Privacy" class="text-light">Privacy Policy</a> |
+                    <a href="/Home/Terms" class="text-light">Terms of Service</a>
+                </p>*@
+        </div>
+    </footer>
+</body>
+
+</html>

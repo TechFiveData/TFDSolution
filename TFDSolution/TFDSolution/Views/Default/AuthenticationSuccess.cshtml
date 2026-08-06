@@ -1,0 +1,89 @@
+﻿@model TFDSolution.Models.LicenseModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TFD | Welcome</title>
+    @{
+        var ImagesBase = Url.Content("~/Images");
+        var ContentBase = Url.Content("~/Content");
+    }
+    <link rel="stylesheet" href="@ContentBase/Site.css">
+    <link rel="stylesheet" href="@ContentBase/theme//theme1/login.css">
+    <link href="@ContentBase/bootstrap.min.css" rel="stylesheet" />
+    <link href="@ContentBase/main/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-3.7.1.js"></script>
+    <style>
+        .tableLic tbody td {
+            padding: 0 10px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body class="loginbody" style="background-image: Url('@ImagesBase/theme1.jpg')">
+    <div class="header-block">
+        <span>www.techfivedata.com</span>
+    </div>
+    
+    <div class="section1"></div>
+    <!--SECTION 2-->
+    <div class="section2">
+        <div class="main" style="width:850px;margin-left:5%;">
+            <h4 style="border-bottom: 1px double #f39b3b; padding-bottom: 15px;">Lincese Key Information</h4>
+            <div class="row">
+                <div class="col-12 form-group">
+                    <table class="tableLic display disabled table table-bordered">
+                        <tbody>
+                            <tr>
+                                <td><label class="form-label">License scheme version</label></td>
+                                <td><label>@Model.LicenseVersion</label></td>
+                            </tr>
+                            <tr>
+                                <td><label class="form-label">You license key expires on </label></td>
+                                <td><label>@Model.ExpirationDate</label></td>
+                            </tr>
+                            <tr>
+                                <td><label class="form-label">You license key expires withing two weeks </label></td>
+                                <td>
+                                    @if (Model.RemainingDays <= 14)
+                                    {
+                                        <label><span class="text-danger">Yes</span>, Please Contact <a href="mailto:support@techfivedata.com">TechFiveData</a>. to renew the license.</label>
+                                    }
+                                    else
+                                    {
+                                        <label>No</label>
+                                    }
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><label class="form-label">Day remaining till license expiration</label></td>
+                                <td><label class="text-danger">@Model.RemainingDays</label></td>
+                            </tr>
+                            <tr>
+                                <td><label class="form-label">License key type</label></td>
+                                <td><label>@Model.LicenseKeyType</label></td>
+                            </tr>
+                            <tr>
+                                <td><label class="form-label">Allowed Maximum Users</label></td>
+                                <td><label>@Model.MaximumUser</label></td>
+                            </tr>
+                            <tr>
+                                <td><label class="form-label">Information</label></td>
+                                <td><label>@Model.Message</label></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="alert alert-success">
+                <strong>Congratulations!</strong> Product has been activated successfully
+            </div>
+            <p>
+                <a class="btn btn-primary" href="@Url.Action("Index","Home")" style="text-decoration: none;">Login Into The System</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

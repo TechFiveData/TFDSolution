@@ -1,0 +1,447 @@
+﻿@model TFDSolution.Transport.Integration.EInvoiceRequest
+<div id="ewayAccordion">
+    <!-- Document Details -->
+    <div class="card">
+        <div class="card-header p-0" id="headingDocument">
+            <h6 class="mb-0">
+                <button class="btn btn-link btn-block text-left" data-toggle="collapse"
+                        data-target="#collapseDocument" aria-expanded="true" aria-controls="collapseDocument">
+                    <i class="fa fa-file-text"></i> Document Details
+                </button>
+            </h6>
+        </div>
+        <div id="collapseDocument" class="collapse show" aria-labelledby="headingDocument" data-parent="#ewayAccordion">
+            <div class="card-body">
+                <div class="row eway-summary">
+                    <div class="col-md-4 col-sm-6 mb-1">
+                        <div class="info-item">
+                            <span class="info-label">Supply Type</span>
+                            <span class="info-value">@Model.DocDtls.Typ</span>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-sm-6 mb-2">
+                        <div class="info-item">
+                            <span class="info-label">Document No.</span>
+                            <span class="info-value">@Model.DocDtls.No</span>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-sm-6 mb-2">
+                        <div class="info-item">
+                            <span class="info-label">Document Date</span>
+                            <span class="info-value">@Model.DocDtls.Dt</span>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-sm-6 mb-2">
+                        <div class="info-item">
+                            <span class="info-label">Version</span>
+                            <span class="info-value">@Model.Version</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Supplier Details -->
+    <div class="card">
+        <div class="card-header p-0" id="headingSupplier">
+            <h6 class="mb-0">
+                <button class="btn btn-link btn-block text-left collapsed"
+                        data-toggle="collapse"
+                        data-target="#collapseSupplier">
+                    <i class="fa fa-user"></i> Buyer Details
+                </button>
+            </h6>
+        </div>
+        <div id="collapseSupplier" class="collapse" data-parent="#ewayAccordion">
+            <div class="card-body">
+                <!-- Supplier Fields -->
+                <div class="row eway-summary">
+
+                    <div class="col-md-4 col-sm-6 mb-1">
+                        <div class="info-item">
+                            <span class="info-label">GSTIN</span>
+                            <span class="info-value">@Model.BuyerDtls.Gstin</span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-sm-6 mb-1">
+                        <div class="info-item">
+                            <span class="info-label">Trade Name</span>
+                            <span class="info-value">@Model.BuyerDtls.TrdNm</span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-sm-6 mb-1">
+                        <div class="info-item">
+                            <span class="info-label">State Code</span>
+                            <span class="info-value">@Model.BuyerDtls.Stcd</span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-sm-6 mb-1">
+                        <div class="info-item">
+                            <span class="info-label">Address 1</span>
+                            <span class="info-value">@Model.BuyerDtls.Addr1</span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-sm-6 mb-1">
+                        <div class="info-item">
+                            <span class="info-label">Address 2</span>
+                            <span class="info-value">@Model.BuyerDtls.Addr2</span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-sm-6 mb-1">
+                        <div class="info-item">
+                            <span class="info-label">Place</span>
+                            <span class="info-value">@Model.BuyerDtls.Loc</span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-sm-6 mb-1">
+                        <div class="info-item">
+                            <span class="info-label">Pincode</span>
+                            <span class="info-value">@Model.BuyerDtls.Pin</span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-sm-6 mb-1">
+                        <div class="info-item">
+                            <span class="info-label">Actual State Code</span>
+                            <span class="info-value">@Model.BuyerDtls.Stcd</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Customer Details -->
+    <div class="card">
+        <div class="card-header p-0">
+            <h6 class="mb-0">
+                <button class="btn btn-link btn-block text-left collapsed" data-toggle="collapse" data-target="#collapseCustomer">
+                    <i class="fa fa-user"></i> Seller Details
+                </button>
+            </h6>
+        </div>
+        <div id="collapseCustomer" class="collapse" data-parent="#ewayAccordion">
+            <div class="card-body">
+                <!-- Customer Fields -->
+                <div class="row eway-summary">
+                    <div class="col-md-4 col-sm-6 mb-1">
+                        <div class="info-item">
+                            <span class="info-label">GSTIN</span>
+                            <span class="info-value">@Model.SellerDtls.Gstin</span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-sm-6 mb-1">
+                        <div class="info-item">
+                            <span class="info-label">Trade Name</span>
+                            <span class="info-value">@Model.SellerDtls.TrdNm</span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-sm-6 mb-1">
+                        <div class="info-item">
+                            <span class="info-label">State Code</span>
+                            <span class="info-value">@Model.SellerDtls.Stcd</span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-sm-6 mb-1">
+                        <div class="info-item">
+                            <span class="info-label">Address 1</span>
+                            <span class="info-value">@Model.SellerDtls.Addr1</span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-sm-6 mb-1">
+                        <div class="info-item">
+                            <span class="info-label">Address 2</span>
+                            <span class="info-value">@Model.SellerDtls.Addr2</span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-sm-6 mb-1">
+                        <div class="info-item">
+                            <span class="info-label">Place</span>
+                            <span class="info-value">@Model.SellerDtls.Loc</span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-sm-6 mb-1">
+                        <div class="info-item">
+                            <span class="info-label">Pincode</span>
+                            <span class="info-value">@Model.SellerDtls.Pin</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+    <div class="card-header p-0">
+        <h6 class="mb-0">
+            <button class="btn btn-link btn-block text-left collapsed" data-toggle="collapse" data-target="#collapseshipment">
+                <i class="fa fa-user"></i> Shipment Details
+            </button>
+        </h6>
+    </div>
+    <div id="collapseshipment" class="collapse" data-parent="#ewayAccordion">
+        <div class="card-body">
+            <!-- Customer Fields -->
+            <div class="row eway-summary">
+                <div class="col-md-4 col-sm-6 mb-1">
+                    <div class="info-item">
+                        <span class="info-label">GSTIN</span>
+                        <span class="info-value">@(Model.ShipDtls != null ? Model.ShipDtls.Gstin : "N/A")</span>
+                    </div>
+                </div>
+
+                <div class="col-md-4 col-sm-6 mb-1">
+                    <div class="info-item">
+                        <span class="info-label">Trade Name</span>
+                        <span class="info-value">@(Model.ShipDtls != null ? Model.ShipDtls.TrdNm : "N/A")  </span>
+                    </div>
+                </div>
+
+                <div class="col-md-4 col-sm-6 mb-1">
+                    <div class="info-item">
+                        <span class="info-label">State Code</span>
+                        <span class="info-value">@(Model.ShipDtls != null ? Model.ShipDtls.Stcd : "N/A")</span>
+                    </div>
+                </div>
+
+                <div class="col-md-4 col-sm-6 mb-1">
+                    <div class="info-item">
+                        <span class="info-label">Address 1</span>
+                        <span class="info-value">@(Model.ShipDtls != null ? Model.ShipDtls.Addr1 : "N/A")</span>
+                    </div>
+                </div>
+
+                <div class="col-md-4 col-sm-6 mb-1">
+                    <div class="info-item">
+                        <span class="info-label">Address 2</span>
+                        <span class="info-value">@(Model.ShipDtls != null ? Model.ShipDtls.Addr2 : "N/A")</span>
+                    </div>
+                </div>
+
+                <div class="col-md-4 col-sm-6 mb-1">
+                    <div class="info-item">
+                        <span class="info-label">Place</span>
+                        <span class="info-value">@(Model.ShipDtls != null ? Model.ShipDtls.Loc : "N/A")</span>
+                    </div>
+                </div>
+
+                <div class="col-md-4 col-sm-6 mb-1">
+                    <div class="info-item">
+                        <span class="info-label">Pincode</span>
+                        <span class="info-value">@(Model.ShipDtls != null ? Convert.ToString(Model.ShipDtls.Pin) : "N/A")</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    <!-- Invoice Details -->
+    <div class="card">
+        <div class="card-header p-0">
+            <h6 class="mb-0">
+                <button class="btn btn-link btn-block text-left collapsed"
+                        data-toggle="collapse"
+                        data-target="#collapseInvoice">
+                    <i class="fa fa-money"></i> Invoice Details
+                </button>
+            </h6>
+        </div>
+        <div id="collapseInvoice" class="collapse" data-parent="#ewayAccordion">
+            <div class="card-body">
+                <!-- Invoice Fields -->
+                <div class="row eway-summary">
+                    <div class="col-md-4 col-sm-6 mb-1">
+                        <div class="info-item">
+                            <span class="info-label">Basic Amount</span>
+                            <span class="info-value text-right">@Model.ValDtls.AssVal</span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-sm-6 mb-1">
+                        <div class="info-item">
+                            <span class="info-label">Other Charges</span>
+                            <span class="info-value text-right">@Model.ValDtls.OthChrg</span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-sm-6 mb-1">
+                        <div class="info-item">
+                            <span class="info-label">CGST</span>
+                            <span class="info-value text-right">@Model.ValDtls.CgstVal</span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-sm-6 mb-1">
+                        <div class="info-item">
+                            <span class="info-label">SGST</span>
+                            <span class="info-value text-right">@Model.ValDtls.SgstVal</span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-sm-6 mb-1">
+                        <div class="info-item">
+                            <span class="info-label">IGST</span>
+                            <span class="info-value text-right">@Model.ValDtls.IgstVal</span>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-sm-6 mb-1">
+                        <div class="info-item">
+                            <span class="info-label">CESS</span>
+                            <span class="info-value text-right">@Model.ValDtls.CesVal</span>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-sm-6 mb-1">
+                        <div class="info-item">
+                            <span class="info-label">CESS Non Advol</span>
+                            <span class="info-value text-right">@Model.ValDtls.StCesVal</span>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-sm-6 mb-1">
+                        <div class="info-item total-item">
+                            <span class="info-label">Total Amount</span>
+                            <span class="info-value text-right">@Model.ValDtls.TotInvValFc</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Transpor Details -->
+    <div class="card">
+        <div class="card-header p-0">
+            <h6 class="mb-0">
+                <button class="btn btn-link btn-block text-left collapsed" data-toggle="collapse" data-target="#collapseTransport">
+                    <i class="fa fa-truck"></i> Transport Details
+                </button>
+            </h6>
+        </div>
+        <div id="collapseTransport" class="collapse" data-parent="#ewayAccordion">
+            <div class="card-body">
+                <!-- Transport Fields -->
+               
+                <div class="row eway-summary">
+                    <div class="col-md-4 col-sm-6 mb-1">
+                        <div class="info-item">
+                            <span class="info-label">Transporter GSTIN</span>
+                            <span class="info-value">@Model.TranDtls.EcmGstin</span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-sm-6 mb-1">
+                        <div class="info-item">
+                            <span class="info-label">Transporter Name</span>
+                            <span class="info-value">@Model.TranDtls.TaxSch</span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-sm-6 mb-1">
+                        <div class="info-item">
+                            <span class="info-label">Transport Mode</span>
+                            <span class="info-value">@Model.TranDtls.RegRev</span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-sm-6 mb-1">
+                        <div class="info-item">
+                            <span class="info-label">Transport Supply</span>
+                            <span class="info-value">@Model.TranDtls.SupTyp</span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-sm-6 mb-1">
+                        <div class="info-item">
+                            <span class="info-label">IGST On Intra.</span>
+                            <span class="info-value">@Model.TranDtls.IgstOnIntra</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div>
+    <!-- Items Section -->
+    <div class="card mt-3">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h6 class="mb-0">
+                <i class="fa fa-list"></i> Item Details
+            </h6>
+            <span class="font-weight-bold" id="lblTotalItems">
+                Total Items : @Convert.ToString(Model.ItemList != null ? Model.ItemList.Count : 0)
+            </span>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table id="tbleInvoiceItems"
+                       class="table table-bordered table-striped table-hover mb-0 dataTable">
+                    <thead>
+                        <tr>
+                            <th width="50">Sr.</th>
+                            <th>Product</th>
+                            <th>HSN</th>
+                            <th>Qty</th>
+                            <th>Unit</th>
+                            <th>Taxable Value</th>
+                            <th>GST %</th>
+                            <th>CGST</th>
+                            <th>SGST</th>
+                            <th>IGST</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            if (Model.ItemList != null && Model.ItemList.Count > 0)
+                            {
+                                int srnot = 0;
+                                foreach (var itm in Model.ItemList)
+                                {
+                                    srnot = srnot + 1;
+                                    <tr>
+                                        <td>@srnot</td>
+                                        <td>@itm.PrdDesc</td>
+                                        <td>@itm.HsnCd</td>
+                                        <td>@itm.Qty</td>
+                                        <td>@itm.Unit</td>
+                                        <td>@itm.TotItemVal</td>
+                                        <td>@itm.GstRt</td>
+                                        <td>@itm.CgstAmt</td>
+                                        <td>@itm.SgstAmt</td>
+                                        <td>@itm.IgstAmt</td>
+                                        <td>@itm.TotAmt</td>
+                                    </tr>
+                                }
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+$(document).ready(function() {
+        new DataTable('#tbleInvoiceItems', {
+            searching: false,
+            paging: false,
+            ordering: false,
+            info: false,
+            scrollY: '400px',
+            scrollX: true,
+            scrollCollapse: true,
+            fixedHeader: true
+        });
+    })
+</script>

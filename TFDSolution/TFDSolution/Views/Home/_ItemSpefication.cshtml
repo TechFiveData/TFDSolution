@@ -1,0 +1,50 @@
+﻿@model TFDSolution.Transport.Master.ItemSpeficationModel
+
+<div id="divItemSpefication">
+    @if (Model != null && Model.Fields != null && Model.Fields.Count > 0)
+    {
+        <table id="tblSpecification" class="table display">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Specification</th>
+                    <th>Value</th>
+                    <th>Remarks</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    int SpecRow = 1;
+                }
+                @foreach (var item in Model.Fields)
+                {
+                    <tr>
+                        <td class="row-space">
+                            @SpecRow
+                        </td>
+                        <td class="row-space">
+                            <label>@item.FieldCaption</label>
+                        </td>
+                        <td class="row-space" style="padding: 10px;">
+                            <input type="text" id="@SpecRow" data-bind="@item.FieldName" width="100" value="@item.FieldValue" maxlength="50" class="form-control valueField" />
+                        </td>
+                        <td class="row-space">
+                            <input type="text" data-bind="@item.FieldName" style="text-align:left"  value="@item.FieldRemarks" maxlength="500" class="form-control remarkfield" />
+                        </td>
+                    </tr>
+                    SpecRow = SpecRow + 1;
+                }
+            </tbody>
+        </table>
+        <script>
+            new DataTable("#tblSpecification", {
+                "destroy": true,
+                scrollCollapse: true,
+                paging: false,
+                info: false,
+                searching: false,
+                ordering: false,    
+            });
+        </script>
+    }
+</div>

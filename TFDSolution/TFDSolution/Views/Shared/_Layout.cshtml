@@ -1,0 +1,1339 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    @{
+        var ImagesBase = Url.Content("~/Images");
+        var ContentBase = Url.Content("~/Content");
+    }
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TFD | @ViewBag.Title</title>
+    <link rel="apple-touch-icon" href="apple-icon.png">
+    <link rel="shortcut icon" href="favicon.ico">
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    <link href="~/Content/main/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Content/main/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="~/Content/main/themify-icons/css/themify-icons.css" rel="stylesheet" />
+    <link href="~/Content/main/flag-icon-css/css/flag-icon.min.css" rel="stylesheet" />
+    <link href="~/Content/main/selectFX/css/cs-skin-elastic.css" rel="stylesheet" />
+
+    <link href="~/Content/main/jqvmap/jqvmap.min.css" rel="stylesheet" />
+    <link href="~/Content/main/assets/css/style.css" rel="stylesheet" />
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800' rel='stylesheet' type='text/css'>
+    @* For drag and drop row reordering*@
+    <link href="~/Content/rowReorder.dataTables.min.css" rel="stylesheet" />
+    @*For drag and drop Tab reordering*@
+    <link href="~/Content/jquery-ui-1.13.2.css" rel="stylesheet" />
+    <link href="~/Content/select2.min.css" rel="stylesheet" />
+
+    <script src="~/Scripts/jquery-3.7.1.min.js"></script>
+    <script src="~/Scripts/dataTables.js"></script>
+    <script src="~/Scripts/dataTables.scroller.js"></script>
+    @*<script src="~/Scripts/dataTables.jqueryui.js"></script>*@
+    <link href="~/Content/dataTables.jqueryui.css" rel="stylesheet" />
+    <link href="~/Content/jquery.dataTables.css" rel="stylesheet" />
+    <script src="~/Scripts/CommonFunction.js"></script>
+    <script src="~/Scripts/jquery.dataTables.js"></script>
+    <script src="~/Scripts/toastr.min.js"></script>
+    <script src="~/Scripts/select2.min.js"></script>
+    <link href="~/Content/toastr.css" rel="stylesheet" />
+    @*Added for full calender event*@
+    <link href="~/Content/fullcalendar@5.11.3/main.min.css" rel="stylesheet" />
+    @*<link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet" />*@
+
+    <script>
+        toastr.options = {
+            "closeButton": false,
+            "debug": false,
+            "newestOnTop": false,
+            "progressBar": false,
+            "positionClass": "toast-bottom-right",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        }
+    </script>
+    <style>
+        /* Position submenu */
+        .dropdown-submenu {
+            position: relative;
+        }
+
+            .dropdown-submenu .dropdown-menu {
+                top: 0;
+                left: 100%;
+                margin-top: -1px;
+                display: none;
+            }
+
+            /* Show on hover */
+            .dropdown-submenu:hover > .dropdown-menu {
+                display: block;
+            }
+        /* Submenu position */
+        .dropdown-submenu {
+            position: relative;
+        }
+
+            .dropdown-submenu .dropdown-menu {
+                top: 0;
+                left: 100%;
+                margin-top: -1px;
+            }
+
+            /* Optional arrow */
+            .dropdown-submenu > a:after {
+                content: "▶";
+                float: right;
+                margin-left: 5px;
+                font-size: 10px;
+            }
+
+            /* Show submenu */
+            .dropdown-submenu.show > .dropdown-menu {
+                display: block;
+            }
+
+        .dropdown-submenu {
+            position: relative;
+        }
+
+            .dropdown-submenu .dropdown-menu {
+                top: 0;
+                left: 100%;
+                margin-top: -1px;
+            }
+
+        .c-appversion {
+            background: #212529;
+            color: #fff;
+            text-align: center;
+            text-align: center;
+            align-items: center;
+            padding-bottom: 5px;
+            font-weight: 500;
+            position: absolute;
+            width: 100%;
+            padding: 12px;
+        }
+
+            .c-appversion span {
+                width: 100%;
+                float: left;
+            }
+
+            .c-appversion a .blink {
+                animation: blinker 1s linear infinite;
+                color: red; /* optional */
+                font-weight: bold; /* optional */
+                text-decoration: none;
+                width: 100%;
+            }
+        /* Notification Tab Styles */
+        .notif-tabs {
+            display: flex;
+            border-bottom: 1px solid #e0e0e0;
+            background: #f8f9fa;
+        }
+
+        .notif-tab {
+            flex: 1;
+            background: none;
+            border: none;
+            padding: 10px 4px;
+            font-size: 11px;
+            color: #666;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+        }
+
+            .notif-tab i {
+                font-size: 14px;
+            }
+
+            .notif-tab:hover {
+                color: #333;
+                background: #f0f0f0;
+            }
+
+            .notif-tab.active {
+                color: #5a5af5;
+                border-bottom: 2px solid #5a5af5;
+                background: #fff;
+                font-weight: 600;
+            }
+
+        .tab-badge {
+            background: #dc3545;
+            color: #fff;
+            border-radius: 10px;
+            font-size: 9px;
+            padding: 1px 5px;
+            min-width: 16px;
+            text-align: center;
+            display: inline-block;
+        }
+
+            .tab-badge:empty, .tab-badge[data-val="0"] {
+                background: #aaa;
+            }
+
+        .notif-tab-content {
+            display: none;
+        }
+
+            .notif-tab-content.active {
+                display: block;
+            }
+
+        /* Todo & Followup items */
+        .todo-item, .followup-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 8px 12px;
+            border-bottom: 1px solid #f0f0f0;
+            gap: 8px;
+            font-size: 13px;
+        }
+
+            .todo-item.done .todo-text {
+                text-decoration: line-through;
+                color: #aaa;
+            }
+
+            .todo-item input[type="checkbox"] {
+                margin-top: 2px;
+                cursor: pointer;
+            }
+
+        .todo-text {
+            flex: 1;
+        }
+
+        .followup-item .followup-info {
+            flex: 1;
+        }
+
+        .followup-item .followup-title {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .followup-item .followup-time {
+            font-size: 11px;
+            color: #888;
+            margin-top: 2px;
+        }
+
+        .followup-item.overdue .followup-time {
+            color: #ccc;
+            font-weight: 600;
+        }
+
+        .item-delete {
+            background: none;
+            border: none;
+            color: #ccc;
+            cursor: pointer;
+            padding: 0 4px;
+            font-size: 12px;
+        }
+
+            .item-delete:hover {
+                color: #ccc;
+            }
+
+        .notif-tab-content.active {
+        }
+
+        .notif-tab.active {
+            border-bottom: 2px solid #5a5af5;
+            color: #ccc;
+            background: #fff;
+            font-weight: 600;
+        }
+
+        #divDataNofication.notification-menu {
+            border: 1.5px solid #ccc !important;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(90, 90, 245, 0.10);
+        }
+    </style>
+</head>
+<body>
+    <div id="pageLoader" class="loader-overlay">
+        <div class="loader"></div>
+    </div>
+    <!-- Left Panel -->
+    <aside id="left-panel" class="left-panel">
+        <nav class="navbar navbar-expand-sm navbar-default">
+            <div class="navbar-header">
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#main-menu" aria-controls="main-menu" aria-expanded="false" aria-label="Toggle navigation">
+                    <i class="fa fa-bars"></i>
+                </button>
+                <a class="navbar-brand" href="@Url.Action("index","Home")"><img src="@ImagesBase/logo4.png" alt="Logo"></a>
+                <a class="navbar-brand hidden" href="@Url.Action("index","Home")"><img src="@ImagesBase/logo2.png" alt="Logo"></a>
+            </div>
+            <div id="main-menu" class="main-menu collapse navbar-collapse">
+                <ul class="nav navbar-nav">
+                    @{
+                        if (TFDSolution.Common.SessionPersister.LoginedUser != null)
+                        {
+                            var dashboards = TFDSolution.Common.SessionPersister.LoginedUser?.Dashboards;
+                            if (dashboards != null && dashboards.Count > 0)
+                            {
+                                foreach (var item in dashboards)
+                                {
+                                    <li class="active">
+                                        <a href="@Url.Action("Index", "Dashboard", new { @dasbharodName = item.DashboardName })" class="p-0"> <i class="menu-icon fa fa-dashboard"></i>@item.DashboardTitle </a>
+                                    </li>
+                                }
+                            }
+                            else
+                            {
+                                <li class="active">
+                                    <a href="@Url.Content("~/")" class="p-0"> <i class="menu-icon fa fa-dashboard"></i>Dashboard </a>
+                                </li>
+                            }
+                        }
+                        else
+                        {
+                            <li class="active">
+                                <a href="@Url.Content("~/")" class="p-0"> <i class="menu-icon fa fa-dashboard"></i>Dashboard </a>
+                            </li>
+                        }
+                    }
+                    <li class="children">
+                        <a class="p-0" href="@Url.Action("Calender", "Home")">
+                            <i class="menu-icon fa fa-calendar"></i>Calendar
+                        </a>
+                    </li>
+                    @{
+                        var Parentforms = TFDSolution.Common.SessionPersister.LoginedUser?.Forms;
+                        bool hasVisibleForms = Parentforms != null && Parentforms.Any(f => !f.NoAccess);
+                        int RoleId = TFDSolution.Common.SessionPersister.LoginedUser.RoleID;
+                    }
+                    @if (hasVisibleForms)
+                    {
+                        <h3 class="menu-title">Main</h3><!-- /.menu-title -->
+                        foreach (var item in Parentforms.Where(x => x.FormName != "Utilities" && x.FormName != "Summary").OrderBy(x => x.SortOrder))
+                        {
+                            if (!item.NoAccess)
+                            {
+
+                                <li class="menu-item-has-children dropdown">
+                                    @{
+                                        // Map FormTitle and FormName to icon filenames
+                                        var iconMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        {
+                                            { "CRM", "CRM.png" },
+                                            { "Master", "Master.png" },
+                                            { "Parameter", "Parameter.png" },
+                                            { "Purchase", "Purchase.png" },
+                                            { "Sales", "Sales.png" },
+                                            { "Service", "Service.png" },
+                                            { "Production", "Service.png" },
+                                            { "Store", "Store.png" }
+                                        };
+
+                                        string iconFile = null;
+                                        if (iconMap.TryGetValue(item.FormTitle, out var titleIcon))
+                                        {
+                                            iconFile = titleIcon;
+                                        }
+                                    }
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        @if (!string.IsNullOrEmpty(iconFile))
+                                        {
+                                            <img class="mr-2" src="~/Images/Icons/@iconFile" />
+                                        }
+                                        else
+                                        {
+                                            <i class="menu-icon fa fa-laptop"></i>
+                                        }
+                                        @item.FormTitle
+                                    </a>
+                                    <ul class="sub-menu children dropdown-menu">
+                                        @foreach (var child in item.ChildForm.OrderBy(x => x.SortOrder))
+                                        {
+                                            if (!child.NoAccess)
+                                            {
+                                                if (child.FormName == "companymaster")
+                                                {
+                                                    <li><i class="fa fa-minus"></i><a href="@Url.Action("Company", "Master")">Company Master</a></li>
+                                                }
+                                                else if (child.IsHierachyForm)
+                                                {
+                                                    <li><i class="fa fa-minus"></i><a href="@Url.Action("HierachyPage", "Home", new { @pagename = child.FormName })">@child.FormTitle</a></li>
+                                                }
+                                                else
+                                                {
+                                                    <li><i class="fa fa-minus"></i><a href="@Url.Action("MyPage", "Home", new { @pagename = child.FormName })">@child.FormTitle</a></li>
+                                                }
+                                            }
+                                        }
+                                    </ul>
+                                </li>
+                            }
+                        }
+                    }
+                    @if (RoleId == 1)
+                    {
+                        <h3 class="menu-title">Settings</h3><!-- /.menu-title -->
+                        <li class="menu-item-has-children dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-tasks"></i>Users & Roles</a>
+                            <ul class="sub-menu children dropdown-menu">
+                                <li><i class="menu-icon fa fa-fort-awesome"></i><a href="@Url.Action("UserMaster", "Master")">Users</a></li>
+                                <li><i class="menu-icon fa fa-area-chart"></i><a href="@Url.Action("RoleMaster", "Master")">Roles & Permission</a></li>
+                            </ul>
+                        </li>
+                        <li class="menu-item-has-children dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-code"></i>Forms</a>
+                            <ul class="sub-menu children dropdown-menu">
+                                <li><i class="menu-icon fa fa-cogs"></i><a href="@Url.Action("Settings", "FormSetting")">Forms Settings</a></li>
+                                <li><i class="menu-icon fa fa-columns"></i><a href="@Url.Action("ItemAdvanceSettings", "FormSetting")">Item Advance Settings</a></li>
+                                @*<li><i class="menu-icon fa fa-certificate"></i><a href="@Url.Action("FormPermission", "FormSetting")">Forms Permission</a></li>*@
+                                <li><i class="menu-icon fa fa-sitemap"></i><a href="@Url.Action("FormFlowSetting", "Master")">Flow Settings</a></li>
+                            </ul>
+                        </li>
+                        <li class="menu-item-has-children dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-cogs"></i>Configuration</a>
+                            <ul class="sub-menu children dropdown-menu">
+                                <li><i class="menu-icon fa fa-line-chart"></i><a href="@Url.Action("OtherCharges", "Configuration")">Other Charges</a></li>
+                                <li><i class="menu-icon fa fa-id-card-o"></i><a href="@Url.Action("License", "Configuration")">Your License</a></li>
+                                <li><i class="menu-icon fa fa-area-chart"></i><a href="@Url.Action("DynamicReport", "Setting")">Reports</a></li>
+                                @*<li><i class="menu-icon fa fa-thumbs-up"></i><a href="@Url.Action("Approvals", "Setting")">Approvals</a></li>*@
+                                <li><i class="menu-icon ti-email"></i><a href="@Url.Action("EmailTemplate", "Configuration")">Email Templates</a></li>
+                                <li><i class="menu-icon ti-email"></i><a href="@Url.Action("DashboardSetting", "Configuration")">Dashboard</a></li>
+                                <li><i class="menu-icon ti-settings"></i><a href="@Url.Action("UserApprovalSettings", "Configuration")">User Approval</a></li>
+                                <li><i class="menu-icon ti-settings"></i><a href="@Url.Action("FormSystemReportSettings", "Configuration")">System Report Settings</a></li>
+                            </ul>
+                        </li>
+                        <li class="menu-item-has-children dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-th-list"></i>Utilities</a>
+                            <ul class="sub-menu children dropdown-menu">
+                                <li><i class="menu-icon fa fa-thumbs-o-up"></i><a href="@Url.Action("MultiApproval", "Configuration")">Multi Approval</a></li>
+                                <li><i class="menu-icon fa fa-th"></i><a href="@Url.Action("AccountLedger", "Reports")">Account Ledger</a></li>
+                                <li><i class="menu-icon fa fa-th"></i><a href="@Url.Action("SystemAuditLogs", "Reports")">User Audit Log</a></li>
+                            </ul>
+                        </li>
+                        <h3 class="menu-title">Reports</h3>
+                        <li class="menu-item-has-children dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="menu-icon fa fa-glass"></i>Summary
+                            </a>
+                            <ul class="sub-menu children dropdown-menu">
+                                <li><i class="menu-icon fa fa-list-ol"></i><a href="@Url.Action("MISReport", "Reports")">MIS Report</a></li>
+                                <li><i class="menu-icon fa fa-list-ol"></i><a href="@Url.Action("SystemAuditLogs", "Reports")">Audit Logs</a></li>
+                            </ul>
+                        </li>
+                        <li class="menu-item-has-children dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                <i class="menu-icon fa fa-bar-chart"></i> Statutory Reports
+                            </a>
+                            <ul class="sub-menu children dropdown-menu">
+                                <li class="dropdown-submenu">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                        <i class="menu-icon fa fa-minus" style="top:3px;"></i> Accounts
+                                    </a>
+                                    <ul class="dropdown-menu" style="display: none; left: 22px; top: 0px; position: relative; border: 0px; padding: 0; ">
+                                        <li><a href="@Url.Action("AccountLedger","Reports")"><i class="fa fa-minus"></i> Account Ledger</a></li>
+                                        <li><a href="@Url.Action("TrialBalance","Reports")"><i class="fa fa-minus"></i> Trial Balance</a></li>
+                                        <li><a href="@Url.Action("ProfitLoss","Reports")"><i class="fa fa-minus"></i> Profit & Loss</a></li>
+                                        <li><a href="@Url.Action("BalanceSheet","Reports")"><i class="fa fa-minus"></i> Balance Sheet</a></li>
+                                    </ul>
+                                </li>
+                                <li class="dropdown-submenu">
+                                    <a href="#" class="dropdown-toggle">
+                                        <i class="menu-icon fa fa-minus" style="top:3px;"></i> Tax
+                                    </a>
+                                    <ul class="dropdown-menu" style="display: none; left: 22px; top: 0px; position: relative; border: 0px; padding: 0; ">
+                                        <li><a href="@Url.Action("GSTR1Report","Reports")"><i class="fa fa-minus"></i> GSTR-1</a></li>
+                                        <li><a href="@Url.Action("GSTR2Report","Reports")"><i class="fa fa-minus"></i> GSTR-2</a></li>
+                                        <li><a href="@Url.Action("GSTR3BReport","Reports")"><i class="fa fa-minus"></i> GSTR-3B</a></li>
+                                    </ul>
+                                </li>
+
+                            </ul>
+                        </li>
+                    }
+                    else
+                    {
+                        if (Parentforms.Where(x => x.FormName == "Utilities").FirstOrDefault() != null)
+                        {
+                            <h3 class="menu-title">Settings</h3>
+                            foreach (var item in Parentforms.Where(x => x.FormName == "Utilities" && x.NoAccess == false).OrderBy(x => x.SortOrder))
+                            {
+                                <li class="menu-item-has-children dropdown">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i class="menu-icon fa fa-th-list"></i>Utilities</a>
+                                    @if (!item.NoAccess)
+                                    {
+                                        <ul class="sub-menu children dropdown-menu">
+                                            @foreach (var child in item.ChildForm.Where(x => x.NoAccess == false).OrderBy(x => x.SortOrder))
+                                            {
+                                                if (child.FormName == "MultiApproval")
+                                                {
+                                                    <li><i class="menu-icon fa fa-thumbs-o-up"></i><a href="@Url.Action("MultiApproval", "Configuration")">Multi Approval</a></li>
+                                                }
+                                                else if (child.FormName == "AccountLedger")
+                                                {
+                                                    <li><i class="menu-icon fa fa fa-th"></i><a href="@Url.Action("AccountLedger", "Reports")">Account Ledger</a></li>
+                                                }
+                                                else if (child.FormName == "SystemAuditLogs")
+                                                {
+                                                    <li><i class="menu-icon fa fa fa-th"></i><a href="@Url.Action("SystemAuditLogs", "Reports")">User Audit Log</a></li>
+                                                }
+                                            }
+                                        </ul>
+                                    }
+                                </li>
+                            }
+                        }
+                        if (Parentforms.Where(x => x.FormName == "Summary").FirstOrDefault() != null)
+                        {
+                            <h3 class="menu-title">Reports</h3>
+                            foreach (var item in Parentforms.Where(x => x.FormName == "Summary" && x.NoAccess == false).OrderBy(x => x.SortOrder))
+                            {
+                                <li class="menu-item-has-children dropdown">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <i class="menu-icon fa fa-glass"></i>Summary
+                                    </a>
+                                    @if (!item.NoAccess)
+                                    {
+                                        <ul class="sub-menu children dropdown-menu">
+                                            @foreach (var child in item.ChildForm.Where(x => x.NoAccess == false).OrderBy(x => x.SortOrder))
+                                            {
+                                                if (child.FormName == "MISReport")
+                                                {
+                                                    <li><i class="menu-icon fa fa-list-ol"></i><a href="@Url.Action("MISReport", "Reports")">MIS Report</a></li>
+                                                }
+                                            }
+                                        </ul>
+                                    }
+                                </li>
+                            }
+                        }
+                        if (Parentforms.Where(x => x.FormName == "Statutory").FirstOrDefault() != null)
+                        {
+                            <h3 class="menu-title">Reports</h3>
+                            foreach (var item in Parentforms.Where(x => x.FormName == "Statutory" && x.NoAccess == false).OrderBy(x => x.SortOrder))
+                            {
+                                <li class="menu-item-has-children dropdown">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <i class="menu-icon fa fa-glass"></i>Statutory Reports
+                                    </a>
+                                    @if (!item.NoAccess)
+                                    {
+                                        <ul class="sub-menu children dropdown-menu">
+                                            @{
+                                                if (item.ChildForm.Where(x => x.NoAccess == false && (x.FormName == "AccountLedger" || x.FormName == "TrialBalance" || x.FormName == "ProfitLoss" || x.FormName == "BalanceSheet")).FirstOrDefault() != null)
+                                                {
+                                                    <li class="dropdown-submenu">
+                                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                                            <i class="menu-icon fa fa-minus" style="top:3px;"></i> Accounts
+                                                        </a>
+                                                        <ul class="dropdown-menu" style="display: none; left: 22px; top: 0px; position: relative; border: 0px; padding: 0; ">
+                                                            @{
+                                                                foreach (var child in item.ChildForm.Where(x => x.NoAccess == false && (x.FormName == "AccountLedger" || x.FormName == "TrialBalance" || x.FormName == "ProfitLoss" || x.FormName == "BalanceSheet")).OrderBy(x => x.SortOrder))
+                                                                {
+                                                                    if (child.FormName == "AccountLedger")
+                                                                    {
+                                                                        <li><a href="@Url.Action("AccountLedger","Reports")"><i class="fa fa-minus"></i> Account Ledger</a></li>
+                                                                    }
+                                                                    else if (child.FormName == "TrialBalance")
+                                                                    {
+                                                                        <li><a href="@Url.Action("TrialBalance","Reports")"><i class="fa fa-minus"></i> Trial Balance</a></li>
+                                                                    }
+                                                                    else if (child.FormName == "ProfitLoss")
+                                                                    {
+                                                                        <li><a href="@Url.Action("ProfitLoss","Reports")"><i class="fa fa-minus"></i> Profit & Loss</a></li>
+                                                                    }
+                                                                    else if (child.FormName == "BalanceSheet")
+                                                                    {
+                                                                        <li><a href="@Url.Action("BalanceSheet","Reports")"><i class="fa fa-minus"></i> Balance Sheet</a></li>
+                                                                    }
+                                                                }
+                                                            }
+                                                        </ul>
+                                                    </li>
+                                                }
+                                                if (item.ChildForm.Where(x => x.NoAccess == false && (x.FormName == "GSTR1Report" || x.FormName == "GSTR2Report" || x.FormName == "GSTR3BReport")).FirstOrDefault() != null)
+                                                {
+                                                    <li class="dropdown-submenu">
+                                                        <a href="#" class="dropdown-toggle">
+                                                            <i class="menu-icon fa fa-minus" style="top:3px;"></i> Tax
+                                                        </a>
+                                                        <ul class="dropdown-menu" style="display: none; left: 22px; top: 0px; position: relative; border: 0px; padding: 0; ">
+                                                            @{
+                                                                foreach (var child in item.ChildForm.Where(x => x.NoAccess == false && (x.FormName == "AccountLedger" || x.FormName == "TrialBalance" || x.FormName == "ProfitLoss" || x.FormName == "BalanceSheet")).OrderBy(x => x.SortOrder))
+                                                                {
+                                                                    if (child.FormName == "GSTR1Report")
+                                                                    {
+                                                                        <li><a href="@Url.Action("GSTR1Report","Reports")"><i class="fa fa-minus"></i> GSTR-1</a></li>
+                                                                    }
+                                                                    else if (child.FormName == "GSTR2Report")
+                                                                    {
+                                                                        <li><a href="@Url.Action("GSTR2Report","Reports")"><i class="fa fa-minus"></i> GSTR-2</a></li>
+                                                                    }
+                                                                    else if (child.FormName == "GSTR3BReport")
+                                                                    {
+                                                                        <li><a href="@Url.Action("GSTR3BReport","Reports")"><i class="fa fa-minus"></i> GSTR-3B</a></li>
+                                                                    }
+                                                                }
+                                                            }
+                                                        </ul>
+                                                    </li>
+                                                }
+                                            }
+                                        </ul>
+                                    }
+                                </li>
+                            }
+                        }
+                    }
+                </ul>
+            </div><!-- /.navbar-collapse -->
+        </nav>
+    </aside><!-- /#left-panel -->
+    <!-- Left Panel -->
+    <!-- Right Panel -->
+    <div id="right-panel" class="right-panel">
+        <!-- Header-->
+        <header id="header" class="header">
+            <div class="header-menu">
+                <div class="col-sm-3">
+                    <a id="menuToggle" class="menutoggle pull-left"><i class="fa fa fa-tasks"></i></a>
+                    <div class="header-left">
+                        <button class="search-trigger"><i class="fa fa-search"></i></button>
+                        <div class="form-inline">
+                            <form class="search-form">
+                                <input class="form-control mr-sm-2" type="text" placeholder="Search ..." aria-label="Search">
+                                <button class="search-close" type="submit"><i class="fa fa-close"></i></button>
+                            </form>
+                        </div>
+                        <div class="dropdown for-notification">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" id="btnnotification"
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                    onclick="ResetNotificationTab()">
+                                <i class="fa fa-bell"></i><span id="notificationCount" class="count bg-danger">1</span>
+                            </button>
+                            <div id="divDataNofication" class="notification-menu dropdown-menu" aria-labelledby="notification">
+                                <!-- Tab Header -->
+                                <div class="notif-tabs">
+                                    <button class="notif-tab active" data-tab="notifications">
+                                        <i class="fa fa-bell"></i> Notifications
+                                        <span class="tab-badge" id="tabNotifCount">0</span>
+                                    </button>
+                                    <button class="notif-tab" data-tab="todo">
+                                        <i class="fa fa-check-square-o"></i> To-Do
+                                        <span class="tab-badge" id="tabTodoCount">0</span>
+                                    </button>
+                                    <button class="notif-tab" data-tab="followup">
+                                        <i class="fa fa-clock-o"></i> Follow Up
+                                        <span class="tab-badge" id="tabFollowupCount">0</span>
+                                    </button>
+                                </div>
+
+                                <!-- Tab: Notifications -->
+                                <div class="notif-tab-content active" id="tab-notifications">
+                                    <div class="notification-header">
+                                        <span>You have <span class="badge">0</span> Notifications</span>
+                                        <a href="../Account/MyNofications">View All</a>
+                                    </div>
+                                    <div class="notification-list"></div>
+                                </div>
+
+                                <!-- Tab: To-Do -->
+                                <div class="notif-tab-content" id="tab-todo">
+                                    <div class="notification-header">
+                                        <span>To-Do Items</span>
+                                        <a href="#">View All</a>
+                                    </div>
+                                    <div class="todo-input-area" style="padding: 8px 12px; border-bottom: 1px solid #eee;">
+                                        <div style="display:flex; gap:6px;">
+                                            <input type="text" id="todoInput" class="form-control form-control-sm" placeholder="Add a new task..." style="flex:1;" />
+                                            <button class="btn btn-sm btn-primary" id="btnAddTodo" onclick="AddTodoItem()">
+                                                <i class="fa fa-plus"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="notification-list" id="todoList"></div>
+                                </div>
+
+                                <!-- Tab: Follow Up -->
+                                <div class="notif-tab-content" id="tab-followup">
+                                    <div class="notification-header">
+                                        <span>Follow Ups</span>
+                                        <a href="#">View All</a>
+                                    </div>
+                                    <div class="followup-input-area" style="padding: 8px 12px; border-bottom: 1px solid #eee;">
+                                        <div style="display:flex; flex-direction:column; gap:6px;">
+                                            <input type="text" id="followupTitle" class="form-control form-control-sm" placeholder="Follow up title..." />
+                                            <div style="display:flex; gap:6px;">
+                                                <input type="datetime-local" id="followupDate" class="form-control form-control-sm" style="flex:1;" />
+                                                <button class="btn btn-sm btn-primary" id="btnAddFollowup" onclick="AddFollowupItem()">
+                                                    <i class="fa fa-plus"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="notification-list" id="followupList"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="dropdown for-message" style="display:none;">
+                            <button class="btn btn-secondary dropdown-toggle" type="button"
+                                    id="message"
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="ti-email"></i>
+                                <span class="count bg-primary">9</span>
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="message">
+                                <p class="red">You have 4 Mails</p>
+                                <a class="dropdown-item media" href="#">
+                                    <span class="photo media-left"><img alt="avatar" src="@ImagesBase/avatar/1.jpg"></span>
+                                    <span class="message media-body">
+                                        <span class="name float-left">Jonathan Smith</span>
+                                        <span class="time float-right">Just now</span>
+                                        <p>Hello, this is an example msg</p>
+                                    </span>
+                                </a>
+                                <a class="dropdown-item media" href="#">
+                                    <span class="photo media-left"><img alt="avatar" src="@ImagesBase/avatar/2.jpg"></span>
+                                    <span class="message media-body">
+                                        <span class="name float-left">Jack Sanders</span>
+                                        <span class="time float-right">5 minutes ago</span>
+                                        <p>Lorem ipsum dolor sit amet, consectetur</p>
+                                    </span>
+                                </a>
+                                <a class="dropdown-item media" href="#">
+                                    <span class="photo media-left"><img alt="avatar" src="@ImagesBase/avatar/3.jpg"></span>
+                                    <span class="message media-body">
+                                        <span class="name float-left">Cheryl Wheeler</span>
+                                        <span class="time float-right">10 minutes ago</span>
+                                        <p>Hello, this is an example msg</p>
+                                    </span>
+                                </a>
+                                <a class="dropdown-item media" href="#">
+                                    <span class="photo media-left"><img alt="avatar" src="@ImagesBase/avatar/4.jpg"></span>
+                                    <span class="message media-body">
+                                        <span class="name float-left">Rachel Santos</span>
+                                        <span class="time float-right">15 minutes ago</span>
+                                        <p>Lorem ipsum dolor sit amet, consectetur</p>
+                                    </span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 text-center">
+                    @{
+                        TFDSolution.Business.Interface.IMasterBusiness masterBusiness = new TFDSolution.Business.MasterBusiness();
+                        TFDSolution.Transport.Master.UserCompany company = @TFDSolution.Common.SessionPersister.LoginedUser.CompanyInfo;
+                        <div class="company-area dropdown">
+                            <a class="dropdown-toggle" style="color: #fff !important" href="#" data-toggle="dropdown" id="company" aria-haspopup="true" aria-expanded="true">
+                                <span class="user-area-menu-text">
+                                    @company.CompanyName &nbsp;
+                                    <label style="font-size:11px;">(@company.FinancialAlias)</label>
+                                </span>
+                            </a>
+                            @{
+                                var companyData = masterBusiness.GetCompanyData();
+                                if (companyData != null && companyData.Company != null && companyData.Company.Count > 0)
+                                {
+                                    int fYearId = TFDSolution.Common.SessionPersister.LoginedUser.CompanyInfo.DefaultFiancialId;
+                                    <div class="company-menu dropdown-menu" aria-labelledby="company">
+                                        @{
+                                            foreach (var item in companyData.Company)
+                                            {
+                                                <div class="dropdown-item-company company-card">
+                                                    <div class="company-name">
+                                                        @item.CompanyName
+                                                    </div>
+                                                    <div class="year-list">
+                                                        @if (item != null && item.Financials != null && item.Financials.Count > 0)
+                                                        {
+                                                            foreach (var Fitem in item.Financials)
+                                                            {
+                                                                if (Fitem.FiancialYearId == fYearId)
+                                                                {
+                                                                    <span class="year-badge active" title="@Fitem.Alias" onclick="UpdateUserCF('@item.CompanyId', @Fitem.FiancialYearId, '@Fitem.Alias')">
+                                                                        @Fitem.Alias
+                                                                    </span>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <span class="year-badge" title="@Fitem.Alias" onclick="UpdateUserCF('@item.CompanyId', @Fitem.FiancialYearId, '@Fitem.Alias')">
+                                                                        @Fitem.Alias
+                                                                    </span>
+                                                                }
+                                                            }
+                                                        }
+                                                    </div>
+                                                </div>
+                                            }
+                                        }
+                                    </div>
+                                }
+                            }
+                        </div>
+                    }
+                </div>
+                <div class="col-sm-3 p-0">
+                    <div class="user-area dropdown float-right">
+                        <a href="#" class="dropdown-toggle" id="profile" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span class="user-area-menu-text">@TFDSolution.Common.SessionPersister.LoginedUser.FirstName @TFDSolution.Common.SessionPersister.LoginedUser.LastName</span>
+                            @{
+                                var picName = Convert.ToString(TFDSolution.Common.SessionPersister.LoginedUser.UserName) + ".png";
+                                if (System.IO.File.Exists(Server.MapPath("/Images/Profile/" + picName)))
+                                {
+                                    <img class="user-avatar rounded-circle" src="@ImagesBase/Profile/@picName" alt="Picture">
+                                }
+                                else
+                                {
+                                    <img class="user-avatar rounded-circle" src="@ImagesBase/NoImage.png" alt="Picture">
+                                }
+                            }
+                        </a>
+                        <div class="user-menu dropdown-menu" aria-labelledby="profile">
+                            <a class="nav-link" href="@Url.Action("Profile","Account")"><i class="fa fa-user"></i> My Profile</a>
+
+                            <a class="nav-link" href="@Url.Action("MyNofications","Account")  "><i class="fa fa-user"></i> Notifications <span class="count" id="MyNoficationCount">0</span></a>
+
+                            <a class="nav-link" href="#"><i class="fa fa-cog"></i>Settings</a>
+
+                            <a class="nav-link" href="@Url.Action("Logout","Login")"><i class="fa fa-power-off"></i> Logout</a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </header>
+        <div class="content mt-1">
+            @RenderBody()
+        </div>
+    </div>
+    @*<footer class="main-footer p-0">
+            <div class="text-center">
+                <p class="mb-0 p-2" style="color:#fff !important;">
+                    &copy; @DateTime.Now.Year <strong>Lotus Next ERP</strong>. All rights reserved.
+                    <span class="float-right">App Version: 4.15</span>
+                </p>
+            </div>
+        </footer>*@
+    <div id="confirmModal" class="confirm-overlay">
+        <div class="confirm-box">
+            <!-- Icon -->
+            <div class="confirm-header">
+                <div class="confirm-icon">
+                    @*<i class="fa fa-check-circle"></i>*@
+                </div>
+                <span class="confirm-title">Confirmation</span>
+            </div>
+            @*<div class="confirm-header">
+                </div>*@
+            <div class="confirm-body">
+                Are you sure you want to proceed?
+            </div>
+            <div class="confirm-footer">
+                <button class="btn-cancel">Cancel</button>
+                <button class="btn-ok">Yes, Proceed</button>
+            </div>
+        </div>
+    </div>
+    <!--<div id="confirmModal" class="confirm-modal">
+        <div class="confirm-box success">-->
+    <!-- Icon -->
+    <!--<div class="confirm-icon">
+        <i class="fa fa-check-circle"></i>
+    </div>-->
+    <!-- Title -->
+    <!--<div class="confirm-title">Confirmation</div>-->
+    <!-- Message -->
+    <!--<div class="confirm-body">
+        Are you sure?
+    </div>-->
+    <!-- Buttons -->
+    <!--<div class="confirm-actions">
+                <button type="button" class="btn btn-ok">Yes</button>
+                <button type="button" class="btn btn-cancel">Cancel</button>
+            </div>
+
+        </div>
+    </div>-->
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+    <script src="~/Content/main/popper/dist/umd/popper.min.js"></script>
+    <script src="~/Content/main/bootstrap/dist/js/bootstrap.min.js"></script>
+    @*<script src="~/Content/main/assets/js/main.js"></script>
+        <script src="~/Content/main/assets/js/dashboard.js"></script>*@
+    <script src="~/Content/main/assets/js/widgets.js"></script>
+    <script src="~/Content/main/jqvmap/jquery.vmap.min.js"></script>
+    @*<script src="~/Content/main/assets/js/init-scripts/data-table/datatables-init.js"></script>*@
+    @*<script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>*@
+
+    @*Start: For drag and drop row reordering*@
+    <script src="~/Scripts/jquery.dataTables.min.js"></script>
+    <script src="~/Scripts/dataTables.rowReorder.min.js"></script>
+    @*End: For drag and drop row reordering*@
+    @*Start: For drag and drop Tab reordering*@
+    <script src="~/Scripts/jquery-ui-1.13.2.min.js"></script>
+    <script src="~/Scripts/select2.min.js"></script>
+    @*Added for full calender event*@
+    <script src="~/Scripts/fullcalendar@5.11.3/main.min.js"></script>
+    @*<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>*@
+    <script type="text/javascript">
+        // Trigger from any tab
+        function ResetNotificationTab() {
+            $('.notif-tab').removeClass('active');
+            $('.notif-tab-content').removeClass('active');
+            $('.notif-tab[data-tab="notifications"]').addClass('active');
+            $('#tab-notifications').addClass('active');
+        }
+        function logoutAllTabs() {
+            localStorage.setItem("logout", Date.now());
+        }
+        function customConfirm({ message, type = "success", title = "Confirmation", okText = "OK",
+            cancelText = "Cancel" }, callback) {
+            const modal = $("#confirmModal");
+            const box = modal.find(".confirm-box");
+            // reset classes
+            box.removeClass("success warning delete").addClass(type);
+            // set content
+            modal.find(".confirm-body").text(message);
+            modal.find(".confirm-title").text(title);
+            // set button text dynamically
+            $(".btn-ok").text(okText);
+            $(".btn-cancel").text(cancelText);
+            // icons
+            let iconClass = "";
+            if (type === "success") iconClass = "fa fa-check-circle";
+            if (type === "warning") iconClass = "fa fa-exclamation-triangle";
+            if (type === "delete") iconClass = "fa fa-trash";
+            modal.find(".confirm-icon").attr("class", "confirm-icon " + iconClass);
+            modal.addClass("show");
+            // events
+            $(".btn-ok").off("click").on("click", function () {
+                modal.removeClass("show");
+                callback(true);
+            });
+            $(".btn-cancel").off("click").on("click", function () {
+                modal.removeClass("show");
+                callback(false);
+            });
+            // 🔥 Keyboard support
+            $(document).on("keydown.confirm", function (e) {
+                if (!modal.hasClass("show")) return;
+                if (e.key === "Enter") {
+                    e.preventDefault();
+                    closeModal(true);   // YES
+                }
+                if (e.key === "Escape") {
+                    e.preventDefault();
+                    closeModal(false);  // CANCEL
+                }
+            });
+            $("#confirmModal").off("click").on("click", function (e) {
+                if ($(e.target).is("#confirmModal")) {
+                    closeModal(false); // treat as Cancel
+                }
+            });
+            // 🔥 common close function
+            function closeModal(result) {
+                modal.removeClass("show");
+                $(document).off("keydown.confirm"); // cleanup
+                callback(result);
+            }
+
+            // 🔥 Optional: auto focus Yes button
+            setTimeout(() => {
+                $(".btn-ok").focus();
+            }, 100);
+        }
+
+        $(document).ready(function () {
+            $("#company").click(function (e) {
+                e.preventDefault();
+                e.preventDefault();
+                $(this).next(".company-menu").toggleClass("show");
+            });
+            window.addEventListener("storage", function (event) {
+                if (event.key === "logout") {
+                    // Another tab triggered logout
+                    window.location.href = '@Url.Action("Index", "Home")';
+                }
+            });
+            // Close when clicking outside
+            $(document).click(function (e) {
+                if (!$(e.target).closest('.company-area').length) {
+                    $(".company-menu").removeClass("show");
+                }
+            });
+            $('.dropdown-submenu > a').on("click", function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                $(this).parent().toggleClass('show');
+                $(this).next('.dropdown-menu').toggle();
+            });
+            // Show loader when page starts loading
+            $("#pageLoader").fadeOut();
+            BindUserNotifications();
+            setInterval(function () {
+                BindUserNotifications();
+            }, 50000);
+        });
+        // Hide loader when page is fully loaded
+        $(window).on("load", function () {
+            $("#pageLoader").fadeOut();
+        });
+        // Loop through all menu links
+        $('#main-menu a').each(function () {
+            var link = $(this).attr('href');
+            var currentUrl = window.location.pathname + window.location.search;
+
+            if (link && currentUrl.toLowerCase() === link.toLowerCase()) {
+
+                // Highlight this item
+                $(this).parent("li").addClass("active");
+
+                // Open parent dropdown
+                $(this).closest('.dropdown').addClass('show');
+
+                // Open its submenu
+                $(this).closest('.dropdown-menu').addClass('show');
+
+                // Set toggle to expanded
+                $(this).closest('.dropdown')
+                    .children('.dropdown-toggle')
+                    .attr('aria-expanded', 'true');
+            }
+        });
+        //$(document).ajaxStart(function (event, jqXHR, options) {
+        //    /*if (options.skipLoading) return;*/
+        //    try {
+        //        if (options ? options.skipLoading : false) {
+        //            console.log("Skip loading");
+        //            return;
+        //        }
+        //        else {
+        //            $("#pageLoader").fadeIn();
+        //        }
+        //    } catch (e) {
+        //        console.log("Error : " + e);
+        //    }
+
+        //}).ajaxStop(function (event, jqXHR, options) {
+        //    $("#pageLoader").fadeOut();
+        //});
+
+        $(document).ajaxSend(function (event, jqXHR, options) {
+            if (options ? options.skipLoading : false) return; // <-- Skip loader
+            $("#pageLoader").fadeIn();
+        });
+
+        $(document).ajaxComplete(function (event, jqXHR, options) {
+            if (options ? options.skipLoading : false) return;
+            $("#pageLoader").fadeOut();
+        });
+
+    function UpdateUserCF(companyId, financialId, msg) {
+            customConfirm("Are you sure you want to proceed?", function (result) {
+                if (result) {
+                    // YES clicked
+                    console.log("Proceeding...");
+                    $.ajax({
+                        url: '@Url.Action("UpdateUserSetting", "Common")',
+                        type: 'GET',
+                        data: { CompanyId: companyId, FinancialId: financialId },
+                        success: function (response) {
+                            if (response.IsSuccess) {
+                                //alert("Record Status has been successfully.");
+                                ShowToastNotification("success", "You have successfully switch to " + msg+ " Year.");
+                                setTimeout(function () {
+                                    //window.location.reload();
+                                    logoutAllTabs();
+                                    window.location.href = '@Url.Action("Index", "Home")';
+                                }, 2000);
+                            } else {
+                                ShowToastNotification("error", "Error status update record.");
+                            }
+                        },
+                        error: function () {
+                            $("#pageLoader").hide();
+                            console.log("Error loading while updating..." + fieldcap);
+                        }
+                    });
+                } else {
+                    // Cancel clicked
+                    console.log("Cancelled");
+                }
+            });
+            //if (confirm("Are you sure you want to proceed?")) {
+
+            //}
+        }
+    function BindUserNotifications() {
+        // reset UI first (prevents stale/incorrect values during first run)
+        //$("#notificationCount").text(0);
+        $("#divDataNofication span.badge").text(0);
+        $("#divDataNofication .notification-list").empty();
+        $.ajax({
+            url: '@Url.Action("getUserNotifications", "Master")',
+            type: 'GET',
+            dataType: 'json',               // ensure jQuery parses JSON — prevents string/HTML handling
+            skipLoading: true,              // <-- Skip loader for this request
+            success: function (response) {
+                if (!response || !Array.isArray(response) || response.length === 0) {
+                    // nothing to show
+                    return;
+                }
+
+                const count = response.reduce((acc, it) => Math.max(acc, Number(it.UnReadCount || 0)), 0);
+                if (count > 99) {
+                    $("#notificationCount").text("99+");
+                }
+                else {
+                    $("#notificationCount").text(count);
+                }
+                $("#divDataNofication span.badge").text(count);
+                // build markup in memory for performance & avoid shadowing variables
+                let itemsHtml = '';
+                response.forEach(function (item) {
+                    const title = item.Title || '';
+                    const msgTime = typeof formatTimeAgo === 'function' ? formatTimeAgo(item.CreatedOn) : '';
+                    const statusClass = (item.IsRead === true) ? "read" : "unread";
+
+                    itemsHtml += `<a class="notification-item ${statusClass}" href="../Account/MyNofications">
+                        <div class="icon"><i class="fa fa-envelope"></i></div>
+                        <div class="content"><p>${title}</p></div>
+                        <div class="time">${msgTime}</div>
+                    </a>`;
+                });
+
+                $("#divDataNofication .notification-list").append(itemsHtml);
+                if (count > 99) {
+                    $("#notificationCount").text("99+");
+                }
+                else {
+                    $("#notificationCount").text(count);
+                }
+                $("#divDataNofication span.badge").text(count);
+
+                // compute unread count robustly (use max or sum depending on server semantics)
+                // Using max to preserve original pattern where server supplied UnReadCount per item.
+
+                // optionally update other UI places:
+                // $("#MyNoficationCount").text(count);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                // If server returned HTML (e.g. login redirect or error page), detect and handle it
+                const body = (jqXHR && jqXHR.responseText) ? jqXHR.responseText.trim() : '';
+                if (body && body.charAt(0) === '<') {
+                    // likely a login/HTML response (session expired or server returned a View)
+                    console.warn("Notification endpoint returned HTML — session may be expired. Forcing reload to sign-in.");
+                    window.location.href = '@Url.Action("Index", "Home")';
+                    return;
+                }
+                console.error("Error loading notifications:", textStatus, errorThrown);
+            }
+        });
+    }
+    function BindUserNotificationsOld() {
+            var nofticationHtml = '<p class="red">You have 0 Notification</p>';
+            //$("#notification span").html("0");
+            //$("#MyNoficationCount").html("0");
+            try {
+                 $.ajax({
+                    url: '@Url.Action("getUserNotifications", "Master")',
+                    type: 'GET',
+                     data: {},
+                     skipLoading: true, // <-- Skip loader for this request
+                     success: function (response) {
+                         if (response && response.length > 0) {
+                             let count = 0;//response.length;
+                             let nofticationHtml = '';
+                             $.each(response, function (index, item) {
+                                 let titleStyle = 'font-weight:600;color:#000;';
+                                 let msgTime = formatTimeAgo(item.CreatedOn);
+                                let statusread = (item.IsRead == true) ? "read" : "unread";
+                                let nofticationHtml = `<a class="notification-item ${statusread}" href="../Account/MyNofications">
+                                    <div class="icon"><i class="fa fa-envelope"></i></div>
+                                    <div class="content">
+                                        <p>${item.Title}</p>
+                                    </div>
+                                    <div class="time">${msgTime}</div>
+                                </a>`;
+                                 $("#divDataNofication .notification-list").append(nofticationHtml);
+                                 //if (item.IsRead == true) {
+                                 //    nofticationHtml += `<a class="dropdown-item media" href="../Account/MyNofications"><i class="fa fa-check"></i><p>${item.Title}</p></a>`;
+                                 //}
+                                 //else {
+                                 //    nofticationHtml += `<a class="dropdown-item media" href="../Account/MyNofications"><i class="fa fa-envelope"></i><p style="${titleStyle}">${item.Title}</p></a>`;
+                                 //}
+                                 count = item.UnReadCount;
+                                 $("#notificationCount").text(count);
+                             });
+                             nofticationHtml = `<p class="red">You have ${count} Notification${count > 1 ? 's' : ''}</p>` + nofticationHtml;
+                             //$("#divDataNofication").html(nofticationHtml);
+                             $("#notificationCount").html(count);
+                             $("#divDataNofication span.badge").html(count);
+                             /*$("#MyNoficationCount").html(count);                             */
+                         }
+                    },
+                    error: function () {
+                        console.log("Error loading while updating...");
+                    }
+                });
+            } catch (e) {
+
+            }
+        }
+        // ===== Tab switching =====
+        $(document).on('click', '.notif-tab', function () {
+            var tabName = $(this).data('tab');
+            $('.notif-tab').removeClass('active');
+            $(this).addClass('active');
+            $('.notif-tab-content').removeClass('active');
+            $('#tab-' + tabName).addClass('active');
+        });
+
+        // Prevent dropdown from closing when clicking inside
+        $(document).on('click', '#divDataNofication', function (e) {
+            e.stopPropagation();
+        });
+
+        // ===== TO-DO =====
+        var todoItems = JSON.parse(localStorage.getItem('tfd_todo') || '[]');
+
+        function RenderTodoList() {
+            var html = '';
+            var pending = 0;
+            if (todoItems.length === 0) {
+                html = '<div style="padding:16px;text-align:center;color:#aaa;font-size:13px;">No tasks yet. Add one above.</div>';
+            } else {
+                todoItems.forEach(function (item, idx) {
+                    var doneClass = item.done ? 'done' : '';
+                    html += '<div class="todo-item ' + doneClass + '">' +
+                        '<input type="checkbox" ' + (item.done ? 'checked' : '') + ' onchange="ToggleTodo(' + idx + ')" />' +
+                        '<span class="todo-text">' + escapeHtml(item.text) + '</span>' +
+                        '<button class="item-delete" onclick="DeleteTodo(' + idx + ')"><i class="fa fa-times"></i></button>' +
+                        '</div>';
+                    if (!item.done) pending++;
+                });
+            }
+            $('#todoList').html(html);
+            $('#tabTodoCount').text(pending > 0 ? pending : '');
+        }
+
+        function SaveTodos() {
+            localStorage.setItem('tfd_todo', JSON.stringify(todoItems));
+        }
+
+        function AddTodoItem() {
+            var text = $('#todoInput').val().trim();
+            if (!text) return;
+            todoItems.unshift({ text: text, done: false });
+            SaveTodos();
+            RenderTodoList();
+            $('#todoInput').val('').focus();
+        }
+
+        function ToggleTodo(idx) {
+            todoItems[idx].done = !todoItems[idx].done;
+            SaveTodos();
+            RenderTodoList();
+        }
+
+        function DeleteTodo(idx) {
+            todoItems.splice(idx, 1);
+            SaveTodos();
+            RenderTodoList();
+        }
+
+        // Allow Enter key to add todo
+        $(document).on('keydown', '#todoInput', function (e) {
+            if (e.key === 'Enter') AddTodoItem();
+        });
+
+        // ===== FOLLOW UP =====
+        var followupItems = JSON.parse(localStorage.getItem('tfd_followup') || '[]');
+
+        function RenderFollowupList() {
+            var html = '';
+            var upcoming = 0;
+            var now = new Date();
+            if (followupItems.length === 0) {
+                html = '<div style="padding:16px;text-align:center;color:#aaa;font-size:13px;">No follow-ups yet. Add one above.</div>';
+            } else {
+                followupItems.sort(function (a, b) { return new Date(a.date) - new Date(b.date); });
+                followupItems.forEach(function (item, idx) {
+                    var itemDate = new Date(item.date);
+                    var isOverdue = itemDate < now;
+                    var overdueClass = isOverdue ? 'overdue' : '';
+                    var dateStr = itemDate.toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+                    html += '<div class="followup-item ' + overdueClass + '">' +
+                        '<div class="followup-info">' +
+                        '<div class="followup-title">' + escapeHtml(item.title) + '</div>' +
+                        '<div class="followup-time"><i class="fa fa-clock-o"></i> ' + dateStr + (isOverdue ? ' — Overdue' : '') + '</div>' +
+                        '</div>' +
+                        '<button class="item-delete" onclick="DeleteFollowup(' + idx + ')"><i class="fa fa-times"></i></button>' +
+                        '</div>';
+                    if (!isOverdue) upcoming++;
+                });
+            }
+            $('#followupList').html(html);
+            $('#tabFollowupCount').text(upcoming > 0 ? upcoming : '');
+        }
+
+        function SaveFollowups() {
+            localStorage.setItem('tfd_followup', JSON.stringify(followupItems));
+        }
+
+        function AddFollowupItem() {
+            var title = $('#followupTitle').val().trim();
+            var date = $('#followupDate').val();
+            if (!title || !date) {
+                alert('Please enter both a title and a date/time.');
+                return;
+            }
+            followupItems.push({ title: title, date: date });
+            SaveFollowups();
+            RenderFollowupList();
+            $('#followupTitle').val('');
+            $('#followupDate').val('');
+        }
+
+        function DeleteFollowup(idx) {
+            followupItems.splice(idx, 1);
+            SaveFollowups();
+            RenderFollowupList();
+        }
+
+        function escapeHtml(text) {
+            return $('<div>').text(text).html();
+        }
+
+        // Init lists on page load
+        $(document).ready(function () {
+            RenderTodoList();
+            RenderFollowupList();
+        });
+    </script>
+</body>
+</html>

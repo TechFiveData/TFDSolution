@@ -1,0 +1,530 @@
+﻿
+@{
+    ViewBag.Title = "Report Settings";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+<input type="hidden" id="hdnSelectedFormId" value="" />
+<div class="breadcrumbs">
+    <div class="col-sm-4">
+        <div class="page-header float-left">
+            <div class="page-title">
+                <h1>Report Settings</h1>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-8">
+        <div class="page-header float-right">
+            <div class="page-title">
+                <ol class="breadcrumb text-right">
+                    <li><a href="@Url.Action("Index","Home")">Home</a></li>
+                    <li class="active">Report Settings</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="animated fadeIn">
+    <div class="row">
+        <div class="col-md-12 p-0">
+            <div class="card">
+                <div class="card-header">
+                    <div class="col-lg-8">
+                        <div style="float:left;display:flex;align-items:center;">
+                            <select id="ddlSelect" class="form-control form-select" style="width:200px;float:left;">
+                                @if (Model != null && Model.ChildForm != null)
+                                {
+                                    foreach (var item in Model.ChildForm)
+                                    {
+                                        <option data-bind="@item.Prefix" value="@item.FormId">@item.FormTitle</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                        <div style="float:left;display:flex;align-items:center;">
+                            <select id="ddlSubForm" class="form-control form-select" style="width:220px;float:left;"></select>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 text-right">
+                        <a class="btn btn-sm" href="@Url.Action("Index","Home")"><i class="fa fa-arrow-circle-left"></i>&nbsp; Back</a>
+                        <a class="btn btn-sm" id="btnAddReport" href="javascript:void(0);" title="Add New Report" data-toggle="modal" data-target="#reportModal">
+                            <i class="fa fa-plus"></i>&nbsp;Add
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12 form-group">
+                            <table id="tblReport" class="display cell-border" cellspacing="0" width="100%"></table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="reportModal" tabindex="-1" role="dialog" aria-labelledby="reportModal" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog modal-lg" role="document" style="width:450px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="reportModallabel">Add New Report</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="hdnReportId" value="0" />
+                <div class="row form-group">
+                    <div class="col col-md-12">
+                        <label for="text-input" class="form-control-label">Select File<span class="text-danger p-1">(*)</span></label>
+                    </div>
+                    <div class="col col-md-12">
+                        <input type="text" id="txtReportName" class="d-none">
+                        <div class="custom-file-wrapper" style="display:flex; align-items:center; gap:10px;">
+                            <label for="Reportfile" class="btn btn-default" style="border:1px solid #ccc; padding:4px 10px; margin:0; cursor:pointer;">
+                                Choose File
+                            </label>
+                            <input type="file" id="Reportfile" accept=".rpt" name="Reportfile" onchange="selectedFile();" style="display:none;">
+                            <span id="labelFileName">No file chosen</span>
+                        </div>
+                        <div><label id="labelFile" style="font-size:12px;color:#555;"></label></div>
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col col-md-12">
+                        <label for="text-input" class=" form-control-label">Report Title<span class="text-danger p-1">(*)</span></label>
+                    </div>
+                    <div class="col col-md-12">
+                        <input type="text" id="txtReportTitle" name="text-input" placeholder="Report Title" maxlength="50" class="form-control">
+                    </div>
+                </div>
+                <div class="row form-group d-none">
+                    <div class="col col-md-12">
+                        <label for="text-input" class="form-control-label">Source Name<span class="text-danger p-1">(*)</span></label>
+                    </div>
+                    <div class="col col-md-12">
+                        <input type="text" id="txtReportSource" name="text-input" placeholder="Source Name" maxlength="50" class="form-control">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <progress id="fileProgress" style="display: none"></progress>
+                <button type="button" id="btnCancelReport" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="SaveReport();">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+    $(document).ready(function () {
+        var FormSettings_FormId = localStorage.getItem("FormSettings_FormId");
+
+        // First set the selected value on the native select
+        $("#ddlSelect option").each(function () {
+            if ($(this).val() === FormSettings_FormId) {
+                $(this).prop("selected", true);
+                return false;
+            }
+        });
+
+        // THEN initialize Select2 (so it picks up the correct selected option)
+        $('#ddlSelect').select2({
+            placeholder: "Select Form",
+            allowClear: true,
+            width: '200px'
+        });
+      BindParentDropdown();
+    //BindFormReport();
+        $("#btnAddReport").click(function () {
+            cleanReport();
+        })
+        $('#ddlSelect').on('change', function () {
+            var selectedFormId = $(this).val();
+            //$("#hdnSelectedFormId").val(selectedFormId);
+            BindSubFormDropdown(selectedFormId);
+
+        });
+        $("#ddlSubForm").change(function () {
+            var formId = $(this).val();
+            localStorage.setItem("FormSettings_SubFormId", formId);
+            $("#hdnSelectedFormId").val(formId);
+            $("#lblFormname").html($("#ddlSubForm option:selected").text());
+            /*GetFormFieldList();*/
+            $("#hdnSelectedFormSQLTableName").val($("#ddlSubForm option:selected").attr("data-bind"));
+            var tempId = $("#ddlSubForm option:selected").attr("data-content");
+            $("#hdnSelectedFormSQLTemplateId").val($("#ddlSubForm option:selected").attr("data-content"));
+            $("#liDocNumber").addClass("d-none");
+            if (tempId != null && tempId != undefined && tempId == 2) {
+                $("#liDocNumber").removeClass("d-none");
+            }
+            $("#nav-Header-tab").click();
+            BindFormReport();
+        });
+});
+
+    function selectedFile() {
+        var uploadFile = document.getElementById('Reportfile');
+        if (uploadFile.files != null && uploadFile.files.item(0) != null) {
+            var fileName = uploadFile.files.item(0).name;
+            var nameWithoutExt = fileName.substring(0, fileName.lastIndexOf('.')) || fileName;
+            var formattedSize = formatBytes(uploadFile.files.item(0).size);
+
+            $('#labelFileName').text(fileName);           // show file name next to button
+            $('#labelFile').text("File size: " + formattedSize);  // show size below
+            $("#txtReportName").val(fileName);
+            $("#txtReportTitle").val(nameWithoutExt);
+        }
+    }
+    function BindParentDropdown() {
+    $.ajax({
+        url: '@Url.Action("getFormSystem", "FormSetting")',
+        type: 'GET',
+        data: { formId: '' },
+        success: function (data) {
+            $('#ddlSelect').empty();
+            $.each(data, function (i, item) {
+                $('#ddlSelect').append(
+                    $('<option>', {
+                        value: item.FormId,
+                        text: item.FormTitle
+                    })
+                );
+            });
+
+            // After ddlSelect is populated, bind ddlSubForm with first value
+            var firstFormId = $('#ddlSelect').find('option:first').val();
+            if (firstFormId) {
+                BindSubFormDropdown(firstFormId);
+            }
+        },
+        error: function () {
+            console.error('Failed to load parent dropdown.');
+        }
+    });
+}
+
+function BindSubFormDropdown(formId) {
+    $.ajax({
+        url: '@Url.Action("getFormSystem", "FormSetting")',
+        type: 'GET',
+        data: { formId: formId },
+        success: function (data) {
+            $('#ddlSubForm').empty();
+            $.each(data, function (i, item) {
+                $('#ddlSubForm').append(
+                    $('<option>', {
+                        value: item.FormId,
+                        text: item.FormTitle
+                    })
+                );
+            });
+            // DESTROY OLD SELECT2
+            if ($('#ddlSubForm').hasClass("select2-hidden-accessible")) {
+
+                $('#ddlSubForm').select2('destroy');
+
+            }
+
+            // INITIALIZE SELECT2
+            $('#ddlSubForm').select2({
+                placeholder: "Select Sub Form",
+                allowClear: true,
+                width: '220px'
+            });
+
+            var firstFormId = $('#ddlSubForm').find('option:first').val();
+            $("#hdnSelectedFormId").val(firstFormId);
+            BindFormReport();
+        },
+        error: function () {
+            console.error('Failed to load sub-form dropdown.');
+        }
+    });
+}
+
+// On ddlSelect change, reload ddlSubForm
+$('#ddlSelect').on('change', function () {
+    var selectedFormId = $(this).val();
+    //$("#hdnSelectedFormId").val(selectedFormId);
+    BindSubFormDropdown(selectedFormId);
+
+    });
+    $(document).on('change', '#ddlSelect', function () {
+        var selectedFormId = $(this).val();
+        if (selectedFormId) {
+            BindSubFormDropdown(selectedFormId);
+        }
+    });
+
+$("#ddlSubForm").change(function () {
+    var formId = $(this).val();
+    localStorage.setItem("FormSettings_SubFormId", formId);
+    $("#hdnSelectedFormId").val(formId);
+    $("#lblFormname").html($("#ddlSubForm option:selected").text());
+    /*GetFormFieldList();*/
+    $("#hdnSelectedFormSQLTableName").val($("#ddlSubForm option:selected").attr("data-bind"));
+    var tempId = $("#ddlSubForm option:selected").attr("data-content");
+    $("#hdnSelectedFormSQLTemplateId").val($("#ddlSubForm option:selected").attr("data-content"));
+    $("#liDocNumber").addClass("d-none");
+    if (tempId != null && tempId != undefined && tempId == 2) {
+        $("#liDocNumber").removeClass("d-none");
+    }
+    $("#nav-Header-tab").click();
+    BindFormReport();
+});
+
+    function DownloadReport(reportId) {
+        cleanReport();
+        $.get('@Url.Action("DownloadReport","FormSetting")', { ReportId: reportId }, function (data) {
+            if (data != null) {
+
+            }
+        }).fail(function () {
+            // Error callback if the request fails
+        });
+    }
+    function EditReport(reportId) {
+    cleanReport();
+    $.get('@Url.Action("GetFormSystemReport", "FormSetting")', { ReportId: reportId }, function (data) {
+        if (data != null) {
+            $("#txtReportName").val(data.ReportName);
+            $("#txtReportTitle").val(data.ReportTitle);
+            $("#ddlReportType").val(data.ReportType);
+            $("#txtReportSource").val(data.ReportSource);
+            $("#hdnReportId").val(data.ReportId);
+            $("#txtReportTitle").focus();
+
+            // Fake the file selected appearance
+            $("#labelFileName").text(data.ReportName);
+            $("#labelFile").text(""); // clear size since we don't have it, or store it in DB
+            selectedFile();
+        }
+    }).fail(function () {});
+}
+    function DeleteFormReport(reportId) {
+        if (confirm("Are you sure you want to delete thi record?")) {
+            $.get('@Url.Action("DeleteFormSystemReport", "FormSetting")', { ReportId: reportId }, function (data) {
+                if (data != null && data.IsSuccess) {
+                    ShowToastNotification("success","Record has been deleted successfully!");
+                    BindFormReport();
+                }
+            }).fail(function () {
+                // Error callback if the request fails
+            });
+        }
+    }
+    function cleanReport() {
+        $("#txtReportName").val("");
+        $("#txtReportTitle").val("");
+        $("#ddlReportType").val("Transaction");
+        $("#txtReportSource").val("");
+        $("#txtReportTitle").focus();
+        $("#labelFile").html("");
+        $("#labelFileName").text("No file chosen");   // reset span
+        $("#hdnReportId").val(0);
+        $("#Reportfile").val(null);
+    }
+    function BindFormReport()
+    {
+
+        var _formId = $("#hdnSelectedFormId").val();
+        $.ajax({
+            type: "GET",
+            url: "@Url.Action("GetFormSystemReports", "FormSetting")",
+            contentType: "application/json; charset=utf-8",
+            data: { formId: _formId },
+            dataType: "json",
+            success: SuccessBindFormReport,
+             failure: function (response) {
+                 alert(response.d);
+             },
+             error: function (response) {
+                 ShowToastNotification("error", "Error fetching data!");
+             }
+         });
+    }
+    function SuccessBindFormReport(dataset) {
+        dataset = Array.isArray(dataset) ? dataset : [];
+        // Initialize DataTable
+        let formTable = new DataTable("#tblReport", {
+            "destroy": true,
+            searching: false,
+            paging: false,
+            scrollCollapse: true,
+            info: true,
+            // scrollY: '500px',
+            data: dataset,
+            select: true,
+            columns: [
+                {
+                    title: '',
+                    /*className: "grid-action-item",*/
+                    render: function (data, type, row, meta) {
+                        var filePath = row.ReportName;
+                        @*var reportsBasePath = '@Url.Content("~/Reports/")'; // => "/Reports/"
+                        if (row.ReportPath) {
+                            filePath = reportsBasePath + row.ReportPath.replace(/^~\/Reports\//, "");
+                        }*@
+                        @*return "<a title='Edit Record' data-toggle='modal' data-target='#reportModal' onclick='EditReport(\"" + row.ReportId + "\")' href='javascript:void(0)'><i class='fa fa-pencil'></i></a> &nbsp;|&nbsp; <a title='Delete Record' onclick='DeleteFormReport(\"" + row.ReportId + "\")' href='javascript:void(0)';><i class='fa fa-trash text-danger'></i></a> &nbsp;|&nbsp; <a title='Download Report' onclick='DownloadReport(\"" + row.ReportId + "\")' href="@Url.Action("DownloadFile", "Home", new { fileName = @row.ReportTitle })";><i class='fa fa-download text-black'></i></a>";*@
+                        return `<a title="Edit Record" data-toggle="modal" data-target="#reportModal"
+                           href="javascript:void(0)" onclick="EditReport('${row.ReportId}')">
+                            <i class="fa fa-pencil"></i>
+                        </a>
+                        &nbsp;|&nbsp;
+                        <a title="Delete Record" href="javascript:void(0)"
+                           onclick="DeleteFormReport('${row.ReportId}')">
+                            <i class="fa fa-trash text-danger"></i>
+                        </a>
+                        &nbsp;|&nbsp;
+                        <a title="Download Report"
+                           href="javascript:void(0)" onclick="DownloadReport('${filePath}');">
+                            <i class="fa fa-download text-black"></i>
+                        </a>`;
+                    },
+                },
+                { title: "Form", data: "FormTitle" },                
+                { title: "Report Name", data: "ReportTitle" },
+                { title: "Report Path", data: "ReportPath" },
+            ],
+            language: {
+                emptyTable: "No records found", // Message when no data is available
+                zeroRecords: "No matching records found"
+            }
+        });
+    }
+    function DownloadReport(fileName) {
+        $.ajax({
+            url: '@Url.Action("DownloadRepor", "FormSetting")',
+            type: "GET",
+            data: { fileName: fileName },
+            xhrFields: {
+                responseType: 'blob' // to handle file bytes
+            },
+            success: function (data, status, xhr) {
+                var disposition = xhr.getResponseHeader('Content-Disposition');
+                if (disposition && disposition.indexOf('attachment') !== -1) {
+                    var matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(disposition);
+                    var filename = (matches != null && matches[1]) ? matches[1].replace(/['"]/g, '') : fileName;
+
+                    var blob = new Blob([data]);
+                    var link = document.createElement('a');
+                    link.href = window.URL.createObjectURL(blob);
+                    link.download = filename;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
+            },
+            error: function (xhr) {
+                ShowToastNotification("error", "File does not exists");
+            }
+        });
+    }
+    function checkFileExists(filePath) {
+        $.ajax({
+            url: filePath,
+            type: 'HEAD',   // only request headers, not full file
+            success: function () {
+                location.href = filePath;
+            },
+            error: function () {
+                ShowToastNotification("error", "File does not exists");
+            }
+        });
+    }
+    function SaveReport()
+    {
+        var isFormValid = true;
+        var isEditMode = parseInt($("#hdnReportId").val()) > 0;
+        $("#reportModal input").each(function () {
+            var fieldId = $(this).attr("id");
+            // Skip hidden fields and source field
+            if (fieldId == "hdnReportId" || fieldId == "txtReportName" || fieldId == "txtReportSource" || fieldId == "hdnReportFileSize") {
+                return;
+            }
+            // Skip file input if in edit mode (file is optional during edit)
+            if (fieldId == "Reportfile" && isEditMode) {
+                return;
+            }
+
+            if ($.trim($(this).val()).length == 0) {
+                $(this).addClass("input-validation-error");
+                if (isFormValid == true) {
+                    $(this).focus();
+                }
+                isFormValid = false;
+            } else {
+                $(this).removeClass("input-validation-error");
+            }
+        });
+
+        if (!isFormValid) {
+            ShowToastNotification("error","Please fill in all the required fields (indicated by *)");
+        }
+        else {
+            try {
+                var formId = $("#hdnSelectedFormId").val();
+                var logoImg = $('input[name="Reportfile"]').get(0).files[0];
+                var formData = new FormData();
+                // REMOVED duplicate ReportName from here
+                formData.append('ReportId', $("#hdnReportId").val());
+                formData.append('ReportTitle', $("#txtReportTitle").val());
+                formData.append('ReportType', $("#ddlReportType").val());
+                formData.append('ReportSource', $("#txtReportSource").val());
+                formData.append('FormId', formId);
+
+                // Only append ReportName once here
+                if (logoImg) {
+                    formData.append('ReportName', logoImg.name);
+                    formData.append("file", logoImg);
+                } else {
+                    formData.append('ReportName', $("#txtReportName").val());
+                }
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("SaveSystemReport", "FormSetting")',
+                    /*contentType: "application/json;",*/
+                    data: formData,
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    success: function (response) {
+                        if (response.IsSuccess) {
+                            ShowToastNotification("success","Record saved successfully.");
+                            cleanReport();
+                            $('#btnCancelReport').click();
+                            BindFormReport()
+                        }
+                        else {
+                            alert(response.Response);
+                        }
+                    },
+                    xhr: function () {
+                        var fileXhr = $.ajaxSettings.xhr();
+                        if (fileXhr.upload) {
+                            $("progress").show();
+                            fileXhr.upload.addEventListener("progress", function (e) {
+                                if (e.lengthComputable) {
+                                    $("#fileProgress").attr({
+                                        value: e.loaded,
+                                        max: e.total
+                                    });
+                                }
+                            }, false);
+                        }
+                        return fileXhr;
+                    },
+                    failure: function (response) {
+
+                    },
+                    error: function (response) {
+
+                    }
+                });
+            } catch (e) {
+            }
+        }
+    }
+</script>

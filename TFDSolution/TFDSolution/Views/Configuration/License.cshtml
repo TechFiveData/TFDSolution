@@ -1,0 +1,88 @@
+﻿@model TFDSolution.Models.LicenseModel
+
+@{
+    ViewBag.Title = "License";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="breadcrumbs">
+    <div class="col-sm-4">
+        <div class="page-header float-left">
+            <div class="page-title">
+                <h1>Your Product License Information</h1>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-8">
+        <div class="page-header float-right">
+            <div class="page-title">
+                <ol class="breadcrumb text-right">
+                    <li><a href="@Url.Action("Index","Home")">Home</a></li>
+                    <li>Configuration</li>
+                    <li>License Information</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="animated fadeIn">
+    <div class="row">
+        <div class="col-md-12 p-0">
+            <div class="card">
+                <div class="card-header">
+                    <div class="col-lg-6">
+                        <strong class="card-title">Product License</strong>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <table class="tableLic display disabled table table-bordered">
+                        <tbody>
+                            <tr>
+                                <td><label class="form-label">License scheme version</label></td>
+                                <td><label>@Model.LicenseVersion</label></td>
+                            </tr>
+                            <tr>
+                                <td><label class="form-label">You license key expires on </label></td>
+                                <td><label>@Model.ExpirationDate</label></td>
+                            </tr>
+                            <tr>
+                                <td><label class="form-label">You license key expires withing two weeks </label></td>
+                                <td>
+                                    @if (Model.RemainingDays <= 14)
+                                    {
+                                        <label><span class="text-danger">Yes</span>, Please Contact <a href="mailto:support@techfivedata.com">TechFiveData</a>. to renew the license.</label>
+                                    }
+                                    else
+                                    {
+                                        <label>No</label>
+                                    }
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><label class="form-label">Day remaining till license expiration</label></td>
+                                <td><label class="text-danger">@Model.RemainingDays (Days)</label> </td>
+                            </tr>
+                            <tr>
+                                <td><label class="form-label">License key type</label></td>
+                                <td><label>@Model.LicenseKeyType</label></td>
+                            </tr>
+                            <tr>
+                                <td><label class="form-label">Allowed Maximum Users</label></td>
+                                <td><label>@Model.MaximumUser</label></td>
+                            </tr>
+                            <tr>
+                                <td><label class="form-label">Information</label></td>
+                                <td><label>@Model.Message</label></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p>
+                        <div class="hint">
+                            If you want to renew the product license, Contact to <a href="mailto:support@techfivedata.com">Tech Five Data</a>.
+                        </div>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,291 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="TFDSolutionModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+  <EntityType Name="m_CompanyBank">
+    <Key>
+      <PropertyRef Name="BankId" />
+    </Key>
+    <Property Name="BankId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="CompanyId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="BankName" Type="nvarchar" MaxLength="50" Nullable="false" />
+    <Property Name="BranchName" Type="nvarchar" MaxLength="50" Nullable="false" />
+    <Property Name="BranchCode" Type="varchar" MaxLength="20" Nullable="false" />
+    <Property Name="BranchAddress1" Type="varchar" MaxLength="50" />
+    <Property Name="BranchAddress2" Type="varchar" MaxLength="50" />
+    <Property Name="CityId" Type="uniqueidentifier" />
+    <Property Name="AccountNo" Type="nvarchar" MaxLength="50" Nullable="false" />
+    <Property Name="IFSCCode" Type="varchar" MaxLength="50" />
+    <Property Name="SwiftCde" Type="varchar" MaxLength="50" />
+    <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="CreatedOn" Type="datetime" Nullable="false" />
+    <Property Name="UpdatedBy" Type="uniqueidentifier" />
+    <Property Name="UpdatedOn" Type="datetime" />
+  </EntityType>
+  <EntityType Name="m_CompanyFinancials">
+    <Key>
+      <PropertyRef Name="FiancialYearId" />
+    </Key>
+    <Property Name="FiancialYearId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="CompanyId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="StartDate" Type="datetime" Nullable="false" />
+    <Property Name="EndDate" Type="datetime" Nullable="false" />
+    <Property Name="Alias" Type="varchar" MaxLength="50" Nullable="false" />
+    <Property Name="IsActive" Type="bit" Nullable="false" />
+    <Property Name="CreatedOn" Type="datetime" Nullable="false" />
+    <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="UpdatedOn" Type="datetime" />
+    <Property Name="UpdatedBy" Type="uniqueidentifier" />
+  </EntityType>
+  <EntityType Name="m_CompanyMast">
+    <Key>
+      <PropertyRef Name="CompanyId" />
+    </Key>
+    <Property Name="CompanyId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="CompanyCode" Type="varchar" MaxLength="30" Nullable="false" />
+    <Property Name="CompanyName" Type="varchar" MaxLength="500" Nullable="false" />
+    <Property Name="Phone" Type="varchar" MaxLength="15" />
+    <Property Name="Mobile" Type="varchar" MaxLength="15" />
+    <Property Name="Email" Type="varchar" MaxLength="100" />
+    <Property Name="WebStite" Type="varchar" MaxLength="100" />
+    <Property Name="Fax" Type="varchar" MaxLength="20" />
+    <Property Name="RegisterAddress1" Type="nvarchar" MaxLength="200" />
+    <Property Name="RegisterAddress2" Type="nvarchar" MaxLength="200" />
+    <Property Name="RegisterPincode" Type="varchar" MaxLength="10" />
+    <Property Name="FactoryAddress1" Type="nvarchar" MaxLength="200" />
+    <Property Name="FactoryAddress2" Type="nvarchar" MaxLength="200" />
+    <Property Name="FactoryPincode" Type="varchar" MaxLength="10" />
+    <Property Name="GSTNo" Type="varchar" MaxLength="50" />
+    <Property Name="PANNo" Type="varchar" MaxLength="20" />
+    <Property Name="CINNo" Type="varchar" MaxLength="50" />
+    <Property Name="ECCNo" Type="varchar" MaxLength="50" />
+    <Property Name="IECCode" Type="varchar" MaxLength="50" />
+    <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="CreatedOn" Type="datetime" Nullable="false" />
+    <Property Name="UpdatedBy" Type="uniqueidentifier" />
+    <Property Name="UpdatedOn" Type="datetime" />
+    <Property Name="DefaultCurrencyId" Type="int" />
+    <Property Name="FromEmail" Type="nvarchar" MaxLength="255" />
+    <Property Name="DisplayName" Type="nvarchar" MaxLength="100" />
+    <Property Name="SmtpServer" Type="nvarchar" MaxLength="255" />
+    <Property Name="SmtpPort" Type="int" />
+    <Property Name="EnableSSL" Type="bit" />
+    <Property Name="SmtpUsername" Type="nvarchar" MaxLength="255" />
+    <Property Name="SmtpPassword" Type="nvarchar" MaxLength="255" />
+    <Property Name="RegiterCityId" Type="int" />
+    <Property Name="RegiterStateId" Type="int" />
+    <Property Name="RegisterCountryId" Type="int" />
+    <Property Name="FactoryCityId" Type="int" />
+    <Property Name="FactoryStateId" Type="int" />
+    <Property Name="FactoryCountryId" Type="int" />
+  </EntityType>
+  <EntityType Name="m_CompanyUnit">
+    <Key>
+      <PropertyRef Name="CompanyUnitId" />
+    </Key>
+    <Property Name="CompanyUnitId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="SiteName" Type="nvarchar" MaxLength="50" Nullable="false" />
+    <Property Name="Address1" Type="nvarchar" MaxLength="200" Nullable="false" />
+    <Property Name="Address2" Type="nvarchar" MaxLength="200" />
+    <Property Name="CityId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="StateId" Type="uniqueidentifier" />
+    <Property Name="CountryId" Type="uniqueidentifier" />
+    <Property Name="Pincode" Type="varchar" MaxLength="10" />
+    <Property Name="GSTNo" Type="varchar" MaxLength="50" />
+    <Property Name="PANNo" Type="varchar" MaxLength="20" />
+    <Property Name="Phone" Type="varchar" MaxLength="20" Nullable="false" />
+    <Property Name="Email" Type="nvarchar" MaxLength="50" />
+    <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="CreatedOn" Type="datetime" Nullable="false" />
+    <Property Name="UpdatedBy" Type="uniqueidentifier" />
+    <Property Name="UpdatedOn" Type="datetime" />
+    <Property Name="CompanyId" Type="uniqueidentifier" />
+  </EntityType>
+  <EntityType Name="m_FormField">
+    <Key>
+      <PropertyRef Name="FieldId" />
+    </Key>
+    <Property Name="FieldId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="FormId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="FormTabId" Type="uniqueidentifier" />
+    <Property Name="FieldTypeId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="IsActive" Type="bit" Nullable="false" />
+    <Property Name="FieldName" Type="varchar" MaxLength="50" Nullable="false" />
+    <Property Name="FieldCaption" Type="varchar" MaxLength="50" Nullable="false" />
+    <Property Name="FieldLength" Type="int" Nullable="false" />
+    <Property Name="FormSectionId" Type="uniqueidentifier" />
+    <Property Name="IsRequired" Type="bit" Nullable="false" />
+    <Property Name="CreatedOn" Type="datetime" Nullable="false" />
+    <Property Name="UpdatedOn" Type="datetime" />
+    <Property Name="ParameterId" Type="uniqueidentifier" />
+    <Property Name="DDLSourceType" Type="varchar" MaxLength="50" />
+    <Property Name="DDLSourceName" Type="varchar" MaxLength="50" />
+    <Property Name="DDLTextField" Type="varchar" MaxLength="50" />
+    <Property Name="DDLValueField" Type="varchar" MaxLength="50" />
+    <Property Name="IsReadOnly" Type="bit" />
+    <Property Name="IsVisible" Type="bit" />
+    <Property Name="IsVisibleInList" Type="bit" />
+    <Property Name="FieldSize" Type="varchar" MaxLength="50" />
+    <Property Name="FieldPlaceHolder" Type="varchar" MaxLength="50" />
+    <Property Name="FieldHelpText" Type="varchar" MaxLength="100" />
+    <Property Name="SortOrder" Type="int" />
+    <Property Name="IsDisable" Type="bit" />
+    <Property Name="FieldFormula" Type="nvarchar" MaxLength="3000" />
+    <Property Name="IsDependencyField" Type="bit" />
+    <Property Name="IsMultiSelection" Type="bit" />
+    <Property Name="IsUnique" Type="bit" />
+    <Property Name="FieldDecimal" Type="int" />
+    <Property Name="AllowMultiDocument" Type="bit" />
+    <Property Name="IsSummary" Type="bit" />
+    <Property Name="TemplateId" Type="int" />
+  </EntityType>
+  <EntityType Name="m_FormFieldOption">
+    <Key>
+      <PropertyRef Name="OptionId" />
+    </Key>
+    <Property Name="OptionId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="FieldId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="OptionName" Type="varchar" MaxLength="50" Nullable="false" />
+    <Property Name="OptionValue" Type="varchar" MaxLength="50" Nullable="false" />
+    <Property Name="CreatedOn" Type="datetime" Nullable="false" />
+    <Property Name="UpdatedOn" Type="datetime" />
+  </EntityType>
+  <EntityType Name="m_FormFieldTypes">
+    <Key>
+      <PropertyRef Name="FieldTypeId" />
+    </Key>
+    <Property Name="FieldTypeId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="FieldType" Type="varchar" MaxLength="50" Nullable="false" />
+    <Property Name="FieldTypeClass" Type="varchar" MaxLength="100" />
+    <Property Name="SortOrder" Type="int" />
+    <Property Name="IsFieldTypeElement" Type="bit" />
+  </EntityType>
+  <EntityType Name="m_FormMast">
+    <Key>
+      <PropertyRef Name="FormId" />
+    </Key>
+    <Property Name="FormId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="FormName" Type="nvarchar" MaxLength="50" Nullable="false" />
+    <Property Name="FormTitle" Type="nvarchar" MaxLength="50" Nullable="false" />
+    <Property Name="FormDescription" Type="nvarchar" MaxLength="500" />
+    <Property Name="IsActive" Type="bit" Nullable="false" />
+    <Property Name="ParentFormId" Type="uniqueidentifier" />
+    <Property Name="SQLTableName" Type="varchar" MaxLength="30" />
+    <Property Name="Prefix" Type="varchar" MaxLength="50" />
+    <Property Name="CompanyId" Type="uniqueidentifier" />
+    <Property Name="SqlTemplateId" Type="int" />
+    <Property Name="Alias" Type="nvarchar" MaxLength="5" />
+    <Property Name="SortOrder" Type="int" />
+  </EntityType>
+  <EntityType Name="m_FormSection">
+    <Key>
+      <PropertyRef Name="FormSectionId" />
+    </Key>
+    <Property Name="FormSectionId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="SectionName" Type="varchar" MaxLength="30" Nullable="false" />
+  </EntityType>
+  <EntityType Name="m_FormTab">
+    <Key>
+      <PropertyRef Name="FormTabId" />
+    </Key>
+    <Property Name="FormTabId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="FormId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="FormSectionId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="TabName" Type="varchar" MaxLength="50" Nullable="false" />
+    <Property Name="IsActive" Type="bit" Nullable="false" />
+    <Property Name="CreatedOn" Type="datetime" Nullable="false" />
+    <Property Name="UpdatedOn" Type="datetime" />
+    <Property Name="SortOrder" Type="int" />
+    <Property Name="TabTitle" Type="varchar" MaxLength="50" />
+    <Property Name="TabSQLTableName" Type="varchar" MaxLength="50" />
+    <Property Name="NextTabDataScript" Type="varchar" MaxLength="200" />
+  </EntityType>
+  <EntityType Name="m_UserMast">
+    <Key>
+      <PropertyRef Name="UserId" />
+    </Key>
+    <Property Name="UserId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="FirstName" Type="varchar" MaxLength="50" Nullable="false" />
+    <Property Name="LastName" Type="varchar" MaxLength="50" />
+    <Property Name="EmailId" Type="nvarchar" MaxLength="50" Nullable="false" />
+    <Property Name="UserName" Type="nvarchar" MaxLength="25" Nullable="false" />
+    <Property Name="Password" Type="nvarchar" MaxLength="100" Nullable="false" />
+    <Property Name="IsActive" Type="bit" Nullable="false" />
+    <Property Name="CreatedOn" Type="datetime" Nullable="false" />
+    <Property Name="UpdatedOn" Type="datetime" />
+    <Property Name="LastLoginDate" Type="datetime" />
+    <Property Name="PasswordExpiredOn" Type="datetime" />
+    <Property Name="Status" Type="int" />
+    <Property Name="RoleId" Type="int" />
+    <Property Name="IsLoggedIn" Type="bit" />
+    <Property Name="SessionId" Type="nvarchar" MaxLength="100" />
+    <Property Name="DefaultDashboardId" Type="int" />
+  </EntityType>
+  <EntityType Name="m_UserSettings">
+    <Key>
+      <PropertyRef Name="UserSettingId" />
+    </Key>
+    <Property Name="UserSettingId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="UserId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="CompanyId" Type="uniqueidentifier" Nullable="false" />
+    <Property Name="DefaultFiancialYearId" Type="int" Nullable="false" />
+  </EntityType>
+  <Function Name="auth_getLogin" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="UserName" Type="varchar" Mode="In" />
+    <Parameter Name="Password" Type="varchar" Mode="In" />
+  </Function>
+  <Function Name="m_getFormData" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="FormId" Type="varchar" Mode="In" />
+  </Function>
+  <Function Name="m_getFormFields" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="FormId" Type="varchar" Mode="In" />
+    <Parameter Name="SectionId" Type="varchar" Mode="In" />
+    <Parameter Name="TabId" Type="varchar" Mode="In" />
+  </Function>
+  <Function Name="m_getForms" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="FormId" Type="varchar" Mode="In" />
+  </Function>
+  <Function Name="m_getNextCode" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="p_tableName" Type="varchar" Mode="In" />
+  </Function>
+  <Function Name="m_getSelection" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="SelectionType" Type="varchar" Mode="In" />
+    <Parameter Name="WhereClause" Type="varchar" Mode="In" />
+    <Parameter Name="OrderBy" Type="varchar" Mode="In" />
+    <Parameter Name="EntryType" Type="varchar" Mode="In" />
+  </Function>
+  <Function Name="m_setUser" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="p_action" Type="varchar" Mode="In" />
+    <Parameter Name="UserId" Type="uniqueidentifier" Mode="In" />
+    <Parameter Name="FirstName" Type="varchar" Mode="In" />
+    <Parameter Name="LastName" Type="varchar" Mode="In" />
+    <Parameter Name="EmailId" Type="nvarchar" Mode="In" />
+    <Parameter Name="UserName" Type="nvarchar" Mode="In" />
+    <Parameter Name="Password" Type="nvarchar" Mode="In" />
+    <Parameter Name="IsActive" Type="bit" Mode="In" />
+  </Function>
+  <Function Name="proc_AddCompany" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="CompanyCode" Type="varchar" Mode="In" />
+    <Parameter Name="CompanyName" Type="varchar" Mode="In" />
+    <Parameter Name="CreatedBy" Type="varchar" Mode="In" />
+    <Parameter Name="Email" Type="varchar" Mode="In" />
+    <Parameter Name="Phone" Type="varchar" Mode="In" />
+    <Parameter Name="Mobile" Type="varchar" Mode="In" />
+  </Function>
+  <Function Name="proc_getCompanyList" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+  <Function Name="proc_getItem" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+    <Parameter Name="UId" Type="varchar" Mode="In" />
+  </Function>
+  <EntityContainer Name="TFDSolutionModelStoreContainer">
+    <EntitySet Name="m_CompanyBank" EntityType="Self.m_CompanyBank" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="m_CompanyFinancials" EntityType="Self.m_CompanyFinancials" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="m_CompanyMast" EntityType="Self.m_CompanyMast" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="m_CompanyUnit" EntityType="Self.m_CompanyUnit" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="m_FormField" EntityType="Self.m_FormField" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="m_FormFieldOption" EntityType="Self.m_FormFieldOption" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="m_FormFieldTypes" EntityType="Self.m_FormFieldTypes" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="m_FormMast" EntityType="Self.m_FormMast" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="m_FormSection" EntityType="Self.m_FormSection" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="m_FormTab" EntityType="Self.m_FormTab" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="m_UserMast" EntityType="Self.m_UserMast" Schema="dbo" store:Type="Tables" />
+    <EntitySet Name="m_UserSettings" EntityType="Self.m_UserSettings" Schema="dbo" store:Type="Tables" />
+  </EntityContainer>
+</Schema>

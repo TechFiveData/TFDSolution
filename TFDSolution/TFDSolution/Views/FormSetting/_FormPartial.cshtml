@@ -1,0 +1,99 @@
+﻿@model TFDSolution.Transport.Master.FormMast
+<div>
+    @*@if (!string.IsNullOrEmpty(Model.FormName))
+    {
+        <div class="row form-group">
+            <div class="col col-md-3">
+                <label for="text-input" class=" form-control-label">Form Name<span class="text-danger p-1">(*)</span></label>
+            </div>
+            <div class="col-12 col-md-9">
+                <input type="text" id="txtFormName" width="200" name="text-input" value="@Model.FormName" disabled placeholder="Form Name" class="form-control" style="width:100px;">
+            </div>
+        </div>
+        <div class="row form-group">
+            <div class="col col-md-3">
+                <label for="select" class=" form-control-label">Form Status<span class="text-danger p-1">(*)</span></label>&nbsp;&nbsp;
+            </div>
+            <div class="col-12 col-md-9">
+                <label class="switch switch-3d switch-success mr-3">
+                    <input type="checkbox" id="chkFormStatus" class="switch-input" checked="true"> <span class="switch-label"></span> <span class="switch-handle"></span>
+                </label>
+            </div>
+        </div>
+        <div class="row form-group">
+            <div class="col col-md-3">
+                <label for="text-input" class=" form-control-label">Form Title<span class="text-danger p-1">(*)</span></label>
+            </div>
+            <div class="col-12 col-md-9">
+                <input type="text" id="txtFormTitle" name="text-input" value="@Model.FormTitle" placeholder="Form Titile" class="form-control">
+            </div>
+        </div>
+        <div class="row form-group">
+            <div class="col col-md-3">
+                <label for="text-input" class=" form-control-label">Form Description</label>
+            </div>
+            <div class="col-12 col-md-9">
+                <input type="text" id="txtFormDescription" name="text-input" value="@Model.FormDescription" placeholder="form Description" class="form-control">
+            </div>
+        </div>
+    }*@
+    <div class="row form-group">
+        <div class="col-12 col-md-12 section-title">
+            <label>
+                Forms
+                <div style="float:right;">
+                    <a class="btn btn-sm" href="@Url.Action("ItemAction","Master")" data-toggle="modal" data-target="#formModal"
+                       title="Click here to add new form"><i class="fa fa-plus"></i>&nbsp; Add New Form</a>
+                </div>
+            </label>
+        </div>
+        <div class="row form-group">
+            <div class="col-12 col-md-12 section-body">
+                <div class="row form-group" style="margin-top:10px;">
+                    <table id="tblForm" class="display nowrap cell-border" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Form Name</th>
+                                <th>Form Title</th>
+                                <th>Form Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.ChildForm)
+                            {
+                                <tr>
+                                    <td>
+                                        <a href="@Url.Action("SettingAction","FormSetting", new {_formId = item.FormId})"><i class='fa fa-pencil'></i></a>
+                                        &nbsp;|&nbsp;
+                                        <a href="javascript:vid(0);"><i class='fa fa-trash text-danger'></i></a>
+                                    </td>
+                                    <td>
+                                        @item.FormName
+                                    </td>
+                                    <td>@item.FormTitle</td>
+                                    <td>
+                                        @if (item.IsActive)
+                                        {
+                                            <span class="fa fa-check text-success"></span>
+                                        }
+                                        else
+                                        {
+                                            <span class="fa fa-remove text-danger"></span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        new DataTable('#tblForm');
+    });
+</script>

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{148B19A5-1319-4A78-B858-BA2B3130DDA5}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>TFDIntegrations</RootNamespace>
+    <AssemblyName>TFDIntegrations</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="EInvoiceBill\Model\AuthResponse.cs" />
+    <Compile Include="EInvoiceBill\Model\CancelIRNResponse.cs" />
+    <Compile Include="EInvoiceBill\Model\EInvoice.cs" />
+    <Compile Include="EInvoiceBill\Model\ErrorResponse.cs" />
+    <Compile Include="EInvoiceBill\Model\GenerateIRNResponse.cs" />
+    <Compile Include="EInvoiceBill\Model\IRNDetails.cs" />
+    <Compile Include="EInvoiceBill\Model\Request\GenerateIRNRequest.cs" />
+    <Compile Include="EInvoiceBill\Model\SignedQRCodeResponse.cs" />
+    <Compile Include="EInvoiceBill\Services\IRNService.cs" />
+    <Compile Include="EInvoiceBill\Services\NICAuthenticationService.cs" />
+    <Compile Include="EInvoiceBill\Services\QRCodeService.cs" />
+    <Compile Include="EWayBill\Common\ApiResponse.cs" />
+    <Compile Include="EWayBill\Common\ErrorResponse.cs" />
+    <Compile Include="EWayBill\Helpers\ApiClientHelper.cs" />
+    <Compile Include="EWayBill\Helpers\CryptoUtility.cs" />
+    <Compile Include="EWayBill\Helpers\JsonHelper.cs" />
+    <Compile Include="EWayBill\Helpers\RSAHelper.cs" />
+    <Compile Include="EWayBill\Helpers\TokenManager.cs" />
+    <Compile Include="EWayBill\Models\ApiToken.cs" />
+    <Compile Include="EWayBill\Models\AuthenticationRequest.cs" />
+    <Compile Include="EWayBill\Models\AuthenticationResponse.cs" />
+    <Compile Include="EWayBill\Models\AuthRequest.cs" />
+    <Compile Include="EWayBill\Models\Request\CancelEWayBillRequest.cs" />
+    <Compile Include="EWayBill\Models\Request\ConsolidatedEWayBillRequest.cs" />
+    <Compile Include="EWayBill\Models\Request\DispatchDetails.cs" />
+    <Compile Include="EWayBill\Models\Request\EWayBillItem.cs" />
+    <Compile Include="EWayBill\Models\Request\ExtendValidityRequest.cs" />
+    <Compile Include="EWayBill\Models\Request\GenerateEWayBillRequest.cs" />
+    <Compile Include="EWayBill\Models\Request\GetEWayBillRequest.cs" />
+    <Compile Include="EWayBill\Models\Request\RecipientDetails.cs" />
+    <Compile Include="EWayBill\Models\Request\SupplierDetails.cs" />
+    <Compile Include="EWayBill\Models\Request\TransporterDetails.cs" />
+    <Compile Include="EWayBill\Models\Request\UpdateVehicleRequest.cs" />
+    <Compile Include="EWayBill\Models\Response\CancelEWayBillResponse.cs" />
+    <Compile Include="EWayBill\Models\Response\ExtendValidityResponse.cs" />
+    <Compile Include="EWayBill\Models\Response\GenerateEWayBillResponse.cs" />
+    <Compile Include="EWayBill\Models\Response\GetEWayBillResponse.cs" />
+    <Compile Include="EWayBill\Models\Response\UpdateVehicleResponse.cs" />
+    <Compile Include="EWayBill\Models\TokenInfo.cs" />
+    <Compile Include="EWayBill\Services\AuthenticationService.cs" />
+    <Compile Include="EWayBill\Services\EncryptionService.cs" />
+    <Compile Include="EWayBill\Services\EWayBillService.cs" />
+    <Compile Include="EWayBill\Services\HttpService.cs" />
+    <Compile Include="EWayBill\Services\ServiceFactory.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TFDSolution.Transport\TFDSolution.Transport.csproj">
+      <Project>{A03A7C1E-79FB-4D5E-94DF-8E1B7BA6EFF7}</Project>
+      <Name>TFDSolution.Transport</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

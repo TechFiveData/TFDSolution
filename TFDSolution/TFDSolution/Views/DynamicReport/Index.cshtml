@@ -1,0 +1,309 @@
+﻿@{
+    ViewBag.Title = "Reports";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="~/Scripts/select2.min.js"></script>
+
+<link href="~/Content/select2.min.css" rel="stylesheet" />
+<style>
+    .modal.top-center .modal-dialog {
+        position: absolute;
+        top: 5%;
+        left: 50%;
+        transform: translateX(-50%);
+        margin: 0;
+        width: 70% !important;
+        max-width: 70%;
+    }
+
+    .modal-content {
+        max-height: 90vh;
+        /*overflow-y: auto;*/
+    }
+
+    .modal-open .modal {
+        overflow-x: hidden;
+        overflow-y: hidden;
+    }
+</style>
+
+<div class="breadcrumbs">
+    <div class="col-sm-4">
+        <div class="page-header float-left">
+            <div class="page-title">
+                <h1>Reports</h1>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-8">
+        <div class="page-header float-right">
+            <div class="page-title">
+                <ol class="breadcrumb text-right">
+                    <li><a href="@Url.Action("Index","Home")">Home</a></li>
+                    <li class="active">Reports</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="animated fadeIn">
+    <div class="row">
+        <div class="col-md-12 p-0">
+            <div class="card">
+                <div class="card-header">
+                    <div class="col-lg-9"></div>
+                    <div class="col-lg-3 text-right">
+                        <a class="btn btn-sm" href="javascript:void(0);"><i class="fa fa-refresh"></i>&nbsp; Refresh</a>
+                        <a class="btn btn-sm" id="btnAddNew" href="javascript:void(0);" title="Add New Charges Template" data-toggle="modal" data-target="#ReportModal"><i class="fa fa-plus"></i>&nbsp; New</a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12 form-group">
+                            <table id="tblReportTemplate" class="display cell-border nowrap" cellspacing="0" width="100%"></table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade top-center" id="ReportModal" tabindex="-1" role="dialog" aria-labelledby="ReportModalLabel" data-backdrop="static" aria-hidden="true">
+    <div class="modal-dialog " role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ReportModalLabel">Add New Report Template</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="divTemplate" class="m-2"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="btnCancel" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" onclick="SaveReportTemplate();" class="btn btn-primary">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    // Static filter table data
+    const staticFilterData = [
+        {
+            ORDINAL_POSITION: 1,
+            FIELD_NAME: "FromDate",
+            FIELD_CAPTION: "Start Date",
+            FIELD_TYPE: "Date",
+            DEFAULT_VALUE: ""
+        },
+        {
+            ORDINAL_POSITION: 2,
+            FIELD_NAME: "ToDate",
+            FIELD_CAPTION: "End Date",
+            FIELD_TYPE: "Date",
+            DEFAULT_VALUE: ""
+        }
+    ];
+    let dynamicFilterRows = [];
+    // Dropdown options for Field Type
+    const fieldTypeOptions = ["Text", "Date", "Dropdown"];
+    $(document).ready(function () {
+        BindPendings();
+        $("#btnAddNew").click(function () {
+            AddEditReportTemplate(0);
+        });
+    });
+
+    function BindPendings() {
+        var isValid = true;
+        //var _fromDate = $('#fromDate').val();
+        //var _toDate = $('#toDate').val();
+        //if (!_fromDate || !toDate) {
+        //    ShowToastNotification("error", 'Please select both From Date and To Date.');
+        //    isValid = false;
+        //    return;
+        //}
+        if (isValid) {
+            $.ajax({
+                type: "GET",
+                url: "@Url.Action("getReportTemplates", "Reports")",
+                contentType: "application/json; charset=utf-8",
+                skipLoading: true,
+                success: SuccesssBindGrid,
+                failure: function (response) {
+                    ShowToastNotification("error", response.d);
+                },
+                error: function (response) {
+                    ShowToastNotification("error", "Error fetching data!");
+                }
+            });
+        }
+    }
+    function SuccesssBindGrid(dataset) {
+        dataset = Array.isArray(dataset) ? dataset : [];
+        // Initialize DataTable
+        let formTable = new DataTable("#tblReportTemplate", {
+            "destroy": true,
+            searching: true,
+            paging: true,
+            scrollCollapse: true,
+            info: true,
+            // scrollY: '500px',
+            data: dataset,
+            lengthMenu: [10, 25, 50, 100],
+            pageLength: 50,
+            columns: [
+                { title: '#', data: 'SrNo' },
+                {
+                    title: 'Report Title',
+                    data: 'ReportTitle',
+                    render: function (data, type, row, meta) {
+                        return "<a title='View Record' onclick='AddEditReportTemplate(" + row["ReportId"] +")' href='javascript:void(0);';>" + row["ReportTitle"] + "</a>";
+                    },
+                },
+                { title: 'Report Name', data: 'ReportName' }
+            ],
+            language: {
+                emptyTable: "No records found", // Message when no data is available
+                zeroRecords: "No matching records found"
+            }
+        });
+    }
+    function AddEditReportTemplate(reportId) {
+         try {
+             $.ajax({
+                 type: "POST",
+                 url: "@Url.Action("PartialReportTemplate", "Reports")",
+                 skipLoading: false, // <-- Custom flag
+                 data: { ReportId: reportId },
+                 skipLoading: true,
+                 success: function (Response) {
+                     $("#divTemplate").empty();
+                     $("#divTemplate").html(Response);
+                     var myModal = new bootstrap.Modal(document.getElementById('ReportModal'));
+                     myModal.show();
+                 },
+             });
+         }
+         catch (e) {
+         }
+    }
+    function SaveReportTemplate() {
+        try {
+            if ($("#ddlUser").val() == null || ($("#ddlUser").val() != null && $("#ddlUser").val().length == 0)) {
+                ShowToastNotification("error", "Select User");
+                $("#ddlUser").focus();
+                return;
+            }            
+            var multiText = $("#ddlUser").map(function () {
+                return $(this).val(); // Use .val() if you want IDs
+            }).get().join(',');
+            var _assignedUsers = multiText;
+            var isFormValid = true;
+            if ($.trim($("#txtReportCaption").val()).length == 0) {
+                $("#txtReportCaption").addClass("input-validation-error");
+                $("#txtReportCaption").after("<div class='validation' style='color:red;margin-bottom: 2px;'>Please select Process</div>");
+                if (isFormValid == true) {
+                    $("#txtReportCaption").focus();
+                }
+                isFormValid = false;
+            } else {
+                $("#txtReportCaption").removeClass("input-validation-error");
+            }
+            if ($.trim($("#txtReportName").val()).length == 0) {
+                $("#txtReportName").addClass("input-validation-error");
+                $("#txtReportName").after("<div class='validation' style='color:red;margin-bottom: 2px;'>Please select Location</div>");
+                if (isFormValid == true) {
+                    $("#txtReportName").focus();
+                }
+                isFormValid = false;
+            } else {
+                $("#txtReportName").removeClass("input-validation-error");
+            }
+            let filters = [];
+            let sqlMappings = [];
+            if ($("#tblRequestPeraFilter").length > 0) {
+                $("#tblRequestPeraFilter tbody tr").each(function () {
+                    let fieldcap = $(this).find(".RTFieldCaption").text().length ? $(this).find(".RTFieldCaption").text() : $(this).find(".RTFieldCaption").val();
+                    let fieldname = $(this).find(".RTFieldName").text().length ? $(this).find(".RTFieldName").text() : $(this).find(".RTFieldName").val();
+                    let fieldType = $(this).find(".RTFieldType select").val();
+                    let fieldval = '';
+                    const $input = $(this).find("input.RTFieldDefaultVal");
+                    const $select = $(this).find("select.RTFieldDefaultVal");
+                    if ($input.length && !$input.hasClass("d-none")) {
+                        fieldval = $input.val();
+                    } else if ($select.length) {
+                        fieldval = $select.val();
+                    }
+                    let srNumber = $(this).find(".RTSrNofield").text();
+                    if (fieldname.length > 0) {                        
+                        filters.push({
+                            SrNo: srNumber,
+                            FieldCaption: fieldcap,
+                            FieldName: fieldname,
+                            FieldType: fieldType,
+                            FieldDefaultValue: fieldval
+                        });
+                    }
+                });
+            } else {
+                isFormValid = false;
+            }
+            if ($("#tblRequest").length > 0) {
+                $("#tblRequest tbody tr").each(function () {
+                    let paramName = $(this).find(".RTRParaNamefield").text();
+                    let paramValue = $(this).find(".RTRParaValufield").val();
+                    let paramDatatype = $(this).find(".RTRParaDataTypefield").text();
+                    let paramDefaultValue = $(this).find(".RTFieldDefaultVal").val();
+                    let srNumber = $(this).find(".RTRSrNofield").text();
+                    if (paramName.length > 0) {
+                        sqlMappings.push({
+                            SrNo: srNumber,
+                            ParamValueName: paramValue,
+                            ParameterName: paramName,
+                            ParamDataType: paramDatatype,
+                            DefaultValue: paramDefaultValue
+                        });
+                    }
+                });
+            } else {
+                isFormValid = false;
+            }            
+            if (isFormValid) {
+                var model = {
+                    ReportId: $("#hgnTemplateId").val(),
+                    ReportTitle: $("#txtReportCaption").val(),
+                    ReportName: $("#txtReportName").val(),
+                    IsActive: $("#chkIsActive").prop('checked'),
+                    SQLQueryName: $("#ddlStoreprocedure").val(),
+                    Action: "INSERT",
+                    Header: filters,
+                    ProcedureMappings: sqlMappings,
+                    AssignedUsers: _assignedUsers
+                }
+                $.ajax({
+                    type: "POST", url: '@Url.Action("SaveReportTemplate", "Reports")',
+                    contentType: "application/json;",
+                    data: JSON.stringify(model),
+                    async: false,
+                    success: function (response) {
+                        if (response.IsSuccess) {
+                            ShowToastNotification("success", response.Response);
+                            $("#btnCancel").click();
+                            BindPendings();
+                        }
+                        else {
+                            ShowToastNotification("error", response.Response);
+                        }
+                    },
+                    failure: function (response) { },
+                    error: function (response) { }
+                });
+            }
+        } catch (e) {
+
+        }
+    }
+</script>

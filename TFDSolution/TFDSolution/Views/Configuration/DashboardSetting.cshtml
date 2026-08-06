@@ -1,0 +1,326 @@
+﻿
+@{
+    ViewBag.Title = "Dashboard Setting";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="breadcrumbs">
+    <div class="col-sm-4">
+        <div class="page-header float-left">
+            <div class="page-title">
+                <h1>Dashboard Setting</h1>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-8">
+        <div class="page-header float-right">
+            <div class="page-title">
+                <ol class="breadcrumb text-right">
+                    <li><a href="@Url.Action("Index","Home")">Home</a></li>
+                    <li class="active">Dashboard Setting</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="animated fadeIn">
+    <div class="row">
+        <div class="col-md-12 p-0">
+            <div class="card">
+                <div class="card-header">
+                    <div class="col-lg-9"></div>
+                    <div class="col-lg-3 text-right">
+                        <a class="btn btn-sm" href="javascript:void(0);"><i class="fa fa-refresh"></i>&nbsp; Refresh</a>
+                        <a class="btn btn-sm" id="btnAddNew" data-toggle="modal" data-target="#DashboardModal"
+                           title="Add New Dashboard"><i class="fa fa-plus"></i>&nbsp; New</a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12 form-group">
+                            <table id="tblSetting" class="display cell-border nowrap" cellspacing="0" width="100%"></table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="DashboardModal" tabindex="-1" role="dialog" aria-labelledby="DashboardModalLabel" data-backdrop="static" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="width:500px;">
+            <div class="modal-header">
+                <h5 class="modal-title" id="DashboardModalLabel">Add Dashboard</h5>
+                <button type="button" id="btnCancelDashboard" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" style="overflow:hidden;">
+                <div class="m-2">
+                    <input type="hidden" id="hdnDashboardId" value="0" />
+                    <div class="row form-group" style="overflow:hidden;">
+                        <div class="col-md-12">
+                            <label for="text-input" class="form-control-label">Dashboard Title<span class="text-danger p-1">(*)</span></label>
+                            <input type="text" id="txtdashboardTitle" data-content="0" maxlength="50" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="col-md-12">
+                            <label for="text-input" class="form-control-label">Dashboard Name<span class="text-danger p-1">(*)</span></label>
+                            <input type="text" id="txtdashboardName" data-content="0" maxlength="50" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="col col-md-12">
+                            <label for="text-input" class="form-control-label">Assigned Users<span class="text-danger p-1">(*)</span></label>
+                            <select id="ddlUser" class="form-select select2" style="min-width:680px !important" multiple>
+                                <option>Select</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="col col-md-12">
+                            <div class="form-check">
+                                <div class="checkbox">
+                                    <label for="chkChangeValue" class="form-check-label ">
+                                        <input type="checkbox" id="chkIsActive" name="chkIsActive" value="IsActive" class="form-check-input">Is Active
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="btnCancelDashboard" class="btn btn-secondary" data-dismiss="modal" aria-label="Close">Close</button>
+                <button type="button" id="btnSubmitDashboard" class="btn btn-primary">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        BindGrid();;
+        $("#btnCancelDashboard").click(function () {
+            $("#DashboardModal").modal("hide");
+        });
+        $("#btnAddNew").click(function () {
+            OpenAddModal();
+        });
+        $('#txtdashboardTitle').change(function () {
+            $('#txtdashboardName').val($(this).val().replace(/\s/g, ""));
+        });
+        $('#txtdashboardName').change(function () {
+            $(this).val($(this).val().replace(/\s/g, ""));
+        });
+        $("#btnSubmitDashboard").click(function () {
+            // Add your submit logic here
+            try {
+                // Validation
+                if ($("#txtdashboardTitle").val().trim() === "") {
+                    ShowToastNotification("error", "Dashboard Title is required.");
+                    return;
+                }
+
+                if ($("#txtdashboardName").val().trim() === "") {
+                    ShowToastNotification("error", "Dashboard Name is required.");
+                    return;
+                }
+
+                if ($("#ddlUser").val() === null || $("#ddlUser").val().length === 0) {
+                    ShowToastNotification("error", "Please select Assigned Users.");
+                    return;
+                }
+
+                // Prepare object to send in AJAX
+                let model = {
+                    DashboardId: $("#hdnDashboardId").val(),
+                    DashboardTitle: $("#txtdashboardTitle").val().trim(),
+                    DashboardName: $("#txtdashboardName").val().trim(),
+                    AssignedUsers: $("#ddlUser").val().join(','),   // Multi-select support
+                    IsActive: $("#chkIsActive").is(":checked") ? 1 : 0
+                };
+
+                // AJAX Call
+                $.ajax({
+                    url: "@Url.Action("SaveDashboardSetting", "Configuration")",
+                    method: "POST",
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(model),
+                    beforeSend: function () {
+                        $("#btnSubmitDashboard").prop("disabled", true).text("Saving...");
+                    },
+                    success: function (response) {
+                        BindGrid();
+                        $("#btnCancelDashboard").click();
+                        $("#btnSubmitDashboard").prop("disabled", false).text("Save");
+                        ShowToastNotification("success", "Dashboard saved successfully!");
+                    },
+                    error: function (xhr) {
+                        alert("Error while saving data.");
+                        $("#btnSubmitDashboard").prop("disabled", false).text("Save");
+                    }
+                });
+            } catch (e) {
+                ShowToastNotification("error", "Error occured.. Please try again");
+            }
+        });
+    });
+    function OpenAddModal() {
+        try {
+            // Reset form fields
+            $("#hdnDashboardId").val("0");
+            $("#txtdashboardTitle").val("");
+            $("#txtdashboardName").val("");
+            $("#ddlUsers").val(null).trigger('change'); // Clear multi-select
+            $("#chkIsActive").prop("checked", true); // Default to checked
+            BindUserDropdown();
+            // Open modal
+            $("#DashboardModal").modal("show");
+        } catch (e) {
+            console.error("Error opening add modal:", e);
+        }
+    }
+    function BindUserDropdown()
+    {
+        try {
+            let parentWrapper = $("#ddlUser").parent();
+            $("#ddlUser").select2({
+                dropdownParent: parentWrapper,
+                placeholder: 'Select User(s)',
+                allowClear: true,
+                delay: 250,
+                minimumInputLength: 0, // change to 0 if you want scrolling without typing
+                ajax: {
+                    url: '@Url.Action("FillSelctionCommon", "Common")',
+                    dataType: 'json',
+                    skipLoading: true, // <-- Custom flag
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            _type: 'User',
+                            _whareClause: params.term || '', // search term
+                            _orderType: '',
+                            _entryType: ''
+                        };
+                    },
+                    processResults: function (data) {
+                        return {
+                            results: data.results,
+                            pagination: {
+                                more: data.pagination.more
+                            }
+                        };
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Select2 AJAX Error:", error);
+                        console.error("Status:", status);
+                        console.error("Response:", xhr.responseText);
+                    },
+                    cache: true
+                }
+            });
+            //$('#' + selectId).select2()
+        } catch (e) {
+            console.error("Select2 AJAX Error:", e);
+        }
+    }
+    function BindGrid() {
+        try {
+            $.ajax({
+                type: "GET",
+                url: "@Url.Action("getDashboardSetting", "Configuration")",
+                contentType: "application/json; charset=utf-8",
+                success: SuccesssBindGrid,
+                failure: function (response) {
+                    ShowToastNotification("error", response.d);
+                },
+                error: function (response) {
+                    ShowToastNotification("error", "Error fetching data!");
+                }
+            });
+        } catch (e) {
+        }
+    }
+    function DeleteDashboardSetting(settingId) {
+        if (confirm("Are you sure you want to delete?")) {
+            try {
+                $.ajax({
+                    type: "GET",
+                    url: "@Url.Action("DeleteDashboard", "Configuration")",
+                    data: { Id: settingId },
+                    dataType: "json",
+                    success: function (response) {
+                        if (response != null && response.IsSuccess) {
+                            BindGrid();
+                            ShowToastNotification("success", "Record has been delete successfully.");
+                        }
+                        else if (response != null && response.IsSuccess == false) {
+                            ShowToastNotification("error", response.Response);
+                        }
+                        else {
+                            ShowToastNotification("error", "No data found!");
+                        }
+                    },
+                    error: function (xhr) {
+                        ShowToastNotification("error", "Error fetching data. Please try again.");
+                    }
+                });
+            } catch (e) {
+                console.log(e);
+            }
+        }
+    }
+    function EditTemplate(tempId) {
+        var editlink1 = '@Url.Action("DashboardSettingAction", "Configuration", new { dashboardId = "_uId"})';
+        editlink1 = editlink1.replace("amp;", "");
+        editlink1 = editlink1.replace("amp;", "");
+        editlink1 = editlink1.replace("_uId", encodeURIComponent(tempId));
+        location.href = editlink1;
+    }
+    function SuccesssBindGrid(dataset) {
+        dataset = Array.isArray(dataset) ? dataset : [];
+        // Initialize DataTable
+        let formTable = new DataTable("#tblSetting", {
+            "destroy": true,
+            searching: true,
+            paging: true,
+            scrollCollapse: true,
+            info: true,
+            // scrollY: '500px',
+            data: dataset,
+            columns: [
+                {
+                    title: "",
+                    className: 'text-center',
+                    render: function (data, type, row, meta) {
+                        return `<a title="Edit" class="text-success me-2" href="javascript:void(0)" onclick="EditTemplate(${row.DashboardId})"><i class="fa fa-pencil"></i></a>|
+                        <a title="Delete" class="text-danger ms-2" href="javascript:void(0)"onclick="DeleteDashboardSetting(${row.DashboardId})"><i class="fa fa-trash"></i></a>`;
+                    }
+                },
+                { title: '#', data: 'SrNo', className: 'text-center' },
+                { title: 'Dashboard Name', data: 'DashboardName' },
+                {
+                    title: 'Template Title',
+                    data: 'DashboardTitle',
+                    render: function (data, type, row, meta) {
+                        return "<a title='View Record' onclick='EditTemplate(" + row["DashboardId"] + ")' href='javascript:void(0);';>" + row["DashboardTitle"] + "</a>";
+                    },
+                },
+                { title: 'Sort Order', data: 'SortOrder' },
+                {
+                    title: 'Active',
+                    className: 'text-center',
+                    render: function (data, type, row, meta) {
+                        return (row.IsActive === true) ? '<span class="fa fa-check text-success"></span>' : '<span class="fa fa-remove text-danger"></span>';
+                    }
+                },
+
+            ],
+            language: {
+                emptyTable: "No records found", // Message when no data is available
+                zeroRecords: "No matching records found"
+            }
+        });
+    }
+</script>

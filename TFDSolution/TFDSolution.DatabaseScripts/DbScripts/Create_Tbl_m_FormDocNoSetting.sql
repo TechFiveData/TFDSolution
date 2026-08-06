@@ -1,0 +1,9 @@
+
+CREATE TABLE m_FormDocNoSetting (
+    DocNoSettingId INT IDENTITY(1,1) PRIMARY KEY,   
+	DocName VARCHAR(50) NOT NULL,
+	DocAlias VARCHAR(10) NOT NULL,
+	StartNumber VARCHAR(10) NOT NULL,
+	FormId UNIQUEIDENTIFIER NOT NULL,
+	IsDefault BIT NULL   
+);

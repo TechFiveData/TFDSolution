@@ -1,0 +1,8 @@
+CREATE TYPE dbo.UDT_FieldProcInParamMapping AS TABLE
+(
+	FieldParamId INT NULL,
+    FieldId UNIQUEIDENTIFIER NOT NULL,
+    ParamName NVARCHAR(100) NOT NULL,
+    MapFieldId UNIQUEIDENTIFIER NULL,
+    DefaultValue NVARCHAR(200) NULL
+);

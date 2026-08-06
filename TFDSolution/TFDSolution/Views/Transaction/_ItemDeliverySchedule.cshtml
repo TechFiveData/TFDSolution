@@ -1,0 +1,252 @@
+﻿@model TFDSolution.Transport.Master.DeliveryScheduleModel
+
+<style>
+    #divdeliverySchedule .dataTables_scrollHeadInner {
+        width: 100% !important;
+    }
+
+        #divdeliverySchedule .dataTables_scrollHeadInner table {
+            width: 100% !important;
+        }
+
+    #tblItem_DeliverySchedule {
+        width: 100% !important;
+    }
+
+        #tblItem_DeliverySchedule th,
+        #tblItem_DeliverySchedule td {
+            white-space: nowrap;
+            vertical-align: middle;
+        }
+
+        #tblItem_DeliverySchedule.dataTables_scrollHeadInner {
+            width: 100% !important;
+        }
+
+            #tblItem_DeliverySchedule .dataTables_scrollHeadInner table {
+                width: 100% !important;
+            }
+
+        #tblItem_DeliverySchedule input {
+            width: 100%;
+            min-width: 130px;
+        }
+</style>
+<table id="tblItem_DeliverySchedule" class="table table-bordered display" style="width:100% !important">
+    <thead>
+        <tr>
+            <th style="width:60px">#</th>
+
+            @if (Model.Fields != null)
+            {
+                foreach (var field in Model.Fields)
+                {
+                    <th style="min-width:150px">@field.FieldCaption</th>
+                }
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            int srNo = 1;
+        }
+        @if (Model.Data != null && Model.Data.Count > 0)
+        {
+            foreach (var item in Model.Data)
+            {
+                <tr>
+                    <td class="row-space">
+                        <label id="ItemSrNo" data-bind="SrNo" class="DSSrNofield">@srNo</label>
+                    </td>
+                    @foreach (var field in Model.Fields)
+                    {
+                        string ctrlId = "ctrl_" + Convert.ToString(field.FieldName) + "_" + srNo;
+                        var value = item.GetType().GetProperty(field.FieldName)?.GetValue(item, null);
+                        <td class="row-space">
+                            @if (field.FieldType == "Date" || field.FieldType == "DateTimeField")
+                            {
+                                DateTime dt;
+                                if (DateTime.TryParse(Convert.ToString(value), out dt))
+                                {
+                                    <input type="date" id="@ctrlId" data-bind="@field.FieldName" class="form-control DSDatefield" value="@dt.ToString("yyyy-MM-dd")" />
+                                }
+                                else
+                                {
+                                    <input type="date" id="@ctrlId" data-bind="@field.FieldName" class="form-control DSDatefield" />
+                                }
+                            }
+                            else if (field.FieldType == "Numeric")
+                            {
+                                <input type="number" id="@ctrlId" data-bind="@field.FieldName" class="form-control DSQTYfield" value="@value" />
+                            }
+                            else
+                            {
+                                <input type="text" id="@ctrlId" data-bind="@field.FieldName" class="form-control DSRemarkfield" value="@value" />
+                            }
+                        </td>
+                    }
+                </tr>
+                srNo++;
+            }
+        }
+        else
+        {
+            <!-- Forcefully Add Blank Row -->
+            <tr>
+                <td class="row-space">
+                    <label id="ItemSrNo" data-bind="SrNo" class="DSSrNofield">@srNo</label>
+                </td>
+                @foreach (var field in Model.Fields)
+                {
+                    string ctrlId = "ctrl_" + Convert.ToString(field.FieldName) + "_" + srNo;
+                    <td class="row-space">
+                        @if (field.FieldType == "Date" || field.FieldType == "DateTimeField")
+                        {
+                            <input type="date" id="@ctrlId"  data-bind="@field.FieldName"  class="form-control DSDatefield" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                        }
+                        else if (field.FieldType == "Numeric")
+                        {
+                            <input type="number" id="@ctrlId" data-bind="@field.FieldName"  class="form-control DSQTYfield" />
+                        }
+                        else
+                        {
+                            <input type="text" id="@ctrlId"  data-bind="@field.FieldName"  class="form-control DSRemarkfield" />
+                        }
+                    </td>
+                }
+            </tr>
+        }
+    </tbody>
+</table>
+<script type="text/template" id="rowTemplate">
+    <tr>
+        <td class="row-space">
+            <label id="ItemSrNo" data-bind="SrNo" class="DSSrNofield">__SRNO__</label>
+        </td>
+        @foreach (var field in Model.Fields)
+        {
+            string ctrlId = "ctrl_" + Convert.ToString(field.FieldName) + "_" + srNo;
+            <td class="row-space">
+                @if (field.FieldType == "Date" || field.FieldType == "DateTimeField")
+                {
+                    <input type="date" id="@ctrlId" data-bind="@field.FieldName"  class="form-control DSDatefield" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                }
+                else if (field.FieldType == "Numeric")
+                {
+                    <input type="number" id="@ctrlId" data-bind="@field.FieldName"  class="form-control DSQTYfield" value="__QTY__" />
+                }
+                else
+                {
+                    <input type="text" id="@ctrlId" data-bind="@field.FieldName"  class="form-control DSRemarkfield" />
+                }
+
+            </td>
+        }
+    </tr>
+</script>
+<script>
+    $(document).ready(function () {
+        var table = new DataTable("#tblItem_DeliverySchedule", {
+            destroy: true,
+            paging: false,
+            info: false,
+            searching: false,
+            ordering: false,
+            scrollY: "250px",
+            scrollX: true,
+            scrollCollapse: true,
+            autoWidth: false
+        });
+
+        table.columns.adjust().draw();
+
+        $("#addNewDeliverySchedule").click(function (e) {
+            e.preventDefault();
+            if ($("#DataTabPopup #Quantity").length = 0) {
+                ShowToastNotification("error", "Quantity field does not exists. Please check fields.");
+                return;
+            }
+            else {
+                var qty = $("#DataTabPopup #Quantity").val();
+                if (qty && qty !== "0") {
+                    var TotalQTY = parseInt($("#DataTabPopup #Quantity").val());
+                    var total = 0;
+                    if ($("#tblItem_DeliverySchedule tbody tr").length > 0) {
+                        $("#tblItem_DeliverySchedule tbody .DSQTYfield").each(function () {
+                            var val = parseFloat($(this).val()) || 0; // default to 0 if empty or invalid
+                            total += val;
+                        });
+                    }
+                    if (TotalQTY <= total) {
+                        ShowToastNotification("error", "You already scheduled for the " + total + " Quantity. Please check delivery schedule");
+                        return;
+                    }
+                    else {
+                        addNewDSRow();
+                    }
+                }
+                else {
+                    ShowToastNotification("error", "Please enter quantity of item.");
+                    $("#DataTabPopup #Quantity").focus();
+                    return;
+                }
+            }
+        });
+        $("#tblItem_DeliverySchedule").on("blur", ".DSRemarkfield", function () {
+            let allFilled = true;
+            $("#tblItem_DeliverySchedule tbody tr").each(function () {
+                let dateVal = $(this).find(".DSDatefield").val();
+                let qtyVal = $(this).find(".DSQTYfield").val();
+                let remarkVal = $(this).find(".DSRemarkfield").val();
+                if (!dateVal || qtyVal === "" || qtyVal === "0" || !remarkVal) {
+                    allFilled = false;
+                    return false; // break loop
+                }
+            });
+            // If all rows have values, add a new row
+            if (allFilled) {
+                addNewDSRow();
+            }
+        });
+    });
+    function addNewDSRow() {
+        // Get current quantity value
+        const TotalQTY = parseFloat($("#DataTabPopup #Quantity").val()) || 0;
+        // Calculate total quantity from table
+        const total = $("#tblItem_DeliverySchedule tbody .DSQTYfield")
+            .toArray()
+            .reduce((sum, el) => sum + (parseFloat($(el).val()) || 0), 0);
+        // Determine maximum remaining quantity
+        const maxQty = TotalQTY - total;
+        if (maxQty > 0) {
+            const today = new Date().toISOString().split("T")[0];
+            // Determine next row number
+            if ($("#tblItem_DeliverySchedule tbody tr td").length == 1) {
+                $("#tblItem_DeliverySchedule tbody tr").remove()
+            }
+            const rowCount = $("#tblItem_DeliverySchedule tbody tr").length + 1;
+            // Create new row HTML
+            const newRow = `<tr>
+               <td class="row-space"><label id="ItemSrNo" data-bind="SrNo" class="DSSrNofield">${rowCount}</label></td>
+               <td class="row-space" style="padding: 10px;">
+                   <input type="date" class="form-control DSDatefield" value="${today}" />
+               </td>
+               <td class="row-space">
+                   <input type="number" value="${maxQty}" maxlength="7" class="form-control DSQTYfield" />
+               </td>
+               <td class="row-space">
+                   <input type="text" value="" maxlength="500" class="form-control DSRemarkfield" />
+               </td></tr>`;
+            // Append new row and focus the date field
+            //$("#tblItem_DeliverySchedule tbody").append(newRow);
+            //$("#tblItem_DeliverySchedule tbody tr:last .DSDatefield").focus();
+
+            var template = $("#rowTemplate").html();
+            template = template.replace("__SRNO__", rowCount);
+            template = template.replace("__QTY__", maxQty);
+            //__QTY__
+            $("#tblItem_DeliverySchedule tbody").append(template);
+            $("#tblItem_DeliverySchedule tbody tr:last .DSDatefield").focus();
+        }
+    }
+</script>

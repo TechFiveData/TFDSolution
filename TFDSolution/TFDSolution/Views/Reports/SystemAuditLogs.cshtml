@@ -1,0 +1,478 @@
+﻿
+@{
+    ViewBag.Title = "SystemAuditLogs";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .select2-container {
+        min-width: 680px !important;
+    }
+
+    .select2 {
+        min-width: 600px !important;
+    }
+
+    .opening-balance-row {
+        background-color: #fff7cc !important;
+        font-weight: 600;
+        position: sticky;
+        top: 0;
+        z-index: 2;
+    }
+
+        .opening-balance-row td {
+            border: none !important;
+        }
+
+    .reportfilter label {
+        min-width: 100px;
+        text-align: right;
+    }
+
+    #tblUserAuditLogReportView_wrapper .dataTables_scrollBody {
+        min-height: 250px;
+        border: 1px solid #ccc;
+    }
+
+    #tblUserAuditLogReportView tbody tr:last-child td {
+        border-bottom: 1px solid #ccc;
+    }
+
+    /* #tblUserAuditLogReportView_filter {
+        display: none;
+    }*/
+
+    .text-danger {
+        animation: blink 1s linear infinite;
+    }
+</style>
+<input type="hidden" id="hdnSelectedUserId" value="" />
+<div class="breadcrumbs">
+    <div class="col-sm-4">
+        <div class="page-header float-left">
+            <div class="page-title">
+                <h1>User Audit Log History</h1>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-8">
+        <div class="page-header float-right">
+            <div class="page-title">
+                <ol class="breadcrumb text-right">
+                    <li><a href="@Url.Action("Index","Home")">Home</a></li>
+                    <li>Utilities</li>
+                    <li class="active">User Audit Log</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="animated fadeIn">
+    <div class="row">
+        <div class="col-md-12 p-0">
+            <div class="card">
+                <div class="card-header">
+                    <div class="col-lg-12 text-right">
+                        <label id="lblExportNotification" style="padding-top: 6px;color: crimson;display:none;float:left;">Report export in progress. Please wait...</label>
+                        @*<a class="btn btn-sm" href="javascript:void(0);"><i class="fa fa-file-pdf-o"></i>&nbsp; PDF</a>*@
+                        @if (ViewBag.ReportSelection != null)
+                        {
+                            List<TFDSolution.Transport.Master.ReportMast> reports = ViewBag.ReportSelection as List<TFDSolution.Transport.Master.ReportMast>;
+                            if (reports != null && reports.Count > 0)
+                            {
+                                <div class="dropdown" style="float:right; position:relative;">
+                                    <button class="btn btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <i class="fa fa-print font16"></i>
+                                    </button>
+                                    <div class="dropdown-menu" style="margin: 2.200rem -4.285em 2rem; " aria-labelledby="dropdownMenuButton">
+                                        @foreach (var item in reports)
+                                        {
+                                            <a class="dropdown-item" onclick="openSystemReport(@item.ReportId);" href="#">@item.ReportTitle</a>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12 form-group reportfilter">
+                            <div class="d-inline-block pr-3 pb-2">
+                                <label class="form-control-label mr-2">From Date</label>
+                                <input id="dtFromDate" type="date" class="form-control d-inline-block w-auto myDate" />
+                            </div>
+                            <div class="d-inline-block pr-3 pb-2">
+                                <label class="form-control-label mr-2">To Date</label>
+                                <input id="dtToDate" type="date" class="form-control d-inline-block w-auto myDate" />
+                            </div>
+                            <button id="btnGenerate" class="btn btn-primary btn-Generate">Generate</button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 form-group reportfilter">
+                            <div class="d-inline-block pr-3 pb-2">
+                                <label class="form-control-label mr-2">User Name</label>
+                                <div class="d-inline-block">
+                                    <select id="ddlUserName" style="width:250px !important;" class="form-select d-inline-block w-auto select2">
+                                        <option>Select User</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-12 form-group">
+                            <table id="tblUserAuditLogReportView" class="display cell-border nowrap" cellspacing="0" width="100%"></table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    function openSystemReport(_ReportId) {
+        try {
+            var SpecificationField = [];
+            SpecificationField.push({ FieldName: "RequestAccountId", FieldValue: $("#ddlUserName").val() });
+            SpecificationField.push({ FieldName: "RequestFromDate",FieldValue: $("#dtFromDate").val() });
+            SpecificationField.push({ FieldName: "RequestToDate", FieldValue: $("#dtToDate").val() });
+
+            $.ajax({
+                url: '@Url.Action("OpenSystemReportView", "Reports")',
+                type: 'POST',
+                contentType: 'application/json; charset=utf-8',
+                data: JSON.stringify({
+                    ReportId: _ReportId,
+                    reportParameters: SpecificationField
+                }),
+                success: function (response) {
+                    if (response != null && response.IsSuccess) {
+                        var basepath = '@Url.Content("~/ExportReport/")';
+                        basepath = basepath + response.Response;
+                        window.open(basepath, "_blank");
+                        ShowToastNotification("success", "Report has been exported successfully.");
+                    }
+                    else {
+                        ShowToastNotification("error", response.Response);
+                    }
+                },
+                error: function () {
+
+                    ShowToastNotification("error", "Error occurred.");
+                }
+            });
+        } catch (e) {
+            console.log(e);
+            ShowToastNotification("error", "An error occurred while exporting the report. Please try again.");
+        }
+    }
+    $(document).ready(function () {
+       let today = new Date();
+        today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
+
+        let formatDate = (d) => d.toISOString().split('T')[0];
+
+        $("#dtFromDate").val(formatDate(today));
+        $("#dtToDate").val(formatDate(today));
+        BindParentDropdown();
+        $("#btnGenerate").click(function () {
+            GetUserList();
+        })
+    });
+@*function BindParentDropdown() {
+    $.ajax({
+        url: '@Url.Action("getUsersForAuditLog", "master")',
+        type: 'GET',
+        data: { formId: '' },
+        success: function (data) {
+            $('#ddlUserName').empty();
+            $.each(data, function (i, item) {
+                $('#ddlUserName').append(
+                    $('<option>', {
+                        value: item.UserId,
+                        text: item.UserName
+                    })
+                );
+            });
+
+            // After ddlSelect is populated, bind ddlSubForm with first value
+            var firstFormId = $('#ddlSelect').find('option:first').val();
+            if (firstFormId) {
+                $("#hdnSelectedUserId").val(firstFormId);
+            }
+        },
+        error: function () {
+            console.error('Failed to load parent dropdown.');
+        }
+    });
+    }
+    $('#ddlUserName').on('change', function () {
+        var selectedFormId = $(this).val();
+        $("#hdnSelectedUserId").val(selectedFormId);
+    });*@
+function BindParentDropdown() {
+
+    $.ajax({
+        url: '@Url.Action("getUsersForAuditLog", "Master")',
+        type: 'GET',
+        success: function (response) {
+
+            $('#ddlUserName').empty();
+
+            if (response.RoleId == 1) {
+                // Admin => Add default option
+                $('#ddlUserName').append(
+                    $('<option>', {
+                        value: '',
+                        text: '-- Select User --',
+                        selected: true
+                    })
+                );
+            }
+
+            $.each(response.Data, function (i, item) {
+                $('#ddlUserName').append(
+                    $('<option>', {
+                        value: item.UserId,
+                        text: item.UserName
+                    })
+                );
+            });
+
+            if (response.RoleId == 1) {
+
+                // Admin
+                $("#hdnSelectedUserId").val('');
+                $('#ddlUserName').prop('disabled', false);
+
+            }
+            else {
+
+                // Normal User
+                if (response.Data.length > 0) {
+
+                    $('#ddlUserName').val(response.Data[0].UserId);
+
+                    $("#hdnSelectedUserId").val(response.Data[0].UserId);
+
+                    $('#ddlUserName').prop('disabled', true);
+                }
+            }
+
+            GetUserList();
+        },
+        error: function () {
+            console.error('Failed to load users.');
+        }
+    });
+}
+
+// User change event
+$('#ddlUserName').on('change', function () {
+    $("#hdnSelectedUserId").val($(this).val());
+});
+function GetUserList() {
+    var userId = $("#hdnSelectedUserId").val();
+    var fromDate = $("#dtFromDate").val();
+    var toDate =  $("#dtToDate").val();
+    $.ajax({
+        type: "GET",
+        url: "@Url.Action("getUsersAuditLogList", "Master")",
+        data: { userId: userId, fromDate: fromDate, toDate: toDate },
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: OnSuccess,
+        failure: function (response) {
+            alert(response.d);
+        },
+        error: function (response) {
+            alert("Error fetching data!");
+        }
+    });
+}
+
+function OnSuccess(response) {
+    bindDataTable(response);
+}
+
+//function bindDataTable(dataset) {
+//    dataset = Array.isArray(dataset) ? dataset : [];
+
+//    // Destroy existing DataTable instance before reinitializing
+//    if ($.fn.DataTable.isDataTable('#tblUserAuditLogReportView')) {
+//        $('#tblUserAuditLogReportView').DataTable().destroy();
+//    }
+//    // Initialize DataTable
+//    new DataTable('#tblUserAuditLogReportView', {
+//        layout: {
+//            topStart: {
+//                pageLength: {
+//                    menu: [10, 25, 50, 100]
+//                }
+//            },
+//            topEnd: {
+//                search: {
+//                    placeholder: 'Type search here'
+//                }
+//            },
+//            bottomEnd: {
+//                paging: {
+//                    buttons: 5
+//                }
+//            }
+//        },
+//        paging: true,
+//        scrollCollapse: true,
+//       /// scrollY: '500px',
+//        data: dataset,
+//        columns: [
+//            {
+//                title: '#', data: 'SrNo'
+//            },
+//            {
+//                title: 'First Name', data: 'FirstName'
+//            },
+//            {
+//                title: 'Last Name', data: 'LastName'
+//            },
+//            {
+//                title: 'EmailId', data: 'EmailId'
+//            },
+//            {
+//                title: 'Last Login Date',
+//                render: function (data, type, row, meta) {
+//                    if (!row.LastLoginDate) {
+//                        return "<span>N/A</span>"; // Default value for null or undefined
+//                    }
+//                    var editlink = formatDate(parseMSDate(row.LastLoginDate));
+//                    return "<span>" + editlink + "</span>";
+//                },
+//            },
+//            {
+//                title: 'Page Name', data: 'PageName'
+//            },
+//            {
+//                title: 'Action', data: 'Action'
+//            },
+//            {
+//                title: 'IPAddress', data: 'IPAddress'
+//            },
+//            {
+//                title: 'Remark', data: 'Remark'
+//            },
+//            {
+//                title: 'URNNo', data: 'URNNo'
+//            },
+//            {
+//                title: 'PageURL', data: 'PageURL'
+//            },
+//        ],
+//        language: {
+//            emptyTable: "No records found", // Message when no data is available
+//            zeroRecords: "No matching records found"
+//        }
+//    });
+    //}
+    function bindDataTable(dataset) {
+        dataset = Array.isArray(dataset) ? dataset : [];
+
+        // Destroy using jQuery wrapper — works with both init styles
+        var table = $('#tblUserAuditLogReportView');
+
+        if ($.fn.DataTable.isDataTable(table)) {
+            table.DataTable().destroy();
+            table.empty(); // ← important: clear the DOM too
+        }
+
+        // Initialize DataTable
+        table.DataTable({
+            layout: {
+                topStart: {
+                    pageLength: {
+                        menu: [10, 25, 50, 100]
+                    }
+                },
+                topEnd: {
+                    search: {
+                        placeholder: 'Type search here'
+                    }
+                },
+                bottomEnd: {
+                    paging: {
+                        buttons: 5
+                    }
+                }
+            },
+            paging: true,
+            scrollCollapse: true,
+            data: dataset,
+            columns: [
+                { title: '#', data: 'SrNo' },
+                {
+                    title: 'Action Date',
+                    render: function (data, type, row, meta) {
+                        if (!row.LogDateTime) return "<span>N/A</span>";
+                        return "<span>" + formatDate(parseMSDate(row.LogDateTime)) + "</span>";
+                    }
+                },
+                {
+                    title: 'User',
+                    render: function (data, type, row, meta) {
+                        return "<span>" + row.FirstName + " " + row.LastName + "</span>"
+                    }
+                },
+                { title: 'User Name', data: 'UserName' },
+                { title: 'Email', data: 'EmailId' },              
+                { title: 'Page Name', data: 'PageName' },
+                { title: 'Action', data: 'Action' },
+                { title: 'Remark', data: 'Remark' },
+                { title: 'URN #', data: 'URNNo' },
+                { title: 'Page URL', data: 'PageURL' },
+                { title: 'IP Address', data: 'IPAddress' },
+                {
+                    title: 'Last Login Date',
+                    render: function (data, type, row, meta) {
+                        if (!row.LastLoginDate) return "<span>N/A</span>";
+                        return "<span>" + formatDate(parseMSDate(row.LastLoginDate)) + "</span>";
+                    }
+                },
+            ],
+            language: {
+                emptyTable: "No records found",
+                zeroRecords: "No matching records found"
+            }
+        });
+    }
+function formatDate(d) {
+    if (hasTime(d)) {
+        let n = d.toLocaleString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+        });
+        var s = (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear();
+        s += ' ' + n;
+    } else {
+        var s = (d.getDate() + '/' + d.getMonth() + 1) + '/' + d.getFullYear();
+    }
+    return s;
+}
+function hasTime(d) {
+    return !!(d.getUTCHours() || d.getUTCMinutes() || d.getUTCSeconds());
+}
+
+function zeroFill(n) {
+    if ((n + '').length == 1)
+        return '0' + n;
+
+    return n;
+}
+function parseMSDate(s) {
+    // Jump forward past the /Date(, parseInt handles the rest
+    return new Date(parseInt(s.substr(6)));
+}
+
+</script>

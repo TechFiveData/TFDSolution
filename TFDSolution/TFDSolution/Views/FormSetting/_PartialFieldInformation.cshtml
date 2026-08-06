@@ -1,0 +1,44 @@
+﻿@model IEnumerable<TFDSolution.Transport.Master.FormFieldInfoModel>
+<style>
+    #tblFieldInfo {
+        width: 100% !important;
+    }
+</style>
+<table id="tblFieldInfo" class="display cell-border nowrap w-100" style="width:100%">
+    <thead>
+        <tr>
+            <th></th>
+            <th>Tab Name</th>
+            <th>Script Name</th>
+            <th>Sort Order</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    <a href="javascript:void(0);" onclick="EditFieldInfo('@item.InformationId','@item.TabName','@item.SQLScriptName')" title="Edit Record"><i class="fa fa-pencil text-black"></i></a>
+                    &nbsp;|&nbsp;
+                    <a href="javascript:void(0);" onclick="DeleteFieldInfo('@item.InformationId')" title="Delete Record"><i class="fa fa-trash text-danger"></i></a>
+                </td>
+                <td>@Html.DisplayFor(modelItem => item.TabName)</td>
+                <td>@Html.DisplayFor(modelItem => item.SQLScriptName)</td>
+                <td>@Html.DisplayFor(modelItem => item.SortOrder)</td>
+            </tr>
+        }
+    </tbody>
+</table>
+<script>
+    $(document).ready(function () {
+        new DataTable("#tblFieldInfo", {
+            autoWidth: false,        // ← disables automatic column sizing
+            searching: false,
+            paging: false,
+            scrollCollapse: true,
+            info: true,
+            select: true,
+            rowReorder: false
+        });
+    })
+</script>

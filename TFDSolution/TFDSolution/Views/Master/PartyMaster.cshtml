@@ -1,0 +1,213 @@
+﻿
+@{
+    ViewBag.Title = "PartyMaster";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="breadcrumbs">
+    <div class="col-sm-4">
+        <div class="page-header float-left">
+            <div class="page-title">
+                <h1>Party Master</h1>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-8">
+        <div class="page-header float-right">
+            <div class="page-title">
+                <ol class="breadcrumb text-right">
+                    <li><a href="@Url.Action("Index","Home")">Home</a></li>
+                    <li class="active">Party Master</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="animated fadeIn">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="col-lg-6">
+                        <strong class="card-title"></strong>
+                    </div>
+                    <div class="col-lg-6 text-right">
+                        <a class="btn btn-sm" href="javascript:void(0);"><i class="fa fa-refresh"></i>&nbsp; Refresh</a>
+                        <a class="btn btn-sm" href="javascript:void(0);"><i class="fa fa-download"></i>&nbsp; Export</a>
+                        <a class="btn btn-sm" href="@Url.Action("PartyAction","Master")" title="Add New Party"><i class="fa fa-plus"></i>&nbsp; New</a>
+
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row form-group">
+                        <table id="tblParty" class="display cell-border" cellspacing="0" width="100%"></table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div><!-- .animated -->
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        GetPartyList();
+    });
+
+    function GetPartyList() {
+        $.ajax({
+            type: "GET",
+            url: "@Url.Action("getPartyList", "Master")",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: OnSuccess,
+            failure: function (response) {
+                alert(response.d);
+            },
+            error: function (response) {
+                alert("Error fetching data!");
+            }
+        });
+    }
+
+    function OnSuccess(response) {
+        bindDataTable(response);
+    }
+
+    function bindDataTable(dataset) {
+        dataset = Array.isArray(dataset) ? dataset : [];
+
+        // Initialize DataTable
+        new DataTable('#tblParty', {
+            layout: {
+                topStart: {
+                    pageLength: {
+                        menu: [10, 25, 50, 100]
+                    }
+                },
+                topEnd: {
+                    search: {
+                        placeholder: 'Type search here'
+                    }
+                },
+                bottomEnd: {
+                    paging: {
+                        buttons: 5
+                    }
+                }
+            },
+            paging: true,
+            scrollCollapse: true,
+           /// scrollY: '500px',
+            data: dataset,
+            columns: [
+                {
+                    title: '',
+                    className: "grid-action-item",
+                    render: function (data, type, row, meta) {
+                        var editlink = "/Master/PartyAction?uId=" + row.PartyId;
+                        var deletelink = "/Master/PartyAction?uId=" + row.PartyId;
+                        return "<a title='Edit Record' href=" + editlink + "><i class='fa fa-pencil'></i></a> &nbsp;|&nbsp; <a title='Delete Record' href='javascript:DeleteParty(\"" + row.PartyId + "\")';><i class='fa fa-trash text-danger'></i></a>";
+                    },
+                },
+                {
+                    title: 'Party Code',
+                    render: function (data, type, row, meta) {
+                        var Partycode = row.PartyCode;
+                        if (row.UpdatedOn != null) {
+                            return "<span>" + Partycode + "</span>";
+                        }
+                        else {
+                            return "<strong>" + Partycode + "</strong>";
+                        }
+                    },
+                },
+                {
+                    title: 'Party Name', data: 'PartyName'
+                },
+                {
+                    title: 'Status',
+                    className: 'text-center',
+                    render: function (data, type, row, meta) {
+                        return (row.PartyStatus === true) ? '<span class="fa fa-check text-success"></span>' : '<span class="fa fa-remove text-danger"></span>';
+                    }
+                },
+                { title: 'Created By', data: 'CreatedBy' },
+                {
+                    title: 'Created On',
+                    render: function (data, type, row, meta) {
+                        var editlink = formatDate(parseMSDate(row.CreatedOn));
+                        return "<span>" + editlink + "</span>";
+                    },
+                },
+                { title: 'Updated By', data: 'UpdatedBy'},
+                {
+                    title: 'Updated On',
+                    render: function (data, type, row, meta) {
+                        if (row.UpdatedOn != null) {
+                            var editlink = formatDate(parseMSDate(row.UpdatedOn));
+                            return "<span>" + editlink + "</span>";
+                        }
+                        else {
+                            return "<span></span>";
+                        }
+                    },
+                },
+
+            ],
+            language: {
+                emptyTable: "No records found", // Message when no data is available
+                zeroRecords: "No matching records found"
+            }
+        });
+    }
+    function formatDate(d) {
+        if (hasTime(d)) {
+            let n = d.toLocaleString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+            });
+            var s = (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear();
+            s += ' ' + n;
+        } else {
+            var s = (d.getDate() + '/' + d.getMonth() + 1) + '/' + d.getFullYear();
+        }
+        return s;
+    }
+    function hasTime(d) {
+        return !!(d.getUTCHours() || d.getUTCMinutes() || d.getUTCSeconds());
+    }
+
+    function zeroFill(n) {
+        if ((n + '').length == 1)
+            return '0' + n;
+
+        return n;
+    }
+    function parseMSDate(s) {
+        // Jump forward past the /Date(, parseInt handles the rest
+        return new Date(parseInt(s.substr(6)));
+    }
+    function DeleteParty(uId) {
+        if (confirm("Are you sure you want to delete record?")) {
+            try
+            {
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("DeleteParty", "Master")',
+                    data: { uId: uId },
+                    async: false,
+                    success: function (response) {
+                        alert(response.Response);
+                        location.reload(); // Refresh the table
+                    },
+                    error: function (response) {
+                        alert(response.Response);
+                    }
+
+                });
+            }
+            catch (e) {
+            }
+        }
+    }
+</script>

@@ -1,0 +1,90 @@
+﻿@model IEnumerable<TFDSolution.Transport.Master.FormFieldInfoModel>
+
+<div class="row form-group">
+    @if (Model != null && Model.Any())
+    {
+        bool isActive = true;
+        bool isActive1 = true;
+        <nav>
+            <!-- Tab Headers -->
+            <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                @foreach (var item in Model)
+                {
+                    string tabId = item.TabName.Replace(" ", "") + "Tab";
+                    <button class="nav-link @(isActive ? "active" : "")"
+                            id="@tabId-tab"
+                            data-bs-toggle="tab"
+                            data-bs-target="#@tabId"
+                            type="button"
+                            role="tab"
+                            aria-controls="@tabId"
+                            aria-selected="@(isActive.ToString().ToLower())">
+                        @item.TabName
+                    </button>
+                    isActive = false;
+                }
+            </div>
+
+            <!-- Tab Content -->
+            <div class="tab-content" id="myTabContent">
+
+                @foreach (var item in Model)
+                {
+                    string tabId = item.TabName.Replace(" ", "") + "Tab";
+
+                    <div class="tab-pane fade p-3 @(isActive1 ? "show active" : "")"
+                         id="@tabId"
+                         role="tabpanel"
+                         aria-labelledby="@tabId-tab">
+
+                        @if (item.Data != null && item.Data.Any())
+                        {
+                            <table class="display cell-border nowrap tblFieldInfo">
+                                <thead>
+                                    <tr>
+                                        @foreach (var key in item.Data.First().Keys)
+                                        {
+                                            <th>@key</th>
+                                        }
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var row in item.Data)
+                                    {
+                                        <tr>
+                                            @foreach (var value in row.Values)
+                                            {
+                                                <td>@value</td>
+                                            }
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                        else
+                        {
+                            <div class="row form-group">
+                                <p>Record not found..</p>
+                            </div>
+                        }
+                    </div>
+                    isActive1 = false;
+                }
+            </div>
+        </nav>
+    }
+</div>
+
+<script>
+    $(document).ready(function () {
+        new DataTable(".tblFieldInfo", {
+            searching: false,
+            paging: false,
+            scrollCollapse: true,
+            info: true,
+            select: true,
+            rowReorder: false,
+            ordering: false
+        });
+    })
+</script>

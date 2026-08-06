@@ -1,0 +1,1920 @@
+﻿@model TFDSolution.Models.PageModel
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit Your Quote</title>
+    <link rel="apple-touch-icon" href="apple-icon.png">
+    <link rel="shortcut icon" href="favicon.ico">
+    <link href="~/Content/main/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Content/main/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="~/Content/main/themify-icons/css/themify-icons.css" rel="stylesheet" />
+    <link href="~/Content/main/flag-icon-css/css/flag-icon.min.css" rel="stylesheet" />
+    <link href="~/Content/main/selectFX/css/cs-skin-elastic.css" rel="stylesheet" />
+    <link href="~/Content/main/jqvmap/jqvmap.min.css" rel="stylesheet" />
+    <link href="~/Content/main/assets/css/style.css" rel="stylesheet" />
+    <link href="~/Content/jquery-ui-1.13.2.css" rel="stylesheet" />
+    <link href="~/Content/select2.min.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-3.7.1.min.js"></script>
+    <script src="~/Scripts/dataTables.js"></script>
+    <script src="~/Scripts/dataTables.scroller.js"></script>
+    @*<script src="~/Scripts/dataTables.jqueryui.js"></script>*@
+    <link href="~/Content/dataTables.jqueryui.css" rel="stylesheet" />
+    <link href="~/Content/jquery.dataTables.css" rel="stylesheet" />
+    <script src="~/Scripts/CommonFunction.js"></script>
+    <script src="~/Scripts/jquery.dataTables.js"></script>
+    <script src="~/Scripts/toastr.min.js"></script>
+    <script src="~/Scripts/select2.min.js"></script>
+    <link href="~/Content/toastr.css" rel="stylesheet" />
+    <style>
+        /* body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: #f5f5f5;
+        }*/
+        .InlineTable .dataTables_wrapper {
+            max-width: 100% !important;
+        }
+
+        .error-box {
+            text-align: center;
+            padding: 30px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+            .error-box h1 {
+                color: #e74c3c;
+                margin-bottom: 10px;
+            }
+
+            .error-box p {
+                color: #555;
+            }
+
+            .error-box button {
+                margin-top: 15px;
+                padding: 10px 20px;
+                border: none;
+                background: #3498db;
+                color: white;
+                border-radius: 5px;
+                cursor: pointer;
+            }
+
+                .error-box button:hover {
+                    background: #2980b9;
+                }
+        /* Position submenu */
+        .dropdown-submenu {
+            position: relative;
+        }
+
+            .dropdown-submenu .dropdown-menu {
+                top: 0;
+                left: 100%;
+                margin-top: -1px;
+                display: none;
+            }
+
+            /* Show on hover */
+            .dropdown-submenu:hover > .dropdown-menu {
+                display: block;
+            }
+        /* Submenu position */
+        .dropdown-submenu {
+            position: relative;
+        }
+
+            .dropdown-submenu .dropdown-menu {
+                top: 0;
+                left: 100%;
+                margin-top: -1px;
+            }
+
+            /* Optional arrow */
+            .dropdown-submenu > a:after {
+                content: "▶";
+                float: right;
+                margin-left: 5px;
+                font-size: 10px;
+            }
+
+            /* Show submenu */
+            .dropdown-submenu.show > .dropdown-menu {
+                display: block;
+            }
+
+        .dropdown-submenu {
+            position: relative;
+        }
+
+            .dropdown-submenu .dropdown-menu {
+                top: 0;
+                left: 100%;
+                margin-top: -1px;
+            }
+
+        .c-appversion {
+            background: #212529;
+            color: #fff;
+            text-align: center;
+            text-align: center;
+            align-items: center;
+            padding-bottom: 5px;
+            font-weight: 500;
+            position: absolute;
+            width: 100%;
+            padding: 12px;
+        }
+
+            .c-appversion span {
+                width: 100%;
+                float: left;
+            }
+
+            .c-appversion a .blink {
+                animation: blinker 1s linear infinite;
+                color: red; /* optional */
+                font-weight: bold; /* optional */
+                text-decoration: none;
+                width: 100%;
+            }
+    </style>
+</head>
+<body>
+    @if (ViewBag.ExceptionMessage != null)
+    {
+        <script type="text/javascript">
+        ShowToastNotification("error", "@ViewBag.ExceptionMessage");
+        </script>
+    }
+    <div id="right-panel" class="right-panel">
+        <header id="header" class="header">
+            <div class="header-menu">
+                <div class="col-sm-3">
+                </div>
+                <div class="col-sm-6 text-center">
+                    <div class="company-area dropdown">
+                        <span class="user-area-menu-text mb-2">P.Balaji Trafo Limited</span>
+                    </div>
+                </div>
+                <div class="col-sm-3 p-0">
+                    <div class="user-area dropdown float-right">
+                        <a href="#" class="dropdown-toggle" id="profile" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span class="user-area-menu-text"></span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <div class="content mt-1">
+            <div class="breadcrumbs">
+                <div class="col-sm-4">
+                    <div class="page-header float-left">
+                        <div class="page-title">
+                            <h1>Submit Your Quotation</h1>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-8">
+                    <div class="page-header float-right">
+                        <div class="page-title">
+                            <ol class="breadcrumb text-right">
+                                <li><a href="@Url.Action("Index","Home")">Home</a></li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @if (Model != null && Model.Design != null)
+            {
+                <div id="divpageDetail" class="animated fadeIn mypage">
+                    <input type="hidden" id="hdnRecordId" value="@ViewBag.PrimaryId" />
+                    <input type="hidden" value="@Model.Design.SQLTableName" id="hdnTableName" />
+                    <input type="hidden" value="@Model.Design.FormId" id="hdnFormId" />
+                    <input type="hidden" value="@Convert.ToString(Model.Design.CompanyId)" id="hdnCompanyId" />
+                    <input type="hidden" value="@Convert.ToString(Model.Design.UserId)" id="hdnUserId" />
+                    <input type="hidden" value="@Model.Design.FinancialYearId" id="hdnFiancialId" />
+                    <input type="hidden" value="" id="hdnSelectedTabId" />
+                    <input type="hidden" value="" id="hdnTabTableName" />
+                    <input type="hidden" value="" id="hdnSelectedSecionId" />
+                    <input type="hidden" value="@Model.PageAction" id="pageAction" />
+                    <input type="hidden" value="@Model.Design.FormName" id="hdnFormName" />
+                    <input type="hidden" data-bind="SqlTemplateId" data-html="SqlTemplateId" value="@Model.Design.SqlTemplateId" id="SqlTemplateId" />
+                    <input type="hidden" value="" id="hdnSelectedDetailId" />
+                    <input id="hdnDocId" type="hidden" value="@ViewBag.DocId" />
+                    @{
+                        string status = ViewBag.Status, statusName = "";
+                        string docNo = ViewBag.DocNo, docNoDB = ViewBag.DocNo;
+                        string currencyid = ViewBag.currenctyId;
+                        bool isStatusField = false;
+                        string urnNo = ViewBag.URNNo, CancelReason = "";
+                        string exchangeRate = "";
+                        DateTime docDate = DateTime.Today.Date;
+                        if (Model.Design.Data != null && Model.Design.Data.Count() > 0)
+                        {
+                            foreach (var item in Model.Design.Data.ToList())
+                            {
+                                if (item.ContainsKey("DocNo"))
+                                {
+                                    docNo = Convert.ToString(item["DocNo"]);
+                                    docNoDB = Convert.ToString(item["DocNo"]);
+                                    if (item.ContainsKey("RevisionCount") && Convert.ToString(item["RevisionCount"]) != "0" && Convert.ToString(item["RevisionCount"]) != "")
+                                    {
+                                        docNo = docNo + "(R" + Convert.ToString(item["RevisionCount"]) + ")";
+                                    }
+                                }
+
+                                if (item.ContainsKey("StatusName"))
+                                {
+                                    statusName = Convert.ToString(item["StatusName"]);
+                                }
+                                if (item.ContainsKey("URNNo"))
+                                {
+                                    urnNo = Convert.ToString(item["URNNo"]);
+                                }
+                                if (item.ContainsKey("CancelReason"))
+                                {
+                                    CancelReason = Convert.ToString(item["CancelReason"]);
+                                }
+                                if (item.ContainsKey("CurrencyId") && !string.IsNullOrEmpty(Convert.ToString(item["CurrencyId"])))
+                                {
+                                    currencyid = Convert.ToString(item["CurrencyId"]);
+                                }
+                                if (item.ContainsKey("Status"))
+                                {
+                                    isStatusField = true;
+                                    status = Convert.ToString(item["Status"]);
+                                }
+                                if (item.ContainsKey("DocDate"))
+                                {
+                                    docDate = Convert.ToDateTime(item["DocDate"]);
+                                }
+                                if (item.ContainsKey("ExchangeRate"))
+                                {
+                                    exchangeRate = "₹" + Convert.ToString(item["ExchangeRate"]);
+                                }
+                            }
+                        }
+                    }
+                    <div class="row m-0">
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <div class="row align-items-center w-100">
+                                        <div class="col-lg-3 text-left">
+                                            <button class="btn btn-sm" data-toggle="modal" data-target="#attachModal" onclick="OpenHeaderAttachments()" title="Attachments" type="button">
+                                                Attachment &nbsp;<i class="fa fa-paperclip font16"></i>
+                                            </button>
+                                        </div>
+                                        <div class="col-lg-9 text-right">
+                                            <button class="btn btn-success" onclick="SavePageData()" type="button" title="Save">Submit Your Quote</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    @if (Model.Design.Sections != null && Model.Design.Sections.Count > 0)
+                                    {
+                                        foreach (var section in Model.Design.Sections.OrderByDescending(x => x.SectionName).ToList())
+                                        {
+                                            string headdcls = "";
+                                            string secId = Convert.ToString(section.FormSectionId);
+                                            string detailtabCSS = "";
+                                            if (section.SectionName == "Header")
+                                            {
+                                                headdcls = "pageHead";
+                                            }
+                                            <div id="@($"{section.SectionName}Tabs")" class="@headdcls">
+                                                @if (section.SectionName != "Header")
+                                                {
+                                                    <div class="separator"></div>
+                                                }
+                                                @if (section.Tabs != null && section.Tabs.Count > 0)
+                                                {
+                                                    <!-- Tabs -->
+                                                    List<TFDSolution.Transport.Master.FormTab> objectTabs = section.Tabs.OrderBy(x => x.SortOrder).ToList();
+                                                    int totalDetailTabs = 0;
+                                                    if (section.SectionName == "Detail")
+                                                    {
+                                                        List<TFDSolution.Transport.Master.FormTab> detailTabs = section.Tabs.ToList();
+                                                        if (detailTabs != null)
+                                                        {
+                                                            totalDetailTabs = detailTabs.Count;
+                                                        }
+                                                    }
+                                                    string cuttab = "";
+                                                    string headdtab = "";
+                                                    if (section.SectionName != "Header")
+                                                    {
+                                                        cuttab = "custom-tab";
+                                                    }
+                                                    else
+                                                    {
+                                                        headdtab = "pageHead-right";
+                                                        <div class="pageHead-left">
+                                                            <div class="page-box form-group" style="min-width:250px;">
+                                                                <div class="row">
+                                                                    <div class="col col-md-12">
+                                                                        <label for="text-input" class="font-weight-bold form-control-label">URN</label>
+                                                                        @if (!string.IsNullOrEmpty(ViewBag.PrimaryId))
+                                                                        {
+                                                                            <label id="LabelURN" class="form-control-label float-right">@urnNo</label>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <label id="LabelURN" class="form-control-label float-right">
+                                                                                @*<a href="javascript:void(0);">Exp</a>*@
+                                                                                @ViewBag.URNNo
+                                                                            </label>
+                                                                        }
+                                                                        <input type="text" value="@urnNo" class="form-control d-none" data-html="URNNo" data-content="TextBox" data-bind="URNNo" id="txtURNNo" />
+                                                                    </div>
+                                                                    <div class="col col-md-12">
+                                                                        <label for="text-input" class="font-weight-bold form-control-label">Status</label>
+                                                                        <button title="Click here to view status history" class="btn btn-secondary dropdown-toggle" type="button" id="dropdownStatus"
+                                                                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                                                                style="background: transparent;color: #000;border: none;padding: 0">
+                                                                        </button>
+                                                                        <div class="dropdown-menu" aria-labelledby="dropdownStatus" style="margin-top:25px;margin-left:62px;">
+                                                                            <div id="approvalHierarchy" class="approval-flow">
+                                                                                @*<div class="step approved">
+                                                                                        <div class="circle"><i class="fa fa-check"></i></div>
+                                                                                        <div class="content">
+                                                                                            <h4>Manager</h4>
+                                                                                            <p>Approved on 18/01/2026 02:45 PM</p>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="step approved">
+                                                                                        <div class="circle"><i class="fa fa-check"></i></div>
+                                                                                        <div class="content">
+                                                                                            <h4>Finance</h4>
+                                                                                            <p>Approved on 18/01/2026 03:10 PM</p>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="step pending">
+                                                                                        <div class="circle">⏳</div>
+                                                                                        <div class="content">
+                                                                                            <h4>Director</h4>
+                                                                                            <p>Pending Approval</p>
+                                                                                        </div>
+                                                                                    </div>*@
+                                                                            </div>
+                                                                        </div>
+                                                                        @{
+                                                                            string _statusname = "", statuscss = "text-info";
+                                                                        }
+                                                                        @if (status == "2")
+                                                                        {
+                                                                            _statusname = "Approved";
+                                                                            statuscss = "text-success";
+                                                                        }
+                                                                        else if (status == "1")
+                                                                        {
+                                                                            _statusname = "Not Approved";
+                                                                            statuscss = "text-primary";
+                                                                        }
+                                                                        else if (status == "3")
+                                                                        {
+                                                                            _statusname = "Cancelled";
+                                                                            statuscss = "text-danger";
+                                                                        }
+                                                                        else if (status == "4")
+                                                                        {
+                                                                            _statusname = "Pending";
+                                                                            statuscss = "text-primary";
+                                                                        }
+                                                                        else if (status == "5")
+                                                                        {
+                                                                            _statusname = "Partial";
+                                                                            statuscss = "text-info";
+                                                                        }
+                                                                        else if (status == "6")
+                                                                        {
+                                                                            _statusname = "Forwarded";
+                                                                            statuscss = "text-info";
+                                                                        }
+                                                                        else if (status == "6")
+                                                                        {
+                                                                            _statusname = "Forwarded";
+                                                                            statuscss = "text-info";
+                                                                        }
+                                                                        else if (status == "7")
+                                                                        {
+                                                                            _statusname = "Partial Approved";
+                                                                            statuscss = "text-info";
+                                                                            if (statusName == "Approved" || statusName == "ApprovedNA")
+                                                                            {
+                                                                                _statusname = "Approved";
+                                                                                statuscss = "text-success";
+                                                                            }
+                                                                            else if (statusName == "Not Approved")
+                                                                            {
+                                                                                _statusname = "Not Approved";
+                                                                                statuscss = "text-primary";
+                                                                            }
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            status = "1";
+                                                                            _statusname = "Draft";
+                                                                            statuscss = "text-info";
+                                                                        }
+                                                                        @if (!string.IsNullOrEmpty(ViewBag.PrimaryId) && ViewBag.PrimaryId != "0" && status != "6" &&
+                                                                            ((!string.IsNullOrEmpty(statusName) && statusName != "Awaiting" && (statusName == "ApprovedNA" || statusName == "Not Approved"))
+                                                                            || (string.IsNullOrEmpty(statusName))))
+                                                                        {
+                                                                            <div class="dropdown" style="float: right;padding: 0 !important;">
+                                                                                <button class="btn btn-secondary dropdown-toggle @statuscss" type="button" id="dropdownMenuButton"
+                                                                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                                                                        style="background: transparent;color: #000;border: none;padding: 0">
+                                                                                    @_statusname
+                                                                                </button>
+                                                                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" style="margin-top:25px;">
+                                                                                    <a class="dropdown-item" href="#" onclick="UpdateRecordStatus(1,'Not Approved','')">
+                                                                                        <lable class="form-control-label text-primary p-0">
+                                                                                            <i class="fa fa-thumbs-o-down" aria-hidden="true"></i>
+                                                                                            Not Approved
+                                                                                        </lable>
+                                                                                    </a>
+                                                                                    @if (Model.Design.CanApprove == true && (status != "7" || (status == "7" && statusName == "Not Approved")))
+                                                                                    {
+                                                                                        <a class="dropdown-item" href="#" onclick="UpdateRecordStatus(2,'Approved','')">
+                                                                                            <lable class="form-control-label text-success p-0">
+                                                                                                <i class="fa fa-thumbs-o-up" aria-hidden="true"></i>
+                                                                                                Approved
+                                                                                            </lable>
+                                                                                        </a>
+                                                                                        <a class="dropdown-item" href="#" data-toggle='modal' data-target='#cancelModel'>
+                                                                                            <lable class="form-control-label text-danger p-0">
+                                                                                                <i class="fa fa-ban" aria-hidden="true"></i>
+                                                                                                Cancelled
+                                                                                            </lable>
+                                                                                        </a>
+                                                                                    }
+                                                                                    else if (Model.Design.CanApprove == true && ((status == "7" && statusName == "ApprovedNA")))
+                                                                                    {
+                                                                                        <a class="dropdown-item" href="#" data-toggle='modal' data-target='#cancelModel'>
+                                                                                            <lable class="form-control-label text-danger p-0">
+                                                                                                <i class="fa fa-ban" aria-hidden="true"></i>
+                                                                                                Cancelled
+                                                                                            </lable>
+                                                                                        </a>
+                                                                                    }
+                                                                                    <a class="dropdown-item" href="javascript:void(0);" onclick="AddComment();">
+                                                                                        <lable class="form-control-label p-0"><i class="fa fa-commenting-o" aria-hidden="true"></i> Add Comment</lable>
+                                                                                    </a>
+                                                                                </div>
+                                                                            </div>
+                                                                        }
+                                                                        else if (status == "3")
+                                                                        {
+                                                                            <div style="float: right;padding: 0 !important;">
+                                                                                <lable class="form-control-label text-center text-danger" title="Cancelled Record" style="color: deeppink;">@_statusname</lable>
+                                                                            </div>
+                                                                        }
+                                                                        else if (status == "6")
+                                                                        {
+                                                                            <div style="float: right;padding: 0 !important;">
+                                                                                <lable class="form-control-label text-center" title="Record is forwared" style="color: deeppink;">@_statusname&nbsp;<i class="fa fa-lock" aria-hidden="true"></i></lable>
+                                                                            </div>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            if ((!string.IsNullOrEmpty(statusName) && statusName == "Awaiting"))
+                                                                            {
+                                                                                <lable class="form-control-label text-right float-right" style="color: lightseagreen;">Awaiting for Approval</lable>
+                                                                                <lable class="form-control-label text-right float-right" style="color: lightseagreen;">Awaiting for Approval</lable>
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <lable class="form-control-label text-right float-right @statuscss" style="color:#ccc;">@_statusname</lable>
+                                                                            }
+                                                                        }
+                                                                        <input type="text" value="@status" class="form-control d-none" data-html="Status" data-content="int" data-bind="Status" id="txtStatus" />
+                                                                    </div>
+                                                                    @if (Model.Design.SqlTemplateId == 2)
+                                                                    {
+                                                                        <div class="col col-md-12">
+                                                                            <label for="text-input" class="font-weight-bold form-control-label">Doc No</label>
+                                                                            @if (Model.PageAction == "A" || Model.PageAction == "E")
+                                                                            {
+                                                                                <a href="#" id="docNumbering" aria-haspopup="true" aria-expanded="false" data-toggle="dropdown" title="Update Category"><i class="fa fa-cog"></i></a>
+                                                                                <div class="user-menu dropdown-menu" aria-labelledby="docNumbering">
+                                                                                    @if (Model.DocNumberSetting != null && Model.DocNumberSetting.Count > 0)
+                                                                                    {
+                                                                                        foreach (var item in Model.DocNumberSetting)
+                                                                                        {
+                                                                                            <a class="nav-link" onclick="getDocumentNo(@item.DocNoSettingId)" href="#">@item.DocName (@item.DocAlias)</a>
+                                                                                        }
+                                                                                    }
+                                                                                </div>
+                                                                            }
+                                                                            @if (!string.IsNullOrEmpty(ViewBag.PrimaryId))
+                                                                            {
+                                                                                <label id="lblDocNo" class="form-control-label float-right">@docNo</label>
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <label id="lblDocNo" class="form-control-label float-right">@ViewBag.DocNo</label>
+                                                                            }
+                                                                            <input type="text" value="@docNoDB" class="form-control d-none" data-html="DocNo" data-content="TextBox" data-bind="DocNo" id="txtDocNo" />
+                                                                        </div>
+                                                                        <div class="col col-md-12 d-flex align-items-center justify-content-between">
+                                                                            <label for="text-input" class="font-weight-bold form-control-label">Doc Date</label>
+                                                                            <label class="form-control-label float-right p-0 m-0">
+                                                                                @if (Model.PageAction == "V")
+                                                                                {
+                                                                                    @docDate.ToString("dd-MM-yyyy")
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    @Html.TextBox("DocDate", docDate.ToString("yyyy-MM-dd"), new
+                                                                                    {
+                                                                                        type = "date",
+                                                                                        @class = "form-control",
+                                                                                        @style = "border:none; width: 104px; padding-right:0",
+                                                                                        @data_content = "DateTimeField",
+                                                                                        dat_html = "Doc Date",
+                                                                                        data_bind = "DocDate",
+                                                                                    })
+                                                                                }
+                                                                            </label>
+                                                                        </div>
+                                                                        <div class="col col-md-12">
+                                                                            <label for="text-input" class="font-weight-bold form-control-label">Currency</label>
+                                                                            @if (Model.PageAction == "A" || Model.PageAction == "E")
+                                                                            {
+                                                                                <a href="#" id="pageCurrency" aria-haspopup="true" aria-expanded="false" data-toggle="dropdown" title="Update Currency"><i class="fa fa-cog"></i></a>
+                                                                                <div class="user-menu dropdown-menu" aria-labelledby="pageCurrency">
+                                                                                    @if (ViewBag.CurrencyList != null && ViewBag.CurrencyList.Count > 0)
+                                                                                    {
+                                                                                        foreach (var item in ViewBag.CurrencyList)
+                                                                                        {
+                                                                                            <a class="nav-link" onclick="getCurrency('@item.Value','@item.Text')" href="#">@item.Text</a>
+                                                                                        }
+                                                                                    }
+                                                                                </div>
+                                                                            }
+                                                                            <label class="form-control-label float-right">
+                                                                                <input type="text" value="@currencyid" class="form-control d-none" data-html="CurrencyId"
+                                                                                       data-content="TextBox" data-bind="CurrencyId" id="txtCurrencyId" />
+                                                                                &nbsp;
+                                                                                <label id="lblCurrency" class="form-control-label float-right">@ViewBag.currentCurrencyName</label>
+                                                                            </label>
+                                                                        </div>
+                                                                        <div class="col col-md-12">
+                                                                            <label for="text-input" class="font-weight-bold form-control-label">Exchange Rate</label>
+                                                                            <lable id="lblCurrencyExchnage" class="form-control-label float-right d-none">@ViewBag.currentExchangeCurrencyName</lable>
+                                                                            @if (Model.PageAction == "V")
+                                                                            {
+
+                                                                                <input id="ExchangeRate" name="ExchangeRate" data-bind="ExchangeRate" data-content="TextBox" style="max-width:100px;margin-bottom:-11px; margin-top: -4px;background: none;" class="form-control float-right border-0 text-right p-0" value="@ViewBag.currentExchangeCurrencyName" />
+                                                                            }
+                                                                            else
+                                                                            {
+
+                                                                                <input id="ExchangeRate" name="ExchangeRate" data-bind="ExchangeRate" data-content="TextBox" style="max-width:100px;margin-bottom:-11px; margin-top: -4px;" class="form-control float-right border-0 text-right p-0" value="@ViewBag.currentExchangeCurrencyName" />
+                                                                            }
+                                                                        </div>
+                                                                    }
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    }
+
+                                                    <div class="float @headdtab @detailtabCSS">
+                                                        @{
+                                                            string activeTab = "";
+                                                        }
+                                                        <ul class="nav nav-tabs @cuttab" id=@($"{section.SectionName}tab") role="tablist">
+                                                            @{
+                                                                int firstRow = 0;
+                                                                string secName = section.SectionName;
+                                                                foreach (var tab in objectTabs)
+                                                                {
+                                                                    string tabName = tab.TabName.Replace(" ", "").Trim();
+                                                                    string tabGrid = "tbl" + tabName;
+                                                                    string tabInlineGrid = "tblInline" + tabName;
+                                                                    string tabid = "tab" + tabName;
+                                                                    <li class="nav-item">
+                                                                        <a onclick="BindInlinGrid('@tabInlineGrid', '@tab.FormTabId','@secName')" class="nav-link @((firstRow == 0) ? "active" : "")" id=@($"{tabName}-tab") data-toggle="tab" href="#@tabid" data-container="@secName" data-bind="@tab.FormTabId" aria-controls="@tab.TabName" role="tab">
+                                                                            @tab.TabTitle
+                                                                        </a>
+                                                                    </li>
+                                                                    if (firstRow == 0)
+                                                                    {
+                                                                        activeTab = tabName;
+                                                                    }
+                                                                    firstRow = firstRow + 1;
+                                                                }
+                                                            }
+                                                        </ul>
+                                                        <div class="tab-content pl-3 p-1 tab-inner-content" id=@($"{section.SectionName}TabContent")>
+                                                            @{
+                                                                firstRow = 0;
+                                                                int tabCounter = 0;
+                                                            }
+                                                            @foreach (var tab in objectTabs)
+                                                            {
+                                                                tabCounter = tabCounter + 1;
+                                                                string tabNextdis = tabCounter == 1 ? "disabled" : "";
+                                                                string tabLastdis = tabCounter == totalDetailTabs ? "disabled" : "";
+                                                                int ListCount = section.Tabs.Count();
+                                                                string tabName = tab.TabName.Replace(" ", "").Trim();
+                                                                string tabGrid = "tbl" + tabName;
+                                                                string tabInlineGrid = "tblInline" + tabName;
+                                                                string hdntab = "hdn" + tabName;
+                                                                string tabid = "tab" + tabName;
+                                                                string tabModel = "model" + tabName;
+                                                                string btnCancel = "btnCancelmodel" + tabName;
+                                                                <div class="tab-pane pt-0 fade @(firstRow == 0 ? "show active" : "")" data-bind="@tab.FormTabId" id="@tabid" aria-labelledby=@($"{tabName}-tab") role="tabpanel">
+                                                                    @if (section.SectionName == "Header")
+                                                                    {
+                                                                        <div class="row form-group">
+                                                                            @if (tab.Fields != null && tab.Fields.Count > 0)
+                                                                            {
+                                                                                var objfields = tab.Fields.ToList();
+                                                                                foreach (var field in objfields)
+                                                                                {
+                                                                                    string cls = "col-md-6";
+                                                                                    if (field.FieldSize == "Medium")
+                                                                                    {
+                                                                                        cls = " col-md-6 ";
+                                                                                    }
+                                                                                    else if (field.FieldSize == "Large")
+                                                                                    {
+                                                                                        cls = " col-md-12 ";
+                                                                                    }
+                                                                                    <div class="col @cls form-group">
+                                                                                        @if (field.FieldType != "CheckBox")
+                                                                                        {
+                                                                                            <label for="@field.FieldName" class="form-control-label">@field.FieldCaption</label>
+                                                                                            if (field.IsRequired)
+                                                                                            {
+                                                                                                <span class="text-danger p-1">(*)</span>
+                                                                                            }
+                                                                                            if (field.FieldType == "Selection")
+                                                                                            {
+                                                                                                <a href="javascript:void(0);" onclick="CopySelectedOption('@field.FieldName.Trim()')" title="Click to copy" class="text-black"><i class="fa fa-copy"></i></a>
+                                                                                            }
+                                                                                        }
+                                                                                        @if (field.FieldType == "Attachment")
+                                                                                        {
+                                                                                            <a href="javascript:void(0);" data-toggle="modal" onclick="OpenDetailAttachment(-1, '@field.FieldCaption', '@field.FieldId',1);" data-target="#attachModal" title="Attachments" class="text-black">
+                                                                                                <i class="fa fa-paperclip"></i>
+                                                                                            </a>
+                                                                                        }
+                                                                                        @switch (field.FieldType)
+                                                                                        {
+                                                                                            case "Label":
+                                                                                                if (!string.IsNullOrEmpty(field.FieldValue))
+                                                                                                {
+                                                                                                    <label class="form-control text-success" data-container="@field.FieldValue" data-html="@field.FieldCaption" data-bind="@field.FieldName" style="padding:0;border:none;" id="@field.FieldName">@field.FieldValue</label>
+                                                                                                }
+                                                                                                else
+                                                                                                {
+                                                                                                    <label class="form-control text-danger" data-container="@field.FieldValue" data-html="@field.FieldCaption" data-bind="@field.FieldName" style="padding:0;border:none;" id="@field.FieldName">N/A</label>
+                                                                                                }
+                                                                                                break;
+                                                                                            case "TextBox":
+                                                                                                if (field.IsRequired)
+                                                                                                {
+                                                                                                    @Html.TextBox(field.FieldName, field.FieldValue, new { @class = "form-control", data_decimal = field.FieldDecimal, data_path = field.FieldFormula, data_html = @field.FieldCaption, data_content = field.FieldType, data_bind = field.FieldName, @maxlength = field.FieldLength, @required = field.IsRequired == true ? "required" : null })
+                                                                                                }
+                                                                                                else if (field.IsReadOnly == true)
+                                                                                                {
+                                                                                                    @Html.TextBox(field.FieldName, field.FieldValue, new { @class = "form-control", data_decimal = field.FieldDecimal, data_path = field.FieldFormula, data_html = @field.FieldCaption, data_content = field.FieldType, data_bind = field.FieldName, @maxlength = field.FieldLength, @readonly = "readonly" })
+                                                                                                }
+                                                                                                else
+                                                                                                {
+                                                                                                    @Html.TextBox(field.FieldName, field.FieldValue, new { @class = "form-control", data_decimal = field.FieldDecimal, data_path = field.FieldFormula, data_html = @field.FieldCaption, data_content = field.FieldType, data_bind = field.FieldName, @maxlength = field.FieldLength })
+                                                                                                }
+                                                                                                @Html.ValidationMessage(field.FieldName, "", new { @class = "text-danger" })
+                                                                                                break;
+                                                                                            case "MultiText":
+                                                                                                if (field.IsRequired)
+                                                                                                {
+                                                                                                    @Html.TextArea(field.FieldName, field.FieldValue, new { @class = "form-control", data_html = @field.FieldCaption, data_content = field.FieldType, data_bind = field.FieldName, @rows = "2", @required = field.IsRequired == true ? "required" : null })
+                                                                                                }
+                                                                                                else if (field.IsReadOnly == true)
+                                                                                                {
+                                                                                                    @Html.TextArea(field.FieldName, field.FieldValue, new { @class = "form-control", data_html = @field.FieldCaption, data_content = field.FieldType, data_bind = field.FieldName, @rows = "2", @readonly = "readonly" })
+                                                                                                }
+                                                                                                else
+                                                                                                {
+                                                                                                    @Html.TextArea(field.FieldName, field.FieldValue, new { @class = "form-control", data_html = @field.FieldCaption, data_content = field.FieldType, data_bind = field.FieldName, @rows = "2" })
+                                                                                                }
+                                                                                                @Html.ValidationMessage(field.FieldName, "", new { @class = "text-danger" })
+                                                                                                break;
+                                                                                            case "Numeric":
+                                                                                                if (field.IsRequired)
+                                                                                                {
+                                                                                                    @Html.TextBox(field.FieldName, field.FieldValue, new { @class = "form-control", data_decimal = field.FieldDecimal, data_path = field.FieldFormula, data_html = @field.FieldCaption, data_content = field.FieldType, data_bind = field.FieldName, @type = "number", @required = field.IsRequired == true ? "required" : null })
+                                                                                                }
+                                                                                                else if (field.IsReadOnly == true)
+                                                                                                {
+                                                                                                    @Html.TextBox(field.FieldName, field.FieldValue, new { @class = "form-control", data_decimal = field.FieldDecimal, data_path = field.FieldFormula, data_html = @field.FieldCaption, data_content = field.FieldType, data_bind = field.FieldName, @type = "number", @readonly = "readonly" })}
+                                                                                                else
+                                                                                                {
+                                                                                                    @Html.TextBox(field.FieldName, field.FieldValue, new { @class = "form-control", data_decimal = field.FieldDecimal, data_path = field.FieldFormula, data_html = @field.FieldCaption, data_content = field.FieldType, data_bind = field.FieldName, @type = "number" })
+                                                                                                }
+                                                                                                @Html.ValidationMessage(field.FieldName, "", new { @class = "text-danger" })
+                                                                                                break;
+                                                                                            case "Selection":
+                                                                                                if (!string.IsNullOrEmpty(field.FieldValue) && Convert.ToString(field.FieldValue).Length > 0)
+                                                                                                {
+                                                                                                    field.FieldValue = Convert.ToString(field.FieldValue).Trim();
+                                                                                                }
+                                                                                                var _fieldValue = field.FieldValue;
+                                                                                                var _fieldText = field.FieldValue;
+                                                                                                if (Model.Design != null && Model.Design.Data != null)
+                                                                                                {
+                                                                                                    foreach (var _it in Model.Design.Data)
+                                                                                                    {
+                                                                                                        object value;
+                                                                                                        if (_it.TryGetValue(field.FieldName + "_Id", out value))
+                                                                                                        {
+                                                                                                            _fieldValue = Convert.ToString(value);
+                                                                                                        }
+                                                                                                    }
+                                                                                                }
+                                                                                                if (field.IsRequired)
+                                                                                                {
+                                                                                                    <select class="form-select select2 form-control selectpicker" disabled data-dependency="@field.IsDependencyField" data-MultiDocument="@field.AllowMultiDocument" data-display="@_fieldText" multiple="@((field.IsMultiSelection.HasValue ? field.IsMultiSelection.Value : false) ? "multiple" : null)" data-multiselection="@field.IsMultiSelection" onchange="selectChange(this)" data-live-search="true" data-sourcetype="@field.DDLSourceType" data-wrap="@field.DDLTextField" data-spy="@field.DDLValueField" data-delay="@field.DDLSourceName" data-interval="@_fieldValue" required id="@field.FieldName.Trim()" data-container="@field.FieldId" data-html="@field.FieldCaption" data-bind="@field.FieldName" data-content="@field.FieldType" data-disabled="@field.IsReadOnly"></select>
+                                                                                                }
+                                                                                                else if (field.IsReadOnly == true)
+                                                                                                {
+                                                                                                    <select class="form-select select2 form-control selectpicker" disabled data-dependency="@field.IsDependencyField" data-MultiDocument="@field.AllowMultiDocument" data-display="@_fieldText" multiple="@((field.IsMultiSelection.HasValue ? field.IsMultiSelection.Value : false) ? "multiple" : null)" data-multiselection="@field.IsMultiSelection" onchange="selectChange(this)" data-wrap="@field.DDLTextField" data-sourcetype="@field.DDLSourceType" data-spy="@field.DDLValueField" data-delay="@field.DDLSourceName" data-interval="@_fieldValue" id="@field.FieldName.Trim()" data-container="@field.FieldId" data-html="@field.FieldCaption" data-bind="@field.FieldName" data-content="@field.FieldType" data-disabled="@field.IsReadOnly"></select>
+                                                                                                }
+                                                                                                else
+                                                                                                {
+                                                                                                    <select class="form-select select2 form-control selectpicker" disabled data-dependency="@field.IsDependencyField" data-MultiDocument="@field.AllowMultiDocument" data-display="@_fieldText" multiple="@((field.IsMultiSelection.HasValue ? field.IsMultiSelection.Value : false) ? "multiple" : null)" data-multiselection="@field.IsMultiSelection" onchange="selectChange(this)" data-wrap="@field.DDLTextField" data-sourcetype="@field.DDLSourceType" data-spy="@field.DDLValueField" data-delay="@field.DDLSourceName" data-interval="@_fieldValue" id="@field.FieldName.Trim()" data-container="@field.FieldId" data-html="@field.FieldCaption" data-bind="@field.FieldName" data-content="@field.FieldType" data-disabled="@field.IsReadOnly"></select>
+                                                                                                }
+                                                                                                @Html.ValidationMessage(field.FieldName, "", new { @class = "text-danger" })
+                                                                                                break;
+                                                                                            case "CheckBox":
+                                                                                                <div class="form-check">
+                                                                                                    @if (field.IsRequired)
+                                                                                                    {
+                                                                                                        if (field.FieldValue == "True")
+                                                                                                        {
+                                                                                                            @Html.CheckBox(field.FieldName, new { @checked = (field.FieldValue == "True" ? "checked" : ""), @class = "form-check-input", data_html = @field.FieldCaption, data_content = field.FieldType, data_bind = field.FieldName, @required = field.IsRequired == true ? "required" : null })
+                                                                                                        }
+                                                                                                        else
+                                                                                                        {
+                                                                                                            @Html.CheckBox(field.FieldName, new { @class = "form-check-input", data_html = @field.FieldCaption, data_content = field.FieldType, data_bind = field.FieldName, @required = field.IsRequired == true ? "required" : null })
+                                                                                                        }
+                                                                                                    }
+                                                                                                    else
+                                                                                                    {
+                                                                                                        if (field.FieldValue == "True")
+                                                                                                        {
+                                                                                                            @Html.CheckBox(field.FieldName, new { @checked = (field.FieldValue == "True" ? "checked" : ""), @class = "form-check-input", data_html = @field.FieldCaption, data_content = field.FieldType, data_bind = field.FieldName })
+                                                                                                        }
+                                                                                                        else if (field.IsReadOnly == true)
+                                                                                                        {
+                                                                                                            @Html.CheckBox(field.FieldName, new { @class = "form-check-input", data_html = @field.FieldCaption, data_content = field.FieldType, data_bind = field.FieldName, @readonly = "readonly" })}
+                                                                                                        else
+                                                                                                        {
+                                                                                                            @Html.CheckBox(field.FieldName, new { @class = "form-check-input", data_html = @field.FieldCaption, data_content = field.FieldType, data_bind = field.FieldName })
+                                                                                                        }
+                                                                                                    }
+                                                                                                    <label class="form-check-label" for="@field.FieldName">@field.FieldCaption</label>
+                                                                                                </div>
+                                                                                                @Html.ValidationMessage(field.FieldName, "", new { @class = "text-danger" })
+                                                                                                break;
+                                                                                            case "RadioButton":
+                                                                                                @Html.ValidationMessage(field.FieldName, "", new { @class = "text-danger" })
+                                                                                                break;
+                                                                                            case "DateTimeField":
+                                                                                                if (!string.IsNullOrEmpty(field.FieldValue))
+                                                                                                {
+                                                                                                    try
+                                                                                                    {
+                                                                                                        DateTime _dt = Convert.ToDateTime(field.FieldValue);
+                                                                                                        field.FieldValue = (_dt == new DateTime(1900, 1, 1, 0, 0, 0)) ? "" : _dt.ToString("yyyy-MM-dd"); ;
+                                                                                                        if (Model.PageAction == "V")
+                                                                                                        {
+                                                                                                            if (!string.IsNullOrEmpty(field.FieldValue))
+                                                                                                            {
+                                                                                                                @Html.TextBox(field.FieldName, field.FieldValue, new { type = "date", @class = "form-control", @data_content = "DateTimeField", dat_html = @field.FieldCaption, data_bind = field.FieldName })
+                                                                                                            }
+                                                                                                            else
+                                                                                                            {
+                                                                                                                @Html.TextBox(field.FieldName, field.FieldValue, new { @class = "form-control", data_html = @field.FieldCaption, @placeholder = "", data_content = field.FieldType, data_bind = field.FieldName, @type = "text" })
+                                                                                                            }
+                                                                                                        }
+                                                                                                    }
+                                                                                                    catch (Exception)
+                                                                                                    {
+                                                                                                        @Html.TextBox(field.FieldName, field.FieldValue, new { @class = "form-control", data_html = @field.FieldCaption, @placeholder = "", data_content = field.FieldType, data_bind = field.FieldName, @type = "text" })
+                                                                                                    }
+                                                                                                }
+                                                                                                else if (Model.PageAction == "V")
+                                                                                                {
+                                                                                                    @Html.TextBox(field.FieldName, field.FieldValue, new { @class = "form-control", data_html = @field.FieldCaption, @placeholder = "", data_content = field.FieldType, data_bind = field.FieldName, @type = "text" })
+                                                                                                }
+                                                                                                if (Model.PageAction == "E" || Model.PageAction == "A")
+                                                                                                {
+                                                                                                    if (field.IsRequired)
+                                                                                                    {
+                                                                                                        @Html.TextBox(field.FieldName, field.FieldValue, new { @class = "form-control", data_html = @field.FieldCaption, data_content = field.FieldType, data_bind = field.FieldName, @type = "date", @required = field.IsRequired == true ? "required" : null })
+                                                                                                    }
+                                                                                                    else if (field.IsReadOnly == true)
+                                                                                                    {
+                                                                                                        @Html.TextBox(field.FieldName, field.FieldValue, new { @class = "form-control", data_html = @field.FieldCaption, data_content = field.FieldType, data_bind = field.FieldName, @type = "date", @readonly = "readonly" })}
+                                                                                                    else
+                                                                                                    {
+                                                                                                        @Html.TextBox(field.FieldName, field.FieldValue, new { @class = "form-control", data_html = @field.FieldCaption, data_content = field.FieldType, data_bind = field.FieldName, @type = "date" })
+                                                                                                    }
+                                                                                                    @Html.ValidationMessage(field.FieldName, "", new { @class = "text-danger" })
+                                                                                                }
+                                                                                                break;
+                                                                                            case "Hidden":
+                                                                                                @Html.Hidden(field.FieldName)
+                                                                                                break;
+                                                                                            case "TimeField":
+                                                                                                if (field.IsRequired)
+                                                                                                {
+                                                                                                    @Html.TextBox(field.FieldName, field.FieldValue, new { @class = "form-control", data_html = @field.FieldCaption, data_content = field.FieldType, data_bind = field.FieldName, @type = "time", @required = field.IsRequired == true ? "required" : null })
+                                                                                                }
+                                                                                                else if (field.IsReadOnly == true)
+                                                                                                {
+                                                                                                    @Html.TextBox(field.FieldName, field.FieldValue, new { @class = "form-control", data_html = @field.FieldCaption, data_content = field.FieldType, data_bind = field.FieldName, @type = "time", @readonly = "readonly" })}
+                                                                                                else
+                                                                                                {
+                                                                                                    @Html.TextBox(field.FieldName, field.FieldValue, new { @class = "form-control", data_html = @field.FieldCaption, data_content = field.FieldType, data_bind = field.FieldName, @type = "time" })
+                                                                                                }
+                                                                                                @Html.ValidationMessage(field.FieldName, "", new { @class = "text-danger" })
+                                                                                                break;
+                                                                                            default:
+                                                                                                if (field.IsRequired)
+                                                                                                {
+                                                                                                    @Html.TextBox(field.FieldName, field.FieldValue, new { @class = "form-control", data_html = @field.FieldCaption, data_content = field.FieldType, data_bind = field.FieldName, @maxlength = field.FieldLength, @required = field.IsRequired == true ? "required" : null })
+                                                                                                }
+                                                                                                else if (field.IsReadOnly == true)
+                                                                                                {
+                                                                                                    @Html.TextBox(field.FieldName, field.FieldValue, new { @class = "form-control", data_html = @field.FieldCaption, data_content = field.FieldType, data_bind = field.FieldName, @maxlength = field.FieldLength, @readonly = "readonly" })
+                                                                                                }
+                                                                                                else
+                                                                                                {
+                                                                                                    @Html.TextBox(field.FieldName, field.FieldValue, new { @class = "form-control", data_html = @field.FieldCaption, data_content = field.FieldType, data_bind = field.FieldName, @maxlength = field.FieldLength })
+                                                                                                }
+                                                                                                @Html.ValidationMessage(field.FieldName, "", new { @class = "text-danger" })
+                                                                                                break;
+                                                                                        }
+                                                                                        @if (!string.IsNullOrEmpty(field.FieldHelpText))
+                                                                                        {
+                                                                                            <small class="form-text text-muted">@field.FieldHelpText</small>
+                                                                                        }
+                                                                                    </div>
+                                                                                }
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <p>No fields available.</p>
+                                                                            }
+                                                                        </div>
+                                                                    }
+                                                                    else
+                                                                    {
+
+                                                                        <input id="@hdntab" type="hidden" value="@tab.TabSQLTableName" />
+                                                                        <div class="row form-group">
+                                                                            <div class="col col-md-12" style="overflow-x:auto;">
+                                                                                @if (tab.Fields != null && tab.Fields.Count > 0)
+                                                                                {
+                                                                                    <div class="InlineTable" data-bind="@tab.FormTabId" id="@tabInlineGrid"></div>
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    <p>No fields available.</p>
+                                                                                }
+                                                                            </div>
+                                                                        </div>
+                                                                    }
+                                                                </div>
+                                                                firstRow = firstRow + 1;
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <p>No tabs available in this section.</p>
+                                                }
+                                            </div>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <div class="error-box">
+                                            <h1>Oops!</h1>
+                                            <p>Page could not be rendered.</p>
+                                            <p>We'll try again shortly.</p>
+                                            <button onclick="location.reload()">Try Again</button>
+                                        </div>
+                                    }
+                                    @if (Model.Design.SqlTemplateId == 2) // && AllowOtherCharges == "y"
+                                    {
+                                        <div id="DivTotal" style="padding-top: 10px !important;"></div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div id="divpageDetail" class="animated fadeIn mypage">
+                    <div class="error-box">
+                        <h1>Oops!</h1>
+                        <p>Page could not be rendered.</p>
+                        <p>We'll try again shortly.</p>
+                        <button onclick="location.reload()">Try Again</button>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#HeaderTabs .select2').each(function () {
+            let selectId = $(this).attr('id');
+
+            let isDependency = $(this).attr("data-dependency");
+            if (selectId && isDependency != "True") {
+                try {
+                    let parentWrapper = $(this).parent();
+                    var sourceType = $(this).attr("data-sourcetype");
+                    var _fieldId = $(this).attr("data-container");
+                    let selectedValues = $(this).attr("data-interval");
+                    let selectedText = $(this).attr("data-display");
+                    let caption = $(this).attr("data-html");
+                    let firstFive = selectedText ? selectedText.substring(0, 40) : "";
+                    if (sourceType != "StoredProcedure") {
+                        const $selectElement = $('#HeaderTabs #' + selectId);
+                        $('#HeaderTabs #' + selectId).select2({
+                            dropdownParent: parentWrapper,
+                            placeholder: 'Select ' + caption,
+                            allowClear: true,
+                            delay: 250,
+                            minimumInputLength: 0, // change to 0 if you want scrolling without typing
+                            ajax: {
+                                url: '@Url.Action("FillSelctionPagingDefault", "Common")',
+                                dataType: 'json',
+                                skipLoading: true, // <-- Custom flag
+                                delay: 250,
+                                data: function (params) {
+                                    return {
+                                        FieldId: _fieldId,
+                                        CompanyId: $("#hdnCompanyId").val(),
+                                        searchTerm: params.term || '', // search term
+                                        page: params.page || 1,
+                                        fieldValue: selectedValues
+                                    };
+                                },
+                                processResults: function (data) {
+                                    return {
+                                        results: data.results,
+                                        pagination: {
+                                            more: data.pagination.more
+                                        }
+                                    };
+                                },
+                                error: function (xhr, status, error) {
+                                    console.error("Select2 AJAX Error:", error);
+                                    console.error("Status:", status);
+                                    console.error("Response:", xhr.responseText);
+                                },
+                                cache: true
+                            }
+                        });
+                        /// Pre-load selected values (important when editing)
+                        if (selectedValues.length) {
+                            $.ajax({
+                                url: '@Url.Action("FillSelctionPagingDefault", "Common")',
+                                type: 'GET',
+                                data: { FieldId: _fieldId, CompanyId: $("#hdnCompanyId").val(), searchTerm: firstFive, page: 1, fieldValue: '' },
+                                success: function (data) {
+                                    var isMultiSelection = $selectElement.attr("data-multiselection");
+                                    if (isMultiSelection != undefined && isMultiSelection != "" && isMultiSelection == "True") {
+                                        const multiVal = selectedValues.split(',');
+                                        $selectElement.val([]).trigger('change');
+                                        multiVal.forEach(function (val) {
+                                            let item = data.results.find(x => x.id.trim().toLowerCase() == val.trim().toLowerCase());
+                                            if (item) {
+                                                let option = new Option(item.text, item.id, true, true);
+                                                $selectElement.append(option);
+                                                $selectElement.trigger('change');
+                                            }
+                                        });
+                                    }
+                                    else {
+                                        if (data != null && data.results != null) {
+                                            let item = data.results.find(x => x.id == selectedValues);
+                                            if (item) {
+                                                let option = new Option(item.text, item.id, true, true);
+                                                $('#HeaderTabs #' + selectId).append(option).trigger('change');
+                                            }
+                                        }
+                                    }
+                                    $('#HeaderTabs #' + selectId).trigger('change');
+                                }
+                            });
+                        }
+                        //$('#' + selectId).select2()
+                    }
+                    else {
+                            //$('#HeaderTabs #' + selectId).select2({
+                            //    dropdownParent: parentWrapper
+                            //});
+                            const pageFieldData = getMasterFieldData();
+                            const $selectElement = $('#HeaderTabs #' + selectId);
+                            $selectElement.select2({
+                                dropdownParent: parentWrapper,
+                                placeholder: `Select ${caption}`,
+                                allowClear: true,
+                                skipLoading: true, // Custom flag
+                                delay: 250,
+                                minimumInputLength: 0, // Set to 0 to allow dropdown without typing
+                                ajax: {
+                                    url: '@Url.Action("FillSelctionPagingSPDefault", "Common")',
+                                    type: 'POST', // <-- Use POST instead of GET
+                                    contentType: 'application/json', // <-- Send JSON body
+                                    dataType: 'json',
+                                    skipLoading: true, // Custom flag
+                                    delay: 250,
+                                    cache: true,cache: true,
+                                    data: function (params) {
+                                        return JSON.stringify({
+                                            FieldId: _fieldId,
+                                            CompanyId: $("#hdnCompanyId").val(),
+                                            UserId: $("#hdnUserId").val(),
+                                            DefaultFiancialId: $("#hdnFiancialId").val(),
+                                            searchTerm: params.term || '',
+                                            page: params.page || 1,
+                                            fieldValue: '',
+                                            pageFieldData: getMasterFieldData()
+                                        });
+                                    },
+                                    processResults: function (data) {
+                                        return {
+                                            results: data.results,
+                                            pagination: {
+                                                more: data.pagination?.more || false
+                                            }
+                                        };
+                                    },
+                                    error: function (xhr, status, error) {
+                                        console.error("Select2 AJAX Error:", {
+                                            error,
+                                            status,
+                                            response: xhr.responseText
+                                        });
+                                    }
+                                }
+                            });
+                            if (selectedValues.length) {
+                                $.ajax({
+                                    url: '@Url.Action("FillSelctionPagingSPDefault", "Common")',
+                                    type: 'POST', // <-- Use POST instead of GET
+                                    contentType: 'application/json', // <-- Send JSON body
+                                    data: JSON.stringify({
+                                        FieldId: _fieldId, CompanyId: $("#hdnCompanyId").val(),
+                                        UserId: $("#hdnUserId").val(),
+                                        DefaultFiancialId: $("#hdnFiancialId").val(),
+                                        searchTerm: firstFive, page: 1, fieldValue: '', pageFieldData: getMasterFieldData()
+                                    }),
+                                    success: function (data) {
+                                        var isMultiSelection = $selectElement.attr("data-multiselection");
+                                        if (isMultiSelection != undefined && isMultiSelection != "" && isMultiSelection == "True") {
+                                            const multiVal = selectedValues.split(',');
+                                            $selectElement.val([]).trigger('change');
+                                            multiVal.forEach(function (val) {
+                                                let item = data.results.find(x => x.id.trim().toLowerCase() == val.trim().toLowerCase());
+                                                if (item) {
+                                                    let option = new Option(item.text, item.id, true, true);
+                                                    $selectElement.append(option);
+                                                    $selectElement.trigger('change');
+                                                }
+                                            });
+                                        }
+                                        else {
+                                            if (data != null && data.results != null) {
+                                                let item = data.results.find(x => x.id == selectedValues);
+                                                if (item) {
+                                                    let option = new Option(item.text, item.id, true, true);
+                                                    $('#HeaderTabs #' + selectId).append(option).trigger('change');
+                                                }
+                                            }
+                                        }
+                                        $('#HeaderTabs #' + selectId).trigger('change');
+                                    }
+                                });
+                            }
+                        }
+                    } catch (e) {
+                    console.error("Select2 AJAX Error:", e);
+                }
+            }
+            });
+            $(document).on('click', '.btn-save', function (e) {
+                var $row = $(this).closest('tr');
+                var tabSQLTable = $(this).attr("data-bind");
+                let detailId = $(this).data("content");
+                if (detailId == 0) {
+                    detailId = $row.attr("data-id")
+                }
+                InlineSaveRecord($row, tabSQLTable, detailId);
+            });
+            defaultBindings();
+        })
+        function defaultBindings(){
+            $("#DetailTabContent .InlineTable").each(function () {
+                if ($(this).attr("id") != undefined && $(this).attr("id").length > 0) {
+                    var fieldcap = $(this).attr("data-bind");
+                    var sectionname = $(this).attr("data-container");
+                    BindInlinGrid($(this).attr("id"), fieldcap, sectionname);
+                }
+            });
+        }
+        function BindInlinGrid(tableName, tbId, sectionname)
+        {
+            if (sectionname != "Header") {
+                try {
+                    $("#hdnSelectedTabId").val(tbId);
+                    var processId = 0;
+                    var isValid = true;
+                    if (isValid) {
+                        $("#hdnSelectedTabId").val(tbId);
+                        $.ajax({
+                            type: "GET",
+                            url: "@Url.Action("getPageInlineTabDataDefault", "Default")",
+                            contentType: "application/json; charset=utf-8",
+                            data: {
+                                tabId: tbId,
+                                ParentId: parseInt($("#hdnRecordId").val(), 0),
+                                ProcessId: processId,
+                                FormId: $("#hdnFormId").val(),
+                                SectionId: "2629A112-68DF-4660-A528-6B5D9041B5EB",
+                                PageAction: '@Model.PageAction',  // ✅ Fix: use colon, not equals
+                                UserId: $("#hdnUserId").val(),
+                                CompanyId: $("#hdnCompanyId").val(),
+                                FiancialYearId: $("#hdnFiancialId").val(),
+                            },
+                            success: function (response) {
+                                if (response != null) {
+                                    $("#" + tableName).html(response);
+                                }
+                            },
+                            error: function (response) {
+                                console.log(response);
+                                ShowToastNotification("error", "Error fetching data!");
+                            }
+                        });
+                    }
+                } catch (e) {
+
+                }
+            }
+        }
+        function selectChange(ctrl) {
+            let selectId = $(ctrl).attr('id');
+            BindHeaderDependencyData(selectId + "_Id", false);
+        }
+        function BindHeaderDependencyData(_fromFieldName, Isloaded) {
+            var PageFieldData = [];
+            var loadname = _fromFieldName.replace('_Id', '');
+            try {
+                var isMultiSelection = $("#" + loadname).attr("data-multiselection");
+                if (isMultiSelection != undefined && isMultiSelection != "" && isMultiSelection == "True") {
+                    console.log("Multiple Selection");
+                }
+                else {
+                    $("#HeaderTabs input").each(function () {
+                        if ($(this) != undefined && $(this) != null && $(this).attr("id") != undefined && $(this).attr("id").length > 0) {
+                            var ctrlId = $(this).attr("id");
+                            var fieldId = $(this).attr("data-bind");
+                            var fieldtype = $(this).attr("data-content");
+                            var fieldcap = $(this).attr("data-html");
+
+                            if (fieldId != null && fieldId != undefined && fieldId.length > 0) {
+                                PageFieldData.push({
+                                    FieldName: fieldId,
+                                    FieldValue: $(this).val()
+                                });
+                            }
+                        }
+                    });
+                    $("#HeaderTabs textarea").each(function () {
+                        if ($(this) != undefined && $(this) != null && $(this).attr("id") != undefined && $(this).attr("id").length > 0) {
+                            var ctrlId = $(this).attr("id");
+                            var fieldId = $(this).attr("data-bind");
+                            var fieldtype = $(this).attr("data-content");
+                            var fieldcap = $(this).attr("data-html");
+                            if (fieldId != null && fieldId != undefined && fieldId.length > 0) {
+                                PageFieldData.push({
+                                    FieldName: fieldId,
+                                    FieldValue: $(this).val()
+                                });
+                            }
+                        }
+                    });
+                    $("#HeaderTabs select").each(function () {
+                        if ($(this) != undefined && $(this) != null && $(this).attr("id") != undefined && $(this).attr("id").length > 0) {
+                            var ctrlId = $(this).attr("id");
+                            var fieldId = $(this).attr("data-bind");
+                            var fieldcap = $(this).attr("data-html");
+                            if (fieldId != null && fieldId != undefined && fieldId.length > 0) {
+                                PageFieldData.push({
+                                    FieldName: fieldId,
+                                    FieldValue: $("#HeaderTabs #" + $(this).attr("id") + "  option:selected").text()
+                                });
+                                PageFieldData.push({
+                                    FieldName: fieldId + "_Id",
+                                    FieldValue: $(this).val()
+                                });
+                            }
+                        }
+                    });
+                    var tablename = $("#hdnTableName").val();
+                    var model = {
+                        PageTablename: tablename,
+                        FieldData: PageFieldData,
+                        FromFieldName: _fromFieldName,
+                        Id: parseInt($("#hdnRecordId").val()),
+                        PageType: "Header",
+                        FormId: '@Model.Design.FormId',
+                        FieldId: (Isloaded == true ? $("#" + loadname).attr("data-container") : ""),
+                        CompanyId: $("#hdnCompanyId").val(),
+                        UserId: $("#hdnUserId").val(),
+                        FiancialYearId: $("#hdnFiancialId").val(),
+                    }
+                    $.ajax({
+                        type: "POST", url: '@Url.Action("getHeaderDependencyDataDefault", "Default")',
+                        contentType: "application/json;",
+                        data: JSON.stringify(model),
+                        skipLoading: true, // <-- Custom flag
+                        beforeSend: function () {
+                            $('#ajaxLoader').hide();  // Show loader before the call
+                        },
+                        complete: function () {
+                            $('#ajaxLoader').hide();  // Hide loader after call finishes (success or fail)
+                        },
+                        async: false,
+                        success: function (response) {
+                            if (response != null && response != undefined && response.length > 0) {
+                                $.each(response, function (index, item) {
+                                    var element = $('#' + item.FieldName);
+                                    var dataset = item.FieldValue;
+                                    if (element != undefined && element.length > 0) {
+                                        if (element[0].localName == "label") {
+                                            $('#' + item.FieldName).removeClass("text-success");
+                                            $('#' + item.FieldName).addClass("text-danger");
+                                            if (dataset != null && dataset != undefined && dataset.length > 0) {
+                                                $.each(dataset, function (index, Dataitem) {
+                                                    if (Dataitem.FieldValue != null && Dataitem.FieldValue.length > 0) {
+                                                        $('#' + item.FieldName).addClass("text-success");
+                                                        $('#' + item.FieldName).removeClass("text-danger");
+                                                        element.text(Dataitem.FieldValue);
+                                                    }
+                                                    else {
+                                                        element.text('N/A');
+                                                    }
+                                                });
+                                            }
+                                            else {
+                                                element.text('N/A');
+                                            }
+                                        }
+                                        else if (element[0].localName == "input") {
+                                            if (dataset != null && dataset != undefined && dataset.length > 0) {
+                                                //if (element[0].type == "text") {
+                                                //    element.val('');
+                                                //}
+                                                //else if (element[0].type == "number") {
+                                                //    element.val('');
+                                                //}
+                                                $.each(dataset, function (index, Dataitem) {
+                                                    if (Dataitem.FieldValue != null && Dataitem.FieldValue.length > 0) {
+                                                        if (element[0].type == "text") {
+                                                            var exVal = element.attr("value");
+                                                            if ('@Model.PageAction' == 'V' && exVal != undefined && exVal != null && exVal.length > 0) {
+                                                                element.val(exVal);
+                                                            }
+                                                            else {
+                                                                element.val(Dataitem.FieldValue);
+                                                            }
+                                                        }
+                                                        else if (element[0].type == "number") {
+                                                            var exVal = element.attr("value");
+                                                            if ('@Model.PageAction' == 'V' && exVal != undefined && exVal != null && exVal.length > 0) {
+                                                                element.val(exVal);
+                                                            }
+                                                            else {
+                                                                element.val(Dataitem.FieldValue);
+                                                            }
+                                                        }
+                                                    }
+                                                });
+                                            }
+                                        }
+                                        else if (element[0].localName == "textarea") {
+                                            if (dataset != null && dataset != undefined && dataset.length > 0) {
+                                                element.val('');
+                                                $.each(dataset, function (index, Dataitem) {
+                                                    if (Dataitem.FieldValue != null && Dataitem.FieldValue.length > 0) {
+                                                        element.val(Dataitem.FieldValue);
+                                                    }
+                                                });
+                                            }
+                                        }
+                                        else if (element[0].localName == "select") {
+                                            if (dataset != null && dataset != undefined && dataset.length > 0) {
+                                                var dropdown = $('#HeaderTabs #' + item.FieldName);
+                                                var fieldvalue = $('#HeaderTabs #' + item.FieldName).attr("data-interval");
+                                                var DDLTextField = $('#HeaderTabs #' + item.FieldName).attr("data-wrap");
+                                                var DDLValueField = $('#HeaderTabs #' + item.FieldName).attr("data-spy");
+                                                var fieldTitle = $('#HeaderTabs #' + item.FieldName).attr("data-html");
+                                                dropdown.empty();
+                                                dropdown.append('<option value="">Select ' + fieldTitle + '</option>');
+                                                var optionItem = "";
+                                                var optionItemValue = "";
+                                                var selectedVal = false;
+                                                for (var irow = 0; irow < dataset.length; irow++) {
+                                                    if (dataset[irow].FieldName == DDLTextField) {
+                                                        optionItem = dataset[irow].FieldValue;
+                                                    }
+                                                    else if (dataset[irow].FieldName == DDLValueField) {
+                                                        optionItemValue = dataset[irow].FieldValue;
+                                                    }
+                                                    if (irow % 2) {
+                                                        if (DDLTextField == DDLValueField) {
+                                                            var fieldvalue = $('#HeaderTabs #' + item.FieldName).attr("data-interval");
+                                                            if (fieldvalue != null && fieldvalue != "" && fieldvalue == optionItem) {
+                                                                selectedVal = true;
+                                                                dropdown.append($('<option selected></option>').val(optionItem).text(optionItem));
+                                                            }
+                                                            else {
+                                                                dropdown.append($('<option></option>').val(optionItem).text(optionItem));
+                                                            }
+                                                        }
+                                                        else {
+                                                            var fieldvalue = $('#HeaderTabs #' + item.FieldName).attr("data-interval");
+                                                            if (fieldvalue != null && fieldvalue != "" && fieldvalue == optionItemValue) {
+                                                                selectedVal = true;
+                                                                dropdown.append($('<option selected></option>').val(optionItemValue).text(optionItem));
+                                                            }
+                                                            else {
+                                                                dropdown.append($('<option></option>').val(optionItemValue).text(optionItem));
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                                var $el = $('#HeaderTabs #' + item.FieldName);
+                                                if (!$el.hasClass('select2-hidden-accessible')) {
+                                                    $el.select2({
+                                                        width: '100%'
+                                                    });
+                                                }
+                                                if (selectedVal) {
+                                                    if ($('#HeaderTabs #' + item.FieldName).attr("data-dependency") != "True"){
+                                                        dropdown.trigger('select');
+                                                    }
+                                                    else {
+                                                        BindHeaderDependencyData(item.FieldName + "_Id", false);
+                                                    }
+                                                }
+
+                                                //if (selectedVal == false && dataset.length > 0) {
+                                                //    $('#HeaderTabs #' + item.FieldName).prop('selectedIndex', 1);
+                                                //}
+                                            }
+                                            else {
+                                                dropdown.empty();
+                                            }
+                                        }
+                                    }
+                                });
+                            }
+                        },
+                        failure: function (response) { },
+                        error: function (response) { }
+                    });
+                }
+            } catch (e) {
+            }
+        }
+        function loadDropdown(_fieldId, dropdownId, fieldcap) {
+            try {
+                var sourceType = $("#" + dropdownId).attr("data-sourcetype");
+                if (sourceType == "StoredProcedure") {
+                    var fieldname = $("#" + dropdownId).attr('id') + "_Id";
+                    /*console.log("Load Stored Procedure Bind for " + fieldname);*/
+                    BindHeaderDependencyData(fieldname, true);
+                }
+                else {
+                    $.ajax({
+                        url: '@Url.Action("getFieldSelection", "Common")',
+                        type: 'GET',
+                        data: { fieldId: _fieldId },
+                        cache: true,
+                        success: function (data) {
+                            var dropdown = $('#' + dropdownId);
+                            var fieldvalue = $('#' + dropdownId).attr("data-interval");
+                            dropdown.empty().append('<option value="">Select ' + fieldcap + '</option>');
+                            $.each(data, function (i, item) {
+                                if (fieldvalue != null && fieldvalue != "" && fieldvalue == item.Value) {
+                                    var isMultiSelection = $('#' + dropdownId).attr("data-multiselection");
+                                    if (isMultiSelection != undefined && isMultiSelection != "" && isMultiSelection == "True") {
+                                        var values = fieldvalue.split(",");
+                                        dropdown.append($('<option selected></option>').val(values).text(item.Text));
+                                    }
+                                    else {
+                                        dropdown.append($('<option selected></option>').val(item.Value).text(item.Text));
+                                    }
+                                }
+                                else {
+                                    dropdown.append($('<option></option>').val(item.Value).text(item.Text));
+                                }
+                            });
+                            var isMultiSelection = $('#' + dropdownId).attr("data-multiselection");
+                            if (isMultiSelection != undefined && isMultiSelection != "" && isMultiSelection == "True") {
+                                var values = fieldvalue.split(",");
+                                $('#' + dropdownId).val(values);
+                            }
+                            BindHeaderDependencyData(dropdownId + "_Id", true);
+                            $("#pageLoader").hide();
+                        },
+                        error: function () {
+                            $("#pageLoader").hide();
+                            console.log("Error loading dropdown: " + fieldcap);
+                        }
+                    });
+                }
+            } catch (e) {
+                console.error("Select2 AJAX Error:", e);
+
+            }
+        }
+        function InlinTabData(detailId, _action, _tabId, tabGrid) {
+            try {
+                if ($("#" + tabGrid).length > 0) {
+                    var $lastRow = $('#' + tabGrid + ' tbody tr:last');
+                    var isFormValid = true;
+                    if ($lastRow.attr('data-id') && $lastRow.attr('data-id') == "0") {
+                        ShowToastNotification("error", "Please save pending record.");
+                        isFormValid = false;
+                    }
+                    else if ($lastRow != null) {
+                        $lastRow.find('input').each(function () {
+                            if ($(this) != undefined && $(this) != null && $(this).attr("id") != undefined && $(this).attr("id").length > 0) {
+                                var fieldcap = $(this).attr("data-html");
+                                $(this).next(".validation").remove();
+                                if ($(this).attr("required") == "True" && $.trim($(this).val()).length == 0) {
+                                    $(this).addClass("input-validation-error");
+                                    ShowToastNotification("info", "Please enter " + fieldcap + "");
+                                    if (isFormValid == true) {
+                                        $(this).focus();
+                                    }
+                                    isFormValid = false;
+                                } else {
+                                    $(this).removeClass("input-validation-error");
+                                }
+                            }
+                        });
+                    }
+                    if (isFormValid) {
+                        var $lastRow = $('#' + tabGrid + ' tbody tr:last');
+                        var $newRow = $lastRow.clone();
+
+                        // Get current number from second column (1-based index, so .eq(1))
+                        var currentRowNo = parseInt($lastRow.find('td').eq(1).text()) || 0;
+                        var newRowNo = currentRowNo + 1;
+
+
+                        // Update row number in second column (1st is usually checkbox or serial)
+                        var secondrow = '<label tabindex="-1" for="ItemSrNo" class="form-control-label">' + newRowNo + '</label>' +
+                            '<input style="display:none" value="' + newRowNo + '" id="ItemSrNo" data-bind="ItemSrNo" data_content="TextBox" class="form-control w-25">'
+                        $newRow.find('td').eq(1).html(secondrow);
+
+                        // Append to table
+                        $('#' + tabGrid + ' tbody').append($newRow);
+                        var isFocused = false;
+                        $newRow.find('input, select, textarea').each(function () {
+                            if ($(this).attr("id") != "ItemSrNo") {
+                                $(this).val('');
+                            }
+                        });
+
+                        $newRow.find('label').each(function () {
+                            if ($(this).attr("for") != "ItemSrNo") {
+                                $(this).text('');
+                            }
+                        });
+                        $newRow.find('select').each(function () {
+                            $(this).select2('destroy').empty();
+                            $(this).next().remove();
+                            $(this).attr("data-display", "");
+                            $(this).attr("data-interval", "");
+                            InitalizeSelect(this);
+                            $(this).val(null).trigger('change');
+                        });
+
+                        $newRow.attr('data-id', 0);
+                        $newRow.find("a.btn-save").attr('data-content', 0);
+                        $newRow.find("a.btn-delete").attr('data-content', 0);
+
+                        var fisteditablectrl = $newRow.find("input, select, textarea").not("[readonly], :disabled, #ItemSrNo").first();
+                        if (fisteditablectrl.length) {
+                            console.log("first column focus" + fisteditablectrl.attr("id"));
+                            fisteditablectrl.focus();
+                        }
+                    }
+                }
+            } catch (e) {
+
+            }
+        }
+        function getDocumentNo(documentId) {
+            $.get('@Url.Action("getDocumentNumber", "Home")', { formId: $("#hdnFormId").val(), docId: documentId }, function (data) {
+                // Success callback: process the returned dataif()
+                if (data != null) {
+                    $("#txtDocNo").val(data.DocNo);
+                    $("#lblDocNo").html(data.DocNo);
+                    $("#hdnDocId").val(documentId);
+                }
+            }).fail(function () {
+                // Error callback if the request fails
+            });
+        }
+
+        function SavePageData() {
+            var isFormValid = true, isAllowMultipleDoc = false;
+            var multipleDocFieldName = "";
+            var PageFieldData = [];
+            $("#HeaderTabs input").each(function () {
+                if ($(this) != undefined && $(this) != null && $(this).attr("id") != undefined && $(this).attr("id").length > 0) {
+                    var ctrlId = $(this).attr("id");
+                    var fieldId = $(this).attr("data-bind");
+                    var fieldtype = $(this).attr("data-content");
+                    var fieldcap = $(this).attr("data-html");
+                    if (fieldId != null && fieldId != undefined && fieldId.length > 0) {
+                        if ($(this).attr("type") == "checkbox") {
+                            var checkVal = ($(this).is(":checked") == true? "true": "false");
+                            PageFieldData.push({
+                                FieldName: fieldId,
+                                FieldValue: checkVal,
+                                FieldType: $(this).attr("type"),
+                            });
+                        }
+                        else if ($(this).attr("type") == "radio") {
+                            var checkVal = ($(this).is(":checked") == true ? "true" : "false");
+                            PageFieldData.push({
+                                FieldName: fieldId,
+                                FieldValue: checkVal,
+                                FieldType: $(this).attr("type"),
+                            });
+                        }
+                        else if ($(this).attr("type") != "file") {
+                            PageFieldData.push({
+                                FieldName: fieldId,
+                                FieldValue: $(this).val(),
+                                FieldType: $(this).attr("type"),
+                            });
+                        }
+                    }
+                    $(this).next(".validation").remove();
+                    if ($(this).prop('required') && $(this).attr("type") != "file" && $.trim($(this).val()).length == 0) {
+                        $(this).addClass("input-validation-error");
+                        $(this).after("<div class='validation' style='color:red;margin-bottom: 2px;'>Please enter " + fieldcap +"</div>");
+                        if (isFormValid == true) {
+                            $(this).focus();
+                        }
+                        isFormValid = false;
+                    } else {
+                        $(this).removeClass("input-validation-error");
+                    }
+                }
+            });
+            $("#DivTotal input").each(function () {
+                if ($(this) != undefined && $(this) != null && $(this).attr("id") != undefined && $(this).attr("id").length > 0) {
+                    var fieldId = $(this).attr("data-bind");
+                    if (fieldId != null && fieldId != undefined && fieldId.length > 0) {
+                        PageFieldData.push({
+                            FieldName: fieldId,
+                            FieldValue: $(this).val(),
+                            FieldType: $(this).attr("type"),
+                        });
+                    }
+                }
+            });
+            $("#HeaderTabs select").each(function () {
+                if ($(this) != undefined && $(this) != null && $(this).attr("id") != undefined && $(this).attr("id").length > 0) {
+                    var ctrlId = $(this).attr("id");
+                    var fieldId = $(this).attr("data-bind");
+                    var fieldcap = $(this).attr("data-html");
+                    if (fieldId != null && fieldId != undefined && fieldId.length > 0) {
+                        var isMultiSelection = $(this).attr("data-multiselection");
+                        if (isMultiSelection != undefined && isMultiSelection != "" && isMultiSelection == "True") {
+                            var multiText = $(this).find('option:selected').map(function () {
+                                return $(this).text(); // Use .val() if you want IDs
+                            }).get().join(',');
+                            isAllowMultipleDoc = $(this).data("multidocument") === true || $(this).data("multidocument") === "True";
+                            multipleDocFieldName = fieldId;
+                            PageFieldData.push({
+                                FieldName: fieldId,
+                                FieldValue: multiText,
+                                FieldType: $(this).attr("type"),
+                            });
+                            PageFieldData.push({
+                                FieldName: fieldId + "_Id",
+                                FieldValue: $(this).val().join(','),
+                                FieldType: $(this).attr("type"),
+                            });
+                        }
+                        else {
+                            if ($(this).val() != null && $(this).val() != undefined && $(this).val().length > 0 && $(this).val() != "0" && $(this).val() != "") {
+                                PageFieldData.push({
+                                    FieldName: fieldId,
+                                    FieldValue: $('#' + $(this).attr("Id") + ' option:selected').text(),
+                                    FieldType: $(this).attr("type"),
+                                });
+                            }
+                            PageFieldData.push({
+                                FieldName: fieldId + "_Id",
+                                FieldValue: $(this).val(),
+                                FieldType: $(this).attr("type"),
+                            });
+                        }
+                    }
+                    $(this).next(".validation").remove();
+                    if ($(this).prop('required') && $.trim($(this).val()).length == 0) {
+                        $(this).addClass("input-validation-error");
+                        $(this).after("<div class='validation' style='color:red;margin-bottom: 2px;'>Please select " + fieldcap +"</div>");
+                        if (isFormValid == true) {
+                            $(this).focus();
+                        }
+                        isFormValid = false;
+                    } else {
+                        $(this).removeClass("input-validation-error");
+                    }
+                }
+            });
+            //textarea
+            $("#HeaderTabs textarea").each(function () {
+                if ($(this) != undefined && $(this) != null && $(this).attr("id") != undefined && $(this).attr("id").length > 0) {
+                    var ctrlId = $(this).attr("id");
+                    var fieldId = $(this).attr("data-bind");
+                    var fieldtype = $(this).attr("data-content");
+                    var fieldcap = $(this).attr("data-html");
+
+                    if (fieldId != null && fieldId != undefined && fieldId.length > 0) {
+                        PageFieldData.push({
+                            FieldName: fieldId,
+                            FieldValue: $(this).val(),
+                            FieldType: $(this).attr("type"),
+                        });
+                    }
+                    $(this).next(".validation").remove();
+                    if ($(this).prop('required') && $.trim($(this).val()).length == 0) {
+                        $(this).addClass("input-validation-error");
+                        $(this).after("<div class='validation' style='color:red;margin-bottom: 2px;'>Please enter " + fieldcap + "</div>");
+                        if (isFormValid == true) {
+                            $(this).focus();
+                        }
+                        isFormValid = false;
+                    } else {
+                        $(this).removeClass("input-validation-error");
+                    }
+                }
+            });
+            $("#HeaderTabs label").each(function () {
+                if ($(this) != undefined && $(this) != null && $(this).attr("id") != undefined && $(this).attr("id").length > 0) {
+                    var fieldId = $(this).attr("data-bind");
+                    if (fieldId != null && fieldId != undefined && fieldId.length > 0) {
+                        PageFieldData.push({
+                            FieldName: fieldId,
+                            FieldValue: $(this).text()
+                        });
+                    }
+                }
+            });
+            if (!isFormValid) {
+                ShowToastNotification("error","Please fill in all the required fields (indicated by *)");
+                return;
+            }
+            else {
+                try {
+                    var tablename = $("#hdnTableName").val();
+                    var recordId = $("#hdnRecordId").val(); // Get the hidden ID field
+                    var model = {
+                        PageTablename: tablename,
+                        FieldData: PageFieldData,
+                        Id: recordId,  // Pass record ID for update
+                        PageType: "Header",
+                        FormId: '@Model.Design.FormId',
+                        DocId: $("#hdnDocId").val(),
+                        AllowMultipleDocument: isAllowMultipleDoc,
+                        MultipleDocFieldName: multipleDocFieldName,
+                        CompanyId: '@Model.Design.CompanyId',
+                        UserId: '@Model.Design.UserId',
+                        FiancialYearId: '@Model.Design.FinancialYearId',
+                        PendingId: '@Model.PendingId',
+                        ItemSrNos: '@Model.ItemSrNos'
+                    }
+
+                     $.ajax({
+                         type: "POST", url: '@Url.Action("SavePageData", "Default")',
+                         contentType: "application/json;",
+                         data: JSON.stringify(model),
+                         async: false,
+                         success: function (response) {
+                             if (response.IsSuccess) {
+                                 ShowToastNotification("success", response.Response)
+                                 var url = '@Url.Action("QuoteSubmitted", "Default")';
+                                 window.location.href = url + '?uRNNo=' + encodeURIComponent(response.URNNo) +
+                                    '&Id=' + encodeURIComponent(response.Id) +
+                                    '&PendingId=' + encodeURIComponent('@Model.PendingId') +
+                                    '&ItemSrNos=' + encodeURIComponent('@Model.ItemSrNos');
+                             }
+                             else {
+                                 ShowToastNotification("error",response.Response);
+                             }
+                         },
+                         failure: function (response) { },
+                         error: function (response) { }
+                     });
+                } catch (e) {
+                }
+            }
+        }
+
+        function InlineSaveRecord(rowData, tablename, detailId) {
+            var isFormValid = true;
+            try {
+                var PageFieldData = [];
+                var rownumber = "1";
+                rowData.find("input").each(function () {
+                    var $input = $(this);
+                    var ctrlId = $input.attr("id");
+                    if (!ctrlId) return;
+                    var fieldId = $input.attr("data-bind");
+                    var fieldcap = $input.attr("data-html");
+                    var fieldValue = $input.val();
+                    var type = $input.prop("type");
+
+                    if (ctrlId == "ItemSrNo") {
+                        rownumber = fieldValue;
+                    }
+
+                    // ✅ Fix datetime-local
+                    if (type === "datetime-local" && fieldValue && fieldValue.length === 16) {
+                        fieldValue += ":00";
+                    }
+                    if (fieldId) { PageFieldData.push({FieldName: fieldId,FieldValue: fieldValue,FieldType: type}); }
+
+                    $input.next(".validation").remove();
+
+                    if ($input.prop('required') && $.trim(fieldValue).length == 0) {
+                        $input.addClass("input-validation-error");
+                        $input.after("<div class='validation' style='color:red;margin-bottom: 2px;'>Please enter " + fieldcap + "</div>");
+
+                        if (isFormValid) {
+                            $input.focus();
+                        }
+                        isFormValid = false;
+                    } else {
+                        $input.removeClass("input-validation-error");
+                    }
+                });
+                rowData.find("textarea").each(function () {
+                    if ($(this).attr("id")) {
+                        var fieldId = $(this).attr("data-bind");
+                        var fieldcap = $(this).attr("data-html");
+                        if (fieldId != null && fieldId != undefined && fieldId.length > 0) {
+                            PageFieldData.push({
+                                FieldName: fieldId,
+                                FieldValue: $(this).val()
+                            });
+                        }
+                        $(this).next(".validation").remove();
+                        if ($(this).prop('required') && $.trim($(this).val()).length == 0) {
+                            $(this).addClass("input-validation-error");
+                            $(this).after("<div class='validation' style='color:red;margin-bottom: 2px;'>Please enter " + fieldcap + "</div>");
+                            if (isFormValid == true) {
+                                $(this).focus();
+                            }
+                            isFormValid = false;
+                        } else {
+                            $(this).removeClass("input-validation-error");
+                        }
+                    }
+                });
+                rowData.find("select").each(function () {
+                    if ($(this).attr("id")) {
+                        const fieldId = $(this).attr("data-bind");
+                        const fieldcap = $(this).attr("data-html");
+                        if (fieldId != null && fieldId != undefined && fieldId.length > 0) {
+                            var val = $(this).val();
+                            if (val && val !== "0" && val !== "" && val.length > 0) {
+                                PageFieldData.push({
+                                    FieldName: fieldId,
+                                    FieldValue: rowData.find("#" + $(this).attr("id") + "  option:selected").text()
+                                });
+                            }
+                            PageFieldData.push({
+                                FieldName: fieldId + "_Id",
+                                FieldValue: $(this).val()
+                            });
+                        }
+                        $(this).next(".validation").remove();
+                        if ($(this).prop('required') && $.trim($(this).val()).length == 0) {
+                            $(this).addClass("input-validation-error");
+                            $(this).after("<div class='validation' style='color:red;margin-bottom: 2px;'>Please select " + fieldcap + "</div>");
+                            if (isFormValid == true) {
+                                $(this).focus();
+                            }
+                            isFormValid = false;
+                        } else {
+                            $(this).removeClass("input-validation-error");
+                        }
+                    }
+                });
+                rowData.find("label").each(function () {
+                    if ($(this).attr("id")) {
+                        var fieldId = $(this).attr("data-bind");
+                        if (fieldId != null && fieldId != undefined && fieldId.length > 0) {
+                            PageFieldData.push({
+                                FieldName: fieldId,
+                                FieldValue: $(this).text()
+                            });
+                        }
+                    }
+                });
+
+                if (!isFormValid) {
+                    ShowToastNotification("error", "Please fill in all the required fields (indicated by *)");
+                    return;
+                }
+                else {
+                    var recordId = $("#hdnDetailId").val(); // Get the hidden ID field
+                    var model = {
+                        PageTablename: tablename,
+                        FieldData: PageFieldData,
+                        Id: detailId,
+                        ParentId: parseInt($("#hdnRecordId").val()),
+                        PageType: "Detail",
+                        FormId: '@Model.Design.FormId',
+                        SectionId: '2629A112-68DF-4660-A528-6B5D9041B5EB',
+                        UserId: $("#hdnUserId").val(),
+                        CompanyId: $("#hdnCompanyId").val(),
+                        FiancialYearId: $("#hdnFiancialId").val(),
+                        PendingId: '@Model.PendingId',
+                        ItemSrNos: '@Model.ItemSrNos'
+                    }
+                    $.ajax({
+                        type: "POST", url: '@Url.Action("SavePageData", "Default")',
+                        contentType: "application/json;",
+                        data: JSON.stringify(model),
+                        async: false,
+                        success: function (response) {
+                            if (response.IsSuccess) {
+                                ShowToastNotification("success", "Row Number " + rownumber + " record has been saved successfully!");
+                                rowData.attr('data-id', response.Id);
+                                rowData.find('a.btn-delete').removeClass('d-none');
+                                rowData.find('a.btn-save').attr('data-content',response.Id);
+                                rowData.find('a.btn-delete').attr('data-content', response.Id);
+                            }
+                            else {
+                                ShowToastNotification("error", response.Response);
+                            }
+                        },
+                        failure: function (response) { },
+                        error: function (response) { }
+                    });
+                }
+            } catch (e) {
+
+            }
+        }
+    </script>
+</body>
+</html>

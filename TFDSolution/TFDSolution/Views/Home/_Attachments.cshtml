@@ -1,0 +1,93 @@
+﻿@model List<TFDSolution.Transport.PageAttachmentModel>
+<table id="tblAttachment" class="display cell-border nowrap">
+    <thead>
+        <tr>
+            <th></th>
+            <th>#</th>
+            <th>File Name</th>
+            <th>File Size</th>
+            <th>Uploaded By</th>
+            <th>Uploaded On</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null && Model.Count > 0)
+        {
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        <a title="View Document" href="javascript:void(0)"
+                           onclick="ViewAttachment('@Url.Content(item.FilePath)')">
+                            <i class="fa fa-eye"></i>
+                        </a>
+                        @if (ViewBag.PageAction != "V" && ViewBag.RecordStatus == "1")
+                        {
+                            Html.Raw("&nbsp;| &nbsp");
+                            <a title="Delete Record" href="javascript:void(0)"
+                               onclick="DeleteAttachment(@item.Id)">
+                                <i class="fa fa-trash text-danger"></i>
+                            </a>
+                        }
+                        &nbsp;|&nbsp;
+                        <a title="Download Document"
+                           href="javascript:void(0)" onclick="DownloadAttachment('@item.FilePath');">
+                            <i class="fa fa-download text-black"></i>
+                        </a>
+                    </td>
+                    <td>@item.SrNo</td>
+                    <td>@item.FileName</td>
+                    <td>@item.FileSize</td>
+                    <td>@item.UploadedBy</td>
+                    <td>@item.UploadDate</td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+<script>
+    function ViewAttachment(filePath) {
+        if (filePath && filePath.length > 0) {
+            // The filePath here should already be resolved to a usable URL
+            window.open(filePath, "_blank");
+        }
+    }
+    function DownloadAttachment(filePath) {
+        $.ajax({
+            url: '@Url.Action("DownloadAttachment", "Home")',
+            type: "GET",
+            data: { fileName: filePath },
+            xhrFields: {
+                responseType: 'blob' // to handle file bytes
+            },
+            success: function (data, status, xhr) {
+                var disposition = xhr.getResponseHeader('Content-Disposition');
+                if (disposition && disposition.indexOf('attachment') !== -1) {
+                    var matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(disposition);
+                    var filename = (matches != null && matches[1]) ? matches[1].replace(/['"]/g, '') : fileName;
+
+                    var blob = new Blob([data]);
+                    var link = document.createElement('a');
+                    link.href = window.URL.createObjectURL(blob);
+                    link.download = filename;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
+            },
+            error: function (xhr) {
+                ShowToastNotification("error", "File does not exists");
+            }
+        });
+    }
+    $(document).ready(function () {
+        new DataTable("#tblAttachment", {
+            searching: false,
+            paging: false,
+            scrollCollapse: true,
+            info: true,
+            select: true,
+            rowReorder: false,
+        });
+    });
+</script>

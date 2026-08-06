@@ -1,0 +1,188 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\EntityFramework.6.5.1\build\EntityFramework.props" Condition="Exists('..\packages\EntityFramework.6.5.1\build\EntityFramework.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{F0D06785-D962-4BC7-8AD3-9F358B241E31}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>TFDSolution.Data</RootNamespace>
+    <AssemblyName>TFDSolution.Data</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.5.1\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.5.1\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="auth_getLogin_Result.cs">
+      <DependentUpon>TFDEntity.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BaseRepository.cs" />
+    <Compile Include="DbHelper.cs" />
+    <Compile Include="EFSqlHelper.cs" />
+    <Compile Include="m_CompanyBank.cs">
+      <DependentUpon>TFDEntity.tt</DependentUpon>
+    </Compile>
+    <Compile Include="m_CompanyFinancials.cs">
+      <DependentUpon>TFDEntity.tt</DependentUpon>
+    </Compile>
+    <Compile Include="m_CompanyMast.cs">
+      <DependentUpon>TFDEntity.tt</DependentUpon>
+    </Compile>
+    <Compile Include="m_CompanyUnit.cs">
+      <DependentUpon>TFDEntity.tt</DependentUpon>
+    </Compile>
+    <Compile Include="m_FormField.cs">
+      <DependentUpon>TFDEntity.tt</DependentUpon>
+    </Compile>
+    <Compile Include="m_FormFieldOption.cs">
+      <DependentUpon>TFDEntity.tt</DependentUpon>
+    </Compile>
+    <Compile Include="m_FormFieldTypes.cs">
+      <DependentUpon>TFDEntity.tt</DependentUpon>
+    </Compile>
+    <Compile Include="m_FormMast.cs">
+      <DependentUpon>TFDEntity.tt</DependentUpon>
+    </Compile>
+    <Compile Include="m_FormSection.cs">
+      <DependentUpon>TFDEntity.tt</DependentUpon>
+    </Compile>
+    <Compile Include="m_FormTab.cs">
+      <DependentUpon>TFDEntity.tt</DependentUpon>
+    </Compile>
+    <Compile Include="m_getFormData_Result.cs">
+      <DependentUpon>TFDEntity.tt</DependentUpon>
+    </Compile>
+    <Compile Include="m_getFormFields_Result.cs">
+      <DependentUpon>TFDEntity.tt</DependentUpon>
+    </Compile>
+    <Compile Include="m_getForms_Result.cs">
+      <DependentUpon>TFDEntity.tt</DependentUpon>
+    </Compile>
+    <Compile Include="m_getSelection_Result.cs">
+      <DependentUpon>TFDEntity.tt</DependentUpon>
+    </Compile>
+    <Compile Include="m_setUser_Result.cs">
+      <DependentUpon>TFDEntity.tt</DependentUpon>
+    </Compile>
+    <Compile Include="m_UserMast.cs">
+      <DependentUpon>TFDEntity.tt</DependentUpon>
+    </Compile>
+    <Compile Include="m_UserSettings.cs">
+      <DependentUpon>TFDEntity.tt</DependentUpon>
+    </Compile>
+    <Compile Include="proc_AddCompany_Result.cs">
+      <DependentUpon>TFDEntity.tt</DependentUpon>
+    </Compile>
+    <Compile Include="proc_AddItem_Result.cs">
+      <DependentUpon>TFDEntity.tt</DependentUpon>
+    </Compile>
+    <Compile Include="proc_getCompanyList_Result.cs">
+      <DependentUpon>TFDEntity.tt</DependentUpon>
+    </Compile>
+    <Compile Include="proc_getItemList_Result.cs">
+      <DependentUpon>TFDEntity.tt</DependentUpon>
+    </Compile>
+    <Compile Include="proc_getItem_Result.cs">
+      <DependentUpon>TFDEntity.tt</DependentUpon>
+    </Compile>
+    <Compile Include="proc_getPartyList_Result.cs">
+      <DependentUpon>TFDEntity.tt</DependentUpon>
+    </Compile>
+    <Compile Include="proc_getParty_Result.cs">
+      <DependentUpon>TFDEntity.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TFDEntity.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>TFDEntity.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TFDEntity.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>TFDEntity.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TFDEntity.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>TFDEntity.edmx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EntityDeploy Include="TFDEntity.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>TFDEntity.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.Config" />
+    <None Include="packages.config" />
+    <None Include="TFDEntity.edmx.diagram">
+      <DependentUpon>TFDEntity.edmx</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="TFDEntity.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>TFDEntity.Context.cs</LastGenOutput>
+      <DependentUpon>TFDEntity.edmx</DependentUpon>
+    </Content>
+    <Content Include="TFDEntity.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>TFDEntity.edmx</DependentUpon>
+      <LastGenOutput>TFDEntity.cs</LastGenOutput>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\EntityFramework.6.5.1\build\EntityFramework.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.5.1\build\EntityFramework.props'))" />
+    <Error Condition="!Exists('..\packages\EntityFramework.6.5.1\build\EntityFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.5.1\build\EntityFramework.targets'))" />
+  </Target>
+  <Import Project="..\packages\EntityFramework.6.5.1\build\EntityFramework.targets" Condition="Exists('..\packages\EntityFramework.6.5.1\build\EntityFramework.targets')" />
+</Project>

@@ -1,0 +1,1621 @@
+﻿
+@{
+    ViewBag.Title = "Item Advance Settings";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="~/Scripts/dataTables.rowReorder.js"></script>
+<style>
+    /* Style the tab */
+    .modal-content {
+        font-size: 13px;
+    }
+
+        .modal-content .modal-title {
+            font-size: 13px;
+        }
+
+    .tab-add-btn {
+        padding-top: 13px;
+        width: 50px;
+        /* border: 1px solid #ccc;
+     border-width: 1px 1px 0 0;
+     border-radius: 0 5px 0 0;*/
+    }
+
+        .tab-add-btn:hover {
+            color: #27a9d7;
+            /*border: 1px solid #ccc;
+         border-width: 1px 1px 0 0;
+         border-radius: 0 5px 0 0;*/
+        }
+
+    .panel-left {
+        float: left;
+        border: 1px solid #ccc;
+        background-color: #fdfdfd;
+        width: 300px;
+        height: 100%;
+    }
+
+    .tab-content {
+        border: none;
+        border-top-width: 0 !important;
+    }
+
+        .tab-content > .tab-pane {
+            padding-right: 10px;
+        }
+
+    .tab-inner-content {
+        border: 1px solid #ccc;
+    }
+
+    .card-header {
+        padding: .25rem 0.35rem !important;
+    }
+
+    .panel-right {
+        float: left;
+        padding: 0px 12px;
+        /*border: 1px solid #ccc;*/
+        width: calc(100% - 300px);
+        border-left: none;
+        height: 100%;
+        background-color: #fff;
+    }
+
+    .nav-link {
+        color: #000;
+        height: 40px !important;
+        /*background-color: #ccc;*/
+        font-size: 14px !important;
+        margin-bottom: 3px;
+    }
+
+    .tab {
+        float: left;
+        /*border: 1px solid #ccc;*/
+        background-color: #fdfdfd;
+        width: 185px;
+        height: 100%;
+    }
+
+        /* Style the buttons inside the tab */
+        .tab button {
+            display: block;
+            background-color: inherit;
+            color: black;
+            padding: 12px 16px;
+            width: 100%;
+            border: none;
+            outline: none;
+            text-align: left;
+            cursor: pointer;
+            transition: 0.3s;
+            font-size: 17px;
+            /*border: 1px solid #ccc;*/
+            border-width: 1px 0 1px 0;
+        }
+
+            /* Change background color of buttons on hover */
+            .tab button:hover {
+                background-color: #dedede;
+            }
+
+            /* Create an active/current "tab button" class */
+            .tab button.active {
+                background-color: #dedede;
+                color: #000;
+            }
+</style>
+<input type="hidden" id="hdnSelectedTab" value="" />
+<input type="hidden" id="hdnTabSortOrder" value="" />
+<input type="hidden" id="hdnSelectedTabName" value="" />
+<input type="hidden" id="hdnSelectedTabGrid" value="" />
+<input type="hidden" id="hdnSelectedFormSQLTableName" value="" />
+<input type="hidden" id="hdnSelectedTabSQLTableName" value="" />
+<input type="hidden" id="hdnSelectedFormSQLTemplateId" value="" />
+<div class="breadcrumbs">
+    <div class="col-sm-4">
+        <div class="page-header float-left">
+            <div class="page-title">
+                <h1>Item Advance Settings</h1>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-8">
+        <div class="page-header float-right">
+            <div class="page-title">
+                <ol class="breadcrumb text-right">
+                    <li><a href="@Url.Action("Index","Home")">Home</a></li>
+                    <li class="active">Item Advance Settings</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="animated fadeIn">
+    <div class="row">
+        <div class="col-md-12 p-0">
+            <div class="card">
+                <div class="card-header">
+                    <div class="col-lg-6 pt-1">
+                        <strong id="selectedHead" class="card-title"></strong>
+                    </div>
+                    <div class="col-lg-6 text-right">
+                        <a class="btn btn-sm" id="btnAddNewField" href="javascript:void(0);" title="Add New Field" data-toggle="modal" data-target="#formfieldModal"><i class="fa fa-plus"></i>&nbsp;Add New Field</a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="card">
+                        <div class="p-3">
+                            <div class="row form-group">
+                                <div id="divDynamicTabs"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="tabModal" tabindex="-1" role="dialog" aria-labelledby="tabModal" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="tabModellLabel">Add New Tab</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="hdnTabSortOrderSelectedFormId" value="0" />
+                <div class="row form-group">
+                    <input type="hidden" id="hdnItemAdvanceId" value="" />
+                    <div class="col col-md-12">
+                        <label for="text-input" class=" form-control-label">Tab Name<span class="text-danger p-1">(*)</span></label>
+                    </div>
+                    <div class="col col-md-12">
+                        <input type="text" id="txtFormTab" name="text-input" placeholder="Tab Name" maxlength="50" class="form-control">
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col col-md-12">
+                        <label for="text-input" class=" form-control-label">Tab Title<span class="text-danger p-1">(*)</span></label>
+                    </div>
+                    <div class="col col-md-12">
+                        <input type="text" id="txtFormTabTitle" name="text-input" placeholder="Tab Title" maxlength="50" class="form-control">
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col col-md-12">
+                        <label for="text-input" class=" form-control-label">Get Stored Procedure</label>
+                    </div>
+                    <div class="col col-md-12">
+                        <select class="form-control form-select select2" name="dropdown" id="ddlGetDataScript"></select>
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col col-md-12">
+                        <label for="text-input" class=" form-control-label">Save Stored Procedure</label>
+                    </div>
+                    <div class="col col-md-12">
+                        <select class="form-control form-select select2" name="dropdown" id="ddlSetDataScript"></select>
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col col-md-12">
+                        <label for="text-input" class=" form-control-label">Validatieon Stored Procedure</label>
+                    </div>
+                    <div class="col col-md-12">
+                        <select class="form-control form-select select2" name="dropdown" id="ddlValidDataScript"></select>
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col col-md-12">
+                        <label for="text-input" class=" form-control-label">SQL Table Name<span class="text-danger p-1">(*)</span></label>
+                    </div>
+                    <div class="col col-md-12">
+                        <input type="text" id="txtFormTabSQLTable" name="text-input" disabled placeholder="SQL Table Name" maxlength="50" class="form-control">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="btnCancelTab" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="SaveTab();">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="formfieldModal" tabindex="-1" role="dialog" aria-labelledby="formfieldModal" data-backdrop="static">
+    <div class="modal-dialog  modal-dialog-scrollable modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="padding-bottom:0;">
+                <h5 class="modal-title" id="fieldModalLabel">Add New Field: <label id="selectedFieldType"></label></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row" style="display:none;">
+                    <div class="page-header float-right" style="min-height:0;">
+                        <div class="page-title" id="fieldPopupPath"></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="panel-left" style="max-width:70px;border: none;">
+                        <div class="nav flex-column nav-pills me-3" id="v-pills-fieldstypetab" role="tablist" aria-orientation="vertical">
+
+                            @*@foreach (var fieldType in Model.FormFieldTypes)
+                                {
+                                    <button class="nav-link text-left" id="btn_@fieldType.FieldTypeName"
+                                            data-bs-toggle="pill"
+                                            data-fieldtype="@fieldType.FieldTypeId"
+                                            data-target="#v-pills-content"
+                                            type="button"
+                                            role="tab"
+                                            onclick="showFieldControl('@fieldType.FieldTypeId', '@fieldType.FieldTypeClass')">
+                                        <i class="@fieldType.FieldTypeClass"></i>
+                                    </button>
+                                }*@
+                            <button class="nav-link active text-left" id="v-pills-home-tab" data-bs-toggle="pill" data-bs-target="#v-pills-home" type="button" role="tab" aria-controls="v-pills-home" aria-selected="true">
+                                <i class="fa fa-text-width"></i>
+                            </button>
+                            <button class="nav-link text-left" id="v-pills-profile-tab" data-bs-toggle="pill" data-bs-target="#v-pills-profile" type="button" role="tab" aria-controls="v-pills-profile" aria-selected="false">
+                                <i class="fa fa-fa-list"></i>
+                            </button>
+                            <button class="nav-link text-left" id="v-pills-messages-tab" data-bs-toggle="pill" data-bs-target="#v-pills-messages" type="button" role="tab" aria-controls="v-pills-messages" aria-selected="false">
+                                <i class="fa fa-table"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="panel-right" id="v-pills-fieldstypecontent" style="width: calc(100% - 70px); overflow-x:hidden; overflow-y:auto;">
+                        <input type="hidden" id="hdnFieldTypeId" />
+                        <input type="hidden" id="hdnFieldId" />
+                        <input type="hidden" id="hdnSortOrder" />
+                        <div class="row">
+                            <div class="col-md-12 form-group">
+                                <label for="text-input" class=" form-control-label">Name<span class="text-danger p-1">(*)</span></label>
+                                <input type="text" id="txtFieldname" name="text-input" placeholder="Field Name" maxlength="50" class="form-control">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 form-group">
+                                <label for="text-input" class=" form-control-label"> Caption<span class="text-danger p-1">(*)</span></label>
+                                <input type="text" id="txtFieldcaption" name="text-input" placeholder="Field Caption" maxlength="50" class="form-control">
+                            </div>
+                        </div>
+                        <div class="row row_size">
+                            <div class="col-md-12 form-group">
+                                <label for="text-input" class=" form-control-label">Size<span class="text-danger p-1">(*)</span></label>
+                                <select id="ddlFieldSize" class="form-control form-select">
+                                    <option value="Small">Small</option>
+                                    <option value="Medium">Medium</option>
+                                    <option value="Large">Large</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row row_Text" id="row_LengthText">
+                            <div class="col-md-12 form-group">
+                                <label for="text-input" class=" form-control-label">Length<span class="text-danger p-1">(*)</span></label>
+                                <input type="number" id="txtFieldLength" name="text-input" data-bind="0" placeholder="Field Length" maxlength="4" class="form-control">
+                            </div>
+                        </div>
+                        <div class="row row_Text" id="row_Text">
+                            <div class="col-md-12 form-group">
+                                <label for="text-input" class=" form-control-label">Placeholder</label>
+                                <input type="text" id="txtFieldPlaceholder" name="text-input" placeholder="Field Placeholder" maxlength="50" class="form-control">
+                            </div>
+                        </div>
+                        <div class="row row_Text" id="row_Text">
+                            <div class="col-md-12 form-group">
+                                <label for="text-input" class=" form-control-label">Helptext</label>
+                                <input type="text" id="txtFieldHelptext" name="text-input" placeholder="Field Helptext" maxlength="100" class="form-control">
+                            </div>
+                        </div>
+                        <div class="row buttonreffield">
+                            <div class="col-md-12 form-group">
+                                <label for="text-input" class=" form-control-label">Reference Field</label>
+                                <select class="form-control form-select select2" id="ddlFieldSelectButton">
+                                    <option>Select Field</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row buttonreffield">
+                            <div class="col-md-12 form-group">
+                                <label for="text-input" class="form-control-label">Template<span class="text-danger p-1">(*)</span></label>
+                                <select id="ddlButtonTemplate" class="form-select select2">
+                                    <option>Select</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 form-group">
+                                <label for="text-input" class=" form-control-label">Formula</label>
+                                @*<input type="text" id="txtFieldFormula" name="text-input" rows="9" placeholder="Field Formula" maxlength="50" class="form-control">*@
+                                <select class="form-control form-select select2" onchange="FieldSelectChangeEvent(this)" id="ddlFieldSelect">
+                                    <option>Select Field</option>
+                                </select>
+                                @Html.TextArea("txtFieldFormula", new { @placeholder = "Field Formula", @class = "form-control" })
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 form-group">
+                                <label for="text-input" class="form-control-label">Decimal Point</label>
+                                <select class="form-control form-select" id="ddlFieldDecimal">
+                                    <option value="0">0</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="tab-content  form-group" id="v-pills-fieldstypetabContent">
+                            <div class="row" id="row_select">
+                                @*style="display: none;"*@
+                                <div class="col-md-12">
+                                    <label for="text-input" class=" form-control-label">Source Type<span class="text-danger p-1 spnIsNumericHideMandaory">(*)</span></label>
+                                </div>
+                                <div class="col-md-12 form-group">
+                                    <div class="form-check-inline form-check">
+                                        <label for="rdbTable" class="form-check-label ">
+                                            <input type="radio" id="rdbTable" name="inline-radios" value="Table" class="form-check-input">Table
+                                        </label>
+                                        <label for="rdbSP" class="form-check-label ">
+                                            <input type="radio" id="rdbSP" name="inline-radios" value="StoredProcedure" class="form-check-input">Stored Procedure
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-12 form-group">
+                                    <label for="text-input" class="form-control-label">
+                                        Source<span class="text-danger p-1 spnIsNumericHideMandaory">(*)</span>
+                                        @*<a id="btnSPRequest" class="d-none" title="Setup Request Parameters" href="javascript:void(0);"><i class="fa fa-cog"></i></a>*@
+                                    </label>
+                                    <select id="ddlTables" onchange="FieldSourceChangeEvent(this)" class="form-control form-select select2"></select>
+                                </div>
+                                <div class="col-md-12 form-group">
+                                    <label for="text-input" class="form-control-label">Select Text Field<span class="text-danger p-1 spnIsNumericHideMandaory">(*)</span></label>
+                                    <select id="ddlSelectText" class="form-control form-select select2"></select>
+                                </div>
+                                <div class="col-md-12 form-group">
+                                    <label for="text-input" class="form-control-label">Select Value Field<span class="text-danger p-1 spnIsNumericHideMandaory">(*)</span></label>
+                                    <select id="ddlSelectValue" class="form-control form-select select2"></select>
+                                </div>
+                                <div id="divSPRequest" class="col-md-12 form-group d-none">
+                                    <label class="form-label label-header">Stored Procedure Request</label>
+                                    <table id="tblRequest" class="table table-striped table-bordered table-default">
+                                        <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Parameter</th>
+                                                <th>Data Type</th>
+                                                <th>Value</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12 form-group">
+                                        <label class="switch switch-3d switch-success mr-3">
+                                            <input type="checkbox" id="chkIsInformation" class="switch-input" checked="checked"> <span class="switch-label"></span> <span class="switch-handle"></span>
+                                        </label>
+                                        <label for="select" class="form-control-label">View Information</label>
+                                        <a href="javascript:void(0);" onclick="OpenFieldViewInfo()" data-target="#fieldViewInfModal" data-toggle='modal' title="Setting of View Information"><i class="fa fa-cog"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 form-group">
+                                <label class="switch switch-3d switch-success mr-3">
+                                    <input type="checkbox" id="chkIsVisible" class="switch-input" checked="checked"> <span class="switch-label"></span> <span class="switch-handle"></span>
+                                </label>
+                                <label for="select" class="form-control-label">Visible</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 form-group">
+                                <label class="switch switch-3d switch-success mr-3">
+                                    <input type="checkbox" id="chkIsVisibleInList" class="switch-input"> <span class="switch-label"></span> <span class="switch-handle"></span>
+                                </label>
+                                <label for="select" class="form-control-label">Visible In List</label>
+                            </div>
+                        </div>
+                        <div class="row" style="display:none;">
+                            <div class="col-md-12 form-group">
+                                <label class="switch switch-3d switch-success mr-3">
+                                    <input type="checkbox" id="chkStatus" class="switch-input" checked="checked"> <span class="switch-label"></span> <span class="switch-handle"></span>
+                                </label>
+                                <label for="select" class="form-control-label">Status</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 form-group">
+                                <label class="switch switch-3d switch-success mr-3">
+                                    <input type="checkbox" id="chkRequired" class="switch-input" checked="checked"> <span class="switch-label"></span> <span class="switch-handle"></span>
+                                </label>
+                                <label for="select" class="form-control-label">Mandatory</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 form-group">
+                                <label class="switch switch-3d switch-success mr-3">
+                                    <input type="checkbox" id="chkIsReadOnly" class="switch-input"> <span class="switch-label"></span> <span class="switch-handle"></span>
+                                </label>
+                                <label for="select" class=" form-control-label">Read Only</label>
+                            </div>
+                        </div>
+                        <div id="divchkIsSummary" class="row">
+                            <div class="col-md-12 form-group">
+                                <label class="switch switch-3d switch-success mr-3">
+                                    <input type="checkbox" id="chkIsSummary" class="switch-input"> <span class="switch-label"></span> <span class="switch-handle"></span>
+                                </label>
+                                <label for="select" class=" form-control-label">Summary</label>
+                            </div>
+                        </div>
+                        <div class="row" style="display:none;">
+                            <div class="col-md-12 form-group">
+                                <label class="switch switch-3d switch-success mr-3">
+                                    <input type="checkbox" id="chkIsDisabled" class="switch-input"> <span class="switch-label"></span> <span class="switch-handle"></span>
+                                </label>
+                                <label for="select" class=" form-control-label">Disabled</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 form-group">
+                                <label class="switch switch-3d switch-success mr-3">
+                                    <input type="checkbox" id="chkIsUnique" class="switch-input"> <span class="switch-label"></span> <span class="switch-handle"></span>
+                                </label>
+                                <label for="select" class=" form-control-label">Is Unique</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 form-group">
+                                <label class="switch switch-3d switch-success mr-3">
+                                    <input type="checkbox" id="chkIsDependencyField" class="switch-input">
+                                    <span class="switch-label"></span> <span class="switch-handle"></span>
+                                </label>
+                                <label for="select" class="form-control-label">Dependency Field</label>
+                            </div>
+                        </div>
+                        <div class="row" id="MultiSelection">
+                            <div class="col-md-12 form-group">
+                                <label class="switch switch-3d switch-success mr-3">
+                                    <input type="checkbox" id="chkIsMultiSelection" class="switch-input">
+                                    <span class="switch-label"></span> <span class="switch-handle"></span>
+                                </label>
+                                <label for="chkIsMultiSelection" class="form-control-label mb-0">Is Multi Selection</label>
+                            </div>
+                            <div class="col-md-12 form-group d-none" id="MultiDocument">
+                                <label class="switch switch-3d switch-success mr-3">
+                                    <input type="checkbox" id="chkMultipleDocument" class="switch-input">
+                                    <span class="switch-label"></span> <span class="switch-handle"></span>
+                                </label>
+                                <label for="select" class="form-control-label">Allow Multiple Document</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="padding: 0 15px;">
+                <button type="button" id="btnCancelField" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" id="btnSaveField" class="btn btn-primary" onclick="SaveField();">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $('.select2').each(function () {
+        const $select = $(this);
+        if ("ddlButtonTemplate" != $(this).attr("id")) {
+            const parentWrapper = $select.closest('.modal'); // or any appropriate container
+
+            $select.select2({
+                dropdownParent: parentWrapper.length ? parentWrapper : $('body')
+            });
+        }
+    });
+    $(document).ready(function () {
+        BindTab();
+        loadFormFields();
+        $('input[type=radio][name=inline-radios]').change(function () {
+            loadDropdownTables(this.value);
+        });
+        $('#txtAFormTitle').on('input', function () {
+            $("#txtAFormDesc").val($(this).val());
+        });
+        $('#txtFieldcaption').on('input', function () {
+            $("#txtFieldPlaceholder").val($(this).val());
+        });
+        $("#btnAddNewField").click(function () {
+            $("#fieldModalLabel").html("Add New Field");
+            $("#btn_TextBox").click();
+        })
+        $("#btnTabRefresh").click(function () {
+            $("#v-pills-tab button.active").click();
+        });
+        $("#ddlSelect").change(function () {
+            var formId = $(this).val();
+            localStorage.setItem("FormSettings_FormId", formId);
+            $("#txtTblPrefix").html($(this).children('option:selected').data('bind'));
+            $("#txtAParentId").val(formId);
+            GetFormList(formId);
+        });
+        $('#txtAFormName').change(function (e) {
+            if (e.which === 32) {
+                return false;
+            }
+            else {
+                $("#txtATableName").val($(this).val());
+            }
+        });
+        $('#txtAFormName').change(function () {
+            $(this).val($(this).val().replace(/\s/g, ""));
+        });
+        $('#txtFieldname').on('input', function () {
+            $(this).val(function (i, val) {
+                return val.replace(/[^a-z\s]/gi, '');
+            });
+        });
+        $('#txtFieldname').change(function () {
+            $(this).val($(this).val().replace(/\s/g, ""));
+        });
+
+        $('#txtATableName').on('input', function () {
+            $(this).val(function (i, val) {
+                return val.replace(/^\d|[A-Z\s]+/g, '');
+            });
+        });
+        $('#txtATableName').change(function () {
+            $(this).val($(this).val().replace(/\s/g, ""));
+        });
+        $('#txtFormTab').keypress(function (e) {
+            if (e.which === 32) {
+                return false;
+            }
+        });
+        $('#txtFormTab').change(function () {
+            $(this).val($(this).val().replace(/\s/g, ""));
+            $("#txtFormTabSQLTable").val("t_" + $(this).val() + "Data");
+        });
+        $("#btnSaveFieldInfo").click(function () {
+            SaveFieldInfo();
+        });
+    });
+    function loadFormFields() {
+        $.ajax({
+           url: "@Url.Action("GetFormFieldTypeList", "FormSetting")",
+            type: 'GET',
+            success: function (data) {
+                let leftPanel = $("#v-pills-fieldstypetab");
+                let contentPanel = $("#v-pills-fieldstypetabContent");
+                leftPanel.empty();
+                /*contentPanel.empty();*/
+                let activeFieldType = null;
+                data.forEach(function (item) {
+                    let isActive = item.SortOrder === 1 ? "active" : "";
+                    if (item.SortOrder === 1) {
+                        activeFieldType = item; // Store the first item with SortOrder 1
+                    }
+
+                    leftPanel.append(`
+                    <button class="nav-link text-left ${isActive}" id="btn_${item.FieldType}"
+                            data-bs-toggle="pill"
+                            data-fieldtype="${item.FieldType}"
+                            type="button"
+                            role="tab"
+                            title="${item.FieldType}"
+                            onclick="showFieldControl('${item.FieldTypeId}', '${item.FieldType}')">
+                        <i class="${item.FieldTypeClass}"></i>
+                    </button>
+                `);
+                });
+                // If we have a default active field type, trigger the click to load it initially
+                if (activeFieldType) {
+                    showFieldControl(activeFieldType.FieldTypeId, activeFieldType.FieldType);
+                }
+            }
+        });
+    }
+    function loadTableColumns(_OptionSource, tableName, selectedText, selectedValu) {
+        try {
+
+            var spTableName = $("#hdnSelectedTabSQLTableName").val();
+            $.ajax({
+                url: "@Url.Action("GetSourceColumns", "FormSetting")",
+                type: "GET",
+                data: { sourceType: _OptionSource, tableName: tableName, fieldId: $("#hdnFieldId").val(), pageTableName: spTableName },
+                success: function (reponse) {
+                    let columnDropdown1 = $("#ddlSelectText");
+                    let columnDropdown2 = $("#ddlSelectValue");
+                    columnDropdown1.empty();
+                    columnDropdown2.empty();
+                    columnDropdown1.append('<option value="">Select TextField</option>');
+                    columnDropdown2.append('<option value="">Select ValueField</option>');
+                    if (reponse.Columns != null && reponse.Columns.length > 0) {
+                        reponse.Columns.forEach(column => {
+                            if (selectedText != undefined && selectedText != null && selectedText != "" && selectedText == column) {
+                                columnDropdown1.append(`<option selected value="${column}">${column}</option>`);
+                            }
+                            else {
+                                columnDropdown1.append(`<option value="${column}">${column}</option>`);
+                            }
+                            if (selectedValu != undefined && selectedValu != null && selectedValu != "" && selectedValu == column) {
+                                columnDropdown2.append(`<option selected value="${column}">${column}</option>`);
+                            }
+                            else {
+                                columnDropdown2.append(`<option value="${column}">${column}</option>`);
+                            }
+                        });
+                    }
+                    if (reponse != null && reponse.Request != null && reponse.Request.length > 0) {
+                        $("#divSPRequest").removeClass("d-none");
+
+                        var ddlField = "<select class='form-control form-select'><option value='0'>Select Field</option>";
+                        reponse.SPColumns.forEach(spCol => {
+                            ddlField = ddlField + `<option value="${spCol}">${spCol}</option>`;
+                        });
+                        ddlField = ddlField + `</select>`;
+
+                        reponse.Request.forEach(item => {
+                            const newRow = `<tr><td>${item.ORDINAL_POSITION}</td><td class="text-left paramName" data-bind="${item.PARAMETER_NAME}">${item.PARAMETER_NAME}</td><td class="text-left">${item.DATA_TYPE}</td><td class="paramField" data-bind="${item.PARAMETER_Value}">${ddlField}</td></tr>`;
+                            // Append it to the tbody
+                            $('#tblRequest tbody').append(newRow);
+                        });
+
+                        $('#tblRequest tbody>tr').each(function () {
+                            if ($(this) != null) {
+                                var _paramMapField = "";
+                                $('td', this).each(function () {
+                                    if ($(this).hasClass('paramField')) {
+                                        _paramMapField = $(this).attr("data-bind");
+                                        $(this).find('select').val(_paramMapField);
+                                    }
+                                });
+                            }
+                        });
+                    }
+                }
+            });
+        } catch (e) {
+        }
+    }
+    function loadDropdownTables(_OptionSource, defaultValue)
+    {
+        let columnDropdown1 = $("#ddlSelectText");
+        let columnDropdown2 = $("#ddlSelectValue");
+        $("#divSPRequest").addClass("d-none");
+        //if (_OptionSource != "Table") {
+        //    $("#divSPRequest").removeClass("d-none");
+        //}
+        //else {
+        //    $("#divSPRequest").addClass("d-none");
+        //}
+        columnDropdown1.empty();
+        columnDropdown2.empty();
+        $('#tblRequest tbody tr').remove();
+        $.ajax({
+            url: "@Url.Action("GetFieldOptionSource", "FormSetting")",
+            type: "GET",
+            skipLoading: true,
+            data: { sourceType: _OptionSource },
+            success: function (tables) {
+                let tableDropdown = $("#ddlTables");
+                tableDropdown.empty();
+                tableDropdown.append('<option value="">Select ' + _OptionSource +'</option>');
+                tables.forEach(table => {
+                    if (defaultValue != undefined && defaultValue != "" && defaultValue == table) {
+                        tableDropdown.append(`<option selected value="${table}">${table}</option>`);
+                    }
+                    else {
+                        tableDropdown.append(`<option value="${table}">${table}</option>`);
+                    }
+                });
+                // When table is selected, load columns in next dropdowns
+                //tableDropdown.off("change").on("change", function () {
+                //    let selectedTable = $(this).val();
+                //    $('#tblRequest tbody tr').remove();
+                //    $("#divSPRequest").addClass("d-none");
+                //    if (selectedTable) {
+                //        loadTableColumns(_OptionSource, selectedTable);
+                //    }
+                //});
+             }
+        });
+    }
+    function showFieldControl(fieldTypeId, fieldType) {
+        var fieldHeader = $("#ddlSelect").find(":selected").text();
+        $("#fieldModalLabel").html("Add New Field : " + fieldType);
+
+        $("#hdnFieldTypeId").val(fieldTypeId);
+        var htmlPath = '<ol class="breadcrumb text-right p-0">'
+        htmlPath = htmlPath + '<li>' + fieldHeader + '</li>';
+        htmlPath = htmlPath + '<li>' + $("#lblFormname").html() + '</li>';
+        htmlPath = htmlPath + '<li>' + $("#hdnSelectedTabName").val() + '</li>';
+        htmlPath = htmlPath + '</ol>';
+        $("#fieldPopupPath").html(htmlPath);
+        AddNewField();
+        $(".row_Text").hide();
+        $("#row_LengthText").hide();
+        $("#row_select").hide();
+        $("#ddlFieldSelect").parent().hide();
+        $("#ddlFieldDecimal").parent().hide();
+        $("#MultiSelection").hide();
+        $(".spnIsNumericHideMandaory").show();
+        $("#divchkIsSummary").hide();
+        $("#chkIsSummary").prop("checked", false);
+        $("#ddlFieldSize").parent().parent().css("display", "");
+        $("#chkRequired").parent().parent().css("display", "");
+        $("#chkIsReadOnly").parent().parent().css("display", "");
+        $("#chkIsDependencyField").parent().parent().css("display", "");
+        $("#chkIsUnique").parent().parent().css("display", "");
+        $(".buttonreffield").hide();
+        if (fieldType === "TextBox" || fieldType === "MultiText") {
+            $(".row_Text").show();
+            $("#row_LengthText").show();
+            $("#row_select").show();
+            $(".row_size").show();
+        } else if (fieldType === "Dropdown" || fieldType === "Selection") {
+            var ddlSource = $('input[type=radio][name=inline-radios]:checked').val();
+            $(".row_Text").hide();
+            $("#row_LengthText").show();
+            $("#row_select").show();
+            $(".row_size").show();
+            $("#MultiSelection").show();
+            $("#rdbTable").prop("checked", true);
+            loadDropdownTables("Table"); // Load DB table list dynamically
+        }
+        else if (fieldType === "Label") {
+            var ddlSource = $('input[type=radio][name=inline-radios]:checked').val();
+            $("#row_select").show();
+            $(".spnIsNumericHideMandaory").hide();
+        }
+        else if (fieldType == "Numeric") {
+            $("#row_select").show();
+            $("#row_LengthText").show();
+            $("#ddlFieldSelect").parent().show();
+            $("#ddlFieldDecimal").parent().show();
+            $("#divchkIsSummary").show();
+            $(".spnIsNumericHideMandaory").hide();
+        }
+        else if (fieldType == "Button") {
+            $("#ddlFieldSize").parent().parent().css("display", "none");
+            $("#chkRequired").parent().parent().css("display", "none");
+            $("#chkIsReadOnly").parent().parent().css("display", "none");
+            $("#chkIsDependencyField").parent().parent().css("display", "none");
+            $("#chkIsUnique").parent().parent().css("display", "none");
+            $('#rdbSP').prop("checked", true);
+            loadDropdownTables("StoredProcedure");
+            $(".row_Text").show();
+            $(".buttonreffield").show();
+        }
+        else {
+            $("#row_LengthText").hide();
+            $(".row_Text").hide();
+            $(".row_size").show();
+            $("#row_select").hide();
+        }
+    }
+    function AddNewTab() {
+        $("#tabModellLabel").html("Add New Grid");
+        $("#txtFormTabTitle").val('');
+        $("#hdnItemAdvanceId").val('');
+        $("#txtFormTab").val('');
+        $("#txtFormTabSQLTable").val('');
+        $("#ddlNextTabDataScript").val(0);
+        $("#txtFormTab").prop("disabled", false);
+        bindStoredProcedure("ddlGetDataScript", "");
+        bindStoredProcedure("ddlSetDataScript", "");
+        bindStoredProcedure("ddlValidDataScript", "");
+        $("#txtFormTab").focus();
+    }
+    function BindTab() {
+        try {
+            $.ajax({
+                type: "GET",
+                url: "@Url.Action("getFormItemAdvanceSettings", "FormSetting")",
+                contentType: "application/json; charset=utf-8",
+                data: {},
+                dataType: "json",
+                success: function (response) {
+                    $("#divDynamicTabs").empty();
+                    if (response != null && response.length > 0) {
+                        $("#btnAddNewField").show();
+                        var dynamicTabId = "ItemAdvanceTab"; // So: "HeaderTab" or "DetailTab"
+                        var tabHtml = '<ul class="nav nav-tabs" id="' + dynamicTabId + '" role="tablist">';
+                        var tabDetHtml = '<div class="tab-content pl-3 p-1 tab-inner-content" id="' + dynamicTabId + 'Content">';
+                        var defaultTabtbl = "";
+                        for (var iRow = 0; iRow < response.length; iRow++)
+                        {
+                            var tanbname = response[iRow].GridName.replace(" ", "");
+                            var tanbtitle = response[iRow].GridTitle;
+                            if (iRow == 0) {
+                                defaultTabtbl = "tblFormFields" + response[iRow].ItemAdvanceId;
+                                tabHtml = tabHtml + "<li class='nav-item'><a style='cursor:move' onclick='selectTab(\"" + response[iRow].ItemAdvanceId + "\",\"" + tanbname + "\",\"" + response[iRow].SQLTableName + "\",\"" + tanbtitle + "\");' class='nav-link active' id=" + tanbname + "-tab' data-toggle='tab' href='#" + tanbname + "' title='Press and move the tab' role='tab' aria-controls=\"" + tanbname + "\" aria-selected='true'>" + tanbtitle + "";
+                                tabHtml = tabHtml + "<label title='Edit Tab' onclick='EditTab(\"" + response[iRow].ItemAdvanceId + "\");' data-toggle='modal' data-target='#tabModal' style='padding-left:8px;'><i class='fa fa-pencil' style='font-size:14px;'></i></label>";
+                                //tabHtml = tabHtml + '<label title="Delete Tab" onclick="DeleteTab(\'' + response[iRow].ItemAdvanceId + '\');" style="padding-left:8px;"><i class="fa fa-trash" style="font-size:14px;"></i></label>';
+                                tabHtml = tabHtml + '</a></li>';
+                                $("#hdnSelectedTab").val(response[iRow].ItemAdvanceId);
+                                $("#hdnSelectedTabName").val(tanbname);
+                                $("#selectedHead").html("Advance Setting : "+ tanbtitle);
+                                $("#hdnTabSorOrder").val(response[iRow].SortOrder);
+                                $("#hdnSelectedTabSQLTableName").val(response[iRow].SQLTableName);
+                            }
+                            else {
+                                tabHtml = tabHtml + "<li class='nav-item'><a  title='Press and move the tab' style='cursor:move' onclick='selectTab(\"" + response[iRow].ItemAdvanceId + "\",\"" + tanbname + "\",\"" + response[iRow].SQLTableName + "\",\"" + tanbtitle + "\");' class='nav-link' id=" + tanbname + "-tab' data-toggle='tab' href='#" + tanbname + "' role='tab' aria-controls=\"" + tanbname + "\" aria-selected='true'>" + tanbtitle + "";
+                                tabHtml = tabHtml + "<label title='Edit Tab' onclick='EditTab(\"" + response[iRow].ItemAdvanceId + "\");' data-toggle='modal' data-target='#tabModal' style='padding-left:8px;'><i class='fa fa-pencil' style='font-size:14px;'></i></label>";
+                                //tabHtml = tabHtml + '<label title="Delete Tab" onclick="DeleteTab(\'' + response[iRow].ItemAdvanceId + '\');" style="padding-left:8px;"><i class="fa fa-trash" style="font-size:14px;"></i></label>';
+                                tabHtml = tabHtml + '</a></li>';
+                                tabHtml = tabHtml + '</li>';
+                            }
+
+                            if (iRow == 0) {
+                                tabDetHtml = tabDetHtml + '<div class="tab-pane fade show active" id="' + tanbname + '" role="tabpanel" aria-labelledby="' + tanbname + '-tab">';
+                            }
+                            else {
+                                tabDetHtml = tabDetHtml + '<div class="tab-pane fade show" id="' + tanbname + '" role="tabpanel" aria-labelledby="' + tanbname + '-tab">';
+                            }
+                            /*tabHtml = tabHtml + '<div class="tab-pane fade show active" id="' + tanbname + '" role="tabpanel" aria-labelledby="' + tanbname + '-tab">';*/
+                            tabDetHtml = tabDetHtml + '<div class="row form-group">';
+                            tabDetHtml = tabDetHtml + '<table id="tblFormFields' + response[iRow].ItemAdvanceId +'" class="row-reorder display table-bordered table-striped dataTable dtr-inline" cellspacing="0" width="100%"></table>';
+                            tabDetHtml = tabDetHtml + '</div></div>';
+                        }
+                        tabHtml = tabHtml + '<a class="btn btn-sm tab-add-btn" style="padding-top:13px;" id="btnAddNewTab" onclick="AddNewTab();" href="javascript:void(0);" title="Add New Field" data-toggle="modal" data-target="#tabModal" style=""><i class="fa fa-plus"></i></a>';
+                        tabHtml = tabHtml + '</ul>';
+                        tabDetHtml = tabDetHtml + '</div>';
+                        $("#divDynamicTabs").append(tabHtml + tabDetHtml);
+
+                        // Make the tabs sortable
+                        $("#" + dynamicTabId).sortable({
+                            axis: "x",
+                            containment: "parent",
+                            items: "> li.nav-item",
+                            stop: function (event, ui) {
+                                let sortedTabs = [];
+                                $("#" + dynamicTabId).children("li.nav-item").each(function (index) {
+                                    const onclickAttr = $(this).find("a").attr("onclick");
+                                    const matches = onclickAttr?.match(/selectTab\("(.+?)",\s*"(.+?)",\s*"(.+?)"\)/);
+                                    if (matches) {
+                                        sortedTabs.push({ FormId: matches[1], FormName: matches[2], SortOrder: index + 1 });
+                                    }
+                                });
+                                // Save new sort order via AJAX
+                                 $.ajax({
+                                    type: "POST",
+                                    url: '@Url.Action("UpdateAdvanceSortOrder", "FormSetting")',
+                                    contentType: "application/json; charset=utf-8",
+                                     data: JSON.stringify({ ItemAdvanceId: parseInt($("#hdnSelectedTab").val()), Rows: sortedTabs }),
+                                    success: function () {
+                                        ShowToastNotification("success", "Tab order updated.");
+                                    },
+                                    error: function () {
+                                        ShowToastNotification("error", "Failed to update tab order.");
+                                    }
+                                });
+                            }
+                        });
+                        $("#hdnSelectedTabGrid").val(defaultTabtbl);
+
+                        GetFormFieldList();
+                    }
+                    else {
+                        $("#btnAddNewField").hide();
+                        AddNewTab();
+                        $("#div" + $("#hdnSelectedTabName").val() + "Tabs").html('<div class="alert alert-info" role="alert">No tabs have been added yet. Click <a href="#" data-toggle="modal" data-target="#tabModal" class="alert-link">Add New Tab</a> here to add a new tab.</div >');
+                    }
+                 },
+                 failure: function (response) {
+                     ShowToastNotification("error", response.d);
+                 },
+                 error: function (response) {
+                     ShowToastNotification("error", "Error fetching data!");
+                 }
+            });
+        } catch (e) {
+
+        }
+    }
+    function EditTab(FormTabId) {        
+        try {
+
+            $("#tabModellLabel").html($("#hdnSelectedTabName").val() + " : Edit Advance Setting");
+            $("#hdnItemAdvanceId").val(FormTabId);
+            //$("#txtFormTabDescription").val("");
+            $("#txtFormTabTitle").val("");
+            $("#txtFormTab").val($("#hdnSelectedTabName").val());
+            $("#txtFormTabSQLTable").val("");
+            $("#txtFormTabTitle").focus();
+            $("#txtFormTab").prop("disabled", true);
+
+            $.ajax({
+                type: "GET",
+                url: "@Url.Action("getFormItemAdvanceDetail", "FormSetting")",
+                contentType: "application/json; charset=utf-8",
+                data: { ItemAdvanceId: FormTabId },
+                dataType: "json",
+                success: function (response) {
+                    if (response != null) {
+                        $("#txtFormTabTitle").val(response.GridTitle);
+                        $("#txtFormTabSQLTable").val(response.SQLTableName);
+                        $("#txtFormTab").val(response.GridName);
+                        //$("#txtFormTabDescription").val(response.Description);
+                        $("#hdnItemAdvanceId").val(response.ItemAdvanceId);
+                        bindStoredProcedure("ddlGetDataScript", response.GetDataScript);
+                        bindStoredProcedure("ddlSetDataScript", response.SetDataScript);
+                        bindStoredProcedure("ddlValidDataScript", response.ValidDataScript);
+                    }
+                    else {
+                    }
+                },
+                failure: function (response) { },
+                error: function (response) { }
+            });
+        } catch (e) {
+        }
+    }
+    function GetFormFieldList()
+    {
+        var advanceId = $("#hdnSelectedTab").val();
+        $.ajax({
+            type: "GET",
+            url: "@Url.Action("getFormItemAdvanceFields", "FormSetting")",
+            contentType: "application/json; charset=utf-8",
+            data: { ItemAdvanceId: advanceId },
+            dataType: "json",
+            skipLoading: true,
+            success: SuccesssBindFields,
+            failure: function (response) {
+                ShowToastNotification("success", response.d);
+            },
+            error: function (response) {
+                ShowToastNotification("error", "Error fetching data!");
+            }
+        });
+    }
+    function SuccesssBindFields(dataset) {
+        try {
+
+            $("#ddlFieldSelect").empty();
+            var $ddl = $('#ddlFieldSelect');
+            $ddl.empty(); // Clear existing options
+            $ddl.append($('<option>', { value: '', text: 'Select Field' }));
+            if (dataset != null && dataset.length > 0) {
+                $.each(dataset, function (index, item) {
+                    if (item.FieldType == "Numeric") {
+                        $ddl.append($('<option>', {
+                            value: item.FieldName,      // or item.Value
+                            text: item.FieldName      // or item.Text
+                        }));
+                    }
+                });
+            }
+            $("#ddlFieldSelectButton").empty();
+            var $ddlButton = $('#ddlFieldSelectButton');
+            $ddlButton.empty(); // Clear existing options
+            $ddlButton.append($('<option>', { value: '', text: 'Select Field' }));
+            if (dataset != null && dataset.length > 0) {
+                $.each(dataset, function (index, item) {
+                    if (item.FieldType == "Numeric") {
+                        $ddlButton.append($('<option>', {
+                            value: item.FieldName,      // or item.Value
+                            text: item.FieldName      // or item.Text
+                        }));
+                    }
+                });
+            }
+            dataset = Array.isArray(dataset) ? dataset : [];
+            var SelectedTabGrid = $("#hdnSelectedTabGrid").val();
+            // Initialize DataTable
+            let formTable = new DataTable("#" + SelectedTabGrid, {
+                "destroy": true,
+                searching: false,
+                paging: false,
+                scrollCollapse: true,
+                info: true,
+                // scrollY: '500px',
+                data: dataset,
+                /*select: true,*/
+                orderable: false,
+                rowReorder: {
+                    selector: '.rowReorder'
+                },
+                columns: [
+                    {
+                        title: 'Action',
+                        orderable: false,
+                        className: "grid-action-item",
+                        render: function (data, type, row, meta) {
+                            var deletelink = "m_FormField";
+                            var option = "Edit";
+                            var Doption = "Delete";
+                            var Voption = "View";
+                            var caption = row.FieldName + " Field";
+                            //return "<a title='Edit Record' data-toggle='modal' data-target='#formfieldModal' onclick='EditField(\"" + row.FieldId + "\",\"" + option + "\")' href='javascript:void(0)'><i class='fa fa-pencil'></i></a> &nbsp;|&nbsp; <a title='Delete Record' onclick='DeleteRecord(\"" + row.FieldId + "\",\"" + deletelink + "\",\"" + caption + "\")' href='javascript:void(0)';><i class='fa fa-trash text-danger'></i></a> &nbsp;|&nbsp; <a title='View Record'  data-toggle='modal' data-target='#formfieldModal' onclick='EditField(\"" + row.FieldId + "\",\"" + Voption + "\")' href='javascript:void(0);'><i class='fa fa-eye text-black'></i></a>";
+                            return "<a title='Edit Record' data-toggle='modal' data-target='#formfieldModal' onclick='EditField(\"" + row.FieldId + "\",\"" + option + "\")' href='javascript:void(0)'><i class='fa fa-pencil'></i></a> &nbsp;|&nbsp; <a title='View Record'  data-toggle='modal' data-target='#formfieldModal' onclick='EditField(\"" + row.FieldId + "\",\"" + Voption + "\")' href='javascript:void(0);'><i class='fa fa-eye text-black'></i></a>";
+                        },
+                    },
+                    {
+                        title: 'Field Name',
+                        orderable: false,
+                        className: "rowReorder",
+                        render: function (data, type, row, meta) {
+                            var option = "View";
+                            return "<a title='View Record'  data-toggle='modal' data-target='#formfieldModal' onclick='EditField(\"" + row.FieldId + "\",\"" + option + "\")' href='javascript:void(0);'>" + row.FieldName + "</a>";
+                        },
+                    },
+                    { title: 'Field Caption', data: 'FieldCaption', className: "rowReorder", orderable: false },
+                    {
+                        title: 'Is Visible',
+                        orderable: false,
+                        render: function (data, type, row, meta) {
+                            return (row.IsVisible === true) ? '<span class="fa fa-check text-success"></span>' : '<span class="fa fa-remove text-danger"></span>'
+                        },
+                    },
+                    {
+                        title: 'Is Visible List',
+                        className: "rowReorder",
+                        orderable: false,
+                        render: function (data, type, row, meta) {
+                            return (row.IsVisibleInList === true) ? '<span class="fa fa-check text-success"></span>' : '<span class="fa fa-remove text-danger"></span>'
+                        },
+                    },
+                    {
+                        title: 'Required',
+                        className: "rowReorder",
+                        orderable: false,
+                        render: function (data, type, row, meta) {
+                            var option = row.IsRequired;
+                            return (row.IsRequired === true) ? '<span data-fieldId=' + row.FieldId + ' class="fa fa-check text-success"></span>' : '<span  data-fieldId=' + row.FieldId + ' class="fa fa-remove text-danger"></span>'
+                        },
+                    },
+                    { title: "Sort Order", data: "SortOrder", className: "rowReorder", orderable: false, },
+                    //{
+                    //    title: 'Sort Order',
+                    //    className: "rowReorder",
+                    //    orderable: false,
+                    //    render: function (data, type, row, meta) {
+                    //        return (row.SortOrder === null) ? '<span>0</span>' : '<span>' + row.SortOrder +'</span>'
+                    //    },
+                    //},
+                    { title: "Field Type", data: "FieldType", className: "rowReorder", orderable: false, },
+                    { title: 'Source', data: 'DDLSourceName', className: "rowReorder", orderable: false },
+                ],
+                language: {
+                    emptyTable: "No records found", // Message when no data is available
+                    zeroRecords: "No matching records found"
+                }
+            });
+
+            try {
+                var $table = $("#" + SelectedTabGrid);
+                var tableId = $table.attr('id');
+                formTable.on('row-reorder', function (e, diff, edit) {
+                    var formId = $("#hdnSelectedFormId").val();
+                    var updatedRows = [];
+                    // Loop through the TRs in the current DOM order
+                    $table.find('tbody tr').each(function (idx) {
+                        var $tr = $(this);
+                        var fieldId = $tr.find('td').eq(5).find('span').attr('data-fieldid');
+                        var fieldName = $tr.find('td').eq(1).text().trim(); // 2nd column is Form Name
+                        updatedRows.push({
+                            FormId: fieldId,
+                            FormName: fieldName,
+                            SortOrder: idx + 1 // 1-based index
+                        });
+                        // Optionally update the first cell in the row with the new sort order
+                        $tr.find('td').eq(6).text(idx + 1);
+                    });
+                    // Get the parent id for this table
+
+                    //AJAX to send new order to your backend
+                    $.ajax({
+                        url: '@Url.Action("UpdateAdvanceSortOrder", "FormSetting")',
+                        type: 'POST',
+                        skipLoading: true,
+                        contentType: 'application/json',
+                        data: JSON.stringify({
+                            ParentFormId: formId,
+                            Rows: updatedRows
+                        }),
+                        success: function (response) {
+                            //location.reload(); // Reloads the entire page to reflect changes
+                            GetFormFieldList();
+                            // Optionally show a success message
+                        },
+                        error: function () {
+                            alert('Failed to save new sort order.');
+                        }
+                    });
+                });
+            } catch (e) {
+                console.error('Caught error:', e.message);
+            }
+
+        } catch (e) {
+
+        }
+    }
+    function AddNewField() {
+        $("#v-pills-fieldstypetab button").removeClass("disabled");
+        $("#txtFieldname").val('');
+        $("#txtFieldcaption").val('');
+        $('#ddlSelectText').val('');
+        $('#ddlTables').val('');
+        $('#ddlSelectValue').val('');
+        $("#txtFieldLength").val('200')
+        $("#txtFieldLength").attr("data-bind", "0");
+        $("#txtFieldPlaceholder").val('');
+        $("#txtFieldHelptext").val('');
+        $("#txtFieldFormula").val('');
+        $("#hdnFieldId").val("");
+        $("#ddlButtonTemplate").val(0);
+        $("#rdbTable").click();
+        $("#ddlFieldSelect").parent().hide();
+        $("#ddlFieldDecimal").parent().hide();
+        $("input[type=radio][name=inline-radios]").prop('checked', false);
+        $("#chkIsReadOnly").prop("checked", false);
+        $("#chkIsSummary").prop("checked", false);
+        $("#chkIsVisible").prop("checked", true);
+        $("#chkIsVisibleInList").prop("checked", false);
+        $("#chkRequired").prop("checked", false);
+        $("#chkStatus").prop("checked", true);
+        $("#btnSaveField").removeAttr("disabled");
+        $("#chkIsDisabled").prop("checked", false);
+        $("#chkIsUnique").prop("checked", false);
+        $("#chkIsMultiSelection").prop("checked", false);
+        $("#chkMultipleDocument").prop("checked", false);
+        $("#chkIsDependencyField").prop("checked", false);
+        $("#v-pills-fieldstypecontent input").attr("disabled", false);
+        $("#v-pills-fieldstypecontent textarea").attr("disabled", false);
+        $("#v-pills-fieldstypecontent select").attr("disabled", false);
+        $("#txtFieldname").attr("data-section", $("#hdnSelectedTabName").val());
+        $('#tblRequest tbody tr').remove();
+        $("#txtFieldname").focus();
+        $("#rdbTable").click();
+    }
+    function SaveField()
+    {
+        var SPParams = [];
+        var isFormValid = true, isFieldLength = true;
+        var isParent = $("#hdnParentForm").val();
+        var fieldType = $("#v-pills-fieldstypetab").find("button.active").data("fieldtype");
+        $("#formfieldModal input").each(function () {
+            var fieldId = $(this).attr("id");
+            if ($.trim($(this).val()).length == 0 && (fieldId != "txtFieldFormula" && fieldId != "txtFieldPlaceholder" && fieldId != "txtFieldHelptext")) {
+                if (fieldId == "txtFieldLength" && (fieldType == "MultiText" || fieldType == "TextBox" || fieldType == "Selection")) {
+                    $(this).addClass("input-validation-error");
+                    if (isFormValid == true) {
+                        $(this).focus();
+                    }
+                    isFormValid = false;
+                }
+                else if (fieldId == "txtFieldname" || fieldId == "txtFieldcaption"){
+                    $(this).addClass("input-validation-error");
+                    if (isFormValid == true) {
+                        $(this).focus();
+                    }
+                    isFormValid = false;
+                }
+            }
+            else if ($.trim($(this).val()).length > 0 && fieldId == "txtFieldLength" &&
+                (fieldType == "MultiText" || fieldType == "TextBox" || fieldType == "Selection")) {
+                var minText = parseInt($(this).attr("data-bind"));
+                if (parseInt($(this).val()) < minText) {
+                    $(this).addClass("input-validation-error");
+                    if (isFormValid == true) {
+                        $(this).focus();
+                    }
+                    isFieldLength = false;
+                    isFormValid = false;
+                } else {
+                    $(this).removeClass("input-validation-error");
+                }
+            }
+            else {
+                $(this).removeClass("input-validation-error");
+            }
+        });
+        if (isFormValid) {
+            $("#formfieldModal select").each(function () {
+                var fieldId = $(this).attr("id");
+                //if ((fieldType == "Selection" || fieldType == "Label")
+                 if ((fieldType == "Selection")
+                    && (fieldId == "ddlTables" || fieldId == "ddlSelectText" || fieldId == "ddlSelectValue")) {
+                    if ($.trim($(this).val()).length == 0) {
+                        $(this).addClass("input-validation-error");
+                        if (isFormValid == true) {
+                            $(this).focus();
+                        }
+                        isFormValid = false;
+                    }
+                    else {
+                        $(this).removeClass("input-validation-error");
+                    }
+                }
+            });
+        }
+        if (!isFormValid) {
+            if (!isFieldLength) {
+                ShowToastNotification("error", "Field length cannot be decreased");
+            }
+            else {
+                ShowToastNotification("error", "Please fill in all the required fields (indicated by *)");
+            }
+        }
+        else {
+
+            if ($('input[name="inline-radios"]:checked').val() == "StoredProcedure" && $('#tblRequest tbody>tr').length > 0) {
+                var spTableName = $("#hdnSelectedTabSQLTableName").val();
+
+                $('#tblRequest tbody>tr').each(function () {
+                    if (isFormValid) {
+                        if ($(this) != null) {
+                            var _paramName = "", _paramMapField = "";
+                            $('td', this).each(function () {
+                                if ($(this).hasClass('paramName')) {
+                                    _paramName = $(this).text();
+                                }
+                                else if ($(this).hasClass('paramField')) {
+                                    _paramMapField = $(this).find('select').val();
+                                    if (_paramMapField == "0") {
+                                        isFormValid = false;
+                                    }
+                                }
+                            });
+                            SPParams.push({
+                                ParameterId: 0,
+                                ParameterName: _paramName,
+                                ParameterValueFieldName: _paramMapField,
+                                ParameterFromTable: spTableName
+                            });
+                        }
+                    }
+                });
+            }
+            if (!isFormValid) {
+                ShowToastNotification("error", "Please select field in Stored Procedure Request.");
+            }
+            else {
+                try {
+                    var ddlSource = $('input[type=radio][name=inline-radios]:checked').val();
+                    var sectionId = $("#hdnSelectedSection").val();
+                    var tabId = $("#hdnSelectedTab").val();
+                    if (fieldType == "Label") {
+                        $("#txtFieldLength").val("3000");
+                    }
+                    else if ($("#chkIsMultiSelection").prop("checked")) {
+                        $("#txtFieldLength").val("3999");
+                    }
+                    var modal = {
+                        FieldName: $("#txtFieldname").val(),
+                        FieldCaption: $("#txtFieldcaption").val(),
+                        FieldLength: $("#txtFieldLength").val(),
+                        FieldPlaceHolder: $("#txtFieldPlaceholder").val(),
+                        FieldHelpText: $("#txtFieldHelptext").val(),
+                        IsRequired: $("#chkRequired").prop("checked"),
+                        IsActive: $("#chkStatus").prop("checked"),
+                        FormId: $("#hdnSelectedFormId").val(),
+                        FieldFormula: $("#txtFieldFormula").val(),
+                        FormTabId: tabId,
+                        FieldTypeId: $("#hdnFieldTypeId").val(),
+                        FormSectionId: sectionId,
+                        FieldId: $("#hdnFieldId").val(),
+                        DDLSourceType: ddlSource,
+                        DDLSourceName: $("#ddlTables").val(),
+                        DDLTextField: $("#ddlSelectText").val(),
+                        DDLValueField: (fieldType == "Button" ? $("#ddlFieldSelectButton").val() : $("#ddlSelectValue").val()),
+                        FieldSize: $("#ddlFieldSize").val(),
+                        FieldDecimal: $("#ddlFieldDecimal").val(),
+                        IsReadOnly: $("#chkIsReadOnly").prop("checked"),
+                        IsSummary: $("#chkIsSummary").prop("checked"),
+                        IsDependencyField: $("#chkIsDependencyField").prop("checked"),
+                        IsVisible: $("#chkIsVisible").prop("checked"),
+                        IsDisable: $("#chkIsDisabled").prop("checked"),
+                        IsUnique: $("#chkIsUnique").prop("checked"),
+                        IsMultiSelection: $("#chkIsMultiSelection").prop("checked"),
+                        AllowMultiDocument: $("#chkMultipleDocument").prop("checked"),
+                        IsVisibleInList: $("#chkIsVisibleInList").prop("checked"),
+                        SortOrder: $("#hdnSortOrder").val(),
+                        FieldType: fieldType,
+                        TabName: $("#hdnSelectedTabName").val(),
+                        SQLTableName: $("#hdnSelectedTabSQLTableName").val(),
+                        SectionName: $("#hdnSelectedTabName").val(),
+                        Parameters: SPParams,
+                        TemplateId: $("#ddlButtonTemplate").val(),
+                        ItemAdvanceId: parseInt($("#hdnSelectedTab").val())
+                    };
+
+                    $.ajax({
+                        type: "POST",
+                        url: '@Url.Action("SaveFormItemAdvanceField", "FormSetting")',
+                        contentType: "application/json;",
+                        data: JSON.stringify(modal),
+                        async: false,
+                        success: function (response) {
+                            if (response.IsSuccess) {
+                                ShowToastNotification("success", "Record saved successfully.");
+                                $("#btn_TextBox").click();
+                                AddNewField();
+                                $('#btnCancelField').click();
+                                GetFormFieldList();
+                            }
+                            else {
+                                ShowToastNotification("error", response.Response);
+                            }
+                        },
+                        failure: function (response) { },
+                        error: function (response) { }
+                    });
+
+                } catch (e) {
+                }
+            }
+        }
+    }
+    function EditField(_fieldId, _type) {
+        if (_type == "Edit") {
+            $("#fieldModalLabel").html("Edit Field");
+            $("#btnSaveField").removeAttr("disabled");
+        }
+        else{
+            $("#fieldModalLabel").html("View Field");
+            $("#btnSaveField").attr("disabled", "disabled");
+        }
+        $('#tblRequest tbody tr').remove();
+        $('#tblDependencyRequest tbody tr').remove();
+        ///alert("Edit Field functionality in development.");
+        try {
+            $.ajax({
+                type: "GET",
+                url: "@Url.Action("getFormItemAdvanceFieldDetail", "FormSetting")",
+                contentType: "application/json; charset=utf-8",
+                data: { FieldId: _fieldId },
+                dataType: "json",
+                success: function (response) {
+                    if (response != null) {
+                        var FormField = response;
+                        $("#v-pills-fieldstypetab #btn_" + FormField.FieldType).click();
+                        showFieldControl(FormField.FieldTypeId, FormField.FieldType);
+                        $("#v-pills-fieldstypecontent input").attr("disabled", true);
+                        $("#v-pills-fieldstypecontent textarea").attr("disabled", true);
+                        $("#txtFieldname").val(FormField.FieldName);
+                        $("#txtFieldname").attr("data-section", FormField.SectionName)
+                        //"Header"
+                        $("#txtFieldFormula").val(FormField.FieldFormula);
+                        $("#txtFieldcaption").val(FormField.FieldCaption);
+                        $("#txtFieldLength").val(FormField.FieldLength);
+                        $("#txtFieldLength").attr("data-bind", FormField.FieldLength);
+                        $("#txtFieldPlaceholder").val(FormField.FieldPlaceHolder);
+                        $("#txtFieldHelptext").val(FormField.FieldHelpText);
+                        $("#chkRequired").prop("checked", (FormField.IsRequired == null ? false : FormField.IsRequired));
+                        $("#chkStatus").prop("checked", (FormField.IsActive == null ? false : FormField.IsActive));
+                        $("#hdnFieldTypeId").val(FormField.FieldTypeId);
+                        $("#hdnFieldId").val(FormField.FieldId);
+                        /*DDLSourceType: ddlSource,*/
+                        if (FormField.DDLSourceType != "") {
+                            $("input[name=inline-radios][value='" + FormField.DDLSourceType +"']").prop("checked", true);
+                            loadDropdownTables(FormField.DDLSourceType, FormField.DDLSourceName);
+                            $("#ddlTables").val(FormField.DDLSourceName);
+                            loadTableColumns(FormField.DDLSourceType, FormField.DDLSourceName, FormField.DDLTextField, FormField.DDLValueField);
+                            $("#ddlSelectText").val(FormField.DDLTextField);
+                            $("#ddlSelectValue").val(FormField.DDLValueField);
+                        }
+                        $("#v-pills-fieldstypecontent select").attr("disabled", true);
+                        $("#ddlFieldSize").val(FormField.FieldSize);
+
+                        if (FormField.FieldType == "Button") {
+                            $("#ddlFieldSelectButton").val(FormField.DDLValueField);
+                            $("#select2-ddlFieldSelectButton-container").html(FormField.DDLValueField);
+                        }
+
+                        $("#ddlFieldDecimal").val(FormField.FieldDecimal);
+                        $("#chkIsReadOnly").prop("checked", (FormField.IsReadOnly == null ? false : FormField.IsReadOnly));
+                        $("#chkIsSummary").prop("checked", (FormField.IsSummary == null ? false : FormField.IsSummary));
+                        $("#chkIsDependencyField").prop("checked", (FormField.IsDependencyField == null ? false : FormField.IsDependencyField));
+                        $("#chkIsVisible").prop("checked", (FormField.IsVisible == null ? false : FormField.IsVisible));
+                        $("#chkIsDisabled").prop("checked", (FormField.IsDisable == null ? false : FormField.IsDisable));
+                        $("#chkIsUnique").prop("checked", (FormField.IsUnique == null ? false : FormField.IsUnique));
+                        $("#chkIsMultiSelection").prop("checked", (FormField.IsMultiSelection == null ? false : FormField.IsMultiSelection));
+                        if ((FormField.IsMultiSelection == null ? false : FormField.IsMultiSelection)) {
+                            if ($("#txtFieldname").attr("data-section") == "Header") {
+                                $("#MultiDocument").removeClass("d-none");
+                            }
+                            else { $("#MultiDocument").addClass("d-none"); }
+                            $("#chkMultipleDocument").prop("checked", false);
+                        }
+                        else {
+                            $("#MultiDocument").addClass("d-none");
+                            $("#chkMultipleDocument").prop("checked", false);
+                        }
+                        $("#chkMultipleDocument").prop("checked", (FormField.AllowMultiDocument == null ? false : FormField.AllowMultiDocument));
+                        $("#chkIsVisibleInList").prop("checked", (FormField.IsVisibleInList == null ? false : FormField.IsVisibleInList));
+                        $("#selectedFieldType").html(FormField.FieldType);
+                        $("#hdnFieldTypeId").val(FormField.FieldTypeId);
+                        $("#hdnSortOrder").val(FormField.SortOrder);
+                        $("#hdnSelectedTabName").val(FormField.TabName);
+                        $("#hdnSelectedFormSQLTableName").val(FormField.SQLTableName);
+                        $("#ddlButtonTemplate").val(FormField.TemplateId);
+                        $("#v-pills-fieldstypetab button").addClass("disabled");
+                        $("#txtFieldname").addClass("disabled");
+                        if (_type == "Edit") {
+                            $("#fieldModalLabel").html("Edit Field : " + FormField.FieldType);
+                            $("#txtFieldcaption").attr("disabled", false);
+                            $("#txtFieldLength").attr("disabled", false);
+                            $("#ddlFieldSelectButton").attr("disabled", false);
+                            $("#txtFieldFormula").attr("disabled", false);
+                            $("#txtFieldPlaceholder").attr("disabled", false);
+                            $("#chkIsUnique").attr("disabled", false);
+                            $("#txtFieldHelptext").attr("disabled", false);
+                            $("#ddlFieldSelect").attr("disabled", false);
+                            $("#chkStatus").attr("disabled", false);
+                            $("#chkRequired").attr("disabled", false);
+                            //$("#chkIsMultiSelection").attr("disabled", false);
+                            $("#chkMultipleDocument").attr("disabled", false);
+                            $("#chkIsReadOnly").attr("disabled", false);
+                            $("#chkIsSummary").attr("disabled", false);
+                            $("#chkIsDependencyField").attr("disabled", false);
+                            $("#chkIsVisible").attr("disabled", false);
+                            $("#chkIsVisibleInList").attr("disabled", false);
+                            $("#ddlButtonTemplate").attr("disabled", false);
+                            $("#ddlFieldSize").attr("disabled", false);
+                            $("#ddlFieldDecimal").attr("disabled", false);
+                            $("#ddlSelectText").attr("disabled", false);
+                            $("#rdbTable").attr("disabled", false);
+                            $("#rdbSP").attr("disabled", false);
+                            $("#ddlTables").attr("disabled", false);
+                            $("#ddlSelectValue").attr("disabled", false);
+                        }
+                        else {
+                            $("#fieldModalLabel").html("View Field : " + FormField.FieldType);
+                        }
+                    }
+                    else {
+
+                    }
+                },
+                failure: function (response) { },
+                error: function (response) { }
+            });
+        } catch (e) {
+
+        }
+    }
+    function DeleteRecord(primaryId, source, caption) {
+        if (confirm("Are you sure you want to delete " + caption + "?")){
+            try {
+                var spTableName = $("#hdnSelectedTabSQLTableName").val();
+                var modal = { PrimaryId: primaryId, Source: spTableName };
+
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("DeleteFormItemAdvanceSetting", "FormSetting")',
+                    contentType: "application/json;",
+                    data: JSON.stringify(modal),
+                    async: false,
+                    success: function (response) {
+                        if (response.IsSuccess) {
+                            ShowToastNotification("success", "Record has been deleted.");
+                            if (source == "m_FormField") {
+                                GetFormFieldList();
+                            }
+                            else if (source == "m_FormTab") {
+                                BindTab();
+                            }
+                        }
+                        else {
+                            ShowToastNotification("error", response.Response);
+                        }
+                    },
+                    failure: function (response) { },
+                    error: function (response) { }
+                });
+            } catch (e) {
+            }
+        }
+    }
+    function selectTab(tabid, tabName, sqltablename, tablTitle) {
+        $("#hdnSelectedTab").val(tabid);
+        $("#hdnSelectedTabGrid").val("tblFormFields" + tabid);
+        $("#hdnSelectedTabName").val(tabName);
+        $("#selectedHead").html("Advance Setting : " + tablTitle);
+        $("#hdnSelectedTabSQLTableName").val(sqltablename)
+        GetFormFieldList();
+    }
+    function FieldSelectChangeEvent(ctrl) {
+        if (ctrl != undefined && $(ctrl).val() != null && $(ctrl).val() != "") {
+            var currentVal = $('#txtFieldFormula').val();         // Get current input value
+            var newVal = currentVal + "{" + $(ctrl).val() + "}";           // Append text
+            $('#txtFieldFormula').val(newVal);
+        }
+    }
+    function FieldSourceChangeEvent(ctrl) {
+        let selectedTable = $(ctrl).val();
+        var _OptionSource = $('input[type=radio][name=inline-radios]:checked').val();
+        $('#tblRequest tbody tr').remove();
+        $("#divSPRequest").addClass("d-none");
+        if (selectedTable) {
+            loadTableColumns(_OptionSource, selectedTable);
+        }
+    }
+    function bindStoredProcedure(dropdownId, defaultValue)
+    {
+        let tableDropdown = $("#" + dropdownId);
+        tableDropdown.empty();
+        $.ajax({
+            url: "@Url.Action("GetFieldOptionSource", "FormSetting")",
+            type: "GET",
+            skipLoading: true,
+            data: { sourceType: "StoredProcedure" },
+            success: function (tables) {
+                tableDropdown.append('<option value="0">Select Stored Procedure</option>')
+                tables.forEach(table => {
+                    if (defaultValue != undefined && defaultValue != "" && defaultValue == table) {
+                        tableDropdown.append(`<option selected value="${table}">${table}</option>`);
+                    }
+                    else {
+                        tableDropdown.append(`<option value="${table}">${table}</option>`);
+                    }
+                });
+             }
+        });
+    }
+    function SaveTab() {
+        var isFormValid = true;
+        $("#tabModal input").each(function () {
+            if ($.trim($(this).val()).length == 0 && ($(this).attr("id") != "txtFormTabSQLTable") && $(this).attr("id") != "hdnItemAdvanceId") {
+                $(this).addClass("input-validation-error");
+                if (isFormValid == true) {
+                    $(this).focus();
+                }
+                isFormValid = false;
+            }
+            else {
+                $(this).removeClass("input-validation-error");
+            }
+        });
+
+        if (!isFormValid) {
+            ShowToastNotification("error", "Please fill in all the required fields (indicated by *)");
+        }
+        else {
+            try {
+                
+                var tabId = parseInt($("#hdnItemAdvanceId").val());
+                var modal = {
+                    GridName: $("#txtFormTab").val(),
+                    IsActive: true,                    
+                    ItemAdvanceId: tabId,
+                    SQLTableName: $("#txtFormTabSQLTable").val(),
+                    GridTitle: $("#txtFormTabTitle").val(),
+                    GetDataScript: $("#ddlGetDataScript").val(),
+                    SetDataScript: $("#ddlSetDataScript").val(),
+                    ValidDataScript: $("#ddlValidDataScript").val()
+                };
+
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("SaveFormItemAdvance", "FormSetting")',
+                    contentType: "application/json;",
+                    data: JSON.stringify(modal),
+                    async: false,
+                    success: function (response) {
+                        if (response.IsSuccess) {
+                            ShowToastNotification("success", "Record saved successfully.");
+                            AddNewTab();
+                            $('#btnCancelTab').click();
+                            BindTab();
+                        }
+                        else {
+                            ShowToastNotification("error", response.Response);
+                        }
+                    },
+                    failure: function (response) { },
+                    error: function (response) { }
+                });
+            } catch (e) {
+            }
+        }
+    }
+</script>

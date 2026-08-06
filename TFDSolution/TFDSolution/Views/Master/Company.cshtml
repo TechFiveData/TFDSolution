@@ -1,0 +1,374 @@
+﻿
+@{
+    ViewBag.Title = "Company";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<!-- /header -->
+<div class="breadcrumbs">
+    <div class="col-sm-4">
+        <div class="page-header float-left">
+            <div class="page-title">
+                <h1>Company</h1>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-8">
+        <div class="page-header float-right">
+            <div class="page-title">
+                <ol class="breadcrumb text-right">
+                    <li><a href="@Url.Action("Index","Home")">Home</a></li>
+                    <li>Company</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="animated fadeIn">
+    <div class="row">
+        <div class="col-md-12 p-0">
+            <div class="card">
+                <div class="card-header">
+                    <div class="col-lg-6">
+                        <strong class="card-title"></strong>
+                    </div>
+                    <div class="col-lg-6 text-right">
+                        <a class="btn btn-sm" href="javascript:void(0);"><i class="fa fa-refresh"></i>&nbsp; Refresh</a>
+                        <a class="btn btn-sm" href="javascript:void(0);"><i class="fa fa-arrow-circle-left"></i>&nbsp; Back</a>
+                        <a class="btn btn-sm" href="javascript:void(0);" title="Export"><i class="fa fa-download"></i>&nbsp; Export</a>
+                        <a class="btn btn-sm" href="javascript:void(0);" title="Add New Company" data-toggle="modal" data-target="#mediumModal"><i class="fa fa-save"></i>&nbsp; New</a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted m-b-15">
+                        List Of Company
+                    </p>
+                    <div class="row form-group">
+                        <table id="tblCompany" class="display cell-border row-border nowrap" cellspacing="0" width="100%"></table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div><!-- .animated -->
+<div class="modal fade" id="mediumModal" tabindex="-1" role="dialog" aria-labelledby="mediumModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="mediumModalLabel">Add New Company</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6 form-group">
+                        <div class="col col-md-6 p-0"><label class=" form-control-label">Company Code</label></div>
+                        <div class="col-12 col-md-6 text-left">
+                            <input type="text" id="CompanyCode" name="CompanyCode" placeholder="Company Code" required class="form-control" disabled />
+                        </div>
+                    </div>
+                    <div class="col-md-6 form-group"></div>
+                </div>
+                <div class="row form-group">
+                    <div class="col col-md-3">
+                        <label for="text-input" class=" form-control-label">Company Name<span class="text-danger p-1">(*)</span></label>
+                    </div>
+                    <div class="col-12 col-md-9">
+                        <input type="text" id="CompanyName" name="CompanyName" placeholder="Company Name" maxlength="50" class="form-control" />
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col col-md-3">
+                        <label for="text-input" class=" form-control-label">Email<span class="text-danger p-1">(*)</span></label>
+                    </div>
+                    <div class="col-12 col-md-9">
+                        <div class="input-group">
+                            <input type="email" id="Email" name="Email" placeholder="Email" maxlength="100" class="form-control" />
+                            <div class="input-group-addon"><i class="fa fa-envelope-o"></i></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label for="Phone" class="control-label mb-1">Phone<span class="text-danger p-1">(*)</span></label>
+                            <input type="text" id="Phone" name="Phone" placeholder="Phone" maxlength="15" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <label for="Mobile" class="control-label mb-1">Mobile<span class="text-danger p-1">(*)</span></label>
+                        <div class="input-group">
+                            <input type="text" id="Mobile" name="Mobile" placeholder="Mobile" maxlength="15" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="SaveCompany();">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        GetComanyList();
+        AddNewCompany();
+        $('#mediumModal').on('shown.bs.modal', function () {
+            AddNewCompany();
+        })
+    });
+    $('#mediumModal').on('shown.bs.modal', function () {
+        AddNewCompany();
+    })
+    function GetComanyList() {
+        $.ajax({
+            type: "GET",
+            url: "@Url.Action("getCompanyList", "Master")",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: OnSuccess,
+            failure: function (response) {
+                alert(response.d);
+            },
+            error: function (response) {
+                alert(response);
+            }
+        });
+    }
+    function OnSuccess(response) {
+        bindDataTable(response);
+    };
+    function bindDataTable(dataset) {
+        // Assuming data is an array of objects
+        if (dataset.length === 0) {
+            return; // No data to display
+        }
+        //if ($.fn.DataTable.isDataTable('#tblCompany')) {
+        //    $('#tblCompany').DataTable().destroy();
+        //}
+
+
+        // Extract column names from the first object
+        //const columns = Object.keys(dataset[0]).map(key => {
+        //    if (key == "CompanyCode") {
+        //        return { title: key, data: key };
+        //    }
+        //});
+        // Initialize DataTable
+        new DataTable('#tblCompany', {
+            "destroy": true,
+            layout: {
+                topStart: {
+                    pageLength: {
+                        menu: [10, 25, 50, 100]
+                    },
+                    ///buttons: ['excelHtml5', 'csvHtml5', 'pdfHtml5']
+                },
+                topEnd: {
+                    search: {
+                        placeholder: 'Type search here'
+                    }
+                },
+                bottomEnd: {
+                    paging: {
+                        buttons: 5
+                    }
+                },
+            },
+            paging: true,
+            scrollCollapse: true,
+           /// scrollY: '500px',
+            data: dataset,
+            columns: [
+                {
+                    title: '',
+                    className: "grid-action-item",
+                    render: function (data, type, row, meta) {
+                        var editlink1 = '@Url.Action("CompanyAction", "Master", new { uId= "_uId", act = "E" })';
+                        editlink1 = editlink1.replace("amp;", "");
+                        editlink1 = editlink1.replace("amp;", "");
+                        editlink1 = editlink1.replace("_uId", row.CompanyId);
+                        return "<a title='Edit Record' href=" + editlink1 + "><i class='fa fa-pencil'></i></a> &nbsp;|&nbsp; <a title='Delete Record' href='javascript:DeleteCompany(\"" + row.CompanyId + "\")';><i class='fa fa-trash text-danger'></i></a>";
+                    },
+                },
+                {
+                    title: 'Company Code',
+                    render: function (data, type, row, meta) {
+                        var companycode = row.CompanyCode;
+                        var editlink1 = '@Url.Action("CompanyAction", "Master", new { uId= "_uId", act= "V" })';
+                        editlink1 = editlink1.replace("amp;", "");
+                        editlink1 = editlink1.replace("amp;", "");
+                        editlink1 = editlink1.replace("_uId", row.CompanyId);
+                        if (row.UpdatedOn != null) {
+                            return "<a title='Edit Record' href=" + editlink1 + "><span>" + companycode + "</span></a>";
+                        }
+                        else {
+                            return "<a title='Edit Record' href=" + editlink1 + "><strong>" + companycode + "</strong></a>";
+                        }
+                    },
+                },
+                {
+                    title: 'Company Name',
+                    data: 'CompanyName'
+                },
+                { title: 'Created By', data: 'CreatedBy' },
+                {
+                    title: 'Created On',
+                    render: function (data, type, row, meta) {
+                        var editlink = formatDate(parseMSDate(row.CreatedOn));
+                        return "<span>" + editlink + "</span>";
+                    },
+                },
+                {
+                    title: 'Updated On',
+                    render: function (data, type, row, meta) {
+                        if (row.UpdatedOn != null) {
+                            var editlink = formatDate(parseMSDate(row.UpdatedOn));
+                            return "<span>" + editlink + "</span>";
+                        }
+                        else {
+                            return "<span></span>";
+                        }
+                    },
+                },
+            ]
+        });
+    }
+    function formatDate(d) {
+        if (hasTime(d)) {
+            let n = d.toLocaleString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+            });
+            var s = (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear();
+            s += ' ' + n;
+        } else {
+            var s = (d.getDate() + '/' + d.getMonth() + 1) + '/' + d.getFullYear();
+        }
+        return s;
+    }
+    function hasTime(d) {
+        return !!(d.getUTCHours() || d.getUTCMinutes() || d.getUTCSeconds());
+    }
+
+    function zeroFill(n) {
+        if ((n + '').length == 1)
+            return '0' + n;
+
+        return n;
+    }
+    function parseMSDate(s) {
+        // Jump forward past the /Date(, parseInt handles the rest
+        return new Date(parseInt(s.substr(6)));
+    }
+
+        function DeleteCompany(uId) {
+        if (confirm("Are you sure you want to delete record?")) {
+            try
+            {
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("DeleteCompany", "Master")',
+                    data: { uId: uId },
+                    async: false,
+                    success: function (response) {
+                        alert(response.Response);
+                        location.reload(); // Refresh the table
+                    },
+                    error: function (response) {
+                        alert(response.Response);
+                    }
+                });
+            }
+            catch (e) {
+            }
+        }
+    }
+    function AddNewCompany() {
+        $("#CompanyCode").val('');
+        GetNextCode("m_CompanyMast");
+        $("#Email").val('');
+        $("#Phone").val('');
+        $("#Mobile").val('');
+        $("#CompanyName").val('');
+        $("#CompanyName").focus();
+    }
+    function GetNextCode(tablename)
+    {
+        var code = "";
+        $.ajax({
+            type: "GET", url: '@Url.Action("getNextCode", "Common")',
+            contentType: "application/json; charset=utf-8",
+            data: { tblName: tablename },
+            dataType: "json",
+            async: false,
+            success: function (response) {
+                $("#CompanyCode").val(response);
+            },
+            failure: function (response) {},
+            error: function (response) {}
+        });
+        return code;
+    }
+     function SaveCompany()
+     {
+         //var cCode = $("#CompanyCode").val();
+         if ($.trim($("#CompanyCode").val()).length == 0) {
+             GetNextCode("m_CompanyMast");
+         }
+
+         //var cName = $("#CompanyName").val();
+         //var cEmail = $("#Email").val();
+         //var cPhone = $("#Phone").val();
+         //var cMobile = $("#Mobile").val();
+         var isFormValid = true;
+         $("#mediumModal input").each(function () {
+             if ($.trim($(this).val()).length == 0) {
+                 $(this).addClass("input-validation-error");
+                 if (isFormValid == true) {
+                     $(this).focus();
+                 }
+                 isFormValid = false;
+             }
+             else {
+                 $(this).removeClass("input-validation-error");
+             }
+         });
+
+         if (!isFormValid) {
+             alert("Please fill in all the required fields (indicated by *)");
+         }
+         else {
+             try {
+                 var company = {
+                     CompanyCode: $("#CompanyCode").val(),
+                     CompanyName: $("#CompanyName").val(),
+                     Email: $("#Email").val(),
+                     Phone: $("#Phone").val(),
+                     Mobile: $("#Mobile").val()
+                 };
+
+                 $.ajax({
+                     type: "POST", url: '@Url.Action("AddCompany", "Master")',
+                     contentType: "application/json;",
+                     data: JSON.stringify(company),
+                     async: false,
+                     success: function (response) {
+                         if (response.IsSuccess) {
+                             alert("Record saved successfully.")
+                             location.reload();
+                         }
+                         else {
+                             alert(response.Response);
+                         }
+                     },
+                     failure: function (response) { },
+                     error: function (response) { }
+                 });
+             } catch (e) {
+             }
+         }
+    }
+</script>

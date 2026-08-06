@@ -1,0 +1,1194 @@
+﻿@model TFDSolution.Transport.Master.PageTabModel
+@{
+    string tabGrid = "tbl" + Model.Design.TabName;
+}
+<input type="hidden" value="@Convert.ToString(Model.CompanyId)" id="hdntabCompanyId" />
+<input type="hidden" value="@Convert.ToString(Model.UserId)" id="hdntabUserId" />
+<input type="hidden" value="@Model.FinancialYearId" id="hdntabFinancialYearId" />
+<script src="~/Scripts/select2.min.js"></script>
+<table id="@tabGrid" data-bind="@Model.Design.FormTabId" class="table table-bordered InlineForm" cellspacing="0" width="100%" style="border:1px solid #ccc;">
+    <thead>
+        <tr>
+            @if (Model.PageAction != "V" && Model.IsDefault != 1)
+            {
+                <th style="min-width:50px !important;"></th>
+            }
+            <th class="grid-action-item-bg text-center">#</th>
+            @foreach (var field in Model.FormFields.Where(x => x.IsVisibleInList == true).OrderBy(x => x.SortOrder).ToList())
+            {
+                if (field.IsRequired)
+                {
+                    <th style="min-width:100px;" title="This field is required.">
+                        @field.FieldCaption
+                        <span class="text-danger">*</span>
+                    </th>
+                }
+                else if (field.FieldType == "Selection")
+                {
+                    <th style="min-width:200px !important;">@field.FieldCaption</th>
+                }
+                else if (field.FieldType == "Button")
+                {
+                    <th style="min-width:60px !important;">@field.FieldCaption</th>
+                }
+                else
+                {
+                    <th style="min-width:100px;">@field.FieldCaption</th>
+                }
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            if (Model.Data != null && Model.Data.Count() > 0)
+            {
+                foreach (var _it in Model.Data)
+                {
+                    object srvalue;
+                    string srNumber = "1", _Id = ""; ;
+                    if (_it.TryGetValue("SrNo", out srvalue))
+                    {
+                        srNumber = Convert.ToString(srvalue);
+                    }
+                    if (_it.TryGetValue("Id", out srvalue))
+                    {
+                        _Id = Convert.ToString(srvalue);
+                    }
+                    <tr data-id="@_Id" data-bind="@Model.Design.TabSQLTableName">
+                        @if (Model.PageAction != "V" && Model.IsDefault != 1)
+                        {
+                            <td class="text-center" style="vertical-align:middle;">
+                                <a title='Save Record' data-bind="@Model.Design.TabSQLTableName" data-content="@_Id" class="text-success btn-save"
+                                   href='javascript:void(0)'>
+                                    <i class="fa fa-save"></i>
+                                </a>&nbsp;
+                                <a title='Delete Record' data-bind="@Model.Design.TabSQLTableName"
+                                   data-content="@_Id" class="text-danger btn-delete" href='javascript:void(0)'>
+                                    <i class="fa fa-trash"></i>
+                                </a>
+                            </td>
+                        }
+                        <td style="background: aliceblue !important; text-align: center; vertical-align: middle">
+                            <label tabindex="-1" for="ItemSrNo" class="form-control-label">@srNumber</label>
+                            <input style="display:none" value="@srNumber" id="ItemSrNo" data-bind="ItemSrNo" data_content="TextBox" disabled class="form-control w-25" />
+                        </td>
+                        @foreach (var field in Model.FormFields.Where(x => x.IsVisibleInList == true).OrderBy(x => x.SortOrder).ToList())
+                        {
+                            var _fieldValue = field.FieldValue; object value;
+                            if (Model.IsDefault == 1 && field.FieldType != "Numeric")
+                            {
+                                field.IsDisable = true;
+                                field.IsReadOnly = true;
+                            }
+                            bool isReadOnlyOrDisabled = (field.IsReadOnly ?? false) || (field.IsDisable ?? false);
+                            if (_it.TryGetValue(field.FieldName, out value))
+                            {
+                                field.FieldValue = Convert.ToString(value);
+                            }
+                            string ctrlId = tabGrid + "inline_" + Convert.ToString(field.FieldName) + "_" + srNumber;
+                            string isButtonClass = field.FieldType == "Button" ? "text-center" : "";
+                            string tabIndexAttr = isReadOnlyOrDisabled ? "-1" : null;
+                            <td class="@isButtonClass" tabindex="@tabIndexAttr">
+                                @switch (field.FieldType)
+                                {
+                                    case "TextBox":
+                                        if (Model.PageAction != "V")
+                                        {
+                                            if (isReadOnlyOrDisabled)
+                                            {
+                                                <input type="text" id="@ctrlId" value="@field.FieldValue" readonly="readonly" tabindex="-1" data-container="@field.FieldId" data-language="@field.IsLanguage" data-path="@field.FieldFormula" class="form-control edit" @(field.IsRequired == true ? "required" : null) data-content="@field.FieldType" data-html="@field.FieldCaption" maxlength="@field.FieldLength" data-bind="@field.FieldName" />
+                                            }
+                                            else
+                                            {
+                                                <input type="text" id="@ctrlId" value="@field.FieldValue" data-path="@field.FieldFormula" data-container="@field.FieldId" data-language="@field.IsLanguage" class="form-control edit" @(field.IsRequired == true ? "required" : null) data-content="@field.FieldType" data-html="@field.FieldCaption" maxlength="@field.FieldLength" data-bind="@field.FieldName" />
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <label tabindex="-1" class="view">@field.FieldValue</label>
+                                        }
+                                        break;
+                                    case "Numeric":
+                                        if (Model.PageAction != "V")
+                                        {
+                                            if (isReadOnlyOrDisabled)
+                                            {
+                                                <input type="number" value="@field.FieldValue" readonly="readonly" tabindex="-1" data-path="@field.FieldFormula" data-decimal=@field.FieldDecimal id="@ctrlId" class="form-control edit" @(field.IsRequired == true ? "required" : null) data-content="@field.FieldType" data-html="@field.FieldCaption" data-bind="@field.FieldName" />
+                                            }
+                                            else
+                                            {
+                                                <input type="number" value="@field.FieldValue" data-path="@field.FieldFormula" id="@ctrlId" class="form-control edit" data-decimal=@field.FieldDecimal @(field.IsRequired == true ? "required" : null) data-content="@field.FieldType" data-html="@field.FieldCaption" data-bind="@field.FieldName" />
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <label tabindex="-1" class="view">@field.FieldValue</label>
+                                        }
+                                        break;
+                                    case "DateTimeField":
+                                        bool IsTime = false;
+                                        if (!string.IsNullOrEmpty(field.FieldValue))
+                                        {
+                                            try
+                                            {
+                                                DateTime _dt = Convert.ToDateTime(field.FieldValue);
+                                                if (_dt == new DateTime(1900, 1, 1))
+                                                {
+                                                    field.FieldValue = "";
+                                                }
+                                                else if (_dt.TimeOfDay != TimeSpan.Zero)
+                                                {
+                                                    field.FieldValue = _dt.ToString("yyyy-MM-dd HH:mm", System.Globalization.CultureInfo.InvariantCulture);
+                                                    IsTime = true;
+                                                }
+                                                else
+                                                {
+                                                    field.FieldValue = _dt.ToString("yyyy-MM-dd");
+                                                }
+                                                //field.FieldValue = (_dt == new DateTime(1900, 1, 1, 0, 0, 0)) ? "" : _dt.ToString("yyyy-MM-dd"); ;
+                                                if (Model.PageAction == "V" || Model.IsDefault == 1)
+                                                {
+                                                    <label tabindex="-1" class="view">@field.FieldValue</label>
+                                                    @*if (!string.IsNullOrEmpty(field.FieldValue))
+                            {
+                                @Html.TextBox(field.FieldName, field.FieldValue, new { type = "date", @class = "form-control", @data_content = "DateTimeField", dat_html = @field.FieldCaption, data_bind = field.FieldName })
+                            }
+                            else
+                            {
+                                @Html.TextBox(field.FieldName, field.FieldValue, new { @class = "form-control", data_html = @field.FieldCaption, @placeholder = "", data_content = field.FieldType, data_bind = field.FieldName, @type = "text" })
+                            }*@
+                                                }
+                                            }
+                                            catch (Exception)
+                                            {
+                                                @Html.TextBox(field.FieldName, field.FieldValue, new { @class = "form-control", data_html = @field.FieldCaption, @placeholder = "", data_content = field.FieldType, data_bind = field.FieldName, @type = "text" })
+                                            }
+                                        }
+                                        else if (Model.PageAction == "V")
+                                        {
+                                            <label tabindex="-1" class="view">@field.FieldValue</label>
+                                        }
+                                        if (Model.PageAction == "E" || Model.PageAction == "A")
+                                        {
+                                            if (field.IsRequired)
+                                            {
+                                                @Html.TextBox(field.FieldName, field.FieldValue, new { @class = "form-control", data_html = @field.FieldCaption, data_content = field.FieldType, data_bind = field.FieldName, @type = "date", @required = field.IsRequired == true ? "required" : null })
+                                            }
+                                            else if (field.IsReadOnly == true)
+                                            {
+                                                @Html.TextBox(field.FieldName, field.FieldValue, new { @class = "form-control", data_html = @field.FieldCaption, data_content = field.FieldType, data_bind = field.FieldName, @type = "date", @readonly = "readonly" })}
+                                            else
+                                            {
+                                                if (IsTime)
+                                                {
+                                                    @Html.TextBox(field.FieldName, field.FieldValue, new { @class = "form-control", data_html = @field.FieldCaption, data_content = field.FieldType, data_bind = field.FieldName, @type = "datetime_local" })
+                                                }
+                                                else
+                                                {
+                                                    @Html.TextBox(field.FieldName, field.FieldValue, new { @class = "form-control", data_html = @field.FieldCaption, data_content = field.FieldType, data_bind = field.FieldName, @type = "date" })
+                                                }
+                                            }
+                                            @Html.ValidationMessage(field.FieldName, "", new { @class = "text-danger" })
+                                        }
+                                        @*if (Model.PageAction != "V")
+                {
+                    if (isReadOnlyOrDisabled)
+                    {
+                        <input type="date" id="@ctrlId" value="@field.FieldValue" readonly="readonly" tabindex="-1" class="form-control edit" data-content="@field.FieldType" @(field.IsRequired == true ? "required" : null) data-html="@field.FieldCaption" data-bind="@field.FieldName" />
+                    }
+                    else
+                    {
+                        <input type="date" id="@ctrlId" value="@field.FieldValue" class="form-control edit" data-content="@field.FieldType" @(field.IsRequired == true ? "required" : null) data-html="@field.FieldCaption" data-bind="@field.FieldName" />
+                    }
+                }
+                else
+                {
+                    <label tabindex="-1" class="view">@field.FieldValue</label>
+                }*@
+                                        break;
+                                    case "MultiText":
+                                        if (Model.PageAction != "V")
+                                        {
+                                            if (isReadOnlyOrDisabled)
+                                            {
+                                                <input type="text" id="@ctrlId" value="@field.FieldValue" readonly="readonly" tabindex="-1" class="form-control edit" data-content="@field.FieldType" @(field.IsRequired == true ? "required" : null) data-html="@field.FieldCaption" maxlength="@field.FieldLength" data-bind="@field.FieldName" />
+                                            }
+                                            else
+                                            {
+                                                <input type="text" id="@ctrlId" value="@field.FieldValue" class="form-control edit" data-content="@field.FieldType" @(field.IsRequired == true ? "required" : null) data-html="@field.FieldCaption" maxlength="@field.FieldLength" data-bind="@field.FieldName" />
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <label tabindex="-1" class="view">@field.FieldValue</label>
+                                        }
+                                        break;
+                                    case "TimeField":
+                                        if (Model.PageAction != "V")
+                                        {
+                                            if (isReadOnlyOrDisabled)
+                                            {
+                                                <input type="time" id="@ctrlId" value="@field.FieldValue" readonly="readonly" tabindex="-1" class="form-control edit" data-content="@field.FieldType" @(field.IsRequired == true ? "required" : null) data-html="@field.FieldCaption" data-bind="@field.FieldName" />
+                                            }
+                                            else
+                                            {
+                                                <input type="time" id="@ctrlId" value="@field.FieldValue" class="form-control edit" data-content="@field.FieldType" @(field.IsRequired == true ? "required" : null) data-html="@field.FieldCaption" data-bind="@field.FieldName" />
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <label tabindex="-1" class="view">@field.FieldValue</label>
+                                        }
+                                        break;
+                                    case "CheckBox":
+                                        if (Model.PageAction != "V")
+                                        {
+                                            <input type="checkbox" id="@ctrlId" value="@field.FieldValue" @(isReadOnlyOrDisabled ? "disabled='disabled' tabindex=\"-1\"" : "") class="form-check edit" data-content="@field.FieldType" @(field.IsRequired == true ? "required" : null) data-html="@field.FieldCaption" data-bind="@field.FieldName" />
+                                        }
+                                        else
+                                        {
+                                            <label tabindex="-1" class="view">@field.FieldValue</label>
+                                        }
+                                        break;
+                                    case "Label":
+                                        <label tabindex="-1" class="form-label" id="@ctrlId" data-bind="@field.FieldName">@field.FieldValue</label>
+                                        break;
+                                    case "Selection":
+                                        if (Model.PageAction != "V")
+                                        {
+                                            var _fieldText = field.FieldValue;
+                                            if (_it.TryGetValue(field.FieldName + "_Id", out srvalue))
+                                            {
+                                                _fieldValue = Convert.ToString(srvalue);
+                                            }
+                                            if (field.IsRequired)
+                                            {
+                                                <select onchange="selectInlinChange(this)" required class="form-select select2 form-control selectpicker edit"
+                                                        style="width:100%; min-width:200px !important;" data-display="@_fieldText"
+                                                        data-sourcetype="@field.DDLSourceType"
+                                                        @(isReadOnlyOrDisabled ? "disabled='disabled' tabindex=\"-1\"" : "")
+                                                        data-multiselection="@field.IsMultiSelection" data-live-search="true"
+                                                        data-wrap="@field.DDLTextField" data-spy="@field.DDLValueField"
+                                                        data-delay="@field.DDLSourceName" data-interval="@_fieldValue" id="@ctrlId"
+                                                        data-container="@field.FieldId" data-html="@field.FieldCaption" data-bind="@field.FieldName"
+                                                        data-content="@field.FieldType">
+                                                </select>
+                                            }
+                                            else
+                                            {
+                                                <select onchange="selectInlinChange(this)" class="form-select select2 form-control selectpicker edit"
+                                                        style="width:100%; min-width:200px !important;" data-display="@_fieldText"
+                                                        data-sourcetype="@field.DDLSourceType"
+                                                        @(isReadOnlyOrDisabled ? "disabled='disabled' tabindex=\"-1\"" : "")
+                                                        data-multiselection="@field.IsMultiSelection" data-live-search="true"
+                                                        data-wrap="@field.DDLTextField" data-spy="@field.DDLValueField"
+                                                        data-delay="@field.DDLSourceName" data-interval="@_fieldValue" id="@ctrlId"
+                                                        data-container="@field.FieldId" data-html="@field.FieldCaption" data-bind="@field.FieldName"
+                                                        data-content="@field.FieldType">
+                                                </select>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <label tabindex="-1" class="view">@field.FieldValue</label>
+                                        }
+                                        break;
+                                    case "Button":
+                                        <a class="btn btn-primary mt-1" href="javascript:void(0)"
+                                           onclick="FieldButtonViewModelInline(@_Id, '@field.FieldId','@field.FieldName.Trim()','@field.FieldCaption','@field.DDLValueField', this, '@field.TemplateId'); return false;"
+                                           title="@field.FieldHelpText"><i class="fa fa-ellipsis-h"></i></a>
+                                        break;
+                                    default:
+                                        if (Model.PageAction != "V")
+                                        {
+                                            if (isReadOnlyOrDisabled)
+                                            {
+                                                <input type="text" id="@ctrlId" value="@field.FieldValue" data-path="@field.FieldFormula"
+                                                       class="form-control edit" @(field.IsRequired == true ? "required" : null)
+                                                       readonly="readonly" tabindex="-1"
+                                                       data-content="@field.FieldType" data-html="@field.FieldCaption" maxlength="@field.FieldLength"
+                                                       data-bind="@field.FieldName" />
+                                            }
+                                            else
+                                            {
+                                                <input onchange="selectInlinChange(this)" type="text" id="@ctrlId" value="@field.FieldValue" data-path="@field.FieldFormula"
+                                                       class="form-control edit" @(field.IsRequired == true ? "required" : null)
+                                                       data-content="@field.FieldType" data-html="@field.FieldCaption" maxlength="@field.FieldLength"
+                                                       data-bind="@field.FieldName" />
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <label tabindex="-1" class="view">@field.FieldValue</label>
+                                        }
+                                        break;
+                                }
+                            </td>
+                        }
+                    </tr>
+                }
+            }
+            else if (Model.PageAction != "V")
+            {
+                <tr data-id="0" data-bind="@Model.Design.TabSQLTableName">
+                    <td class="text-center" style="vertical-align:middle;">
+                        <a title='Save Record' data-bind="@Model.Design.TabSQLTableName" data-content="0" class="text-success btn-save"
+                           href='javascript:void(0)'>
+                            <i class="fa fa-save"></i>
+                        </a>&nbsp;
+                        <a title='Delete Record' data-bind="@Model.Design.TabSQLTableName" data-content="0" class="text-danger btn-delete"
+                           href='javascript:void(0)'>
+                            <i class="fa fa-trash"></i>
+                        </a>
+                    </td>
+                    <td style="background: #fff !important; text-align: center; vertical-align: middle">
+                        <label tabindex="-1" for="ItemSrNo" class="form-control-label">1</label>
+                        <input style="display:none" value="1" id="ItemSrNo" data-bind="ItemSrNo" data_content="TextBox" disabled class="form-control w-25" />
+                    </td>
+                    @foreach (var field in Model.FormFields.Where(x => x.IsVisibleInList == true).OrderBy(x => x.SortOrder).ToList())
+                    {
+                        var _fieldValue = field.FieldValue;
+                        bool isReadOnlyOrDisabled = (field.IsReadOnly ?? false) || (field.IsDisable ?? false);
+                        string ctrlId = tabGrid + "_inline_" + Convert.ToString(field.FieldName);
+                        string isButtonClass = field.FieldType == "Button" ? "text-center" : "";
+                        string tabIndexAttr = isReadOnlyOrDisabled ? "-1" : null;
+                        <td class="@isButtonClass" tabindex="@tabIndexAttr">
+                            @switch (field.FieldType)
+                            {
+                                case "TextBox":
+                                    if (Model.PageAction != "V")
+                                    {
+                                        if (isReadOnlyOrDisabled)
+                                        {
+                                            <input type="text" id="@ctrlId" value="@field.FieldValue" data-path="@field.FieldFormula" data-container="@field.FieldId" data-language="@field.IsLanguage" readonly="readonly" tabindex="-1" class="form-control edit" @(field.IsRequired == true ? "required" : null) data-content="@field.FieldType" data-html="@field.FieldCaption" maxlength="@field.FieldLength" data-bind="@field.FieldName" />
+                                        }
+                                        else
+                                        {
+                                            <input type="text" id="@ctrlId" value="@field.FieldValue" data-path="@field.FieldFormula" data-container="@field.FieldId" data-language="@field.IsLanguage" class="form-control edit" @(field.IsRequired == true ? "required" : null) data-content="@field.FieldType" data-html="@field.FieldCaption" maxlength="@field.FieldLength" data-bind="@field.FieldName" />
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <label tabindex="-1" class="view">@field.FieldValue</label>
+                                    }
+                                    break;
+                                case "Numeric":
+                                    if (Model.PageAction != "V")
+                                    {
+                                        if (isReadOnlyOrDisabled)
+                                        {
+                                            <input type="number" value="@field.FieldValue" data-path="@field.FieldFormula" id="@ctrlId" readonly="readonly" tabindex="-1" class="form-control edit" @(field.IsRequired == true ? "required" : null) data-content="@field.FieldType" data-html="@field.FieldCaption" data-bind="@field.FieldName" />
+                                        }
+                                        else
+                                        {
+                                            <input type="number" value="@field.FieldValue" data-path="@field.FieldFormula" id="@ctrlId" class="form-control edit" @(field.IsRequired == true ? "required" : null) data-content="@field.FieldType" data-html="@field.FieldCaption" data-bind="@field.FieldName" />
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <label tabindex="-1" class="view">@field.FieldValue</label>
+                                    }
+                                    break;
+                                case "Button":
+                                    <a class="btn btn-primary mt-1" href="javascript:void(0)"
+                                       onclick="FieldButtonViewModelInline(0, '@field.FieldId','@field.FieldName.Trim()','@field.FieldCaption', '@field.DDLValueField', this, '@field.TemplateId'); return false;"
+                                       title="@field.FieldHelpText"><i class="fa fa-ellipsis-h"></i></a>
+                                    break;
+                                case "DateTimeField":
+                                    if (Model.PageAction != "V")
+                                    {
+                                        if (isReadOnlyOrDisabled)
+                                        {
+                                            <input type="date" id="@ctrlId" value="@field.FieldValue" class="form-control edit" readonly="readonly" tabindex="-1" data-content="@field.FieldType" @(field.IsRequired == true ? "required" : null) data-html="@field.FieldCaption" data-bind="@field.FieldName" />
+                                        }
+                                        else
+                                        {
+                                            <input type="date" id="@ctrlId" value="@field.FieldValue" class="form-control edit" data-content="@field.FieldType" @(field.IsRequired == true ? "required" : null) data-html="@field.FieldCaption" data-bind="@field.FieldName" />
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <label tabindex="-1" class="view">@field.FieldValue</label>
+                                    }
+                                    break;
+                                case "MultiText":
+                                    if (Model.PageAction != "V")
+                                    {
+                                        if (isReadOnlyOrDisabled)
+                                        {
+                                            <input type="text" id="@ctrlId" value="@field.FieldValue" class="form-control edit" readonly="readonly" tabindex="-1" data-content="@field.FieldType" @(field.IsRequired == true ? "required" : null) data-html="@field.FieldCaption" maxlength="@field.FieldLength" data-bind="@field.FieldName" />
+                                        }
+                                        else
+                                        {
+                                            <input type="text" id="@ctrlId" value="@field.FieldValue" class="form-control edit" data-content="@field.FieldType" @(field.IsRequired == true ? "required" : null) data-html="@field.FieldCaption" maxlength="@field.FieldLength" data-bind="@field.FieldName" />
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <label tabindex="-1" class="view">@field.FieldValue</label>
+                                    }
+                                    break;
+                                case "TimeField":
+                                    if (Model.PageAction != "V")
+                                    {
+                                        if (isReadOnlyOrDisabled)
+                                        {
+                                            <input type="time" id="@ctrlId" value="@field.FieldValue" class="form-control edit" readonly="readonly" tabindex="-1" data-content="@field.FieldType" @(field.IsRequired == true ? "required" : null) data-html="@field.FieldCaption" data-bind="@field.FieldName" />
+                                        }
+                                        else
+                                        {
+                                            <input type="time" id="@ctrlId" value="@field.FieldValue" class="form-control edit" data-content="@field.FieldType" @(field.IsRequired == true ? "required" : null) data-html="@field.FieldCaption" data-bind="@field.FieldName" />
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <label tabindex="-1" class="view">@field.FieldValue</label>
+                                    }
+                                    break;
+                                case "CheckBox":
+                                    if (Model.PageAction != "V")
+                                    {
+                                        <input type="checkbox" id="@ctrlId" value="@field.FieldValue" class="form-check edit" @(isReadOnlyOrDisabled ? "disabled='disabled'" : null) data-content="@field.FieldType" @(field.IsRequired == true ? "required" : null) data-html="@field.FieldCaption" data-bind="@field.FieldName" />
+                                    }
+                                    else
+                                    {
+                                        <label tabindex="-1" class="view">@field.FieldValue</label>
+                                    }
+                                    break;
+                                case "Label":
+                                    <label tabindex="-1" class="form-label" id="@ctrlId" data-bind="@field.FieldName">@field.FieldValue</label>
+                                    break;
+                                case "Selection":
+                                    if (Model.PageAction != "V")
+                                    {
+                                        var _fieldText = field.FieldValue;
+                                        if (Model.Data != null && Model.Data != null)
+                                        {
+                                            foreach (var _prj in Model.Data)
+                                            {
+                                                object fvalue;
+                                                if (_prj.TryGetValue((field.FieldName + "_Id").ToUpper(), out fvalue))
+                                                {
+                                                    _fieldValue = Convert.ToString(fvalue);
+                                                }
+                                            }
+                                        }
+                                        if (field.IsRequired)
+                                        {
+                                            <select onchange="selectInlinChange(this)" required="required" class="form-select select2 form-control selectpicker edit"
+                                                    style="width:100%; min-width:200px !important;" data-display="@_fieldText"
+                                                    data-sourcetype="@field.DDLSourceType" data-multiselection="@field.IsMultiSelection"
+                                                    @(isReadOnlyOrDisabled ? "disabled='disabled'" : null)
+                                                    data-live-search="true" data-wrap="@field.DDLTextField"
+                                                    data-spy="@field.DDLValueField" data-delay="@field.DDLSourceName" data-interval="@_fieldValue"
+                                                    id="@ctrlId" data-container="@field.FieldId" data-html="@field.FieldCaption"
+                                                    data-bind="@field.FieldName" data-content="@field.FieldType">
+                                            </select>
+                                        }
+                                        else
+                                        {
+                                            <select onchange="selectInlinChange(this)" class="form-select select2 form-control selectpicker edit"
+                                                    style="width:100%; min-width:200px !important;" data-display="@_fieldText"
+                                                    data-sourcetype="@field.DDLSourceType" data-multiselection="@field.IsMultiSelection"
+                                                    @(isReadOnlyOrDisabled ? "disabled='disabled'" : null)
+                                                    data-live-search="true" data-wrap="@field.DDLTextField"
+                                                    data-spy="@field.DDLValueField" data-delay="@field.DDLSourceName" data-interval="@_fieldValue"
+                                                    id="@ctrlId" data-container="@field.FieldId" data-html="@field.FieldCaption"
+                                                    data-bind="@field.FieldName" data-content="@field.FieldType">
+                                            </select>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <label tabindex="-1" class="view">@field.FieldValue</label>
+                                    }
+                                    break;
+                                default:
+                                    if (Model.PageAction != "V")
+                                    {
+                                        <input type="text" id="@ctrlId" value="@field.FieldValue" data-path="@field.FieldFormula" @(isReadOnlyOrDisabled ? "disabled='disabled'" : null) class="form-control edit" @(field.IsRequired == true ? "required" : null) data-content="@field.FieldType" data-html="@field.FieldCaption" maxlength="@field.FieldLength" data-bind="@field.FieldName" />
+                                    }
+                                    else
+                                    {
+                                        <label tabindex="-1" class="view">@field.FieldValue</label>
+                                    }
+                                    break;
+                            }
+                        </td>
+                    }
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+@*<div class="modal fade" id="FieldButtonModel" tabindex="-1" role="dialog" aria-labelledby="FieldButtonModelLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered float-none model-center-style" role="document" style="float:none;height: auto;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="FieldButtonModelLabel">Label</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div id="divDetailButtonView" class="modal-body">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="btFBClose" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" id="btnFBSubmit" class="btn btn-primary">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>*@
+<script type="text/javascript">
+
+    var columnNames = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.FormFields
+        .Where(x => x.IsVisibleInList == true)
+        .OrderBy(x => x.SortOrder)
+        .Select(x => new {x.FieldName,x.FieldCaption,x.IsSummary}).ToList()));
+    var hasSummary = $.grep(columnNames, function (item) {
+        return item.IsSummary === true;
+    }).length > 0;
+    var tableName = '@tabGrid';
+    if (hasSummary) {
+        // do something
+        if ($('#' + tableName + ' tfoot').length === 0) {
+            let footer = '<tfoot><tr>';
+            columnNames.forEach(() => footer += '<th></th>');
+            footer += '</tr></tfoot>';
+            $('#' + tableName).append(footer);
+        }
+    }
+    new DataTable('#@tabGrid', {
+        searching: false, paging: false, info: false,
+        // 🚀 SUMMARY FOOTER
+        footerCallback: function (row, data, start, end, display) {
+
+            if (!hasSummary || !columnNames || columnNames.length === 0) return;
+
+            let api = this.api();
+
+            // ✅ Safe numeric conversion
+            let num = function (val) {
+                if (val === null || val === undefined || val === '') return 0;
+
+                if (typeof val === 'string') {
+                    val = val.replace(/[^0-9.-]+/g, ''); // handles ₹, commas etc
+                }
+
+                val = parseFloat(val);
+                return isNaN(val) ? 0 : val;
+            };
+
+            // ✅ Label
+            $(api.column(0).footer()).html('<b>Summary</b>');
+
+            api.columns().every(function (idx) {
+                /* 🔹 1. Always skip fixed columns */
+                //if (idx === 0) return;
+
+                let column = this;
+                // 🔹 Get column data key (VERY IMPORTANT)
+                let colName = column.dataSrc();
+                if (!colName) return;
+                // 🔹 Find config by FieldName
+                let config = columnNames[idx];
+                if (!config || config.IsSummary !== true) return;
+                let footerCell = api.column(column.index() + 1).footer();
+                try {
+                    if (columnNames[idx].ColumnTitle == "Amount"
+                        || columnNames[idx].ColumnName == "Amount") {
+                        let colData = api.rows().data().pluck('Amount').toArray();
+                        let total = colData.reduce((sum, v) => sum + num(v), 0);
+                        if (footerCell) {
+                            $(footerCell).html(total ? total.toFixed(2) : '0');
+                        }
+                    }
+                    else {
+                        let colData = this.data().toArray();
+                        let colDatar = api.rows().data().toArray();
+                        if (!colData.length) return;
+                        try {
+                            // get all row data
+                            let rows = api.rows().data().toArray();
+                            // get only current column values
+                            let colDatar = rows.map(r => r[colName+1]);
+                            let totalr = colDatar.reduce((sum, v) => {
+                                return sum + num(v);
+                            }, 0);
+
+                            let total = colDatar.reduce((sum, v) => {
+                                // convert to string safely
+                                let value = $('<div>').html(v || '').text();
+                                // Clean numeric value
+                                value = value
+                                    .replace(/,/g, '')
+                                    .replace(/[^\d.-]/g, '');
+                                value = parseFloat(value);
+                                if (isNaN(value))
+                                    value = 0;
+                                return sum + value;
+                            }, 0);
+                            if (footerCell) {
+                                $(footerCell).html(total ? total.toFixed(2) : '0');
+                            }
+                        } catch (e) {
+                            if (footerCell) {
+                                $(footerCell).html('0');
+                            }
+                        }
+                    }
+                } catch (e) {
+                    if (footerCell) {
+                        $(footerCell).html('0');
+                    }
+                }
+            });
+        }
+    });
+    function selectInlinChange(ctrl) {
+        let selectId = $(ctrl).attr("id");
+        var $row = $(ctrl).closest('tr');
+        BindInlineDependency(selectId, true, $row);
+    }
+    function InitalizeSelect($select) {
+        let selectId = $($select).attr('id');
+        if (selectId) {
+            try {
+                let parentWrapper = $($select).parent();
+                var sourceType = $($select).attr("data-sourcetype");
+                if (sourceType != "StoredProcedure") {
+                    var _fieldId = $($select).attr("data-container");
+                    let selectedValues = $($select).attr("data-interval");
+                    let selectedText = $($select).attr("data-display");
+                    let firstFive = selectedText ? selectedText.substring(0, 20) : "";
+                    $($select).select2({
+                         dropdownParent: parentWrapper,
+                         placeholder: 'Search...',
+                         allowClear: true,
+                         delay: 250,
+                         dropdownParent: $('body'),
+                         minimumInputLength: 0, // change to 0 if you want scrolling without typing
+                         ajax: {
+                             url: '@Url.Action("FillSelctionPagingDefault", "Common")',
+                             dataType: 'json',
+                             type: 'GET',
+                             delay: 250,
+                             skipLoading: true,
+                             width: '100%', // 🔥 This is key to match the column width
+                             data: function (params) {
+                                 return {
+                                     FieldId: _fieldId,
+                                     CompanyId: $("#hdntabCompanyId").val(),
+                                     searchTerm: params.term || '', // search term
+                                     page: params.page || 1,
+                                     fieldValue: ''
+                                 };
+                             },
+                             processResults: function (data) {
+                                 return {
+                                     results: data.results,
+                                     pagination: {
+                                         more: data.pagination.more
+                                     }
+                                 };
+                             },
+                             error: function (xhr, status, error) {
+                                 console.error("Select2 AJAX Error:", error);
+                                 console.error("Status:", status);
+                                 console.error("Response:", xhr.responseText);
+                             },
+                             cache: true
+                         }
+                    });
+                    /// Pre-load selected values (important when editing)
+                    if (selectedValues.length) {
+                        $.ajax({
+                            url: '@Url.Action("FillSelctionPagingDefault", "Common")',
+                            type: 'GET',
+                            skipLoading: true,
+                            data: { FieldId: _fieldId, CompanyId: $("#hdntabCompanyId").val(), searchTerm: firstFive, page: 1, fieldValue: '' },
+                            success: function (data) {
+                                var isMultiSelection = $(this).attr("data-multiselection");
+                                if (isMultiSelection != undefined && isMultiSelection != "" && isMultiSelection == "True") {
+                                    selectedValues.forEach(function (val) {
+                                        let item = data.results.find(x => x.id == val);
+                                        if (item) {
+                                            let option = new Option(item.text, item.id, true, true);
+                                            $($select).append(option);
+                                        }
+                                    });
+                                }
+                                else {
+                                    if (data != null && data.results != null) {
+                                        let item = data.results.find(x => x.id == selectedValues);
+                                        if (item) {
+                                            let option = new Option(item.text, item.id, true, true);
+                                            $($select).append(option).trigger('change');
+                                        }
+                                    }
+                                }
+                                $($select).trigger('change');
+                            }
+                        });
+                    }
+                    const $input = $($select);
+                    if ($input.hasClass("d-none")) {
+                        $input.next().addClass('d-none');
+                    }
+                }
+            } catch (e) {
+             console.error("Select2 Inline Form:", e);
+            }
+        }
+    }
+    $(document).off("keydown.inlineForm").on("keydown.inlineForm", ".InlineForm input, .InlineForm select", function (e) {
+        if (e.key === "Tab") {
+            try {
+                let $current = $(this);
+                const $row = $current.closest("tr");  // current row
+                let $focusable = $row.find("input:not([readonly]):not([disabled]), select:not([disabled])").filter(":visible");
+                let index = $focusable.index($current);
+                var input_field = $current.attr("id");
+                var tableId = $row.closest('table').attr("data-bind");
+                BindInlineDependency(input_field, false, $row);
+                //console.log("Left last editable column in row:" + index);
+                if (index > -1) {
+                    e.preventDefault();
+                    let next = $focusable.eq(index + 1);
+                    if (next.length) {
+                        next.focus();
+                    }
+                    else {
+                        var tabSQLTable = $row.attr("data-bind");
+                        if (tabSQLTable && tabSQLTable != null && tabSQLTable != "") {
+                            let detailId = $row.attr("data-id");
+                            //detailId = $("#@tabGrid tbody tr").eq(0).data("id");
+                            InlineSaveRecord($row, tabSQLTable, detailId);
+                            const nextRow = $row.next("tr");
+                            if (nextRow.length > 0) {
+                                let next$focusable = nextRow.find("input:not([readonly]):not([disabled]), select:not([disabled])").filter(":visible");
+                                let nextfo = next$focusable.eq(0);
+                                if (nextfo.length) {
+                                    nextfo.focus();
+                                }
+                            }
+                            else {
+                                let isLastRow = $row.is(":last-child");
+                                if (isLastRow) {
+                                    console.log('Last Row');
+                                   if (parseInt('@Model.IsDefault', 0) !== 1) {
+                                        InlinTabData(0, 'A', tableId, '@tabGrid');
+                                    }
+                                }
+                            }
+                        }
+                        console.log("Next editable column Not available:");
+                        e.stopPropagation();
+                        return;
+                    }
+                }
+            } catch (e) {
+
+            }
+        }
+    });
+    $('#@tabGrid').on('blur', 'tr :input', function () {
+        try {
+            var $input = $(this);
+            var fieldvalue = $input.val();
+            var input_field = $input.attr("id");
+            /*console.log("Left field: " + fieldName + " with value: " + value);*/
+            var $row = $input.closest('tr');
+            // Now get other input values in the same row
+            // Loop through all inputs in the row
+            $row.find('input').each(function () {
+                var fieldId = $(this).attr("id");
+                var fieldformula = $(this).attr("data-path");
+                var fielddecimal = $(this).attr("data-decimal");
+                if (fieldformula != undefined && fieldformula != null && fieldformula != "") {
+                    if (input_field != fieldId) {
+                        $row.find('input').each(function () {
+                            if ($(this).attr("data-bind") != null && $(this).attr("data-bind").length > 0) {
+                                if ($(this).val() != null && $(this).val().length == 0) {
+                                    fieldformula = fieldformula.replaceAll("{" + $(this).attr("data-bind").replace("inline_", "") + "}", 0);
+                                }
+                                else {
+                                    fieldformula = fieldformula.replaceAll("{" + $(this).attr("data-bind").replace("inline_", "") + "}", $(this).val());
+                                }
+                            }
+                        });
+                        try {
+                            //console.log(fieldId + " - Field Formula With Value : " + fieldformula);
+                            let decimPoint = 2;
+                            if (fielddecimal != undefined && fielddecimal != null) {
+                                decimPoint = parseInt(fielddecimal);
+                            }
+                            var calFieldValue = parseFloat(eval(fieldformula)).toFixed(decimPoint);
+                            //console.log(fieldId + " - Field Formula With Value : " + calFieldValue);
+                            $(this).val(calFieldValue);
+                        } catch (e) {
+                            console.log(fieldId + " - Field Formula With Value - Exception " + e.message);
+                            $(this).val(0);
+                        }
+                    }
+                }
+            });
+
+        } catch (e) {}
+    });
+    $('#@tabGrid').on('focusout', 'tr :input[type="text"]', function () {
+        try {
+            var $input = $(this);
+            var $row = $input.closest('tr');
+            if($(this).attr("data-language") == "True") {
+
+                var fieldvalue = $input.val();
+                var input_field = $input.attr("id");
+                let fieldname = $input.attr('id');
+                var fieldId = $row.find('input[id="' + $(this).attr("id") + '"]').attr("data-container");
+                BindInlineLanguageConversation(fieldId, fieldvalue, $row);
+            }
+        } catch (e) {}
+    });
+    $(document).ready(function () {
+        $('table.InlineForm tbody tr select').each(function () {
+            console.log("Loading.." + $(this).attr("id"));
+            var $row = $(this).closest('tr');
+            var selectedCtrl = $row.find('input[id="' + $(this).attr("id") + '"]')
+            InitalizeSelect(this);
+        });
+    })
+    function getInlineFieldData(row) {
+        var PageFieldData = [];
+        row.find("input").each(function () {
+            if ($(this) != undefined && $(this) != null && $(this).attr("id") != undefined && $(this).attr("id").length > 0) {
+                var fieldId = $(this).attr("data-bind");
+                if (fieldId != null && fieldId != undefined && fieldId.length > 0) {
+                    PageFieldData.push({
+                        FieldName: fieldId,
+                        FieldValue: $(this).val()
+                    });
+                }
+            }
+        });
+        row.find("textarea").each(function () {
+            if ($(this) != undefined && $(this) != null && $(this).attr("id") != undefined && $(this).attr("id").length > 0) {
+                var fieldId = $(this).attr("data-bind");
+                if (fieldId != null && fieldId != undefined && fieldId.length > 0) {
+                    PageFieldData.push({
+                        FieldName: fieldId,
+                        FieldValue: $(this).val()
+                    });
+                }
+            }
+        });
+        row.find("select").each(function () {
+            if ($(this) != undefined && $(this) != null && $(this).attr("id") != undefined && $(this).attr("id").length > 0) {
+                var fieldId = $(this).attr("data-bind");
+                if (fieldId != null && fieldId != undefined && fieldId.length > 0) {
+                    PageFieldData.push({
+                        FieldName: fieldId,
+                        FieldValue: row.find("#" + $(this).attr("id") + "  option:selected").text()
+                    });
+                    var selectval = $(this).val();
+                    if ($(this).val() == null) {
+                        selectval = row.find("#" + $(this).attr("id")).attr("data-interval");
+                    }
+                    PageFieldData.push({
+                        FieldName: fieldId + "_Id",
+                        FieldValue: selectval
+                    });
+                }
+            }
+        });
+        return PageFieldData;
+    }
+    //Dependency
+    function BindInlineDependency(_fromFieldName, IsSelect, row) {
+        var loadname = _fromFieldName.replace('_Id', '');
+        //$('#' + loadname + '_select-loader').show();
+        /*console.log("Call Dependency = " + '#' + loadname + '_select-loader');*/
+        var PageFieldData = [];
+        row.find("input").each(function () {
+            if ($(this) != undefined && $(this) != null && $(this).attr("id") != undefined && $(this).attr("id").length > 0) {
+                var fieldId = $(this).attr("data-bind");
+                if (fieldId != null && fieldId != undefined && fieldId.length > 0) {
+                    PageFieldData.push({
+                        FieldName: fieldId,
+                        FieldValue: $(this).val()
+                    });
+                }
+            }
+        });
+        row.find("textarea").each(function () {
+            if ($(this) != undefined && $(this) != null && $(this).attr("id") != undefined && $(this).attr("id").length > 0) {
+                var fieldId = $(this).attr("data-bind");
+                if (fieldId != null && fieldId != undefined && fieldId.length > 0) {
+                    PageFieldData.push({
+                        FieldName: fieldId,
+                        FieldValue: $(this).val()
+                    });
+                }
+            }
+        });
+        row.find("select").each(function () {
+            if ($(this) != undefined && $(this) != null && $(this).attr("id") != undefined && $(this).attr("id").length > 0) {
+                var fieldId = $(this).attr("data-bind");
+                if (fieldId != null && fieldId != undefined && fieldId.length > 0) {
+                    PageFieldData.push({
+                        FieldName: fieldId,
+                        FieldValue: row.find("#"+ $(this).attr("id") + "  option:selected").text()
+                    });
+                    var selectval = $(this).val();
+                    if ($(this).val() == null) {
+                        selectval = row.find("#" + $(this).attr("id")).attr("data-interval");
+                    }
+                    PageFieldData.push({
+                        FieldName: fieldId + "_Id",
+                        FieldValue: selectval
+                    });
+                }
+            }
+        });
+
+        try {
+            var tableId = row.closest('table').attr("data-bind");
+            var tablename = '@Model.Design.TabSQLTableName';
+            var _FromFieldName = row.find('#' + _fromFieldName + '').attr("data-bind");
+            if (IsSelect) {
+                _FromFieldName = _FromFieldName + "_Id";
+            }
+            var recordId = row.data("id");
+            var model = {
+                PageTablename: tablename,
+                FieldData: PageFieldData,
+                FromFieldName: row.find('#' + _fromFieldName + '').attr("data-bind")+"_Id",
+                Id: recordId,
+                ParentId: parseInt($("#hdnRecordId").val()),
+                PageType: "Detail",
+                FormId: '@Model.Design.FormId',
+                TabId: tableId,
+                FieldId: row.find('#' + _fromFieldName + '').attr("data-container"),
+                CompanyId: '@Convert.ToString(Model.CompanyId)',
+                UserId: '@Convert.ToString(Model.UserId)',
+                FiancialYearId: $("#hdntabFinancialYearId").val()
+            }
+             $.ajax({
+                 type: "POST", url: '@Url.Action("getDependencyData", "Default")',
+                 contentType: "application/json;",
+                 skipLoading: true, // <-- Custom flag
+                 data: JSON.stringify(model),
+                 async: false,
+                 success: function (response) {
+                     if (response != null && response != undefined && response.length > 0) {
+                         $.each(response, function (index, item) {
+                             var element = row.find('[data-bind="' + item.FieldName + '"]');
+                             if (element != undefined && element.length > 0) {
+                                 var dataset = item.FieldValue;
+                                 if (element[0].localName == "label") {
+                                     row.find('[data-bind="' + item.FieldName + '"]').removeClass("text-success");
+                                     row.find('[data-bind="' + item.FieldName + '"]').addClass("text-danger");
+                                     if (dataset != null && dataset != undefined && dataset.length > 0) {
+                                         $.each(dataset, function (index, Dataitem) {
+                                             if (Dataitem.FieldValue != null && Dataitem.FieldValue.length > 0) {
+                                                 row.find('[data-bind="' + item.FieldName + '"]').addClass("text-success");
+                                                 row.find('[data-bind="' + item.FieldName + '"]').removeClass("text-danger");
+                                                 element.text(Dataitem.FieldValue);
+                                             }
+                                             else {
+                                                 element.text('N/A');
+                                             }
+                                         });
+                                     }
+                                     else {
+                                         element.text('N/A');
+                                     }
+                                 }
+                                 else if (element[0].localName == "input") {
+                                     if (dataset != null && dataset != undefined && dataset.length > 0) {
+                                         //if (element[0].type == "text") {
+                                         //    element.val('');
+                                         //}
+                                         //else if (element[0].type == "number") {
+                                         //    element.val('');
+                                         //}
+                                         $.each(dataset, function (index, Dataitem) {
+                                             if (Dataitem.FieldValue != null && Dataitem.FieldValue.length > 0) {
+                                                 if (element[0].type == "text") {
+                                                     if (Dataitem.FieldValue != null && Dataitem.FieldValue != "" && Dataitem.FieldValue != "0") {
+                                                         element.val(Dataitem.FieldValue);
+                                                     }
+                                                 }
+                                                 else if (element[0].type == "number") {
+                                                     if (Dataitem.FieldValue != null && Dataitem.FieldValue != "" && Dataitem.FieldValue != "0") {
+                                                         element.val(Dataitem.FieldValue);
+                                                     }
+                                                 }
+                                             }
+                                         });
+                                     }
+                                 }
+                                 else if (element[0].localName == "textarea") {
+                                     if (dataset != null && dataset != undefined && dataset.length > 0) {
+                                         element.val('');
+                                         $.each(dataset, function (index, Dataitem) {
+                                             if (Dataitem.FieldValue != null && Dataitem.FieldValue.length > 0) {
+                                                 element.val(Dataitem.FieldValue);
+                                             }
+                                         });
+                                     }
+                                 }
+                                 else if (element[0].localName == "select" && (loadname != row.find('[data-bind="' + item.FieldName + '"]').attr("Id"))) {
+                                     if (dataset != null && dataset != undefined && dataset.length > 0) {
+                                         var DDLTextField = row.find('[data-bind="' + item.FieldName + '"]').attr("data-wrap");
+                                         var DDLValueField = row.find('[data-bind="' + item.FieldName + '"]').attr("data-spy");
+                                         var _fieldCaption = "Option";
+                                         //if (row.find('#' + item.FieldName) != null
+                                         //    && row.find('#' + item.FieldName) != undefined
+                                         //    && row.find('#' + item.FieldName).parent().find("label") != undefined) {
+                                         //    _fieldCaption = $row.find('#' + item.FieldName).parent().find("label").text();
+                                         //}
+                                         var dropdown = row.find('[data-bind="' + item.FieldName + '"]');
+                                         dropdown.empty();
+                                         dropdown.append('<option value="">Search..</option>');
+
+                                         var optionItem = "";
+                                         var optionItemValue = "";
+                                         var selectedVal = false;
+                                         var addItem = false;
+                                         for (var irow = 0; irow < dataset.length; irow++) {
+                                             if (DDLTextField == DDLValueField) {
+                                                 optionItem = dataset[irow].FieldValue;
+                                                 optionItemValue = dataset[irow].FieldValue;
+                                                 addItem = true;
+                                             }
+                                             else {
+                                                 if (dataset[irow].FieldName == DDLTextField) {
+                                                     optionItem = dataset[irow].FieldValue;
+                                                 }
+                                                 else if (dataset[irow].FieldName == DDLValueField) {
+                                                     optionItemValue = dataset[irow].FieldValue;
+                                                 }
+                                             }
+                                             if (irow % 2 || addItem) {
+                                                 var fieldvalue = row.find('[data-bind="' + item.FieldName + '"]').attr("data-interval");
+                                                 if (fieldvalue != null && fieldvalue != "" && fieldvalue == optionItemValue) {
+                                                     selectedVal = true;
+                                                     dropdown.append($('<option selected></option>').val(optionItemValue).text(optionItem));
+                                                 }
+                                                 else {
+                                                     if (dataset.length == 2) {
+                                                         selectedVal = false;
+                                                         dropdown.append($('<option selected></option>').val(optionItemValue).text(optionItem));
+                                                     }
+                                                     else {
+                                                         dropdown.append($('<option></option>').val(optionItemValue).text(optionItem));
+                                                     }
+                                                 }
+                                             }
+                                         }
+                                         let $select = row.find('[data-bind="' + item.FieldName + '"]');
+                                         if ($select.hasClass('select2-hidden-accessible')) {
+                                             $select.select2('destroy');
+                                         }
+
+                                         if (selectedVal == false && dataset.length > 0) {
+                                             $select.prop('selectedIndex', 1);
+                                         }
+
+                                         $select.select2({
+                                             width: '100%',
+                                             dropdownParent: $('body'),
+                                             placeholder: 'Select-1'
+                                         });
+                                     }
+                                     else {
+                                         dropdown.empty();
+                                     }
+                                 }
+                             }
+                         });
+                     }
+                 },
+                 failure: function (response) { $('#' + loadname + '_select-loader').hide(); },
+                 error: function (response) { $('#' + loadname + '_select-loader').hide(); }
+             });
+        } catch (e) {
+            $('#' + loadname + '_select-loader').hide();
+        }
+    }
+    function FieldButtonViewModelInline(detailId, fieldId, fieldName, fieldcaption, readingField, ctrl, templateId) {
+        try {
+            $("#FieldButtonModelLabel").html(fieldcaption);
+            var readingCount = 1, _itemSrNo = 0;
+            let selectId = $(ctrl).attr("id");
+            var $row = $(ctrl).closest('tr');
+            if ($row.find('[data-bind="SampleQuantity"]').length > 0) {
+                readingCount = parseInt($row.find('[data-bind="SampleQuantity"]').val());
+            }
+            if ($row.find('[data-bind="ItemSrNo"]').length > 0) {
+                _itemSrNo = parseInt($row.find('[data-bind="ItemSrNo"]').val());
+            }
+            //PartialDetailButton
+            var model = {
+                FieldId: fieldId,
+                ButtonCaption: fieldcaption,
+                FieldData: getInlineFieldData($row),
+                DetailId: parseInt($row.attr("data-id")),
+                ParentId: parseInt($("#hdnRecordId").val()),
+                FormId: '@Model.Design.FormId',
+                ItemSrNo: _itemSrNo,
+                TabId: '@Model.Design.FormTabId',
+                PageAction: '@Model.PageAction',  // ✅ Fix: use colon, not equals
+                ReferenceFieldCounter: readingCount,
+                TemplateId: templateId
+            }
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("PartialDetailButton", "Home")',
+                contentType: "application/json;",
+                data: JSON.stringify(model),
+                skipLoading: true, // <-- Custom flag
+                async: false,
+                success: function (response) {
+                    if (response != null) {
+                        $("#divDetailButtonView").html(response);
+                    }
+                },
+                failure: function (response) { },
+                error: function (response) { }
+            });
+            var myModal = new bootstrap.Modal(document.getElementById('FieldButtonModel'));
+            myModal.show();
+        } catch (e) {
+            console.log(e);
+        }
+    }
+    function BindInlineLanguageConversation(fieldId, FieldValue, row) {
+        try {
+            $.ajax({
+                url: '@Url.Action("getLanguageConversation", "Transaction")',
+                type: 'GET',
+                data: { fieldId: fieldId, fieldValue: FieldValue },
+                success: function (response) {
+                    if (response && response.length > 0) {
+                        $.each(response, function (index, item) {
+                            var $element = $row.find('input[id="' + item.FieldName + '"]');
+                            // Check if element exists
+                            if ($element.length > 0) {
+                                $element.val(item.FieldValue);
+                            }
+                        });
+                    }
+                },
+                error: function (err) {
+                    console.log("Error:", err);
+                }
+            });
+
+        } catch (e) {
+            console.log("Exception:", e);
+        }
+    }
+</script>

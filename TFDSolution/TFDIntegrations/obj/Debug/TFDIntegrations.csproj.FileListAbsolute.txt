@@ -1,0 +1,12 @@
+C:\Users\ADMIN\source\repos\amitgorvadiya15\TFDSolution\TFDSolution\TFDIntegrations\bin\Debug\TFDIntegrations.dll
+C:\Users\ADMIN\source\repos\amitgorvadiya15\TFDSolution\TFDSolution\TFDIntegrations\bin\Debug\TFDIntegrations.pdb
+C:\Users\ADMIN\source\repos\amitgorvadiya15\TFDSolution\TFDSolution\TFDIntegrations\bin\Debug\Newtonsoft.Json.dll
+C:\Users\ADMIN\source\repos\amitgorvadiya15\TFDSolution\TFDSolution\TFDIntegrations\bin\Debug\TFDSolution.Transport.dll
+C:\Users\ADMIN\source\repos\amitgorvadiya15\TFDSolution\TFDSolution\TFDIntegrations\bin\Debug\TFDSolution.Transport.pdb
+C:\Users\ADMIN\source\repos\amitgorvadiya15\TFDSolution\TFDSolution\TFDIntegrations\bin\Debug\TFDSolution.Transport.dll.config
+C:\Users\ADMIN\source\repos\amitgorvadiya15\TFDSolution\TFDSolution\TFDIntegrations\bin\Debug\Newtonsoft.Json.xml
+C:\Users\ADMIN\source\repos\amitgorvadiya15\TFDSolution\TFDSolution\TFDIntegrations\obj\Debug\TFDIntegrations.csproj.AssemblyReference.cache
+C:\Users\ADMIN\source\repos\amitgorvadiya15\TFDSolution\TFDSolution\TFDIntegrations\obj\Debug\TFDIntegrations.csproj.CoreCompileInputs.cache
+C:\Users\ADMIN\source\repos\amitgorvadiya15\TFDSolution\TFDSolution\TFDIntegrations\obj\Debug\TFDInteg.BD076F6B.Up2Date
+C:\Users\ADMIN\source\repos\amitgorvadiya15\TFDSolution\TFDSolution\TFDIntegrations\obj\Debug\TFDIntegrations.dll
+C:\Users\ADMIN\source\repos\amitgorvadiya15\TFDSolution\TFDSolution\TFDIntegrations\obj\Debug\TFDIntegrations.pdb

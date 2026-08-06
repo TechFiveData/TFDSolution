@@ -1,0 +1,18 @@
+
+CREATE TABLE m_RolePermission (
+    RolePermissionID INT IDENTITY(1,1) PRIMARY KEY,
+    RoleID INT NOT NULL,
+    FormId UNIQUEIDENTIFIER,
+	FullAccess BIT NULL,
+	CanAdd BIT NULL,
+	CanEdit BIT NULL,
+	CanDelete BIT NULL,
+	CanPrint BIT NULL,
+	CanApprove BIT NULL,
+	CreatedBy UNIQUEIDENTIFIER NOT NULL,
+	CreatedOn DATETIME NOT NULL,
+	UpdatedBy UNIQUEIDENTIFIER NULL,
+	UpdatedOn DATETIME NULL,
+	FOREIGN KEY (RoleID) REFERENCES m_RoleMast(RoleID) ON DELETE CASCADE,
+    UNIQUE (RoleID, FormId)
+);

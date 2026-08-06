@@ -1,0 +1,14 @@
+C:\Users\ADMIN\source\repos\amitgorvadiya15\TFDSolution\TFDSolution\TFDSolution.Transport\bin\Debug\TFDSolution.Transport.dll.config
+C:\Users\ADMIN\source\repos\amitgorvadiya15\TFDSolution\TFDSolution\TFDSolution.Transport\bin\Debug\TFDSolution.Transport.dll
+C:\Users\ADMIN\source\repos\amitgorvadiya15\TFDSolution\TFDSolution\TFDSolution.Transport\bin\Debug\TFDSolution.Transport.pdb
+C:\Users\ADMIN\source\repos\amitgorvadiya15\TFDSolution\TFDSolution\TFDSolution.Transport\bin\Debug\EntityFramework.dll
+C:\Users\ADMIN\source\repos\amitgorvadiya15\TFDSolution\TFDSolution\TFDSolution.Transport\bin\Debug\EntityFramework.SqlServer.dll
+C:\Users\ADMIN\source\repos\amitgorvadiya15\TFDSolution\TFDSolution\TFDSolution.Transport\bin\Debug\Newtonsoft.Json.dll
+C:\Users\ADMIN\source\repos\amitgorvadiya15\TFDSolution\TFDSolution\TFDSolution.Transport\bin\Debug\EntityFramework.xml
+C:\Users\ADMIN\source\repos\amitgorvadiya15\TFDSolution\TFDSolution\TFDSolution.Transport\bin\Debug\EntityFramework.SqlServer.xml
+C:\Users\ADMIN\source\repos\amitgorvadiya15\TFDSolution\TFDSolution\TFDSolution.Transport\bin\Debug\Newtonsoft.Json.xml
+C:\Users\ADMIN\source\repos\amitgorvadiya15\TFDSolution\TFDSolution\TFDSolution.Transport\obj\Debug\TFDSolution.Transport.csproj.AssemblyReference.cache
+C:\Users\ADMIN\source\repos\amitgorvadiya15\TFDSolution\TFDSolution\TFDSolution.Transport\obj\Debug\TFDSolution.Transport.csproj.CoreCompileInputs.cache
+C:\Users\ADMIN\source\repos\amitgorvadiya15\TFDSolution\TFDSolution\TFDSolution.Transport\obj\Debug\TFDSolut.1BFAD9EC.Up2Date
+C:\Users\ADMIN\source\repos\amitgorvadiya15\TFDSolution\TFDSolution\TFDSolution.Transport\obj\Debug\TFDSolution.Transport.dll
+C:\Users\ADMIN\source\repos\amitgorvadiya15\TFDSolution\TFDSolution\TFDSolution.Transport\obj\Debug\TFDSolution.Transport.pdb

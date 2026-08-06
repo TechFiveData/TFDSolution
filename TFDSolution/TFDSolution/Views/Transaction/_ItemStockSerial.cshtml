@@ -1,0 +1,595 @@
+﻿@model TFDSolution.Transport.Master.ItemStockSerialModel
+@if (Model.SerialWise)
+{
+    string inVisibleDiv = "", disabledOut = "";
+    bool IsOutPage = false, IsReverseQuantity = false;
+    string AllowReverseQuantity = TFDSolution.Business.CommonBusiness.getFormKeySetting(Model.FormId, "AllowReverseQuantity");
+    if (!string.IsNullOrEmpty(AllowReverseQuantity) && AllowReverseQuantity == "y")
+    {
+        IsReverseQuantity = true;
+    }
+    if (Model != null && !string.IsNullOrEmpty(Model.StockEffect))
+    {
+        IsOutPage = Model.StockEffect == "Out";
+    }
+    if (IsOutPage)
+    {
+        disabledOut = "disabled";
+    }
+    string headcol = "", openCol = "show";
+    string ctrolDisalbed = "";
+    if (Model.Action == "V")
+    {
+        ctrolDisalbed = "disabled";
+    }
+    if (Model.Action == "V" || Model.Action == "E")
+    {
+        openCol = "show";
+        headcol = "";
+    }
+    if (Model.Action == "V")
+    { inVisibleDiv = "d-none"; }
+    <style>
+        #tblItem_DeliverySchedule {
+            width: 100% !important;
+        }
+
+        .dataTables_scrollBody {
+            overflow-y: auto;
+            overflow-x: auto;
+        }
+
+            .dataTables_scrollHeadInner,
+            .dataTables_scrollBody table {
+                width: 100% !important;
+            }
+    </style>
+    <div id="divStockWithSerialNo" class="accordion-item">
+        <h2 class="accordion-header">
+            <button class="accordion-button @headcol" type="button" data-bs-toggle="collapse" data-bs-target="#collapseStockSerial"
+                    aria-expanded="false" aria-controls="collapseStockSerial">
+                Stock Serial No
+            </button>
+        </h2>
+        <div id="collapseStockSerial" class="accordion-collapse collapse @openCol" data-bs-parent="#accordionExample">
+            <div class="accordion-body p-0">
+                @if (!IsOutPage)
+                {
+                    <div class="row align-items-center p-2 @inVisibleDiv">
+                        <div class="col-auto">
+                            <label class="form-label mb-0">Serial #</label>
+                            <input id="txtISSerialNo" class="form-control" value="@Model.SerialCount" type="number" maxlength="20" style="width:80px;" />
+                        </div>
+                        <div class="col-auto">
+                            <label class="form-label mb-0">Batch/Lot No</label>
+                            <input id="txtISBatchLot" class="form-control" type="text" value="@Model.BatchLotNo" maxlength="20" />
+                        </div>
+                        <div class="col-auto">
+                            <label class="form-label mb-0">Total QTY</label>
+                            <label id="txtISTotalQty" class="form-control text-capitalize" style="border:none;" type="text" value="0" />
+                        </div>
+                        @*<div class="col-auto" style="min-height:50px; align-content:end;">
+                                <a onclick="NewItemStockSerial();" title="Click to create batch serial no." class="btn btn-sm btn-primary" href="javascript:void(0);">
+                                    <i class="fa fa-plus"></i>
+                                </a>
+                            </div>*@
+                    </div>
+                }
+                <div class="row">
+                    <div class="col col-md-12">
+                        <table id="tblItem_StockSerial" class="table table-bordered display">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    @if (IsOutPage)
+                                    {
+                                        <th>Select</th>
+                                    }
+                                    <th>Serial #</th>
+                                    <th>Batch/Lot No</th>
+                                    @if (IsOutPage)
+                                    {
+                                        <th>Current Stock</th>
+                                    }
+                                    <th>Quantity</th>
+                                    @if (IsOutPage)
+                                    {
+                                        <th style="min-width:100px">Balance</th>
+                                    }
+                                    @*<th>MFG Date</th>
+                                        <th>Exp.Date</th>*@
+                                    @if (Model.Fields != null)
+                                    {
+                                        foreach (var field in Model.Fields.Where(x => x.FieldName != "BatchLotNo"
+                                        && x.FieldName != "SerialNo").Where(x => x.IsVisible == true).OrderBy(x => x.SortOrder).ToList())
+                                        {
+                                            <th style="min-width:150px">@field.FieldCaption</th>
+                                        }
+                                    }
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    int srNo = 1;
+                                    if (Model.Data != null)
+                                    {
+                                        foreach (var item in Model.Data)
+                                        {
+                                            double balance = Math.Round((item.Stock - item.Quantity), 3);
+                                            string txtSerialNo = "txt" + Convert.ToString(item.SrNo) + "ISSerialfield";
+                                            string txtBatchNo = "txt" + Convert.ToString(item.SrNo) + "ISBatchNofield";
+                                            string txtQty = "txt" + Convert.ToString(item.SrNo) + "ISQTYfield";
+                                            string txtISMFGDatefield = "txt" + Convert.ToString(item.SrNo) + "ISExpDatefield";
+                                            string txtISExpDatefield = "txt" + Convert.ToString(item.SrNo) + "ISExpDatefield";
+                                            string txtISStockfield = "txt" + Convert.ToString(item.SrNo) + "ISStockfield";
+                                            string txtISBalancefield = "txt" + Convert.ToString(item.SrNo) + "ISBalancefield";
+                                            <tr>
+                                                <td class="row-space">
+                                                    <label class="ISSrNofield">@item.SrNo</label>
+                                                </td>
+                                                @if (IsOutPage)
+                                                {
+                                                    <td class="row-space">
+                                                        @if (item.Quantity > 0)
+                                                        {
+                                                            <input type="checkbox" checked="checked" style="text-align:left" class="form-check ISCheckfield" />
+                                                        }
+                                                        else
+                                                        {
+                                                            <input type="checkbox" style="text-align:left" class="form-check ISCheckfield" />
+                                                        }
+                                                    </td>
+                                                }
+                                                <td class="row-space" style="padding: 10px;">
+                                                    <input type="text" id="@txtSerialNo" @ctrolDisalbed @disabledOut style="text-align:left;width:120px;" value="@item.SerialNo" disabled maxlength="50" class="form-control ISSerialfield" />
+                                                </td>
+                                                <td class="row-space">
+                                                    <input type="text" id="@txtBatchNo" @ctrolDisalbed @disabledOut data-bind="BatchLotNo" style="text-align:left" value="@item.BatchLotNo" maxlength="50" class="form-control ISBatchNofield" />
+                                                </td>
+                                                @if (IsOutPage)
+                                                {
+                                                    <td class="row-space">
+                                                        <input type="text" id="@txtISStockfield" disabled="disabled" step="0.001" style="text-align:left" value="@item.Stock" class="form-control ISStockfield" />
+                                                    </td>
+                                                }
+                                                <td class="row-space">
+                                                    @if (Convert.ToString(item.StockEffect).ToLower() == "out")
+                                                    {
+                                                        <input type="number" id="@txtQty" max="@item.Stock" @ctrolDisalbed data-content="Quantity" step="0.001" data-bind="@item.Stock" data-interval="@item.StockEffect" style="text-align: left; width: 100px;" value="@item.Quantity" maxlength="7" class="form-control ISQTYfield" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <input type="number" id="@txtQty" @ctrolDisalbed step="0.001" data-bind="-1" data-content="Quantity" data-interval="@item.StockEffect" style="text-align: left; width: 100px;" value="@item.Quantity" maxlength="7" class="form-control ISQTYfield" />
+                                                    }
+                                                </td>
+                                                @if (IsOutPage)
+                                                {
+                                                    <td style="min-width:100px" class="row-space">
+                                                        <input type="text" id="@txtISBalancefield" data-content="Quantity" step="0.001" disabled="disabled" style="text-align:left" value="@balance" class="form-control ISBalancefield" />
+                                                    </td>
+                                                }
+
+                                                @if (Model.Fields != null)
+                                                {
+                                                    foreach (var field in Model.Fields.Where(x => x.FieldName != "BatchLotNo"
+                                                    && x.FieldName != "SerialNo").Where(x => x.IsVisible == true).OrderBy(x => x.SortOrder).ToList())
+                                                    {
+                                                        bool IsDisabled = false;
+                                                        string ctrlId = "ctrl_" + Convert.ToString(field.FieldName) + "_" + srNo;
+                                                        var value = item.GetType().GetProperty(field.FieldName)?.GetValue(item, null);
+                                                        if (Model.DynamicData != null)
+                                                        {
+                                                            var row = Model.DynamicData.FirstOrDefault(x => Convert.ToInt32(x["SrNo"]) == item.SrNo);
+                                                            if (row != null && row.TryGetValue(field.FieldName, out var val))
+                                                            {
+                                                                field.FieldValue = Convert.ToString(val);
+                                                            }
+                                                        }
+                                                        <td class="row-space">
+                                                            @{
+                                                                if (field.FieldName == "MFGDate")
+                                                                {
+                                                                    if (item.MFGDate.HasValue)
+                                                                    {
+                                                                        <input type="date" id="@txtISMFGDatefield" @ctrolDisalbed @disabledOut data-bind="MFGDate" value="@item.MFGDate.Value.ToString("yyyy-MM-dd")" style="text-align:left" class="form-control ISMFGDatefield" />
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <input type="date" id="@txtISMFGDatefield" @ctrolDisalbed @disabledOut data-bind="MFGDate" style="text-align:left" class="form-control ISMFGDatefield" />
+                                                                    }
+                                                                }
+                                                                else if (field.FieldName == "ExpDate")
+                                                                {
+                                                                    if (item.ExpDate.HasValue)
+                                                                    {
+                                                                        <input type="date" id="@txtISExpDatefield" @ctrolDisalbed @disabledOut data-bind="ExpDate" value="@item.ExpDate.Value.ToString("yyyy-MM-dd")" style="text-align:left" class="form-control ISExpDatefield" />
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <input type="date" id="@txtISExpDatefield" @ctrolDisalbed @disabledOut style="text-align:left" class="form-control ISExpDatefield" />
+                                                                    }
+                                                                }
+                                                                else if (field.FieldType == "Date" || field.FieldType == "DateTimeField")
+                                                                {
+                                                                    DateTime dt;
+                                                                    if (DateTime.TryParse(Convert.ToString(value), out dt))
+                                                                    {
+                                                                        <input type="date" id="@ctrlId" @ctrolDisalbed @disabledOut data-bind="@field.FieldName" class="form-control DSDatefield" value="@dt.ToString("yyyy-MM-dd")" />
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <input type="date" id="@ctrlId" @ctrolDisalbed @disabledOut data-bind="@field.FieldName" class="form-control DSDatefield" />
+                                                                    }
+                                                                }
+                                                                else if (field.FieldType == "Selection")
+                                                                {
+                                                                    var _fieldValue = Convert.ToString(field.FieldValue);
+                                                                    var _fieldText = Convert.ToString(field.FieldValue);                                                                    
+                                                                    if (Model.DynamicData != null)
+                                                                    {
+                                                                        var row = Model.DynamicData.FirstOrDefault(x => Convert.ToInt32(x["SrNo"]) == item.SrNo);
+                                                                        if (row != null && row.TryGetValue(field.FieldName + "_Id", out var val))
+                                                                        {
+                                                                            _fieldValue = Convert.ToString(val);
+                                                                        }
+                                                                    }
+                                                                    if (field.IsRequired)
+                                                                    {
+                                                                        if (IsDisabled)
+                                                                        {
+                                                                            <select class="form-select select2 form-control selectpicker" @ctrolDisalbed @disabledOut data-interval="@_fieldValue" data-disabled="True" data-multiselection="@field.IsMultiSelection" onchange="dropdownChange(this)" data-display="@_fieldText" data-dependency="@field.IsDependencyField" data-live-search="true" data-sourcetype="@field.DDLSourceType" data-wrap="@field.DDLTextField" data-spy="@field.DDLValueField" data-delay="@field.DDLSourceName" data-interval="@_fieldValue" required id="@ctrlId" data-container="@field.FieldId" data-html="@field.FieldCaption" data-bind="@field.FieldName" data-content="@field.FieldType"></select>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <select class="form-select select2 form-control selectpicker" @ctrolDisalbed @disabledOut data-interval="@_fieldValue" data-multiselection="@field.IsMultiSelection" onchange="dropdownChange(this)" data-display="@_fieldText" data-dependency="@field.IsDependencyField" data-live-search="true" data-sourcetype="@field.DDLSourceType" data-wrap="@field.DDLTextField" data-spy="@field.DDLValueField" data-delay="@field.DDLSourceName" data-interval="@_fieldValue" required id="@ctrlId" data-container="@field.FieldId" data-html="@field.FieldCaption" data-bind="@field.FieldName" data-content="@field.FieldType"></select>
+                                                                        }
+                                                                    }
+                                                                    else if (field.IsReadOnly == true)
+                                                                    {
+                                                                        <select class="form-select select2 form-control selectpicker" @ctrolDisalbed @disabledOut data-interval="@_fieldValue" data-multiselection="@field.IsMultiSelection" onchange="dropdownChange(this)" data-display="@_fieldText" data-dependency="@field.IsDependencyField" data-sourcetype="@field.DDLSourceType" data-wrap="@field.DDLTextField" data-spy="@field.DDLValueField" data-delay="@field.DDLSourceName" data-interval="@_fieldValue" id="@ctrlId" data-container="@field.FieldId" data-html="@field.FieldCaption" data-bind="@field.FieldName" data-content="@field.FieldType" data-disabled="@field.IsReadOnly"></select>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        if (IsDisabled)
+                                                                        {
+                                                                            <select class="form-select select2 form-control selectpicker" @ctrolDisalbed @disabledOut data-interval="@_fieldValue" data-disabled="True" data-multiselection="@field.IsMultiSelection" onchange="dropdownChange(this)" data-display="@_fieldText" data-dependency="@field.IsDependencyField" data-sourcetype="@field.DDLSourceType" data-live-search="true" data-wrap="@field.DDLTextField" data-spy="@field.DDLValueField" data-delay="@field.DDLSourceName" data-interval="@_fieldValue" id="@ctrlId" data-container="@field.FieldId" data-html="@field.FieldCaption" data-bind="@field.FieldName" data-content="@field.FieldType"></select>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <select class="form-select select2 form-control selectpicker" @ctrolDisalbed @disabledOut data-interval="@_fieldValue" data-multiselection="@field.IsMultiSelection" onchange="dropdownChange(this)" data-display="@_fieldText" data-dependency="@field.IsDependencyField" data-sourcetype="@field.DDLSourceType" data-live-search="true" data-wrap="@field.DDLTextField" data-spy="@field.DDLValueField" data-delay="@field.DDLSourceName" data-interval="@_fieldValue" id="@ctrlId" data-container="@field.FieldId" data-html="@field.FieldCaption" data-bind="@field.FieldName" data-content="@field.FieldType"></select>
+                                                                        }
+                                                                    }
+                                                                }
+                                                                else if (field.FieldType == "Numeric")
+                                                                {
+                                                                    <input type="number" id="@ctrlId" @ctrolDisalbed @disabledOut data-bind="@field.FieldName" step="0.001" class="form-control DSQTYfield" value="@field.FieldValue" />
+                                                                }
+                                                                else
+                                                                {
+                                                                    <input type="text" id="@ctrlId" @ctrolDisalbed @disabledOut data-bind="@field.FieldName" class="form-control DSRemarkfield" value="@field.FieldValue" />
+                                                                }
+                                                            }
+                                                        </td>
+                                                    }
+                                                }
+                                            </tr>
+                                            srNo++;
+                                        }
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        function InitalizeSelect($select) {
+            let selectId = $($select).attr('id');
+            if (selectId) {
+                try {
+                    let parentWrapper = $("#tblItem_StockSerial #" + selectId).parent();
+                    var sourceType = $("#tblItem_StockSerial #" + selectId).attr("data-sourcetype");
+                    if (sourceType != "StoredProcedure") {
+                        var _fieldId = $("#tblItem_StockSerial #" + selectId).attr("data-container");
+                        let selectedValues = $("#tblItem_StockSerial #" + selectId).attr("data-interval");
+                        let selectedText = $("#tblItem_StockSerial #" + selectId).attr("data-display");
+                        let firstFive = selectedText ? selectedText.substring(0, 20) : "";
+                        $("#tblItem_StockSerial #" + selectId).select2({
+                             dropdownParent: parentWrapper,
+                             placeholder: 'Search...',
+                             allowClear: true,
+                             delay: 250,
+                             dropdownParent: $('body'),
+                             minimumInputLength: 0, // change to 0 if you want scrolling without typing
+                             ajax: {
+                                 url: '@Url.Action("FillSelctionPaging", "Common")',
+                                 dataType: 'json',
+                                 type: 'GET',
+                                 delay: 250,
+                                 skipLoading: true,
+                                 width: '100%', // 🔥 This is key to match the column width
+                                 data: function (params) {
+                                     return {
+                                         FieldId: _fieldId,
+                                         searchTerm: params.term || '', // search term
+                                         page: params.page || 1,
+                                         fieldValue: ''
+                                     };
+                                 },
+                                 processResults: function (data) {
+                                     return {
+                                         results: data.results,
+                                         pagination: {
+                                             more: data.pagination.more
+                                         }
+                                     };
+                                 },
+                                 error: function (xhr, status, error) {
+                                     console.error("Select2 AJAX Error:", error);
+                                     console.error("Status:", status);
+                                     console.error("Response:", xhr.responseText);
+                                 },
+                                 cache: true
+                             }
+                        });
+                        /// Pre-load selected values (important when editing)
+                        if (selectedValues.length) {
+                            $.ajax({
+                                url: '@Url.Action("FillSelctionPaging", "Common")',
+                                type: 'GET',
+                                skipLoading: true,
+                                data: { FieldId: _fieldId, searchTerm: firstFive, page: 1, fieldValue: '' },
+                                success: function (data) {
+                                    var isMultiSelection = $(this).attr("data-multiselection");
+                                    if (isMultiSelection != undefined && isMultiSelection != "" && isMultiSelection == "True") {
+                                        selectedValues.forEach(function (val) {
+                                           let item = data.results.find(x => x.id == val);
+                                            if (item) {
+                                                let option = new Option(item.text, item.id, true, true);
+                                                $("#tblItem_StockSerial #" + selectId).append(option);
+                                            }
+                                        });
+                                    }
+                                    else {
+                                        if (data != null && data.results != null) {
+                                            let item = data.results.find(x => x.id == selectedValues);
+                                            if (item) {
+                                                let option = new Option(item.text, item.id, true, true);
+                                                $("#tblItem_StockSerial #" + selectId).append(option).trigger('change');
+                                            }
+                                        }
+                                    }
+                                    $("#tblItem_StockSerial #" + selectId).trigger('change');
+                                }
+                            });
+                        }
+                        const $input = $("#tblItem_StockSerial #" + selectId);
+                        if ($input.hasClass("d-none")) {
+                            $input.next().addClass('d-none');
+                        }
+                    }
+                } catch (e) {
+                 console.error("Select2 Inline Form:", e);
+                }
+            }
+        }
+        $(document).on('focus click', 'input[type="date"]', function () {
+            $(this).select();
+        });
+        $('#tblItem_StockSerial').on('change', 'input[type="checkbox"]', function () {
+            var IsOutPage = '@IsOutPage';
+            var IsReverseQuantity = '@IsReverseQuantity';            
+            if (IsOutPage == 'True') {
+                var row = $(this).closest('tr');
+                if (IsReverseQuantity == 'True') {
+                    var total = 0;
+                    $("#tblItem_StockSerial tbody tr").each(function () {
+                        const $row = $(this);
+                        const isChecked = $row.find('input[type="checkbox"]').is(':checked');
+                        if (isChecked) {
+                            const qty = parseFloat($row.find(".ISStockfield").val()) || 0;
+                            $row.find(".ISQTYfield").val(qty);
+                            $row.find(".ISBalancefield").val(0);
+                            total += parseFloat(qty.toFixed(3));
+                        }
+                        else {
+                            const qty = parseFloat($row.find(".ISStockfield").val()) || 0;
+                            $row.find(".ISBalancefield").val(qty);
+                            $row.find(".ISQTYfield").val(0);
+                        }
+                    });
+                    $("#DataTabPopup #Quantity").val(parseFloat(total).toFixed(3));
+                }
+                else {
+                    if (!this.checked) {
+                        // Clear Quantity input in this row
+                        row.find('input[data-content="Quantity"]').val('0');
+                        row.find('.ISBalancefield').val(row.find('.ISStockfield').val());
+                    }
+                    else {
+                        var qty = $("#DataTabPopup #Quantity").val();
+                        if (qty && qty !== "0") {
+                            var TotalQTY = parseFloat(parseFloat(qty).toFixed(3));
+                            var total = 0;
+                            const $stockCtrl = row.find(".ISStockfield");
+                            const stock = parseFloat(parseFloat($stockCtrl.val()).toFixed(3) || 0);
+                            $("#tblItem_StockSerial tbody tr").each(function () {
+                                const $row = $(this);
+                                const qty = parseFloat($row.find(".ISQTYfield").val());
+                                // Increase total only by qty or remaining required
+                                total = total + parseFloat(parseFloat(qty).toFixed(3));
+                            });
+                            const fieldQTY = TotalQTY - total;
+                            const _balance = parseFloat(stock - fieldQTY);
+                            if (_balance < 0) {
+                                row.find(".ISQTYfield").val(stock.toFixed(3));
+                                row.find(".ISBalancefield").val(0);
+                            }
+                            else {
+                                row.find(".ISQTYfield").val(fieldQTY.toFixed(3));
+                                row.find(".ISBalancefield").val(_balance.toFixed(3));
+                            }
+                        }
+                    }
+                }                
+            }
+        });
+        $(document).on('paste', 'input[type="date"]', function (e) {
+            e.preventDefault(); // stop default paste
+            // Get pasted text
+            let pastedData = (e.originalEvent || e).clipboardData.getData('text').trim();
+            // Normalize delimiters (accept -, /, .)
+            let clean = pastedData.replace(/[.\-]/g, '/');
+            let parts = clean.split('/');
+            let formatted = "";
+
+            // Case: yyyy-MM-dd or yyyy/MM/dd (ISO format)
+            if (parts.length === 3 && parts[0].length === 4) {
+                let yyyy = parts[0];
+                let mm = parts[1].padStart(2, '0');
+                let dd = parts[2].padStart(2, '0');
+                formatted = `${yyyy}-${mm}-${dd}`;
+            }
+            // Case: dd/MM/yyyy (European/India format)
+            else if (parts.length === 3 && parts[0].length <= 2 && parts[1].length <= 2) {
+                let dd = parts[0].padStart(2, '0');
+                let mm = parts[1].padStart(2, '0');
+                let yyyy = parts[2];
+                formatted = `${yyyy}-${mm}-${dd}`;
+            }
+            // Case: MM/dd/yyyy (US format)
+            else if (parts.length === 3 && parts[0].length <= 2 && parts[1].length <= 2 && parts[2].length === 4 && parts[0] <= 12) {
+                let mm = parts[0].padStart(2, '0');
+                let dd = parts[1].padStart(2, '0');
+                let yyyy = parts[2];
+                formatted = `${yyyy}-${mm}-${dd}`;
+            }
+            if (formatted) {
+                $(this).val(formatted);
+            } else {
+                console.log("⚠️ Invalid date format! Use dd/MM/yyyy, MM-dd-yyyy, or yyyy-MM-dd.");
+            }
+        });
+        $(document).ready(function () {
+            $('#tblItem_StockSerial tbody tr select').each(function () {
+                 console.log("Loading.." + $(this).attr("id"));
+                 var $row = $(this).closest('tr');
+                 var selectedCtrl = $row.find('input[id="' + $(this).attr("id") + '"]')
+                 InitalizeSelect(this);
+             });
+            new DataTable("#tblItem_StockSerial", {
+                destroy: true,
+                paging: false,
+                info: false,
+                searching: false,
+                ordering: false,
+                scrollY: "300px",   // 👈 set fixed height for tbody
+                scrollX: true,      // 👈 horizontal scroll if wide
+                scrollCollapse: true,
+                fixedHeader: true   // 👈 keeps thead fixed
+            });
+            $('#tblItem_StockSerial').on('blur', '.ISQTYfield', function () {
+                try {
+
+                    let val = this.value;
+                    if (val.includes(".")) {
+                        let parts = val.split(".");
+                        if (parts[1].length > 3) {
+                            this.value = parseFloat(parseFloat(val).toFixed(3));
+                        }
+                    }
+                    const $current = $(this);
+                    const $row = $current.closest('tr');
+                    const $stockField = $row.find('.ISStockfield');
+                    if ($stockField.length) {
+                        const stock = parseFloat(parseFloat($stockField.val()).toFixed(3) || 0);
+                        const fieldvalue = parseFloat(parseFloat($current.val()).toFixed(3) || 0);
+                        const balanceQTY = stock - fieldvalue;
+
+                        if (balanceQTY < 0) {
+                            // Add error style
+                            $current.addClass("input-validation-error");
+                            // Optional: reset to stock or zero
+                            // $current.val(stock);
+                        } else {
+                            // Remove error style
+                            $current.removeClass("input-validation-error");
+                        }
+                        $row.find('.ISBalancefield').val(balanceQTY.toFixed(3));
+                    }
+
+                    var qty = parseFloat(parseFloat($("#DataTabPopup #Quantity").val()));
+                    if (qty && qty !== "0") {
+                        var TotalQTY = parseFloat(parseFloat(qty).toFixed(3));
+                        var total = 0;
+                        $("#tblItem_StockSerial tbody .ISQTYfield").each(function () {
+                            const stockEffect = $(this).attr("data-interval");
+                            var val = parseFloat(parseFloat($(this).val()).toFixed(3) || 0); // default to 0 if empty or invalid
+                            total += parseFloat(val);
+                        });
+                        if ($("#txtISTotalQty").length > 0) {
+                            $("#txtISTotalQty").text(total);
+                            $("#txtISTotalQty").removeClass("text-danger");
+                            $("#txtISTotalQty").removeClass("text-success");
+                            if (TotalQTY != total) {
+                                $("#txtISTotalQty").addClass("text-danger");
+                            }
+                            else if (TotalQTY = total) {
+                                $("#txtISTotalQty").addClass("text-success");
+                            }
+                        }
+                    }
+                }
+                catch (e) {
+                    console.error("Error in ISQTYfield blur:", e);
+                }
+            });
+            var IsOutPage = '@IsOutPage';
+            if (IsOutPage != 'True')
+            {
+                
+            } AutobindFieldValues();
+        });
+
+        function AutobindFieldValues() {
+            if ($("#tblItem_StockSerial").length > 0) {
+                //if ($("#hdnPageActionDetail").val() !== "A") return;
+                var ItemFieldData = getPageFieldData();
+                let fieldMap = {};
+                if (ItemFieldData && ItemFieldData.length) {
+                    ItemFieldData.forEach(f => fieldMap[f.FieldName] = f.FieldValue);
+                }
+                $("#tblItem_StockSerial tbody tr").each(function () {
+                    let $row = $(this);
+                    // 🔹 Handle ALL INPUTS in row
+                    $row.find('td input[data-bind]').each(function () {
+                        let $input = $(this);
+                        let key = $input.attr("data-bind");
+                        if (fieldMap[key] !== undefined) {
+                            $input.val(fieldMap[key]);
+                        }
+                    });
+                    // 🔹 Handle ALL SELECTS in row
+                    $row.find('td select[data-bind]').each(function () {
+                        let $select = $(this);
+                        let key = $select.attr("data-bind");
+                        let ctrlId = $select.attr("Id");
+                        let value = fieldMap[key + "_Id"];
+                        let text = fieldMap[key]; // optional (display text)                        
+                        if (value !== undefined) {
+                            // create option if not exists                            
+                            if ($select.find("option[value='" + value + "']").length === 0) {
+                                let newOption = new Option(text || value, value, true, true);
+                                $("#" + ctrlId).append(newOption);
+                            }
+                            $("#" + ctrlId).val(value).trigger('change');
+                        }
+                    });
+                    $row.find("td input[id='ISQTYfield']").trigger('blur');
+                });
+            }
+        }
+    </script>
+}

@@ -1,0 +1,676 @@
+﻿@model TFDSolution.Transport.Master.UserDetail
+
+@{
+    ViewBag.Title = "User Action";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .dropdown {
+        position: relative;
+        display: inline-block;
+    }
+
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: white;
+        min-width: 200px;
+        border: 1px solid #ccc;
+        padding: 10px;
+        box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+        z-index: 1;
+    }
+
+    .dropdown:hover .dropdown-content {
+        display: block;
+    }
+
+    .checkbox-list label {
+        display: block;
+    }
+</style>
+<!-- /header -->
+<div class="breadcrumbs">
+    <div class="col-sm-4">
+        <div class="page-header float-left">
+            <div class="page-title">
+                @if (string.IsNullOrEmpty(Model.UserName))
+                {
+                    <h1>Add New User </h1>
+                }
+                else
+                {
+                    <h1>Edit User: @Model.UserName </h1>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-8">
+        <div class="page-header float-right">
+            <div class="page-title">
+                <ol class="breadcrumb text-right">
+                    <li><a href="@Url.Action("Index","Home")">Home</a></li>
+                    <li><a href="@Url.Action("UserMaster","Master")">User</a></li>
+                    @if (!string.IsNullOrEmpty(Model.UserName))
+                    {
+                        <li class="active">Edit User</li>
+                    }
+                    else
+                    {
+                        <li class="active">Add New User</li>
+                    }
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="animated fadeIn">
+    @using (Html.BeginForm("UserAction", "Master", FormMethod.Post))
+    {
+        if (ViewBag.ErrorMessages != null)
+        {
+            <script>
+                ShowToastNotification("error", '@ViewBag.ErrorMessages');
+            </script>
+        }
+        if (ViewBag.SuccessMessage != null)
+        {
+            @*<div id="divError">
+                    <div class="alert alert-success">
+                        <strong>Success!</strong> @ViewBag.SuccessMessage
+                    </div>
+                </div>*@
+            <script type="text/javascript">
+             ShowToastNotification("success", '@ViewBag.SuccessMessage');
+             @*setTimeout(function () {
+                 var backURL = "@Url.Action("UserMaster", "Master")"
+                 location.href = backURL;
+             }, 6000);*@
+            </script>
+        }
+        @Html.HiddenFor(m => m.UserId)
+        @*@Html.HiddenFor(m => m.UserName)*@
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="col-lg-6">
+                            <strong class="card-title"></strong>
+                        </div>
+                        <div class="col-lg-6 text-right">
+                            <a class="btn btn-sm" id="btnrefresh" href="javascript:void(0);"><i class="fa fa-refresh"></i>&nbsp; Refresh</a>
+                            <a class="btn btn-sm" id="btnBack" href="@Url.Action("UserMaster", "Master")"><i class="fa fa-arrow-circle-left"></i>&nbsp; Back</a>
+                            <button class="btn btn-sm" type="submit"><i class="fa fa-save"></i>&nbsp; Save</button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="general">
+                            <div class="form-horizontal page-head">
+                                <div class="section-left">
+                                    <div class="row form-group">
+                                        <div class="col col-md-3">
+                                            <label for="text-input" class=" form-control-label">Profile&nbsp;Picture</label>
+                                        </div>
+                                        <div class="col-12 col-md-9 text-left">
+                                            @*<span id="spnProfileImage" style="display: inline-block; text-align: center; width: 150px; height: 150px; background-color: #e5e5e5; border: 1px solid #808080; border-radius: 50%; overflow: hidden; cursor: pointer; ">*@
+                                            <img id="imgUserProfile" class=" rounded-circle " title="Click here to update profile image."
+                                                 alt="No Image"
+                                                 src="@Url.Action("GetProfilePic", "Master", new { username = Model.UserName })"
+                                                 style="width:100px; height:100px;  object-fit:cover;"
+                                                 onerror="this.onerror=null;this.src='@Url.Content("~/Images/NoImage.png")';" />
+                                            @*</span>*@
+                                            <input type="file" name="ProfilePic" id="ProfilePic" accept="image/*" style="display:none;" />
+                                            <br />
+                                            <small class="text-muted">Max size: 150MB. Only images allowed.</small>
+                                        </div>
+                                    </div>
+                                    <div class="row form-group">
+                                        <div class="col col-md-3">
+                                            <label for="text-input" class=" form-control-label">First Name<span class="text-danger p-1">(*)</span></label>
+                                        </div>
+                                        <div class="col-12 col-md-9">
+                                            @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control", @rows = "3", @placeholder = "First Name", @required = "required", @maxlength = "50" })
+                                            @Html.ValidationMessageFor(m => m.FirstName, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                    <div class="row form-group">
+                                        <div class="col col-md-3">
+                                            <label for="LastName" class=" form-control-label">Last Name<span class="text-danger p-1">(*)</span></label>
+                                        </div>
+                                        <div class="col-12 col-md-9">
+                                            @Html.TextBoxFor(m => m.LastName, new { @class = "form-control", @rows = "3", @placeholder = "Last Name", @required = "required", @maxlength = "50" })
+                                            @Html.ValidationMessageFor(m => m.LastName, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                    <div class="row form-group">
+                                        <div class="col col-md-3">
+                                            <label for="Password" class=" form-control-label">Password<span class="text-danger p-1">(*)</span></label>
+                                        </div>
+                                        <div class="col-12 col-md-9">
+                                            <div class="d-flex align-items-center">
+                                                @Html.TextBoxFor(m => m.Password, new { @class = "form-control me-2", @type = "password" })
+                                                <a href="#" id="togglePassword" title="View Password" class="text-decoration-none">
+                                                    <i class="fa fa-eye text-black"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="section-right">
+                                    <div class="row form-group">
+                                        <div class="col col-md-3">
+                                            <label for="text-input" class=" form-control-label">Status</label>
+                                        </div>
+                                        <div class="col-12 col-md-9">
+                                            <label class="switch switch-3d switch-success mr-3">
+                                                @Html.CheckBoxFor(x => x.IsActive, new { @class = "switch-input" })
+                                                <span class="switch-label"></span>
+                                                <span class="switch-handle"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="row form-group">
+                                        <div class="col col-md-3">
+                                            <label for="text-input" class=" form-control-label">Email<span class="text-danger p-1">(*)</span></label>
+                                        </div>
+                                        <div class="col-12 col-md-9">
+                                            <div class="input-group">
+                                                @Html.TextBoxFor(m => m.EmailId, new { @placeholder = "Email", @class = "form-control", @required = "required", @maxlength = "50" })
+                                                <div class="input-group-addon" style="padding: 4px 5px !important;"><i class="fa fa-envelope-o"></i></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row form-group">
+                                        <div class="col col-md-3">
+                                            <label for="text-input" class=" form-control-label">Mobile<span class="text-danger p-1">(*)</span></label>
+                                        </div>
+                                        <div class="col-12 col-md-9">
+                                            @Html.TextBoxFor(m => m.Mobile, new { @class = "form-control", @rows = "3", @placeholder = "Mobile", @required = "required", @maxlength = "10" })
+                                            @Html.ValidationMessageFor(m => m.Mobile, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                    <div class="row form-group">
+                                        <div class="col col-md-3">
+                                            <label for="text-input" class=" form-control-label">User Name<span class="text-danger p-1">(*)</span></label>
+                                        </div>
+                                        <div class="col-12 col-md-9 form-group">
+                                            @if (string.IsNullOrEmpty(Model.UserName))
+                                            {
+                                                @Html.TextBoxFor(m => m.UserName, new { @placeholder = "User Name", @class = "form-control", @required = "required", @maxlength = "50" })
+                                            }
+                                            else
+                                            {
+                                                @Html.TextBoxFor(m => m.UserName, new { @placeholder = "User Name", @class = "form-control", required = "required", @maxlength = "50" })
+                                            }
+                                            @Html.ValidationMessageFor(m => m.UserName, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                    <div class="row form-group">
+                                        <div class="col col-md-3"><label class=" form-control-label">User Role<span class="text-danger p-1">(*)</span></label></div>
+                                        <div class="col-12 col-md-8">
+                                            @Html.DropDownListFor(m => m.UserRole, new SelectList(ViewBag.UserRoleList, "Value", "Text", Model.UserRole), "Select User Role", new { @class = "form-control form-select ", @id = "ddlUserRole" })
+                                            @Html.ValidationMessageFor(model => model.UserRole, "", new { @class = "text-danger" })
+                                        </div>
+                                        <div class="col-12 col-md-1 pl-0">
+                                            <div class="input-group">
+                                                <a class=" btn  btn-sm" href="javascript:void(0);" title="Add Contact Person" data-toggle="modal" data-target="#mediumModal"><i class="fa fa-plus-square"></i></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @{
+                                        var companyList = ((IEnumerable<TFDSolution.Transport.clsSelection>)ViewBag.CompanyList)
+                                            .Select(c => new SelectListItem
+                                            {
+                                                Text = c.Text,
+                                                Value = c.Value
+                                            }).ToList();
+                                    }
+                                    <div class="row form-group">
+                                        <div class="col col-md-3"><label class="form-control-label">Company<span class="text-danger p-1">(*)</span></label></div>
+                                        <div class="col-12 col-md-8">
+                                            @{
+                                                var companies = (List<TFDSolution.Transport.clsSelection>)ViewBag.CompanyList;
+                                            }
+                                            <div id="listboxCompanies" class="multi-select-listbox" style="border-radius: .25rem;">
+                                                @foreach (var company in companies)
+                                                {
+                                                    var id = company.Value;
+                                                    bool isChecked = Model.UserCompanies?.Any(c => c.CompanyId.ToString().ToUpper() == id) == true;
+
+                                                    <div class="form-check">
+                                                        <input type="checkbox"
+                                                               class="form-check-input company-checkbox"
+                                                               value="@id"
+                                                               @(isChecked ? "checked" : "") />
+
+                                                        <label class="form-check-label">@company.Text</label>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                        @Html.ValidationMessageFor(m => m.UserCompanies, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="detail">
+                            <div class="page-breaker"></div>
+                            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" id="profile-tab" data-toggle="tab" href="#address" role="tab" aria-controls="address" aria-selected="true">Details</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="emailcofig-tab" data-toggle="tab" href="#emailcofig" role="tab" aria-controls="emailcofig" aria-selected="true">Email Configuration</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="password-tab" data-toggle="tab" href="#managepassword" role="tab" aria-controls="managepassword" aria-selected="true">Manager Password</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="settings-tab" data-toggle="tab" href="#settings" role="tab" aria-controls="settings" aria-selected="true">Settings</a>
+                                </li>
+                            </ul>
+                            <div class="tab-content pl-3 p-1" id="myTabContent">
+                                <div class="tab-pane fade show active" id="address" role="tabpanel" aria-labelledby="profile-tab">
+                                    <div class="form-horizontal page-head">
+                                        <div class="section-left">
+                                            <div class="row form-group">
+                                                <div class="col col-md-3">
+                                                    <label for="text-input" class=" form-control-label">Address1</label>
+                                                </div>
+                                                <div class="col-12 col-md-9">
+                                                    @Html.TextBoxFor(m => m.Address1, new { @class = "form-control", @rows = "3", @placeholder = "Address 1", @maxlength = "250" })
+                                                    @Html.ValidationMessageFor(m => m.Address1, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                            <div class="row form-group">
+                                                <div class="col col-md-3">
+                                                    <label for="text-input" class=" form-control-label">Address2</label>
+                                                </div>
+                                                <div class="col-12 col-md-9">
+                                                    @Html.TextBoxFor(m => m.Address2, new { @class = "form-control", @rows = "3", @placeholder = "Address 2", @maxlength = "250" })
+                                                    @Html.ValidationMessageFor(m => m.Address2, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                            <div class="row form-group">
+                                                <div class="col col-md-3"><label class=" form-control-label">City</label></div>
+                                                <div class="col-12 col-md-9">
+                                                    @Html.DropDownListFor(m => m.City, new SelectList(ViewBag.CityList, "Value", "Text", Model.City), "Select City", new { @class = "form-control form-select", @id = "ddlCity" })
+                                                    @Html.ValidationMessageFor(model => model.City, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                            <div class="row form-group">
+                                                <div class="col col-md-3"><label class=" form-control-label">State</label></div>
+                                                <div class="col-12 col-md-9">
+                                                    @Html.DropDownListFor(m => m.State, new SelectList(ViewBag.StateList, "Value", "Text", Model.State), "Select State", new { @class = "form-control form-select", @id = "ddlState" })
+                                                    @Html.ValidationMessageFor(model => model.State, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                            <div class="row form-group">
+                                                <div class="col col-md-3"><label class=" form-control-label">Country</label></div>
+                                                <div class="col-12 col-md-9">
+                                                    @Html.DropDownListFor(m => m.Country, new SelectList(ViewBag.CountryList, "Value", "Text", Model.Country), "Select Country", new { @class = "form-control form-select", @id = "ddlCountry" })
+                                                    @Html.ValidationMessageFor(model => model.Country, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="section-right">
+                                            <div class="row form-group">
+                                                <div class="col col-md-3">
+                                                    <label for="text-input" class=" form-control-label">Pincode</label>
+                                                </div>
+                                                <div class="col-12 col-md-9">
+                                                    @Html.TextBoxFor(m => m.Pincode, new { @placeholder = "Pincode", @class = "form-control", @maxlength = "6" })
+                                                    @Html.ValidationMessageFor(m => m.Pincode, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                            <div class="row form-group">
+                                                <div class="col col-md-3">
+                                                    <label for="text-input" class=" form-control-label">Contact Number</label>
+                                                </div>
+                                                <div class="col-12 col-md-9">
+                                                    @Html.TextBoxFor(m => m.ContactNo, new { @placeholder = "Contact Number", @class = "form-control", @maxlength = "10" })
+                                                    @Html.ValidationMessageFor(m => m.ContactNo, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                            <div class="row form-group">
+                                                <div class="col col-md-3">
+                                                    <label for="text-input" class=" form-control-label">Contact Person</label>
+                                                </div>
+                                                <div class="col-12 col-md-9">
+                                                    @Html.TextBoxFor(m => m.ContactPerson, new { @placeholder = "Contact Person", @class = "form-control" })
+                                                    @Html.ValidationMessageFor(m => m.ContactPerson, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                            <div class="row form-group">
+                                                <div class="col col-md-3">
+                                                    <label for="text-input" class=" form-control-label">Contact Email</label>
+                                                </div>
+                                                <div class="col-12 col-md-9">
+                                                    <div class="input-group">
+                                                        @Html.TextBoxFor(m => m.ContactEmail, new { @placeholder = "Contact Email", @class = "form-control", @maxlength = "50" })
+                                                        <div class="input-group-addon" style="padding: 4px 5px !important;"><i class="fa fa-envelope-o"></i></div>
+                                                    </div>
+                                                    @*@Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })*@
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="emailcofig" role="tabpanel" aria-labelledby="emailcofig-tab">
+                                    <div class="form-horizontal page-head">
+                                        <div class="section-left">
+                                            <!-- Email Subject Field -->
+                                            <div class="row form-group">
+                                                <div class="col col-md-3">
+                                                    <label for="text-input" class="form-control-label">From Email</label>
+                                                </div>
+                                                <div class="col-12 col-md-9">
+                                                    @Html.TextBoxFor(m => m.FromEmail, new { @class = "form-control", @placeholder = "From Email", @maxlength = "255" })
+                                                    @Html.ValidationMessageFor(m => m.FromEmail, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                            <!-- Password -->
+                                            <div class="row form-group">
+                                                <div class="col col-md-3">
+                                                    <label for="text-input" class="form-control-label">Password</label>
+                                                </div>
+                                                <div class="col-12 col-md-9">
+                                                    @Html.TextBoxFor(m => m.FromPassword, new { @class = "form-control", @type = "password", @placeholder = "Email Password", @maxlength = "255" })
+                                                    @Html.ValidationMessageFor(m => m.FromPassword, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                            <!-- Display Name -->
+                                            <div class="row form-group">
+                                                <div class="col col-md-3">
+                                                    <label for="text-input" class="form-control-label">Display Name</label>
+                                                </div>
+                                                <div class="col-12 col-md-9">
+                                                    @Html.TextBoxFor(m => m.DisplayName, new { @placeholder = "Recipient Email", @class = "form-control", @maxlength = "100" })
+                                                    @Html.ValidationMessageFor(m => m.DisplayName, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="section-right">
+                                            <!-- SmtpServer -->
+                                            <div class="row form-group">
+                                                <div class="col col-md-3">
+                                                    <label for="text-input" class="form-control-label">SMTP Server</label>
+                                                </div>
+                                                <div class="col-12 col-md-9">
+                                                    @Html.TextBoxFor(m => m.SmtpServer, new { @placeholder = "SMTP Server", @class = "form-control", @maxlength = "255" })
+                                                    @Html.ValidationMessageFor(m => m.SmtpServer, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                            <!-- SmtpPort Field -->
+                                            <div class="row form-group">
+                                                <div class="col col-md-3">
+                                                    <label for="text-input" class="form-control-label">SMTP Port</label>
+                                                </div>
+                                                <div class="col-12 col-md-9">
+                                                    @Html.TextBoxFor(m => m.SmtpPort, new { @placeholder = "SMTP Port", @class = "form-control", @maxlength = "100" })
+                                                    @Html.ValidationMessageFor(m => m.SmtpPort, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                            <!-- EnableSSL -->
+                                            <div class="row form-group">
+                                                <div class="col col-md-3">
+                                                    <label for="text-input" class="form-control-label">EnableSSL</label>
+                                                </div>
+                                                <div class="col-12 col-md-9">
+                                                    @Html.CheckBoxFor(m => m.EnableSSL, new { @placeholder = "Enable SSL", @class = "form-check", @maxlength = "100" })
+                                                    @Html.ValidationMessageFor(m => m.EnableSSL, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="managepassword" role="tabpanel" aria-labelledby="password-tab">
+                                    <div class="form-horizontal page-head">
+                                        <div class="section-left">
+                                            <!-- New Password -->
+                                            <div class="row form-group">
+                                                <div class="col col-md-3">
+                                                    <label for="text-input" class="form-control-label">New Password<span class="text-danger p-1">(*)</span></label>
+                                                </div>
+                                                <div class="col-12 col-md-9">
+                                                    <div class="d-flex align-items-center" style="width: 82%;">
+                                                        @Html.TextBoxFor(m => m.NewPassword, new { @class = "form-control me-2 flex-grow-1", @type = "password", @placeholder = "New Password", @maxlength = "255" })
+                                                        @Html.ValidationMessageFor(m => m.NewPassword, "", new { @class = "text-danger" })
+                                                        <a href="#" id="toggleNewPassword" title="View Password" class="text-decoration-none">
+                                                            <i class="fa fa-eye text-black"></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- Confirm Password -->
+                                            <div class="row form-group">
+                                                <div class="col col-md-3">
+                                                    <label for="text-input" class="form-control-label">Confirm Password<span class="text-danger p-1">(*)</span></label>
+                                                </div>
+                                                <div class="col-12 col-md-9">
+                                                    <div class="d-flex align-items-center" style="width: 80%;">
+                                                        @Html.TextBoxFor(m => m.ConfirmPassword, new { @class = "form-control me-2", @type = "password", @placeholder = "Confirm Password", @maxlength = "255" })
+                                                        @Html.ValidationMessageFor(m => m.ConfirmPassword, "", new { @class = "text-danger" })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row form-group">
+                                                <div class="col col-md-3"></div>
+                                                <div class="col-12 col-md-9">
+                                                    <div class="d-flex align-items-center" style="width: 80%;">
+                                                        <a id="btnUpdatePassword" href="javascript:void(0);" class="btn btn-primary" onclick="UpdatePassword()" title="Click here to update password">Update Password</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="section-right">
+                                            <!-- SmtpServer -->
+                                            <div class="row form-group">
+                                                <div class="col-12 col-md-12">
+                                                    <div style="padding-left:15px;" id="msg"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="settings" role="tabpanel" aria-labelledby="settings-tab">
+                                    <div class="form-horizontal page-head">
+                                        <div class="section-left">
+                                            <div class="row form-group">
+                                                <div class="col col-md-3"><label class=" form-control-label">Default Dashboard</label></div>
+                                                <div class="col-12 col-md-9">
+                                                    @Html.DropDownListFor(m => m.DashboardId, new SelectList(ViewBag.DashboardIdList, "Value", "Text", Model.DashboardId), "Select Dashboard",
+                                                   new { @class = "form-control form-select", @id = "ddlDashboard" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div><!-- .animated -->
+
+<script type="text/javascript">
+    function UpdatePassword() {
+        try {
+            var newPassword = $('#NewPassword').val();
+            var confirmPassword = $('#ConfirmPassword').val();
+            if (newPassword === '') {
+                ShowToastNotification("error", "Please enter new password.");
+                return;
+            }
+            if (confirmPassword === '') {
+                ShowToastNotification("error", "Please enter confirm password.");
+                return;
+            }
+            if (newPassword !== confirmPassword) {
+                ShowToastNotification("error", "New password and confirm password do not match.");
+                return;
+            }
+            // If validation passes, submit the form
+            var _model = {
+                UserId: '@Model.UserId.ToString()',
+                NewPassword: newPassword,
+                ConfirmPassword: confirmPassword
+            };
+
+            $.ajax({
+                type: "POST", url: '@Url.Action("UserUpdatePassword", "Master")',
+                contentType: "application/json;",
+                data: JSON.stringify(_model),
+                async: false,
+                success: function (response) {
+                    if (response.IsSuccess) {
+                        $('#NewPassword').val('');
+                        $('#ConfirmPassword').val('');
+                        ShowToastNotification("success", response.Response);
+                    }
+                    else {
+                        ShowToastNotification("error", response.Response);
+                    }
+                },
+                failure: function (response) { },
+                error: function (response) { }
+            });
+        } catch (e) {
+
+        }
+    }
+    $(function () {
+        @*$("#NewPassword").on("keyup", function () {
+            var password = $(this).val();
+            // Regex rule
+            var regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+            if (regex.test(password)) {
+                $("#msg").text("Valid Password").css("color", "green");
+            } else {
+                $("#msg").text("Invalid Password").css("color", "red");
+            }
+        });*@
+        $("#NewPassword").on("keyup", function () {
+            const password = $(this).val();
+            const rules = [
+                { regex: /.{8,}/, message: "Min 8 characters" },
+                { regex: /[A-Z]/, message: "At least one uppercase letter" },
+                { regex: /[a-z]/, message: "At least one lowercase letter" },
+                { regex: /[0-9]/, message: "At least one number" },
+                { regex: /[$!%*?&#]/, message: "At least one special character" }
+            ];
+            let allValid = true;
+            let validationHtml = "<ul>";
+            rules.forEach(rule => {
+                const color = rule.regex.test(password) ? "green" : "red";
+                validationHtml += `<li style="color:${color}">${rule.message}</li>`;
+                if (!rule.regex.test(password)) allValid = false;
+            });
+            validationHtml += "</ul>";
+            $("#btnUpdatePassword").prop("disabled", !allValid); // Enable only when valid
+
+            $("#msg").html(validationHtml);
+        });
+        $('#toggleNewPassword').on('click', function (e) {
+            e.preventDefault();
+            const passwordInput = $('#NewPassword');
+            const icon = $('#toggleIcon');
+
+            // Toggle the type attribute
+            if (passwordInput.attr('type') === 'password') {
+                passwordInput.attr('type', 'text');
+                icon.removeClass('fa-eye').addClass('fa-eye-slash');
+            } else {
+                passwordInput.attr('type', 'password');
+                icon.removeClass('fa-eye-slash').addClass('fa-eye');
+            }
+        });
+        $('#togglePassword').on('click', function (e) {
+            e.preventDefault();
+            const passwordInput = $('#Password');
+            const icon = $('#toggleIcon');
+
+            // Toggle the type attribute
+            if (passwordInput.attr('type') === 'password') {
+                passwordInput.attr('type', 'text');
+                icon.removeClass('fa-eye').addClass('fa-eye-slash');
+            } else {
+                passwordInput.attr('type', 'password');
+                icon.removeClass('fa-eye-slash').addClass('fa-eye');
+            }
+        });
+        // Open file dialog on click of image or span
+        $('#spnProfileImage, #imgUserProfile').on('click', function () {
+            $('#ProfilePic').click();
+        });
+        // Preview and upload image on file select
+        $('#ProfilePic').on('change', function (e) {
+            var file = e.target.files[0];
+            if (!file) return;
+            if (file.size > 150 * 1024 * 1024) {
+                alert('File size must not exceed 150MB.');
+                $(this).val('');
+                return;
+            }
+            // Preview
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                $('#imgUserProfile').attr('src', e.target.result);
+            };
+            reader.readAsDataURL(file);
+
+            // Upload via AJAX
+            var formData = new FormData();
+            formData.append('ProfilePic', file);
+            formData.append('username', $('#UserName').val());
+
+            $.ajax({
+                url: '@Url.Action("UploadProfilePic", "Master")',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (resp) {
+                    if (resp && resp.success) {
+                        // Optionally show a success message
+                        ShowToastNotification("success", "Profile picture saved successfully.");
+                    } else {
+                        ShowToastNotification("error", resp && resp.message ? resp.message : 'Upload failed.');
+                    }
+                },
+                error: function () {
+                    ShowToastNotification("error",'Error uploading image.');
+                }
+            });
+        });
+    });
+    function SetDefaultSelection(did, ddlValue) {
+        if (ddlValue != "" && ddlValue.length > 0 && ddlValue != "0") {
+            $("#" + did).val(ddlValue).attr('selected', true);
+        }
+    }
+    $(document).ready(function () {
+        $('form').submit(function () {
+            // Remove old hidden fields
+            $('.company-hidden').remove();
+            var index = 0;
+            $('.company-checkbox:checked').each(function () {
+                $('<input>')
+                    .attr('type', 'hidden')
+                    .attr('name', 'UserCompanies[' + index + '].CompanyId')
+                    .attr('value', $(this).val())
+                    .addClass('company-hidden')
+                    .appendTo('form');
+
+                index++;
+            });
+        });
+        $('#btnrefresh').click(function () {
+            location.reload();
+        });
+    });
+</script>

@@ -1,0 +1,568 @@
+﻿@{
+    ViewBag.Title = ViewBag.PageTitle ?? "Account Ledger";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .select2-container {
+        min-width: 680px !important;
+    }
+
+    .select2 {
+        min-width: 600px !important;
+    }
+
+    .dropdown-menu-right {
+        right: 0 !important;
+        left: auto !important;
+        min-width: 250px;
+        margin-top: 34px !important;
+        transform: none !important;
+    }
+
+    .dropdown-item {
+        width: 100%;
+        white-space: normal;
+        overflow-wrap: break-word;
+    }
+
+    .opening-balance-row {
+        background-color: #fff7cc !important;
+        font-weight: 600;
+        position: sticky;
+        top: 0;
+        z-index: 2;
+    }
+
+        .opening-balance-row td {
+            border: none !important;
+        }
+
+    .reportfilter label {
+        min-width: 100px;
+        text-align: right;
+    }
+
+    #tblLedgerReportView_wrapper .dataTables_scrollBody {
+        min-height: 250px;
+        border: 1px solid #ccc;
+    }
+
+    #tblLedgerReportView tbody tr:last-child td {
+        border-bottom: 1px solid #ccc;
+    }
+
+    /* #tblLedgerReportView_filter {
+        display: none;
+    }*/
+
+    .text-danger {
+        animation: blink 1s linear infinite;
+    }
+</style>
+<div class="breadcrumbs">
+    <div class="col-sm-4">
+        <div class="page-header float-left">
+            <div class="page-title">
+                <h1>Account Ledger</h1>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-8">
+        <div class="page-header float-right">
+            <div class="page-title">
+                <ol class="breadcrumb text-right">
+                    <li><a href="@Url.Action("Index","Home")">Home</a></li>
+                    <li>Utilities</li>
+                    <li class="active">Account Ledger</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="animated fadeIn">
+    <div class="row">
+        <div class="col-md-12 p-0">
+            <div class="card">
+                <div class="card-header">
+                    <div class="col-lg-12 text-right">
+                        <label id="lblExportNotification" style="padding-top: 6px;color: crimson;display:none;float:left;">Report export in progress. Please wait...</label>
+                        <a class="btn btn-sm" id="btnExportCsv" href="javascript:void(0);"><i class="fa fa-file-excel-o"></i>&nbsp; Excel</a>
+                        @*<a class="btn btn-sm" href="javascript:void(0);"><i class="fa fa-file-pdf-o"></i>&nbsp; PDF</a>*@
+                        @if (ViewBag.ReportSelection != null)
+                        {
+                            List<TFDSolution.Transport.Master.ReportMast> reports = ViewBag.ReportSelection as List<TFDSolution.Transport.Master.ReportMast>;
+                            if (reports != null && reports.Count > 0)
+                            {
+                                <div class="dropdown" style="float:right; position:relative;">
+                                    <button class="btn btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <i class="fa fa-print font16"></i>
+                                    </button>
+                                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+                                        @foreach (var item in reports)
+                                        {
+                                            <a class="dropdown-item" onclick="openSystemReport(@item.ReportId);" href="#">@item.ReportTitle</a>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12 form-group reportfilter">
+                            <div class="d-inline-block pr-3 pb-2">
+                                <label class="form-control-label mr-2">From Date</label>
+                                <input id="dtFromDate" type="date" class="form-control d-inline-block w-auto myDate" />
+                            </div>
+                            <div class="d-inline-block pr-3 pb-2">
+                                <label class="form-control-label mr-2">To Date</label>
+                                <input id="dtToDate" type="date" class="form-control d-inline-block w-auto myDate" />
+                            </div>
+                            <button id="btnGenerate" class="btn btn-primary btn-Generate">Generate</button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 form-group reportfilter">
+                            <div class="d-inline-block pr-3 pb-2">
+                                <label class="form-control-label mr-2">Account Name</label>
+                                <div class="d-inline-block">
+                                    <select id="ddlLedger"
+                                            style="width:250px !important;"
+                                            class="form-select d-inline-block w-auto select2">
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-12 form-group">
+                            <table id="tblLedgerReportView" class="display cell-border nowrap" cellspacing="0" width="100%"></table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    function openSystemReport(_ReportId) {
+        try {
+            var SpecificationField = [];
+            SpecificationField.push({ FieldName: "RequestAccountId",FieldValue: $("#ddlLedger").val() });
+            SpecificationField.push({ FieldName: "RequestFromDate",FieldValue: $("#dtFromDate").val() });
+            SpecificationField.push({ FieldName: "RequestToDate", FieldValue: $("#dtToDate").val() });
+            $.ajax({
+                url: '@Url.Action("OpenSystemReportView", "Reports")',
+                type: 'POST',
+                contentType: 'application/json; charset=utf-8',
+                data: JSON.stringify({
+                    ReportId: _ReportId,
+                    TableName: "t_AccountLedgerData_Hist",
+                    reportParameters: SpecificationField
+                }),
+                success: function (response) {
+                    if (response != null && response.IsSuccess) {
+                        var basepath = '@Url.Content("~/ExportReport/")';
+                        basepath = basepath + response.Response;
+                        window.open(basepath, "_blank");
+                        ShowToastNotification("success", "Report has been exported successfully.");
+                    }
+                    else {
+                        ShowToastNotification("error", response.Response);
+                    }
+                },
+                error: function () {
+
+                    ShowToastNotification("error", "Error occurred.");
+                }
+            });
+        } catch (e) {
+            console.log(e);
+            ShowToastNotification("error", "An error occurred while exporting the report. Please try again.");
+        }
+    }
+    $(document).ready(function () {
+        let today = new Date();
+        // First day of current month
+        let year = today.getFullYear();
+        let month = today.getMonth();
+
+        let firstDay = (month >= 3) ? new Date(year, 3, 1) : new Date(year - 1, 3, 1);
+        firstDay.setMinutes(firstDay.getMinutes() - firstDay.getTimezoneOffset());
+        let formatted = firstDay.toISOString().split('T')[0];
+        // Format yyyy-MM-dd (required for type="date")
+        let formatDate = (d) => d.toISOString().split('T')[0];
+        $("#dtFromDate").val(formatDate(firstDay));
+        $("#dtToDate").val(formatDate(today));
+        BindAccount();
+        $("#btnExportCsv").addClass("disabled");
+        //ReportLoadPagination();
+        $("#btnGenerate").click(function () {
+          ReportLoadPagination();
+        })
+        @if (ViewBag.AccountId != null && ViewBag.AccountId > 0)
+        {
+            <text>
+                console.log(@ViewBag.AccountId);
+                $("#dtFromDate").val("@ViewBag.FromDate");
+                $("#dtToDate").val("@ViewBag.ToDate");
+                @*var option = new Option("@ViewBag.AccountLedger", "@ViewBag.AccountId", true, true);
+                $("#ddlLedger").append(option).trigger("change");*@
+                $("#ddlLedger").val("@ViewBag.AccountId".trim()).trigger("change");
+            </text>
+        }
+        $('#btnExportCsv').on('click', function () {
+            try {
+                 var requestModel = {
+                     FromDate: $("#dtFromDate").val(),
+                     ToDate: $("#dtToDate").val(),
+                     AccountId: $("#ddlLedger").val(),
+                     AccountName: $("#ddlLedger option:selected").text()
+                 };
+                $("#btnExportCsv").addClass("disabled");
+                $("#lblExportNotification").show();
+                $("#btnExportCsv").attr("title", "Report is exporting. Please wait..")
+                ShowToastNotification("info", "Report is downloading... Please wait.");
+                $.ajax({
+                    url: "@Url.Action("ExportAccountLedgerReport", "Reports")",
+                    type: "POST",
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(requestModel),
+                    skipLoading: true,
+                    beforeSend: function () {
+                        $('#btnDownloadCsv').text('Preparing...').prop('disabled', true);
+                    },
+                    success: function (response) {
+                        if (response != null && response != null && response.IsSuccess) {
+                            //ShowToastNotification("success", response.Response);
+                            // Poll every 5 seconds to check export completion
+                            let pollInterval = setInterval(function () {
+                                $.ajax({
+                                    url: '@Url.Action("CheckExportStatus", "Reports")',
+                                    type: 'GET',
+                                    async: true,
+                                    skipLoading: true,
+                                    data: { fileName: response.Action },
+                                    success: function (res) {
+                                        if (res.IsReady) {
+                                            $("#lblExportNotification").hide();
+                                            $("#btnExportCsv").removeClass("disabled");
+                                            $("#btnExportCsv").attr("title", "Export");
+                                            clearInterval(pollInterval);
+                                            const downloadBaseUrl = '@Url.Content("~/TempDownload/")';
+                                            const url = downloadBaseUrl + encodeURIComponent(res.FileName);
+                                            // Construct download URL
+                                            //const downloadUrl = '@Url.Content("~/TempDownload/")' + res.FileName;
+
+                                            ShowToastNotification("success", "Report is ready. Downloading...");
+                                            window.open(url, '_blank');
+                                        }
+                                    }
+                                });
+                            }, 5000);
+                        }
+                        else {
+                            $("#btnExportCsv").removeClass("disabled");
+                            $("#lblExportNotification").hide();
+                            $("#btnExportCsv").attr("title", "Export");
+                            ShowToastNotification("error", response.Response);
+                        }
+                    },
+                    complete: function () {
+                        /*$('#btnDownloadCsv').text('Preparing...').prop('disabled', true);*/
+                        //ShowToastNotification("success", "Report downloaded success.");
+                    },
+                    error: function () {
+                        $("#btnExportCsv").removeClass("disabled");
+                        $("#lblExportNotification").hide();
+                        $("#btnExportCsv").attr("title", "Export");
+                        ShowToastNotification("error", "Report downloaded failed. Please try again..");
+                    }
+                });
+            } catch (e) {
+                $("#btnExportCsv").attr("title", "Export");
+                $("#lblExportNotification").hide();
+                $("#btnExportCsv").removeClass("disabled");
+                ShowToastNotification("error", "Report downloaded failed. Please try again..");
+            }
+        });
+    });
+    function BindAccount() {
+        try {
+             // Add selected option
+           var accountId = '@ViewBag.AccountId';
+            var accountName = '@ViewBag.AccountLedger';
+
+            $("#ddlLedger").select2({
+                dropdownParent: $("#ddlLedger").parent(),
+                placeholder: "Select Account",
+                allowClear: true,
+                ajax: {
+                    url: '@Url.Action("FillSelctionCommon", "Common")',
+                    dataType: 'json',
+                    delay: 250,
+                    skipLoading: true,
+                    data: function (params) {
+                        return {
+                            _type: "Ledger",
+                            _whareClause: params.term || "",
+                            _orderType: "",
+                            _entryType: ""
+                        };
+                    },
+                    processResults: function (data) {
+                        return {
+                            results: data.results
+                        };
+                    }
+                }
+            });
+
+           if (accountId && accountId !== "0") {
+                $.ajax({
+                    url: '@Url.Action("FillSelctionCommon", "Common")',
+                    dataType: 'json',
+                    data: {
+                        _type: "Ledger",
+                        _whareClause: '@ViewBag.AccountLedger' // or create a separate parameter like _id
+                    },
+                    success: function (data) {
+                        if (data.results.length > 0) {
+                            var item = data.results[0];
+                            var option = new Option(item.text, item.id, true, true);
+                            $("#ddlLedger").append(option).trigger("change");
+                            ReportLoadPagination();
+                        }
+                    }
+                });
+
+            }
+         } catch (e) {
+            console.error("Select2 AJAX Error:", e);
+         }
+     }
+    function ReportLoadPagination() {
+    try {
+        var dynamicColumns = [];
+        dynamicColumns.push({
+            title: "#",
+            class: "text-center",
+            render: function (data, type, row, meta) {
+                if (row["Account_Id"] > 0) {
+                    return "<span>" + row["RowNo"] + "</span>";
+                } else {
+                    return "<span></span>";
+                }
+            }
+        });
+        dynamicColumns.push({
+            title: "Posting Date",
+            class: "text-center",
+            render: function (data, type, row, meta) {
+                if (row["AccountName"] == "Grand Total" ||
+                    row["AccountName"] == "Closing Balance") {
+                    return `<span></span>`;
+                }
+                else if (row["DocDate"] != null && row["Account_Id"] > 0) {
+                    var editlink = formatDate(parseMSDate(row["DocDate"]));
+                    return "<span>" + editlink + "</span>";
+                }
+                else {
+                    return "<span></span>";
+                }
+            }
+        });
+        dynamicColumns.push({
+            data: "DocNo",
+            title: "Doc #",
+            class: "text-center",
+            render: function (data, type, row, meta) {
+                if (row["Account_Id"] > 0) {
+                    return "<a title='View Record' href='../Home/PageDetail?pagename="
+                        + row.FormName
+                        + "&uId=" + row.ParentId
+                        + "&act=V' target='_blank'>"
+                        + row.DocNo +
+                        "</a>";
+                }
+                else {
+                    return "<span></span>";
+                }
+            }
+        });
+        dynamicColumns.push({
+            title: "Doc Type",
+            data: "FormTitle"
+        });
+        dynamicColumns.push({
+            title: "Particular",
+            data: "AccountName"
+        });
+        dynamicColumns.push({
+            title: "Debit",
+            data: "Debit_Amount",
+            class: "text-right",
+            render: function (data, type, row, meta) {
+                let debitAmt = parseFloat(data) || 0;
+                if (row["AccountName"] == "Closing Balance") {
+                    if (debitAmt > 0) {
+                        return "<span class='text-danger'>₹" +
+                            debitAmt.toLocaleString('en-IN',
+                            { minimumFractionDigits: 2 }) +
+                            "</span>";
+                    }
+                    else {
+                        return "<span class='text-danger'>₹0.00</span>";
+                    }
+                }
+                else {
+                    return "<span class='text-danger'>₹" +
+                        debitAmt.toLocaleString('en-IN',
+                        { minimumFractionDigits: 2 }) +
+                        "</span>";
+                }
+            }
+        });
+        dynamicColumns.push({
+            title: "Credit",
+            data: "Credit_Amount",
+            class: "text-right",
+            render: function (data, type, row, meta) {
+                let creditAmt = parseFloat(data) || 0;
+                if (row["AccountName"] == "Closing Balance") {
+                    if (creditAmt > 0) {
+                        return "<span class='text-success'>₹" +
+                            creditAmt.toLocaleString('en-IN',
+                            { minimumFractionDigits: 2 }) +
+                            "</span>";
+                    }
+                    else {
+                        return "<span class='text-success'>₹0.00</span>";
+                    }
+                }
+                else {
+                    return "<span class='text-success'>₹" +
+                        creditAmt.toLocaleString('en-IN',
+                        { minimumFractionDigits: 2 }) +
+                        "</span>";
+                }
+            }
+        });
+        dynamicColumns.push({
+            title: "Balance",
+            data: "Balance",
+            class: "text-right",
+            render: function (data, type, row, meta) {
+                if (type === 'display' || type === 'filter') {
+                    if (row["AccountName"] == "Grand Total" ||
+                        row["AccountName"] == "Closing Balance") {
+                        return `<span></span>`;
+                    }
+                    else {
+                        let balance = parseFloat(row["Balance"]) || 0;
+                        let label = balance >= 0 ? "Cr" : "Dr";
+                        let absBalance = Math.abs(balance);
+                        let cssClass = balance >= 0 ? "text-success" : "text-danger";
+                        return `<span class="${cssClass}">
+                                    ₹${absBalance.toLocaleString('en-IN',
+                                    { minimumFractionDigits: 2 })} ${label}
+                                </span>`;
+                    }
+                }
+                return `<span>0</span>`;
+            }
+        });
+        $("#btnExportCsv").addClass("disabled");
+        var requestModel = {
+            FromDate: $("#dtFromDate").val(),
+            ToDate: $("#dtToDate").val(),
+            AccountId: $("#ddlLedger").val(),
+            AccountName: $("#ddlLedger option:selected").text()
+        };
+        if ($.fn.DataTable.isDataTable('#tblLedgerReportView')) {
+            $('#tblLedgerReportView')
+                .DataTable()
+                .destroy();
+            $('#tblLedgerReportView thead').empty();
+        }
+        let table = $("#tblLedgerReportView").DataTable({
+            destroy: true,
+            deferLoading: 0,
+            columns: dynamicColumns,
+            scrollY: "70vh",
+            scrollX: true,
+            scrollCollapse: true,
+            searching: true,
+            ordering: false,
+            serverSide: true,
+            paging: false,
+            processing: true,
+            fixedHeader: false,
+            orderCellsTop: true,
+            lengthMenu: [10, 25, 100, 200, 500, 10000],
+            pageLength: 10000,
+            scroller: {
+                loadingIndicator: true,
+                displayBuffer: 10
+            },
+            language: {
+                emptyTable: "Data not available",
+                infoEmpty: "No records available",
+                processing: ""
+            },
+            createdRow: function (row, data, dataIndex) {
+                if (dataIndex === 0) {
+                    $(row).addClass('opening-balance-row');
+                }
+                if (data.AccountName === 'Closing Balance') {
+                    $(row).addClass('opening-balance-row fw-bold');
+                }
+                if (data.AccountName === 'Grand Total') {
+                    $(row).addClass('table-light fw-bold even');
+                }
+            },
+            ajax: {
+                url: "@Url.Action("GetLedgerReport", "Reports")",
+                type: "POST",
+                skipLoading: true,
+                data: function (d) {
+                    d.search = d.search.value;
+                    d.model = requestModel;
+                },
+                dataSrc: function (json) {
+                    if (!json ||
+                        !json.data ||
+                        json.data.length === 0) {
+                        $("#btnExportCsv").addClass("disabled");
+                        return [];
+                    }
+                    return json.data;
+                }
+            }
+        });
+        setTimeout(() => {
+            table.ajax.reload();
+        }, 0);
+        table.on('processing.dt', function (e, settings, processing) {
+            if (processing) {
+                $('.dataTables_processing')
+                    .html(
+                        '<i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:#27a9d7;"></i> Loading...'
+                    )
+                    .show();
+            }
+            else {
+                $('.dataTables_processing').hide();
+                $("#btnExportCsv")
+                    .removeClass("disabled");
+            }
+        });
+    }
+    catch (e) {
+        ShowToastNotification("error", e.message);
+        $("#btnExportCsv").addClass("disabled");
+    }
+}
+</script>

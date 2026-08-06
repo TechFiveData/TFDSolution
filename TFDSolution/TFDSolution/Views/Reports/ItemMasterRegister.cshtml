@@ -1,0 +1,113 @@
+﻿
+
+
+@{
+    ViewBag.Title = "Item Master Register";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="breadcrumbs">
+    <div class="col-sm-4">
+        <div class="page-header float-left">
+            <div class="page-title">
+                <h1> Item Master Register </h1>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-8">
+        <div class="page-header float-right">
+            <div class="page-title">
+                <ol class="breadcrumb text-right">
+                    <li class="active">Home</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="animated fadeIn">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="col-lg-6">
+                        <strong class="card-title"></strong>
+                    </div>
+                    <div class="col-lg-6 text-right">
+                        <a class="btn btn-sm" href="javascript:void(0);" title="Export"><i class="fa fa-download"></i>&nbsp; Export</a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="p-3">
+                        <div class="row form-group">
+                            <div class="col-md-12">
+                                <table id="tblreportIndentRegiter" class="display cell-border nowrap" cellspacing="0" width="100%"></table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        //DefaultFilter();
+        BindPendings();
+        $("#btnSearch").click(function () {
+            BindPendings();
+        });
+    });
+    function BindPendings() {
+            $.ajax({
+                type: "GET",
+                url: "@Url.Action("getItemMasterRegister", "Reports")",
+                contentType: "application/json; charset=utf-8",
+                data: { },
+                dataType: "json",
+                success: SuccesssBindGrid,
+                failure: function (response) {
+                    ShowToastNotification("error", response.d);
+                },
+                error: function (response) {
+                    ShowToastNotification("error", "Error fetching data!");
+                }
+            });
+    }
+    function SuccesssBindGrid(dataset) {
+        dataset = Array.isArray(dataset) ? dataset : [];
+        // Initialize DataTable
+        let formTable = new DataTable("#tblreportIndentRegiter", {
+            "destroy": true,
+            searching: true,
+            paging: true,
+            scrollCollapse: true,
+            info: true,
+            // scrollY: '500px',
+            data: dataset,
+            select: true,
+            rowReorder: true,
+            rowReorder: {
+                dataSrc: 'SortOrder',
+                selector: 'tr'
+            },
+            columns: [
+                { title: '#', data: 'Sr_No' },
+                { title: 'Item Name', data: 'ItemName' },
+                { title: 'Alias', data: 'Alias' },
+                { title: 'Item Group', data: 'ItemGroup' },
+                { title: 'Unit', data: 'Unit' },
+                { title: 'HSN', data: 'HSN' },
+                { title: 'Part No', data: 'PartNo' },
+                { title: 'Drawing No', data: 'DrawingNo' },
+                { title: 'LeadTime', data: 'LeadTime' },
+                { title: 'Tax Slab', data: 'TaxSlab' },
+                { title: 'Minimum Stock', data: 'MinimumStock' },
+                { title: 'Location', data: 'Location' },
+            ],
+            language: {
+                emptyTable: "No records found", // Message when no data is available
+                zeroRecords: "No matching records found"
+            }
+        });
+    }
+</script>

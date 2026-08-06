@@ -1,0 +1,276 @@
+﻿@model TFDSolution.Transport.Master.MultiApprovalModel
+
+@{
+    ViewBag.Title = "Multi Approval";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .select2-container {
+        min-width: 680px !important;
+    }
+</style>
+<div class="breadcrumbs">
+    <div class="col-sm-4">
+        <div class="page-header float-left">
+            <div class="page-title">
+                <h1>Multi Approval</h1>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-8">
+        <div class="page-header float-right">
+            <div class="page-title">
+                <ol class="breadcrumb text-right">
+                    <li><a href="@Url.Action("Index","Home")">Home</a></li>
+                    <li>Utilities</li>
+                    <li class="active">Multi Approval</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="animated fadeIn">
+    <div class="row">
+        <div class="col-md-12 p-o">
+            <div class="card">
+                <div class="card-header pt-3">
+                    <div class="row row-cols-lg-auto g-3 align-items-center form-group">
+                        <!-- Parent Form Dropdown -->
+                        <div class="col-auto mb-2">
+                            <label for="ddlSelect" class="form-label  form-label1">Parent Form</label>
+                        </div>
+                        <div class="col-auto mb-2">
+                            <select id="ddlSelect" class="form-select">
+                                @if (Model?.ParentForms != null)
+                                {
+                                    foreach (var item in Model.ParentForms)
+                                    {
+                                        <option data-bind="@item.Prefix" value="@item.FormId">@item.FormTitle</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                        <div class="col-auto mb-2">
+                            <label for="ddlSubForm" class="form-label">Sub Form</label>
+                        </div>
+                        <!-- Sub Form Dropdown -->
+                        <div class="col-auto mb-2">
+                            <select id="ddlSubForm" class="form-select">
+                                <option>Select</option>
+                            </select>
+                        </div>
+                       
+                    </div>
+                    <div class="row row-cols-lg-auto g-3 align-items-center form-group">
+                        <!-- Yes/No Radios -->
+                        <div class="col-auto mb-2">
+                            <label class="form-label form-label1">Entry Type</label>
+                        </div>
+                        <div class="col-auto mb-2">
+                            <div class="form-check form-check-inline me-2 mb-0">
+                                <input class="form-check-input" type="radio" name="myOptions" id="optionYes" value="Header" checked>
+                                <label class="form-check-label" for="optionYes">Header</label>
+                            </div>
+                            <div class="form-check form-check-inline me-2 mb-0">
+                                <input class="form-check-input" type="radio" name="myOptions" id="optionNo" value="Detail">
+                                <label class="form-check-label" for="optionNo">Detail</label>
+                            </div>
+                        </div>
+                        <div class="col-auto d-none">
+                            <label class="form-label me-5 form-label1">User(s)</label>
+                        </div>
+                        <!-- User Dropdown -->
+                        <div class="col-auto pl-0 d-none">
+                            <select id="ddlUser" class="form-select select2" style="min-width:680px !important" multiple>
+                                <option>Select</option>
+                            </select>
+                        </div>
+
+                        <div class="col-auto">
+                            <button id="btnGenerate" class="btn btn-primary">Generate</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="divPartical"></div>                    
+                    <div class="row form-group">
+                        <div class="col-md-12 text-left ml-3">
+                            <button id="btnSubmit" class="btn btn-primary">Submit</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var PendingSelected = [];
+    $(document).ready(function () {
+        $("#ddlSelect").change(function () {
+            var formId = $(this).val();
+            localStorage.setItem("MultiApproval_FormId", formId);
+            GetFormList(formId);
+            BindUserDropdown(formId);
+        });
+        $("#ddlSubForm").change(function () {
+            var formId = $(this).val();
+            BindUserDropdown(formId);
+            $("#btnGenerate").click();
+        });
+        $("#btnGenerate").click(function () {
+            var formId = $("#ddlSubForm").val();
+            if (formId.length && formId != "") {
+                var model = {
+                    FormId: formId,
+                    UserId: '',
+                    EntryType: $("input[name='myOptions']:checked").val(),
+                }
+                 $.ajax({
+                     type: "POST",
+                     url: "@Url.Action("PartialMultiApproval", "Configuration")",
+                     contentType: "application/json;",
+                     skipLoading: true,
+                     data: JSON.stringify(model),
+                     success: function (response) {
+                         $("#divPartical").html(response);
+                     },
+                     failure: function (response) {
+                         ShowToastNotification("error", response.d);
+                     },
+                     error: function (response) {
+                         ShowToastNotification("error", "Error fetching data!");
+                     }
+                 });
+            }
+        })
+        $("#btnSubmit").click(function () {
+            let tableEntry = PendingSelected.find(entry => entry.TableName === "tblData");
+            if (tableEntry) {
+                CreateRecord();
+            }
+        })
+        setTimeout(function () {
+            // Your function or code here, executed after 2 seconds (2000 ms)
+            $("#ddlSelect").trigger("change");
+        }, 200);
+    });
+    function GetFormList(formId)
+    {
+        $.ajax({
+            type: "GET",
+            url: "@Url.Action("getForms", "FormSetting")",
+            contentType: "application/json; charset=utf-8",
+            data: { FormId: formId  },
+            dataType: "json",
+            skipLoading: true,
+            success: SuccesssBindForm,
+            failure: function (response) {;},
+            error: function (response) { ShowToastNotification("error", "Error fetching data!"); }
+        });
+    }
+    function SuccesssBindForm(dataset) {
+        var dropdown = $('#ddlSubForm');
+        dropdown.empty();
+        if (dataset != null && dataset.length > 0) {
+            //dropdown.empty().append('<option value="">Select ' + fieldcap + '</option>');
+            $.each(dataset, function (i, item) {
+                dropdown.append($('<option data-content=' + item.SqlTemplateId + ' data-bind=' + item.SQLTableName +'></option>').val(item.FormId).text(item.FormTitle));
+            });
+            $("#ddlSubForm").trigger("change");
+
+        }
+        else {
+            dropdown.empty().append('<option value="">No Form Created</option>');
+        }
+        var FormSettings_SubFormId = localStorage.getItem("MultiApproval_SubFormId");
+        $("#ddlSubForm option").each(function () {
+            if ($(this).val() === FormSettings_SubFormId) {
+                $(this).prop("selected", true);
+                return false; // break loop
+            }
+        });
+    }
+    function BindUserDropdown(formId) {
+        try {
+            let parentWrapper = $("#ddlUser").parent();
+            $("#ddlUser").select2({
+                dropdownParent: parentWrapper,
+                placeholder: 'Select User(s)',
+                allowClear: true,
+                delay: 250,
+                minimumInputLength: 0, // change to 0 if you want scrolling without typing
+                ajax: {
+                    url: '@Url.Action("FillSelctionCommon", "Common")',
+                    dataType: 'json',
+                    skipLoading: true, // <-- Custom flag
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            _type: 'ApprovalUser',
+                            _whareClause: params.term || '', // search term
+                            _orderType: '',
+                            _entryType: formId
+                        };
+                    },
+                    processResults: function (data) {
+                        return {
+                            results: data.results,
+                            pagination: {
+                                more: data.pagination.more
+                            }
+                        };
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Select2 AJAX Error:", error);
+                        console.error("Status:", status);
+                        console.error("Response:", xhr.responseText);
+                    },
+                    cache: true
+                }
+            });
+            //$('#' + selectId).select2()
+        } catch (e) {
+            console.error("Select2 AJAX Error:", e);
+        }
+    }
+    function CreateRecord() {
+        let tableEntry = PendingSelected.find(entry => entry.TableName === "tblData");
+        if (!tableEntry) {
+            ShowToastNotification("error", "Please select at least record");
+        }
+        else {
+            var paramItem_SRNo = (tableEntry?.FieldValues || "");
+            console.log("Select Ids : " + paramItem_SRNo);
+            // Split current values into array
+            var model = {
+                FormId: $("#ddlSubForm").val(),
+                UserId: '',
+                EntryType: $("input[name='myOptions']:checked").val(),
+                Status: 2,
+                RecorId: paramItem_SRNo
+            }
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("UpdateRecordStatus", "Configuration")",
+                contentType: "application/json;",
+                data: JSON.stringify(model),
+                /*success: OnSuccess,*/
+                success: function (response) {
+                    if (response != null) {
+                        if (response.IsSuccess) {
+                            PendingSelected = [];
+                            BindData();
+                            ShowToastNotification("success", response.Response);
+                        }
+                        else {
+                            ShowToastNotification("error", response.Response);
+                        }
+                    }
+                },
+                error: function (response) {
+                    ShowToastNotification("error", "Error fetching data!");
+                }
+            });
+        }
+    }
+</script>

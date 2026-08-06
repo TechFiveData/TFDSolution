@@ -1,0 +1,195 @@
+﻿@model TFDSolution.Transport.Master.PageTotalData
+
+<div clas="col-md-12">
+    <table id="tblTotal" class="table table-striped table-default table-bordered-none">
+        <tbody>
+            @if (Model != null && Model.Totals.Count > 0)
+            {
+                foreach (var item in Model.Totals)
+                {
+                    item.Amount = Math.Round(item.Amount, 2);
+                    if (item.Name == "SubTotal")
+                    {
+                        <tr>
+                            <td style="width: calc(100% - 200px);">
+                                <label class="form-label float-right m-0 p-1">Sub Total</label>
+                            </td>
+                            <td style="width: 200px;">
+                                <input type="text" id="txtSubTotal" class="form-control" disabled data-bind="SubTotal" value="@item.Amount" />
+                            </td>
+                        </tr>
+                    }
+                    else if (item.Name == "OtherCharges")
+                    {
+                        <tr>
+                            <td style="width: calc(100% - 200px);text-align: right;">
+                                <a class="btnOpenCharges" href="#" id="btnOpenCharges">
+                                    <label style="cursor:pointer" class="form-label float-right m-0 p-1">Tax & Charges</label>
+                                </a>
+                            </td>
+                            <td style="width: 200px;">
+                                <input type="text" id="txtChargesAmount" class="form-control" disabled data-bind="ChargesAmount" value="@item.Amount">
+                            </td>
+                        </tr>
+                        if (Model.OtherChargeDetail != null && Model.OtherChargeDetail.Count > 0)
+                        {
+                            <tr id="divCharges" style="display:none;">
+                                <td colspan="2" style="padding: 0 !important;">
+                                    <div>
+                                        <table border="1" class="table table-striped table-bordered table-default table-bordered-none" style="border:none;margin-bottom:0;">
+                                            <tbody>
+                                                @foreach (var charges in Model.OtherChargeDetail)
+                                                {
+                                                    var id = "txt_" + System.Text.RegularExpressions.Regex.Replace(charges.TaxChargeName ?? string.Empty, @"[^a-zA-Z0-9]", "");
+                                                    charges.Amount = Math.Round(charges.Amount, 2);
+                                                    <tr>
+                                                        <td style="width: calc(100% - 200px);">
+                                                            <label class="form-label float-right m-0 p-1">
+                                                            @charges.TaxChargeName
+                                                            @{
+                                                                if (charges.Effect == "Addition")
+                                                                {
+                                                                    <span class="text-success">(+)</span>
+                                                                }
+                                                                else if (charges.Effect == "Deduction")
+                                                                {
+                                                                    <span class="text-danger">(-)</span>
+                                                                }
+                                                            }
+                                                            </label>
+                                                        </td>
+                                                        <td style="width: 200px;">
+                                                            @if (charges.ChangeValue == 1)
+                                                            {
+                                                                if (Model.PageAction == "V")
+                                                                {
+                                                                    <input id="@id" class='form-control ChargesInput' step="0.01" data-content="@charges.TaxChargeName" data-bind="@charges.OtherChargesDetailId" disabled onchange="chargesEvent(this);" type='text' value="@charges.Amount">
+                                                                }
+                                                                else
+                                                                {
+                                                                    <input id="@id" class='form-control ChargesInput' step="0.01" data-content="@charges.TaxChargeName" data-bind="@charges.OtherChargesDetailId" onchange="chargesEvent(this);" type='text' value="@charges.Amount">
+                                                                }
+                                                            }
+                                                            else
+                                                            {
+                                                                <input id="@id" class='form-control ChargesInput' step="0.01" disabled type='text' data-content="@charges.TaxChargeName" value="@charges.Amount">
+                                                            }
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else if (item.Name == "TotalAmount")
+                    {                        
+                        <tr>
+                            <td style="width: calc(100% - 200px);">
+                                <label id="lblTotalAmount" title="Click to Round Off" class="form-label float-right m-0 p-1">Total Amount</label>
+                            </td>
+                            <td style="width: 200px;">
+                                <input type="text" id="txtTotalAmount" class="form-control" disabled data-bind="TotalAmount" value="@item.Amount" />
+                            </td>
+                        </tr>
+                    }
+                }
+            }
+            else
+            {
+                <tr>
+                    <td style="width: calc(100% - 200px);">
+                        <label class="form-label float-right m-0 p-1">Sub Total</label>
+                    </td>
+                    <td style="width: 200px;">
+                        <input type="text" id="txtSubTotal" class="form-control" disabled data-bind="SubTotal" value="0" />
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: calc(100% - 200px);text-align: right;">
+                        <a class="btnOpenCharges" href="#" id="btnOpenCharges">
+                            <label style="cursor:pointer" class="form-label float-right m-0 p-1">Other Charges</label>
+                        </a>
+                    </td>
+                    <td style="width: 200px;">
+                        <input type="text" id="txtChargesAmount" class="form-control" disabled data-bind="ChargesAmount" value="0">
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: calc(100% - 200px);">
+                        <label class="form-label float-right m-0 p-1">Total Amount</label>
+                    </td>
+                    <td style="width: 200px;">
+                        <input type="text" id="txtTotalAmount" class="form-control" disabled data-bind="TotalAmount" value="0" />
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#lblTotalAmount").on("click", function () {
+            // Check if any input[type=number] has "Round" in its id
+            var $roundInput = $('#tblTotal input[id*="Round"]:not([readonly]):not([disabled])');
+            if ($roundInput.length === 0) {
+                return; // No Round input found
+            }
+            var amount = parseFloat($("#txtTotalAmount").val());
+            if (isNaN(amount) || amount % 1 === 0)
+                return;
+
+            var subTotal = $("#txtSubTotal").length > 0
+                ? parseFloat($("#txtSubTotal").val()) || 0
+                : 0;
+
+            var chargesAmount = $("#txtChargesAmount").length > 0
+                ? parseFloat($("#txtChargesAmount").val()) || 0
+                : 0;
+
+            var amount = subTotal + chargesAmount;
+            var decimal = amount - Math.floor(amount);
+            var roundedAmount, roundOff;
+            if (decimal < 0.49) {
+                roundedAmount = Math.floor(amount);
+            } else {
+                roundedAmount = Math.ceil(amount);
+            }
+            
+            roundOff = roundedAmount - amount;
+            //$("#txtTotalAmount").val(roundedAmount.toFixed(2));
+            $roundInput.val(0);
+            $roundInput.val(roundOff.toFixed(2));
+            $roundInput.change();
+            $("#txtTotalAmount").val(roundedAmount.toFixed(2));
+        });
+    });
+    function chargesEvent(ctrl) {
+        try {
+            var otherChargesDetailId = $(ctrl).attr("data-bind");
+            var _taxChargeName = $(ctrl).attr("data-content");
+            var ocAmt = $(ctrl).val();
+            var formId = $("#hdnFormId").val();
+            var model = {
+                OtherChargesDetailId: otherChargesDetailId,
+                TaxChargeName: _taxChargeName,
+                ParentId: parseInt($("#hdnRecordId").val()),
+                FormId: formId,
+                Amount: ocAmt
+            }
+            $.ajax({
+                type: "POST", url: '@Url.Action("SaveOtherChargesItem", "Home")',
+                contentType: "application/json;",
+                skipLoading: false,
+                data: JSON.stringify(model),
+                async: false,
+                success: function (response) { CalculateGrandTotal(true) },
+                failure: function (response) { },
+                error: function (response) { }
+             });
+        } catch (e) {
+        }
+    }
+</script>

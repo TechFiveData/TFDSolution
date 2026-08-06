@@ -1,0 +1,377 @@
+﻿@model TFDSolution.Transport.Master.RoleDetail
+
+@{
+    ViewBag.Title = "Role Permission";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<!-- /header -->
+<div class="breadcrumbs">
+    <div class="col-sm-4">
+        <div class="page-header float-left">
+            <div class="page-title">
+                @if (string.IsNullOrEmpty(Model.RoleName))
+                {
+                    <h1>Add New Role </h1>
+                }
+                else
+                {
+                    <h1>Edit Role: @Model.RoleName </h1>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-8">
+        <div class="page-header float-right">
+            <div class="page-title">
+                <ol class="breadcrumb text-right">
+                    <li><a href="@Url.Action("Index","Home")">Home</a></li>
+                    <li><a href="@Url.Action("RoleMaster","Master")">Role</a></li>
+                    @if (!string.IsNullOrEmpty(Model.RoleName))
+                    {
+                        <li class="active">Edit Role</li>
+                    }
+                    else
+                    {
+                        <li class="active">Add New Role</li>
+                    }
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="animated fadeIn">
+    @using (Html.BeginForm("RolePermissionAction", "Master", FormMethod.Post))
+    {
+        if (ViewBag.ErrorMessages != null)
+        {
+            @*<div id="divError">
+                    <div class="alert alert-danger">
+                        <strong>Danger!</strong>  @ViewBag.ErrorMessages
+                    </div>
+                </div>*@
+            <script>
+                ShowToastNotification("error", '@ViewBag.ErrorMessages');
+            </script>
+        }
+        if (ViewBag.SuccessMessage != null)
+        {
+            @*<div id="divError">
+                    <div class="alert alert-success">
+                        <strong>Success!</strong> @ViewBag.SuccessMessage
+                    </div>
+                </div>*@
+            <script type="text/javascript">
+             ShowToastNotification("success", '@ViewBag.SuccessMessage');
+             setTimeout(function () {
+                 var backURL = "@Url.Action("RoleMaster", "Master")"
+                 location.href = backURL;
+             }, 6000);
+            </script>
+        }
+        @Html.HiddenFor(m => m.RoleId)
+        @*@Html.HiddenFor(m => m.RoleName)
+            @Html.HiddenFor(m => m.CreatedOn)
+            @Html.HiddenFor(m => m.UserId)*@
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="col-lg-6">
+                            <strong class="card-title"></strong>
+                        </div>
+                        <div class="col-lg-6 text-right">
+                            <a class="btn btn-sm" id="btnrefresh" href="javascript:void(0);"><i class="fa fa-refresh"></i>&nbsp; Refresh</a>
+                            <a class="btn btn-sm" id="btnBack" href="@Url.Action("RoleMaster", "Master")"><i class="fa fa-arrow-circle-left"></i>&nbsp; Back</a>
+                            <button class="btn btn-sm" type="submit"><i class="fa fa-save"></i>&nbsp; Save</button>
+                        </div>
+
+                    </div>
+                    <div class="card-body">
+                        <div id="general">
+                            <div class="form-horizontal page-head">
+                                <div class="section-left">
+                                    <div class="row form-group">
+                                        <div class="col col-md-3">
+                                            <label for="text-input" class=" form-control-label">Role Name<span class="text-danger p-1">(*)</span></label>
+                                        </div>
+                                        <div class="col-12 col-md-9 form-group">
+                                            @Html.TextBoxFor(m => m.RoleName, new { @placeholder = "Role Name", @class = "form-control", @required = "required", @maxlength = "50" })
+                                            @Html.ValidationMessageFor(m => m.RoleName, "", new { @class = "text-danger" })
+
+                                        </div>
+                                    </div>
+                                    <div class="row form-group">
+                                        <div class="col col-md-3"><label class=" form-control-label">Role Status<span class="text-danger p-1">(*)</span></label></div>
+                                        <div class="col-12 col-md-9 pt-2">
+                                            <label class="switch switch-3d switch-success mr-3">
+                                                @Html.CheckBoxFor(m => m.Status, new { @class = "switch-input" })
+                                                <span class="switch-label"></span> <span class="switch-handle"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="section-right">
+                                    <div class="row form-group">
+                                        <div class="col col-md-3">
+                                            <label for="text-input" class=" form-control-label">Description</label>
+                                        </div>
+                                        <div class="col-12 col-md-9">
+                                            @Html.TextBoxFor(m => m.Description, new { @class = "form-control", @rows = "3", @placeholder = "Description", @maxlength = "50" })
+                                            @Html.ValidationMessageFor(m => m.Description, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="detail">
+                            <div class="page-breaker"></div>
+                            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" id="profile-tab" data-toggle="tab" href="#address" role="tab" aria-controls="address" aria-selected="true">Permissions</a>
+                                </li>
+                            </ul>
+                            <div class="tab-content pl-3 p-1" id="myTabContent">
+                                <div class="tab-pane fade show active" id="address" role="tabpanel" aria-labelledby="profile-tab">
+                                    <div class="form-horizontal ">
+                                        <!-- Left Panel -->
+                                        <aside id="left-panel" class="">
+                                            <div class="accordion" id="accordionPanelsStayOpenExample">
+                                                @{
+                                                    for (int i = 0; i < Model.roleParentForms.Count; i++)
+                                                    {
+                                                        var item = Model.roleParentForms[i];
+                                                        <div class="accordion-item">
+                                                            <h2 class="accordion-header" id="panelsStayHeading_@item.FormId">
+                                                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen_@item.FormId"
+                                                                        aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
+                                                                    @item.FormName <span class="pl-2"><i class="fa fa-check permission-indicator" id="permIndicator_@item.FormId" style="display:@(Model.rolePermissions.Any(r => r.ParentFormId == item.FormId && (r.FullAccess || r.CanAdd || r.CanEdit || r.CanDelete || r.CanPrint || r.CanApprove)) ? "inline" : "none")"></i></span>
+
+                                                                    @Html.Hidden($"roleParentForms[{i}].FormId", item.FormId)
+                                                                    @Html.Hidden($"roleParentForms[{i}].FormName", @item.FormName)
+                                                                </button>
+                                                            </h2>
+                                                            <div id="panelsStayOpen_@item.FormId" class="accordion-collapse collapse" aria-labelledby="panelsStayHeading_@item.FormId">
+                                                                <div class="accordion-body">
+                                                                    <table id="permissionTable_@item.FormId" data-parent-id="@item.FormId"
+                                                                           class="permission-table display cell-border table-bordered table-striped dataTable dtr-inline no-footer p-0">
+                                                                        <thead>
+                                                                            <tr>
+                                                                                <th class="grid-action-item-bg sorting center">Form</th>
+                                                                                <th class="grid-action-item-bg sorting center"><input type="checkbox" class="checkAllColumn" data-column="chkFullAccess" data-parent="@item.FormId" /> Full Access</th>
+                                                                                <th class="grid-action-item-bg sorting center"><input type="checkbox" class="checkAllColumn" data-column="chkCanAdd" data-parent="@item.FormId" /> Add</th>
+                                                                                <th class="grid-action-item-bg sorting center"><input type="checkbox" class="checkAllColumn" data-column="chkCanEdit" data-parent="@item.FormId" /> Edit</th>
+                                                                                <th class="grid-action-item-bg sorting center"><input type="checkbox" class="checkAllColumn" data-column="chkCanDelete" data-parent="@item.FormId" /> Delete</th>
+                                                                                <th class="grid-action-item-bg sorting center"><input type="checkbox" class="checkAllColumn" data-column="chkCanPrint" data-parent="@item.FormId" /> Print</th>
+                                                                                <th class="grid-action-item-bg sorting center"><input type="checkbox" class="checkAllColumn" data-column="chkCanApprove" data-parent="@item.FormId" /> Approve</th>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody>
+                                                                            @for (int j = 0; j < Model.rolePermissions.Count; j++)
+                                                                            {
+                                                                                var child = Model.rolePermissions[j];
+                                                                                if (child.ParentFormId == item.FormId)
+                                                                                {
+                                                                                    <tr>
+                                                                                        <td class="grid-action-item-bg sorting left">
+                                                                                            @Html.Hidden($"rolePermissions[{j}].FormId", child.FormId)
+                                                                                            @Html.Hidden($"rolePermissions[{j}].ParentFormId", child.ParentFormId)
+                                                                                            @Html.Hidden($"rolePermissions[{j}].RolePermissionID", child.RolePermissionID)
+                                                                                            @Html.Hidden($"rolePermissions[{j}].FormName", child.FormName)
+                                                                                            @child.FormName
+                                                                                        </td>
+                                                                                        <td class="grid-action-item-bg sorting center"><input type="checkbox" class="chkFullAccess" name="rolePermissions[@j].FullAccess" value="true" @(child.FullAccess ? "checked" : "") /> <input type="hidden" name="rolePermissions[@j].FullAccess" value="false" /></td>
+                                                                                        <td class="grid-action-item-bg sorting center"><input type="checkbox" class="chkCanAdd" name="rolePermissions[@j].CanAdd" value="true" @(child.CanAdd ? "checked" : "") /> <input type="hidden" name="rolePermissions[@j].CanAdd" value="false" /></td>
+                                                                                        <td class="grid-action-item-bg sorting center"><input type="checkbox" class="chkCanEdit" name="rolePermissions[@j].CanEdit" value="true" @(child.CanEdit ? "checked" : "") /> <input type="hidden" name="rolePermissions[@j].CanEdit" value="false" /></td>
+                                                                                        <td class="grid-action-item-bg sorting center"><input type="checkbox" class="chkCanDelete" name="rolePermissions[@j].CanDelete" value="true" @(child.CanDelete ? "checked" : "") /> <input type="hidden" name="rolePermissions[@j].CanDelete" value="false" /></td>
+                                                                                        <td class="grid-action-item-bg sorting center"><input type="checkbox" class="chkCanPrint" name="rolePermissions[@j].CanPrint" value="true" @(child.CanPrint ? "checked" : "") /> <input type="hidden" name="rolePermissions[@j].CanPrint" value="false" /></td>
+                                                                                        <td class="grid-action-item-bg sorting center"><input type="checkbox" class="chkCanApprove" name="rolePermissions[@j].CanApprove" value="true" @(child.CanApprove ? "checked" : "") /> <input type="hidden" name="rolePermissions[@j].CanApprove" value="false" /></td>
+                                                                                    </tr>
+                                                                                }
+                                                                            }
+                                                                        </tbody>
+                                                                    </table>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                }
+                                            </div>
+                                            <!--<nav class="navbar navbar-expand-sm navbar-default">
+                                                <div id="main-menu" class="main-menu collapse navbar-collapse ">
+                                                    <ul class="nav navbar-nav col">
+
+                                                    </ul>
+                                                </div>-->
+                                            <!-- /.navbar-collapse -->
+                                            <!--</nav>-->
+                                        </aside><!-- /#left-panel -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div><!-- .animated -->
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        const columnClassList = ['chkCanAdd', 'chkCanEdit', 'chkCanDelete', 'chkCanPrint', 'chkCanApprove'];
+        const allColumnClasses = ['chkFullAccess', ...columnClassList];
+
+        function updateHeaderCheckbox($table, columnClass) {
+            const parentId = $table.data('parent-id');
+            const $columnCheckboxes = $table.find(`tbody .${columnClass}`);
+            const $headerCheckbox = $(`.checkAllColumn[data-column='${columnClass}'][data-parent='${parentId}']`);
+            $headerCheckbox.prop('checked', $columnCheckboxes.length && $columnCheckboxes.filter(':checked').length === $columnCheckboxes.length);
+        }
+
+        function updateRowFullAccess($row) {
+            const allChecked = columnClassList.every(cls => $row.find(`.${cls}`).prop('checked'));
+            $row.find('.chkFullAccess').prop('checked', allChecked);
+        }
+
+        function updateFullAccessHeader($table) {
+            const parentId = $table.data('parent-id');
+            const $fullAccessCheckboxes = $table.find('tbody .chkFullAccess');
+            const $fullAccessHeader = $(`.checkAllColumn[data-column='chkFullAccess'][data-parent='${parentId}']`);
+            $fullAccessHeader.prop('checked', $fullAccessCheckboxes.length && $fullAccessCheckboxes.filter(':checked').length === $fullAccessCheckboxes.length);
+        }
+
+        function uncheckAllColumnHeaders($table) {
+            const parentId = $table.data('parent-id');
+            columnClassList.forEach(cls => {
+                $(`.checkAllColumn[data-column='${cls}'][data-parent='${parentId}']`).prop('checked', false);
+            });
+        }
+
+        function areAllColumnHeadersChecked(parentId) {
+            return columnClassList.every(cls => $(`.checkAllColumn[data-column='${cls}'][data-parent='${parentId}']`).prop('checked'));
+        }
+
+        // Handle header checkbox (Select All per column)
+        $('.checkAllColumn').on('change', function () {
+            const columnClass = $(this).data('column');
+            const parentId = $(this).data('parent');
+            const isChecked = $(this).prop('checked');
+            const $table = $(`#permissionTable_${parentId}`);
+
+            if (columnClass === 'chkFullAccess') {
+                // Toggle all checkboxes in all rows
+                $table.find('tbody tr').each(function () {
+                    $(this).find('input[type=checkbox]').prop('checked', isChecked);
+                });
+
+                // Toggle all column header checkboxes
+                columnClassList.forEach(cls => {
+                    $(`.checkAllColumn[data-column='${cls}'][data-parent='${parentId}']`).prop('checked', isChecked);
+                });
+            } else {
+                // Individual column select all
+                $table.find(`.${columnClass}`).prop('checked', isChecked);
+
+                // After toggling column, update each row's FullAccess status
+                $table.find('tbody tr').each(function () {
+                    updateRowFullAccess($(this));
+                });
+
+                if (areAllColumnHeadersChecked(parentId)) {
+                    // All individual headers are checked → check FullAccess header + row checkboxes
+                    $(`.checkAllColumn[data-column='chkFullAccess'][data-parent='${parentId}']`).prop('checked', true);
+                    $table.find('tbody tr').each(function () {
+                        $(this).find('.chkFullAccess').prop('checked', true);
+                    });
+                } else {
+                    $(`.checkAllColumn[data-column='chkFullAccess'][data-parent='${parentId}']`).prop('checked', false);
+                    // Also make sure each row's FullAccess is updated (already handled above)
+                }
+            }
+            updatePermissionIndicator($table);
+        });
+
+        // Handle row checkbox changes
+        $('.permission-table tbody').on('change', 'input[type=checkbox]', function () {
+            const $checkbox = $(this);
+            const $row = $checkbox.closest('tr');
+            const $table = $checkbox.closest('table');
+            const parentId = $table.data('parent-id');
+
+            allColumnClasses.forEach(cls => {
+                if ($checkbox.hasClass(cls)) {
+                    updateHeaderCheckbox($table, cls);
+                }
+            });
+
+            if ($checkbox.hasClass('chkFullAccess')) {
+                const isFullChecked = $checkbox.prop('checked');
+
+                // Toggle all other permissions in the row
+                columnClassList.forEach(cls => {
+                    $row.find(`.${cls}`).prop('checked', isFullChecked);
+                });
+
+                if (!isFullChecked) {
+                    // ❌ Unchecking FullAccess → uncheck all column headers
+                    uncheckAllColumnHeaders($table);
+                    $(`.checkAllColumn[data-column='chkFullAccess'][data-parent='${parentId}']`).prop('checked', false);
+                } else {
+                    // ✅ Rechecking FullAccess → check headers *if* all rows in column are checked
+                    columnClassList.forEach(cls => {
+                        updateHeaderCheckbox($table, cls);
+                    });
+
+                    // Also check FullAccess header if needed
+                    updateFullAccessHeader($table);
+                }
+            } else {
+                updateRowFullAccess($row);
+            }
+
+            // Update FullAccess header
+            updateFullAccessHeader($table);
+            updatePermissionIndicator($table);
+        });
+
+        // On page load, auto-check header checkboxes if all rows are checked
+        $('.permission-table').each(function () {
+            const $table = $(this);
+            const parentId = $table.data('parent-id');
+            allColumnClasses.forEach(cls => updateHeaderCheckbox($table, cls));
+            updatePermissionIndicator($table);
+        });
+
+    //To update parent accordian indicator
+        function updatePermissionIndicator($table) {
+            const parentId = $table.data('parent-id');
+            let hasPermission = false;
+
+            $table.find('tbody tr').each(function () {
+                const $row = $(this);
+                if (
+                    $row.find('.chkFullAccess').prop('checked') ||
+                    $row.find('.chkCanAdd').prop('checked') ||
+                    $row.find('.chkCanEdit').prop('checked') ||
+                    $row.find('.chkCanDelete').prop('checked') ||
+                    $row.find('.chkCanPrint').prop('checked') ||
+                    $row.find('.chkCanApprove').prop('checked')
+                ) {
+                    hasPermission = true;
+                    return false; // exit loop early
+                }
+            });
+
+            const $indicator = $('#permIndicator_' + parentId);
+            if (hasPermission) {
+                $indicator.show();
+            } else {
+                $indicator.hide();
+            }
+        }
+    });
+</script>
+

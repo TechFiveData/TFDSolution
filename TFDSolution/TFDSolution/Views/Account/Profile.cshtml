@@ -1,0 +1,315 @@
+﻿@model TFDSolution.Transport.Master.UserMast
+
+@{
+    ViewBag.Title = "Profile";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- /header -->
+<div class="breadcrumbs">
+    <div class="col-sm-4">
+        <div class="page-header float-left">
+            <div class="page-title">
+                <h1>Your Profile: @Model.FirstName&nbsp;@Model.LastName</h1>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-8">
+        <div class="page-header float-right">
+            <div class="page-title">
+                <ol class="breadcrumb text-right">
+                    <li><a href="@Url.Action("Index","Home")">Home</a></li>
+                    <li class="active">Profile</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="animated fadeIn">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="col-lg-6">
+                        <strong class="card-title"></strong>
+                    </div>
+                    <div class="col-lg-6 text-right">
+                        <a class="btn btn-sm" href="javascript:void(0);"><i class="fa fa-refresh"></i>&nbsp; Refresh</a>
+                        <a class="btn btn-sm" href="@Url.Action("ItemAction", "Master")"><i class="fa fa-save"></i>&nbsp; Save</a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="page-head">
+                        <div class="section-left">
+                            <div class="row">
+                                <div class="col-md-6 form-group">
+                                    <div class="col col-md-6 p-0"><label class=" form-control-label">User Code</label></div>
+                                    <div class="col-12 col-md-6 text-left">
+                                        <p class="form-control-static"></p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 form-group">
+                                    <div class="col col-md-6 p-0 text-right"><label for="select" class=" form-control-label">Status</label></div>
+                                    <div class="col-12 col-md-6">
+                                        <label class="switch switch-3d switch-success mr-3">
+                                            <input type="checkbox" class="switch-input" checked="@Model.IsActive"> <span class="switch-label"></span> <span class="switch-handle"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row form-group">
+                                <div class="col col-md-3">
+                                    <label for="text-input" class=" form-control-label">First Name <span class="text-danger p-1">(*)</span></label>
+                                </div>
+                                <div class="col-12 col-md-9">
+                                    @Html.TextBoxFor(m => m.FirstName, new { @placeholder = "First Name ", @class = "form-control" })
+                                </div>
+                            </div>
+                            <div class="row form-group">
+                                <div class="col col-md-3">
+                                    <label for="text-input" class=" form-control-label">Last Name<span class="text-danger p-1">(*)</span></label>
+                                </div>
+                                <div class="col-12 col-md-9">
+                                    @Html.TextBoxFor(m => m.LastName, new { @placeholder = "Last Name", @class = "form-control" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="section-right">
+                            <div class="row form-group">
+                                <div class="col col-md-3">
+                                    <label for="text-input" class=" form-control-label">Email <span class="text-danger p-1">(*)</span></label>
+                                </div>
+                                <div class="col-12 col-md-9">
+                                    <div class="input-group">
+                                        @Html.TextBoxFor(m => m.EmailId, new { @placeholder = "Email Address", @class = "form-control", @name = "input2-group1" })
+                                        <div class="input-group-addon"><i class="fa fa-envelope-o"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row form-group">
+                                <div class="col col-md-3">
+                                    <label for="text-input" class=" form-control-label">User Name <span class="text-danger p-1">(*)</span></label>
+                                </div>
+                                <div class="col-12 col-md-9">
+                                    @Html.TextBoxFor(m => m.UserName, new { @placeholder = "UserName", @class = "form-control", @disabled = "disabled" })
+                                </div>
+                            </div>
+                            <div class="row form-group">
+                                <div class="col col-md-3">
+                                    <label for="text-input" class=" form-control-label">Created On</label>
+                                </div>
+                                <div class="col-12 col-md-9">
+                                    @Model.CreatedOn.ToString("dd, MMM yyyy hh:mm tt")
+                                </div>
+                            </div>
+                            <div class="row form-group">
+                                <div class="col col-md-3">
+                                    <label for="text-input" class=" form-control-label">Last Logined On</label>
+                                </div>
+                                <div class="col-12 col-md-9">
+                                    @Model.LastLoginDate.Value.ToString("dd, MMM yyyy hh:mm tt")
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="page-breaker"></div>
+
+                    <ul class="nav nav-tabs" id="myTab" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="home-tab" data-toggle="tab" href="#general" role="tab" aria-controls="general" aria-selected="true">General</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="profile-tab" data-toggle="tab" href="#Accountdetails" role="tab" aria-controls="Accountdetails" aria-selected="false">Account Details</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="password-tab" data-toggle="tab" href="#managepassword" role="tab" aria-controls="managepassword" aria-selected="false">Manager Password</a>
+                        </li>
+                    </ul>
+                    <div class="tab-content pl-3 p-1" id="myTabContent">
+                        <div class="tab-pane fade show active" id="general" role="tabpanel" aria-labelledby="home-tab">
+                            <form action="" method="post" enctype="multipart/form-data" class="form-horizontal">
+                                <div class="row form-group">
+                                    <div class="col col-md-3"><label for="select" class=" form-control-label">Item Group</label></div>
+                                    <div class="col-12 col-md-9">
+                                        <select name="select" id="select" class="form-control">
+                                            <option value="0">Select Item Group</option>
+                                            <option value="1">Option #1</option>
+                                            <option value="2">Option #2</option>
+                                            <option value="3">Option #3</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row form-group">
+                                    <div class="col col-md-3"><label for="select" class=" form-control-label">Item UOM</label></div>
+                                    <div class="col-12 col-md-9">
+                                        <select name="select" id="select" class="form-control">
+                                            <option value="0">Select UOM</option>
+                                            <option value="1">Option #1</option>
+                                            <option value="2">Option #2</option>
+                                            <option value="3">Option #3</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row form-group">
+                                    <div class="col col-md-3"><label for="select" class=" form-control-label">Item Category</label></div>
+                                    <div class="col-12 col-md-9">
+                                        <select name="select" id="select" class="form-control">
+                                            <option value="0">Select Item Category</option>
+                                            <option value="1">Item</option>
+                                            <option value="2">Service</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                            </form>
+                        </div>
+                        <div class="tab-pane fade" id="Accountdetails" role="tabpanel" aria-labelledby="profile-tab">
+                            <div class="row form-group">
+                                <div class="col col-md-3"><label for="select" class=" form-control-label">GST No</label></div>
+                                <div class="col-12 col-md-9">
+                                    <input type="text" id="text-input" name="text-input" placeholder="GST No" class="form-control">
+                                </div>
+                            </div>
+                            <div class="row form-group">
+                                <div class="col col-md-3"><label for="select" class=" form-control-label">ECC No</label></div>
+                                <div class="col-12 col-md-9">
+                                    <input type="text" id="text-input" name="text-input" placeholder="ECC No" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="managepassword" role="tabpanel" aria-labelledby="password-tab">
+                            <div class="form-horizontal page-head">
+                                <div class="section-left">
+                                    <!-- New Password -->
+                                    <div class="row form-group">
+                                        <div class="col col-md-3">
+                                            <label for="text-input" class="form-control-label">New Password<span class="text-danger p-1">(*)</span></label>
+                                        </div>
+                                        <div class="col-12 col-md-9">
+                                            <div class="d-flex align-items-center" style="width: 82%;">
+                                                <input type="password" id="NewPassword" name="NewPassword" placeholder="New Password" class="form-control me-2 flex-grow-1" maxlength="255">
+                                                <a href="#" id="toggleNewPassword" title="View Password" class="text-decoration-none">
+                                                    <i class="fa fa-eye text-black"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Confirm Password -->
+                                    <div class="row form-group">
+                                        <div class="col col-md-3">
+                                            <label for="text-input" class="form-control-label">Confirm Password<span class="text-danger p-1">(*)</span></label>
+                                        </div>
+                                        <div class="col-12 col-md-9">
+                                            <div class="d-flex align-items-center" style="width: 80%;">
+                                                <input type="password" id="ConfirmPassword" name="ConfirmPassword" placeholder="New Password" class="form-control me-2 flex-grow-1" maxlength="255">
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row form-group">
+                                        <div class="col-12 col-md-12 text-right">
+                                            <a id="btnUpdatePassword" href="javascript:void(0);" class="btn btn-primary" onclick="UpdatePassword()" title="Click here to update password">Update Password</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="section-right">
+                                    <!-- SmtpServer -->
+                                    <div class="row form-group">
+                                        <div class="col-12 col-md-12">
+                                            <div style="padding-left:15px;" id="msg"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(function () {
+        $("#NewPassword").on("keyup", function () {
+            const password = $(this).val();
+            const rules = [
+                { regex: /.{8,}/, message: "Min 8 characters" },
+                { regex: /[A-Z]/, message: "At least one uppercase letter" },
+                { regex: /[a-z]/, message: "At least one lowercase letter" },
+                { regex: /[0-9]/, message: "At least one number" },
+                { regex: /[$!%*?&#]/, message: "At least one special character" }
+            ];
+            let allValid = true;
+            let validationHtml = "<ul>";
+            rules.forEach(rule => {
+                const color = rule.regex.test(password) ? "green" : "red";
+                validationHtml += `<li style="color:${color}">${rule.message}</li>`;
+                if (!rule.regex.test(password)) allValid = false;
+            });
+            validationHtml += "</ul>";
+            $("#btnUpdatePassword").prop("disabled", !allValid); // Enable only when valid
+
+            $("#msg").html(validationHtml);
+        });
+        $('#toggleNewPassword').on('click', function (e) {
+            e.preventDefault();
+            const passwordInput = $('#NewPassword');
+            const icon = $('#toggleIcon');
+
+            // Toggle the type attribute
+            if (passwordInput.attr('type') === 'password') {
+                passwordInput.attr('type', 'text');
+                icon.removeClass('fa-eye').addClass('fa-eye-slash');
+            } else {
+                passwordInput.attr('type', 'password');
+                icon.removeClass('fa-eye-slash').addClass('fa-eye');
+            }
+        });
+    });
+
+    function UpdatePassword() {
+        try {
+            var newPassword = $('#NewPassword').val();
+            var confirmPassword = $('#ConfirmPassword').val();
+            if (newPassword === '') {
+                ShowToastNotification("error", "Please enter new password.");
+                return;
+            }
+            if (confirmPassword === '') {
+                ShowToastNotification("error", "Please enter confirm password.");
+                return;
+            }
+            if (newPassword !== confirmPassword) {
+                ShowToastNotification("error", "New password and confirm password do not match.");
+                return;
+            }
+            // If validation passes, submit the form
+            var _model = {
+                UserId: '@Model.UserId.ToString()',
+                NewPassword: newPassword,
+                ConfirmPassword: confirmPassword
+            };
+
+            $.ajax({
+                type: "POST", url: '@Url.Action("UserUpdatePassword", "Master")',
+                contentType: "application/json;",
+                data: JSON.stringify(_model),
+                async: false,
+                success: function (response) {
+                    if (response.IsSuccess) {
+                        $('#NewPassword').val('');
+                        $('#ConfirmPassword').val('');
+                        ShowToastNotification("success", response.Response);
+                    }
+                    else {
+                        ShowToastNotification("error", response.Response);
+                    }
+                },
+                failure: function (response) { },
+                error: function (response) { }
+            });
+        } catch (e) {
+
+        }
+}
+</script>

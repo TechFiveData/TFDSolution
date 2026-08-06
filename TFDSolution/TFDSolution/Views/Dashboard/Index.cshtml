@@ -1,0 +1,247 @@
+﻿@model TFDSolution.Transport.DashboardModel
+
+@{
+    ViewBag.Title = Model.DashboardTitle;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="~/Content/main/chart.js/Chart.bundle.min.js"></script>
+<style>
+    .dataTables_wrapper {
+        max-width: 100% !important;
+    }
+</style>
+<div class="breadcrumbs">
+    <div class="col-sm-4">
+        <div class="page-header float-left">
+            <div class="page-title">
+                <h1>@Model.DashboardTitle</h1>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-8">
+        <div class="page-header float-right">
+            <div class="page-title">
+                <ol class="breadcrumb text-right">
+                    <li class="active">Home</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+@if (Model.Settings != null && Model.Settings.Count > 0)
+{
+    <div class="row mt-3">
+        @{
+            if (Model.Settings.Where(x => x.WidgetType == "WidgetBox").FirstOrDefault() != null)
+            {
+                <div class="col-lg-12 dashboard">
+                    @foreach (var item in Model.Settings.Where(x => x.WidgetType == "WidgetBox"))
+                    {
+                        <div class="col-sm-6 col-lg-3">
+                            <div class="card text-white" style="height:90px;color:@item.FontColor !important; background-color: @item.BackgroundColor">
+                                <div class="card-body pb-0">
+                                    <div class="dropdown float-right">
+                                        <a href="@item.RedirectURL" title="Redirect" target="_blank"><i class="fa fa-external-link" style="color:#fff;"></i></a>
+                                    </div>
+                                    @if (item.Data != null && item.Data.Count() > 0)
+                                    {
+                                        foreach (var row in item.Data)
+                                        {
+                                            string counter = row.ContainsKey("FieldValue") ? row["FieldValue"].ToString().Replace(",", "") : "0";
+                                            string caption = row.ContainsKey("Caption") ? row["Caption"].ToString() : item.Title;
+                                            decimal TotalVal = 0;
+                                            if (row.ContainsKey("FieldValue") &&
+                                                decimal.TryParse(row["FieldValue"].ToString().Replace(",", ""),
+                                                                 out decimal result))
+                                            {
+                                                TotalVal = result;
+                                                counter = TotalVal.ToString("N0", new System.Globalization.CultureInfo("en-IN"));
+                                            }
+
+                                            <h4 class="mb-0 pb-2">
+                                                @Html.Raw(counter)
+                                            </h4>
+                                            <p class="text-light" style="color:@item.FontColor !important">@caption</p>
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        }
+        @{
+            <div class="col-lg-12 dashboard">
+                @foreach (var item in Model.Settings.Where(x => x.WidgetType != "WidgetBox"))
+                {
+                    string displaySizeClass = string.Equals(item.DisplaySize, "Medium", StringComparison.OrdinalIgnoreCase)
+                    || string.IsNullOrEmpty(item.DisplaySize) ? "col-lg-6" : "col-lg-12";
+                    if (item.WidgetType == "Table")
+                    {
+                        <div class="dashboard @displaySizeClass">
+                            <div class="card">
+                                <div class="card-header" style="padding:10px !important;">
+                                    <strong class="card-title">@item.Title</strong>
+                                    <div class="float-right">
+                                        <a href="@item.RedirectURL" target="_blank">
+                                            <i class="fa fa-link"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="card-body p-1">
+                                    @if (item.ResultData != null && item.ResultData.Data != null && item.ResultData.Data.Count() > 0)
+                                    {
+                                        var result = item.ResultData.Data.FirstOrDefault()?.ToDictionary(x => x.Key, x => x.Value?.ToString());
+                                        foreach (var row in item.ResultData.Data)
+                                        {
+                                            var name = row.ContainsKey("Caption") ? row["Caption"] : null;
+                                            var counter = row.ContainsKey("FieldValue") ? row["FieldValue"] : null;
+                                        }
+                                        List<string> summaryColumns = new List<string>();
+                                        if (item.ResultData?.SummaryColumn != null && item.ResultData.SummaryColumn.Count > 0)
+                                        {
+                                            summaryColumns = item.ResultData.SummaryColumn;
+                                        }
+                                        <table class="table display dashboard-table">
+                                            <thead>
+                                                <tr>
+                                                    @{
+
+                                                        var headers = item.ResultData.Data.FirstOrDefault()?.Keys.ToList();
+                                                        if (headers != null)
+                                                        {
+                                                            foreach (var head in headers)
+                                                            {
+                                                                bool isSummary = summaryColumns.Contains(head);
+                                                                <th scope="col" class="@(isSummary ? "summary-col" : "")">
+                                                                    @head
+                                                                </th>
+                                                            }
+                                                        }
+                                                    }
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @{
+                                                    foreach (var row in item.ResultData.Data)
+                                                    {
+                                                        <tr>
+                                                            @{var tit = item.ResultData.Data.FirstOrDefault()?.Keys.ToList();
+                                                                foreach (var head in tit)
+                                                                {
+                                                                    var name = row.ContainsKey(head) ? row[head] : null;
+                                                                    <td>
+                                                                        @Html.Raw(name)
+                                                                    </td>
+                                                                }
+                                                            }
+                                                        </tr>
+                                                    }
+                                                }
+                                            </tbody>
+                                            @{
+                                                if (summaryColumns != null && summaryColumns.Count > 0)
+                                                {
+                                                    <tfoot>
+                                                        <tr>
+                                                            @foreach (var head in headers)
+                                                            {
+                                                                <th scope="col"></th>
+                                                            }
+                                                        </tr>
+                                                    </tfoot>
+                                                }
+                                            }
+                                        </table>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                }
+            </div>
+        }
+    </div>
+}
+else if (Model.IsSuccess == false && !string.IsNullOrEmpty(Model.Response))
+{
+    <div id="divError">
+        <div class="alert alert-danger">
+            <strong>Something wrong!</strong>  @Model.Response
+        </div>
+    </div>
+}
+<script>
+    $(document).ready(function () {
+        $('.dashboard-table').DataTable({
+            searching: false,
+            paging: false,
+            info: true,
+            scrollY: "300px",
+            scrollCollapse: true,
+            scrollX: true,
+            autoWidth: false,
+            order: [],
+            footerCallback: function (row, data, start, end, display) {
+                try {
+                    var api = this.api();   // ✅ IMPORTANT
+                    var num = function (val) {
+                        if (!val) return 0;
+                        return parseFloat(val.toString().replace(/,/g, '')) || 0;
+                    };
+                    // ✅ Check if ANY column has summary-col
+                    var hasAnySummary = false;
+                    api.columns().every(function (idx) {
+                        var header = $(api.column(idx).header());
+                        if (header.hasClass('summary-col')) {
+                            hasAnySummary = true;
+                        }
+                    });
+                    // ✅ Add "Summary" only if needed
+                    if (hasAnySummary) {
+                        $(api.column(0).footer()).html('<b>Summary</b>');
+                        // First column label
+                        //$(api.column(0).footer()).html('<b>Summary</b>');
+                        api.columns().every(function (idx) {
+                            if (idx < 1) return;
+                            var hasNumber = false;
+                            // ✅ Check if this column header has 'summary-col'
+                            var header = $(api.column(idx).header());
+                            var isSummaryCol = header.hasClass('summary-col');
+                            if (!isSummaryCol) {
+                                $(this.footer()).html('');
+                                return;
+                            }
+                            var total = this.data().reduce(function (sum, value) {
+                                var n = num(value);
+                                if (!isNaN(n)) {
+                                    hasNumber = true;
+                                    return sum + n;
+                                }
+                                return sum;
+                            }, 0);
+
+                            if (hasNumber && total != 0) {
+                                $(this.footer()).html(
+                                    total.toLocaleString('en-IN', {
+                                        minimumFractionDigits: 2,
+                                        maximumFractionDigits: 2
+                                    })
+                                );
+                            } else {
+                                $(this.footer()).html('');
+                            }
+                        });
+                    }
+                } catch (e) {
+                    console.log('Logs- Exception');
+                    console.log(ex);
+                }
+            }
+        });
+    })
+</script>
+<script src="~/Content/main/assets/js/init-scripts/chart-js/chartjs-init.js"></script>
