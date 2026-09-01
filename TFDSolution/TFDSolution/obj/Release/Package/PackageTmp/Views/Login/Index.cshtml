@@ -1,0 +1,312 @@
+﻿@model TFDSolution.Models.LoginModel
+@{
+    ViewBag.Title = "Login";
+    Layout = "";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login | Lotus Next ERP</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    @{
+        var ImagesBase = Url.Content("~/Images");
+        var ContentBase = Url.Content("~/Content");
+    }
+    <link rel="stylesheet" href="@ContentBase/theme//theme1/login.css">
+    <link href="@ContentBase/main/assets/css/style.css" rel="stylesheet" />
+    <link href="@ContentBase/bootstrap.min.css" rel="stylesheet" />
+    <link href="@ContentBase/main/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="@ContentBase/bootstrap.min.css" rel="stylesheet" />
+    <link href="@ContentBase/main/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-3.7.1.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#UserName").focus();
+            $.getJSON("https://api.ipify.org?format=json", function (data) {
+                console.log("User IP:", data.ip);
+                $("#IPAddress").val(data.ip);
+            });
+        });
+    </script>
+    <style>
+        .login-page {
+            background-image: url('@Url.Content(ImagesBase + "/theme1.jpg")');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-page">
+        <!-- Decorative Background -->
+        <div class="circle-one"></div>
+        <div class="circle-two"></div>
+        <!-- =========================================
+             HEADER
+        ========================================== -->
+        <header class="topbar">
+            <a href="#" class="brand">
+                <div class="brand-logo">
+                    <i class="fa fa-line-chart"></i>
+                </div>
+                <div class="brand-name">
+                    LotusNext <span>ERP</span>
+                </div>
+            </a>
+            <a href="#" class="help-link">
+                <i class="fa fa-question-circle"></i>Need Help?
+            </a>
+        </header>
+        <!-- =========================================
+             MAIN
+        ========================================== -->
+        <main class="main-container">
+            <div class="login-container">
+                <div class="row align-items-center">
+                    <!-- =================================
+                         LEFT BRANDING
+                    ================================== -->
+                    <div class="col-lg-6">
+                        <div class="intro-panel d-none">
+                            <div class="intro-badge">
+                                <i class="fa fa-spotify"></i>
+                                SMART BUSINESS MANAGEMENT
+                            </div>
+                            <h1 class="intro-title">
+                                Run your business
+                                <br>
+                                <span>smarter with ERP.</span>
+                            </h1>
+                            <p class="intro-description">
+                                Bring your finance, inventory, sales,
+                                purchasing and operations together with
+                                one powerful ERP platform designed for
+                                modern businesses.
+                            </p>
+
+
+                            <!-- Features -->
+
+                            <div class="features">
+
+                                <div class="feature">
+
+                                    <i class="fa fa-shield-alt"></i>
+
+                                    Secure
+
+                                </div>
+
+
+                                <div class="feature">
+
+                                    <i class="fa fa-bolt"></i>
+
+                                    Powerful
+
+                                </div>
+
+
+                                <div class="feature">
+
+                                    <i class="fa fa-cloud"></i>
+
+                                    Cloud Ready
+
+                                </div>
+
+
+                                <div class="feature">
+
+                                    <i class="fa fa-chart-line"></i>
+
+                                    Business Insights
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- ERP Dashboard -->
+
+                            <div class="erp-visual">
+
+
+                                <div class="visual-card visual-main">
+
+
+                                    <div class="visual-header">
+
+                                        <div class="visual-header-title">
+                                            Business Overview
+                                        </div>
+
+
+                                        <div class="visual-dots">
+
+                                            <span></span>
+                                            <span></span>
+                                            <span></span>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <div class="chart">
+
+                                        <div class="bar"></div>
+                                        <div class="bar"></div>
+                                        <div class="bar"></div>
+                                        <div class="bar"></div>
+                                        <div class="bar"></div>
+                                        <div class="bar"></div>
+
+                                    </div>
+
+                                </div>
+
+
+                                <div class="visual-card visual-small">
+
+                                    <div class="small-title">
+                                        Revenue
+                                    </div>
+
+                                    <div class="small-value">
+                                        ₹ 24.8L
+                                    </div>
+                                    <div class="small-growth">
+                                        <i class="fa fa-arrow-up"></i>
+                                        18.6% Growth
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- =================================
+                         LOGIN
+                    ================================== -->
+                    <div class="col-lg-6">
+                        <div class="login-card">
+                            <!-- Heading -->
+                            <div class="login-heading">
+                                <div class="login-icon">
+                                    <i class="fa fa-sign-in"></i>
+                                </div>
+                                <h2>
+                                    Welcome back
+                                </h2>
+                                <p>
+                                    Sign in to continue to LotusNext ERP
+                                </p>
+                            </div>
+                            @using (Html.BeginForm("Index", "Login", FormMethod.Post, new { autocomplete = "off" }))
+                            {
+                                @Html.TextBoxFor(a => a.IPAddress, new { @style = "display:none;" })
+                                <!-- Username -->
+                                <div class="form-group">
+                                    <label class="form-label">
+                                        Username
+                                        <span class="required">*</span>
+                                    </label>
+                                    <div class="input-wrapper">
+                                        <i class="fa fa-user input-icon"></i>
+                                        @Html.TextBoxFor(a => a.UserName, new {@class = "form-control form-control-icon", @required = "required", @placeholder = "Enter your username", @autocomplete = "username"})
+                                    </div>
+                                </div>
+                                <!-- Password -->
+                                <div class="form-group">
+                                    <label class="form-label">
+                                        Password
+                                        <span class="required">*</span>
+                                    </label>
+                                    <div class="input-wrapper">
+                                        <i class="fa fa-lock input-icon"></i>
+                                        @Html.PasswordFor(a => a.Password, new {@class = "form-control form-control-icon",@required = "required",@placeholder = "Enter your password",@autocomplete = "current-password"})
+                                        <span class="password-toggle"
+                                              onclick="togglePassword('Password', this)">
+                                            <i class="fa fa-eye"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                                <!-- Remember / Forgot -->
+                                <div class="login-options">
+                                    <label class="remember-me">
+                                        <input type="checkbox"
+                                               id="rememberMe"
+                                               name="rememberMe" />
+                                        Remember me
+                                    </label>
+                                    <a  href="@Url.Action("ForgotPassword","Login")" class="forgot-password">
+                                       Forgot password?
+                                    </a>
+                                </div>
+                                <!-- Login Button -->
+                                <button type="submit"
+                                        class="btn-login">
+
+                                    Sign In
+
+                                    <i class="fa fa-arrow-right"></i>
+
+                                </button>
+
+                                <!-- Error Message -->
+                                if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+                                {
+                                    <div id="divError"
+                                         class="login-alert login-alert-error">
+                                        <i class="fa fa-exclamation-circle"></i>
+                                        @Model.ErrorMessage
+                                    </div>
+                                }
+                                <!-- Registration -->
+                                <div class="register-text">
+                                    Don't have an account?
+                                    <a href="@Url.Action("Index","Register")">
+                                       Create an account
+                                    </a>
+                                </div>
+                                <!-- Security -->
+                                <div class="security-note">
+                                    <i class="fa fa-shield-alt"></i>
+                                    Your connection is secure and encrypted
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <!-- =========================================
+             FOOTER
+        ========================================== -->
+        <footer class="footer">
+            &copy; @DateTime.Now.Year Lotus Next ERP. All rights reserved.
+        </footer>
+    </div>
+    <script>
+        function togglePassword(inputId, element) {
+            const input =
+                document.getElementById(inputId);
+            const icon =
+                element.querySelector("i");
+            if (input.type === "password") {
+                input.type = "text";
+                icon.classList.remove("fa-eye");
+                icon.classList.add("fa-eye-slash");
+            }
+            else {
+                input.type = "password";
+                icon.classList.remove("fa-eye-slash");
+                icon.classList.add("fa-eye");
+            }
+        }
+    </script>
+</body>
+</html>

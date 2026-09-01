@@ -1,0 +1,2023 @@
+﻿@model TFDSolution.Models.PageModel
+
+@{
+    ViewBag.Title = Model.Design.FormTitle;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    td.actions {
+        position: relative;
+    }
+
+    .export-print {
+        top: 2px !important;
+        left: 26px !important;
+    }
+
+        .export-print .dropdown-item {
+            padding: 2px 14px !important;
+        }
+
+    .dropdown-item:hover {
+        background-color: #d9d9d9 !important;
+        color: #000 !important;
+        /*transform: translateX(3px);*/
+    }
+
+    .dropdown-item:active {
+        background-color: #d9d9d9;
+        color: #000;
+    }
+
+    .report-print .dropdown-menu .dropdown-item {
+        padding: 2px 14px !important;
+    }
+
+    .modal.modal-right .modal-dialog {
+        position: fixed;
+        margin: 0;
+        top: 0;
+        right: 0;
+        height: 100vh;
+        max-width: 400px; /* adjust width as needed */
+        transform: translateX(100%);
+        transition: transform 0.3s ease-out;
+    }
+
+    .modal.modal-right.show .modal-dialog {
+        transform: translateX(0);
+    }
+
+    .modal-content {
+        height: 100vh;
+        border-radius: 0;
+    }
+</style>
+<input value="0" type="hidden" id="LastCommentId" />
+<div id="tableLoader" style="display:none;position:absolute;top:0;left:0;
+    width:100%;height:100%;background:rgba(255,255,255,0.7);
+    z-index:9999;text-align:center;padding-top:100px;">
+    <img src="/images/loader.gif" alt="Loading..." />
+</div>
+@{
+    var ImagesBase = Url.Content("~/");
+}
+<input type="hidden" value="@Model.Design.SQLTableName" id="hdnTableName" />
+<input type="hidden" value="@Model.Design.FormName" id="hdnFormName" />
+<input type="hidden" value="@Model.Design.FormId" id="hdnFormId" />
+<input type="hidden" value="@Convert.ToString(Model.Design.CanApprove)" id="hdnCanApprove" />
+<input type="hidden" value="@Convert.ToString(Model.Design.CanDelete)" id="hdnCanDelete" />
+<input type="hidden" value="@Convert.ToString(Model.Design.CanEdit)" id="hdnCanEdit" />
+<div class="page-main">
+    <!-- =====================================================
+         PAGE HEADER
+    ====================================================== -->
+    <div class="page-main-header">
+        <div class="page-main-title">
+            <i class="fa fa-building-o"></i>
+            <span>
+                @Model.Design.FormTitle
+            </span>
+        </div>
+        <nav>
+            <ol class="breadcrumb page-breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="@Url.Action("Index","Home")">
+                        Home
+                    </a>
+                </li>
+                <li class="breadcrumb-item active">
+                    @Model.Design.ParentFormTitle
+                </li>
+                <li class="breadcrumb-item active">
+                    @Model.Design.FormTitle
+                </li>
+            </ol>
+        </nav>
+    </div>
+    <div class="page-main-container">
+        <div class="page-main-card">
+            <div class="page-main-card-header">
+                <div class="page-main-card-title">
+                    <button class="btn btn-sm" data-toggle="modal" data-target="#showCommentsModel" onclick="ShowComments()" title="Comments" type="button">
+                        <i class="fa fa-comment-o font16"></i>
+                    </button>
+                </div>
+                <div class="page-main-card-actions">
+                    <!-- REFRESH -->
+                    <a class="page-main-action-btn" href="@Url.Action("MyPage","Home", new { @pagename = Model.Design.FormName })" title="Refresh">
+                        <i class="fa fa-refresh"></i>
+                        Refresh
+                    </a>
+                    @if (Model.Design.CanAdd == true)
+                    {
+                        <a class="page-main-action-btn primary" id="btnAddNew"
+                           href="@Url.Action("PageDetail", "Home", new { @pagename = Model.Design.FormName })" title="Add New @Model.Design.FormTitle">
+                            <i class="fa fa-plus"></i>&nbsp; New
+                        </a>
+                    }
+                    <div class="dropdown" style="float:right; position:relative;">
+                        <button class="btn btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fa fa-download"></i>&nbsp; Export
+                        </button>
+                        <div class="dropdown-menu export-print" style="margin: 2.2rem -1.285em 2rem;min-width: auto !important; width: auto;" aria-labelledby="dropdownMenuButton">
+                            <a class="dropdown-item" title="Export in CSV" id="btnExportCsv" href="javascript:void(0);"><i class="fa fa-file-text-o pr-1" style="color:#555"></i>CSV</a>
+                            <a class="dropdown-item" title="Export in Excel" id="btnExportExcel" href="javascript:void(0);"><i class="fa fa-file-excel-o pr-1" style="color:green"></i>Excel</a>
+                            <a class="dropdown-item" id="btnExportPDF" title="Export in PDF" href="javascript:void(0);"><i class="fa fa-file-pdf-o"></i>&nbsp; PDF</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- =================================================
+                 CARD BODY
+            ================================================== -->
+            <div class="page-main-card-body">
+                <div class="page-main-list-heading d-none">
+                    <div class="page-main-list-title">
+                        <i class="fa fa-list"></i>
+                        List Of @Model.Design.FormTitle
+                    </div>
+                    <div class="page-main-list-description">
+                        Manage and maintain your records
+                    </div>
+                </div>
+                <nav>
+                    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                        <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home" aria-selected="true">
+                            List Record <span id="lblRecordCount" class="font-weight-bold">(0)</span>
+                        </button>
+                        @if (Model.PendingData != null && Model.PendingData.Count > 0)
+                        {
+                            foreach (var item in Model.PendingData)
+                            {
+                                string liId = "nav-pending-tab-" + item.FormPendingId.ToString();
+                                string liCount = liId + "Count";
+                                string contentDiv = "nav-pending-" + item.FormPendingId.ToString();
+                                string tblId = "tblPending-" + item.FormPendingId.ToString();
+                                <button class="nav-link" data-interval="@liCount" data-bind="@tblId" data-content="@item.SourceName" id="@liId"
+                                        data-bs-toggle="tab" data-bs-target="#@contentDiv" type="button" role="tab" aria-controls="@contentDiv"
+                                        aria-selected="false" onclick="adjustColumns('@tblId')">
+                                    @item.FormTabName&nbsp;<span id="@liCount" class="font-weight-bold">(0)</span>
+                                    <a href="javascript:void(0);" onclick="BindPendings('@tblId', '@liCount','@item.SourceName');" class="PendingRefresh" title="Refresh"><i class="fa fa-refresh"></i></a>
+                                </button>
+                            }
+                        }
+                    </div>
+                </nav>
+                <div class="tab-content" id="nav-tabContent">
+                    <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+                        <div class="p-3">
+                            <div class="row form-group">
+                                <div class="col-md-12">
+                                    <table id="tblpage" class="display cell-border nowrap" cellspacing="0" width="100%"></table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @if (Model.PendingData != null && Model.PendingData.Count > 0)
+                    {
+                        foreach (var item in Model.PendingData)
+                        {
+                            string liId = "nav-pending-tab-" + item.FormPendingId.ToString();
+                            string contentDiv = "nav-pending-" + item.FormPendingId.ToString();
+                            string tblId = "tblPending-" + item.FormPendingId.ToString();
+                            <div class="tab-pane fade" id="@contentDiv" role="tabpanel" aria-labelledby="@liId">
+                                <div class="p-3">
+                                    <div class="row form-group">
+                                        <div class="col-md-12" style="width:100%; overflow-x:auto;">
+                                            <table id="@tblId" data-content="@item.FromFormId.ToString()" data-bind="@item.FormPendingId.ToString()" class="display nowrap cell-border" cellspacing="0" width="100%"></table>
+                                        </div>
+                                    </div>
+                                    <div class="row form-group">
+                                        <div class="col-md-12 text-left">
+                                            <button class="btn btn-primary" onclick="CreateRecord('@tblId')">Create @Model.Design.FormTitle</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+                <div class="row form-group mb-0">
+                    <div class="col-12 p-0">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Cancel Reason</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row form-group">
+                    <div class="col col-md-12">
+                        <label for="text-input" class="form-control-label">Enter Reason<span class="text-danger p-1">(*)</span></label>
+                    </div>
+                    <div class="col col-md-12">
+                        <textarea id="txtCancelReason" data-content="0" class="form-control"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="btnCancelReason" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" id="btnSubmitCancelReason" class="btn btn-primary">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="exampleModalDet" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Cancel Reason</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row form-group">
+                    <div class="col col-md-12">
+                        <label for="text-input" class="form-control-label">Enter Reason<span class="text-danger p-1">(*)</span></label>
+                    </div>
+                    <div class="col col-md-12">
+                        <textarea id="txtCancelReasonDet" data-content="0" class="form-control"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="btnCancelReasonDet" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" id="btnSubmitCancelReasonDet" class="btn btn-primary">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="mediumModal" tabindex="-1" role="dialog" aria-labelledby="mediumModalLabel" data-backdrop="static" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="mediumModalLabel">Add New @Model.Design.FormTitle</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="hdnRecordId" />
+                @if (Model.Design.Sections != null && Model.Design.Sections.Count > 0)
+                {
+                    foreach (var section in Model.Design.Sections)
+                    {
+                        <div id="@($"{section.SectionName}Tabs")">
+                            @if (section.SectionName != "Header")
+                            {
+                                <div class="page-breaker"></div>
+                            }
+                            @if (section.Tabs != null && section.Tabs.Count > 0)
+                            {
+                                <!-- Tabs -->
+                                <ul class="nav nav-tabs" id=@($"{section.SectionName}tab") role="tablist">
+                                    @foreach (var tab in section.Tabs)
+                                    {
+                                        <li class="nav-item">
+                                            <a class="nav-link @(tab == section.Tabs.First() ? "active" : "")" id=@($"{tab.TabName}-tab") data-toggle="tab" href="#@tab.TabName" aria-controls="@tab.TabName" role="tab">
+                                                @tab.TabName
+                                            </a>
+                                        </li>
+                                    }
+                                </ul>
+
+                                <!-- Tab Content -->
+                                <div class="tab-content pl-3 p-1 tab-inner-content" id=@($"{section.SectionName}TabContent")>
+                                    @foreach (var tab in section.Tabs)
+                                    {
+                                        <div class="tab-pane fade @(tab == section.Tabs.First() ? "show active" : "")" id="@tab.TabName" aria-labelledby=@($"{tab.TabName}-tab") role="tabpanel">
+                                            <div class="row form-group">
+                                                @if (tab.Fields != null && tab.Fields.Count > 0)
+                                                {
+                                                    foreach (var field in tab.Fields)
+                                                    {
+
+                                                        <div class="col col-md-3">
+                                                            <label for="@field.FieldName" class="form-control-label">
+                                                                @field.FieldCaption
+                                                            </label> @if (field.IsRequired)
+                                                            {
+                                                                <span class="text-danger p-1">(*)</span>
+                                                            }
+                                                        </div>
+
+                                                        <div class="col-12 col-md-9 form-group">
+                                                            @switch (field.FieldType)
+                                                            {
+                                                                case "TextBox":
+                                                                    @Html.TextBox(field.FieldName, null, new
+                                                                    {
+                                                                        @class = "form-control",
+                                                                        @placeholder = field.FieldPlaceHolder,
+                                                                        @maxlength = field.FieldLength,
+                                                                        @required = field.IsRequired ? "required" : null
+                                                                    })
+                                                                    @Html.ValidationMessage(field.FieldName, "", new { @class = "text-danger" })
+                                                                    break;
+
+                                                                case "MultiText":
+                                                                    @Html.TextArea(field.FieldName, null, new
+                                                                    {
+                                                                        @class = "form-control",
+                                                                        @placeholder = field.FieldPlaceHolder,
+                                                                        @rows = "4",
+                                                                        @required = field.IsRequired ? "required" : null
+                                                                    })
+                                                                    @Html.ValidationMessage(field.FieldName, "", new { @class = "text-danger" })
+                                                                    break;
+
+                                                                case "Numeric":
+                                                                    @Html.TextBox(field.FieldName, null, new
+                                                                    {
+                                                                        @class = "form-control",
+                                                                        @type = "number",
+                                                                        @required = field.IsRequired ? "required" : null
+                                                                    })
+                                                                    @Html.ValidationMessage(field.FieldName, "", new { @class = "text-danger" })
+                                                                    break;
+
+                                                                case "Selection":
+                                                                    @*@Html.DropDownList(field.FieldName, new SelectList(GetDropdownOptions(field), "Value", "Text"),
+                                                                        "Select " + field.FieldCaption,
+                                                                        new { @class = "form-control", @required = field.IsRequired ? "required" : null })*@
+                                                                    @Html.ValidationMessage(field.FieldName, "", new { @class = "text-danger" })
+                                                                    break;
+
+                                                                case "CheckBox":
+                                                                    <div class="form-check">
+                                                                        @Html.CheckBox(field.FieldName, new { @class = "form-check-input", @required = field.IsRequired ? "required" : null })
+                                                                        <label class="form-check-label" for="@field.FieldName">@field.FieldCaption</label>
+                                                                    </div>
+                                                                    @Html.ValidationMessage(field.FieldName, "", new { @class = "text-danger" })
+                                                                    break;
+
+                                                                case "RadioButton":
+                                                                    @*@foreach (var option in GetDropdownOptions(field))
+                                                                        {
+                                                                            <div class="form-check form-check-inline">
+                                                                                @Html.RadioButton(field.FieldName, option.Value, new { @class = "form-check-input", @required = field.IsRequired ? "required" : null })
+                                                                                <label class="form-check-label">@option.Text</label>
+                                                                            </div>
+                                                                        }*@
+                                                                    @Html.ValidationMessage(field.FieldName, "", new { @class = "text-danger" })
+                                                                    break;
+
+                                                                case "DateTimeField":
+                                                                    @Html.TextBox(field.FieldName, null, new
+                                                                    {
+                                                                        @class = "form-control",
+                                                                        @type = "date",
+                                                                        @required = field.IsRequired ? "required" : null
+                                                                    })
+                                                                    @Html.ValidationMessage(field.FieldName, "", new { @class = "text-danger" })
+                                                                    break;
+
+                                                                case "Hidden":
+                                                                    @Html.Hidden(field.FieldName)
+                                                                    break;
+
+                                                                default:
+                                                                    @Html.TextBox(field.FieldName, null, new
+                                                                    {
+                                                                        @class = "form-control",
+                                                                        @placeholder = field.FieldPlaceHolder,
+                                                                        @maxlength = field.FieldLength,
+                                                                        @required = field.IsRequired ? "required" : null
+                                                                    })
+                                                                    @Html.ValidationMessage(field.FieldName, "", new { @class = "text-danger" })
+                                                                    break;
+                                                            }
+
+                                                            @if (!string.IsNullOrEmpty(field.FieldHelpText))
+                                                            {
+                                                                <small class="form-text text-muted">@field.FieldHelpText</small>
+                                                            }
+                                                        </div>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <p>No fields available.</p>
+                                                }
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                <p>No tabs available in this section.</p>
+                            }
+                        </div>}
+                }
+                else
+                {
+                    <p>No sections available.</p>
+                }
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="btnCancel" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" id="btnSave" class="btn btn-primary" onclick="SavePagefield();">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="statusCommentModel" tabindex="-1" role="dialog" aria-labelledby="statusCommentModel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document" style="float:none;height: auto;">
+        <div class="modal-content" style="height:300px;">
+            <div class="modal-header">
+                <h5 class="modal-title">Comment</h5>
+                <button type="button" id="btnCancelComment1" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row form-group">
+                    <div class="col col-md-12">
+                        <label for="text-input" class="form-control-label">Enter your commnet<span class="text-danger p-1">(*)</span></label>
+                    </div>
+                    <div class="col col-md-12">
+                        <textarea class="form-control" id="txtStatusComment" rows="6" placeholder="Enter your comment" required></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="btnCancelComment" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" id="btnSubmitComment" class="btn btn-primary">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="showCommentsModel" tabindex="-1" role="dialog" aria-labelledby="showCommentsModelLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document" style="max-width: 410px !important;">
+        <div class="modal-content">
+            <div class="modal-header cursor-move">
+                <h5 class="modal-title" id="fieldInfoModelLabel">Comments</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body chat-modal-body">
+                <div id="divChat" class="chat-container"></div>
+                <div class="chat-input">
+                    <textarea id="textMyComment" rows="2" class="form-control" placeholder="Type a message..."></textarea>
+                    <button type="button" onclick="SubmitComments();" class="btn btn-primary ms-2">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="actions" class="dropdown" style="display:none;position:absolute;">
+    <button id="btnApproved" data-bind="2" class="text-success" value="approved">Approved</button>
+    <button id="btnNotApproved" data-bind="1" class="text-primary" value="notapproved">Not Approved</button>
+    <button id="btnCancelled" data-bind="3" class="text-danger" value="cancelled">Cancelled</button>
+    <button id="btnAddComment" onclick="AddComment();" data-bind="4" class="text-dark" value="comment">Add Comment</button>
+</div>
+<div id="PageAction" class="linkmenu" style="display: none; position: absolute">
+    <a id="btnActionView" data-bind="3" class="text-black">View</a>
+    <a id="btnActionEdit" data-bind="2" class="text-black">Edit</a>
+    <a id="btnActionDelete" data-bind="1" class="text-black">Delete</a>
+</div>
+<div id="actionsDet" class="dropdown" style="display: none; position: absolute">
+    <button id="btnCancelledDet" data-bind="3" class="text-danger" value="cancelled">Cancelled</button>
+</div>
+<script type="text/javascript">
+    function AddComment() {
+        $("#txtStatusComment").val("");
+        $("#txtStatusComment").focus();
+        $('#statusCommentModel').modal('show');
+    }
+    var PendingSelected = [];
+    $(document).ready(function () {
+        setInterval(function () {
+            ShowComments();
+        }, 5000);
+        $("#btnCancelComment, #btnCancelComment1").click(function () {
+            $('#statusCommentModel').modal('hide');
+        });
+        $("#btnSubmitComment").click(function () {
+            try {
+                var comment = $("#txtStatusComment").val();
+                var model = {
+                    FormId: '@Model.Design.FormId',
+                    ParentId: parseInt($("#btnSubmitComment").attr("data-content")),
+                    DetailId: 0,
+                    CommentText: comment
+                };
+
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("AddFormComment", "Transaction")",
+                    data: JSON.stringify(model),
+                    contentType: "application/json; charset=utf-8",
+                    success: function (response) {
+                        if (response.IsSuccess) {
+                            $("#btnCancelComment").click();
+                            $("#txtStatusComment").val('');
+                            ShowToastNotification("success", "Your comment has been submitted.");
+                        } else {
+                            ShowToastNotification("error", "Comment not added.");
+                        }
+                    },
+                    error: function () {
+                        ShowToastNotification("error", "Comment not added.");
+                    }
+                });
+            } catch (e) {
+
+            }
+        });
+        $("#btnSubmitCancelReason").click(function () {
+            var txtreason = $("#txtCancelReason").val();
+            $("#txtCancelReason").next(".validation").remove();
+            $("#txtCancelReason").removeClass("input-validation-error");
+            if (txtreason.length == 0) {
+                $("#txtCancelReason").addClass("input-validation-error");
+                $("#txtCancelReason").after("<div class='validation' style='color:red;margin-bottom: 2px;'>Please enter cancel reason.</div>");
+                $("#txtCancelReason").focus();
+            }
+            else {
+                UpdateRecordStatus($("#hdnFormId").val(), 0, $("#txtCancelReason").attr("data-content"), 3, $("#txtCancelReason").val());
+            }
+        })
+        $("#btnSubmitCancelReasonDet").click(function () {
+            var txtreason = $("#txtCancelReasonDet").val();
+            $("#txtCancelReasonDet").next(".validation").remove();
+            $("#txtCancelReasonDet").removeClass("input-validation-error");
+            if (txtreason.length == 0) {
+                $("#txtCancelReasonDet").addClass("input-validation-error");
+                $("#txtCancelReasonDet").after("<div class='validation' style='color:red;margin-bottom: 2px;'>Please enter cancel reason.</div>");
+                $("#txtCancelReasonDet").focus();
+            }
+            else {
+                UpdateRecordStatus($("#txtCancelReasonDet").attr("data-container"),$("#txtCancelReasonDet").attr("data-content"), $("#txtCancelReasonDet").attr("data-interval"), 3, $("#txtCancelReasonDet").val());
+            }
+        })
+        $("#btnApproved").click(function () {
+            UpdateRecordStatus($("#hdnFormId").val(), 0, $(this).attr("data-content"), 2, "");
+        })
+        $("#btnNotApproved").click(function () {
+            UpdateRecordStatus($("#hdnFormId").val(), 0, $(this).attr("data-content"), 1, "");
+        })
+        $("#btnCancelled").click(function () {
+            $("#txtCancelReason").val("");
+            $("#txtCancelReason").attr("data-content", $(this).attr("data-content"));
+            var myModal = new bootstrap.Modal(document.getElementById('exampleModal'));
+            myModal.show();
+        })
+        $("#btnCancelledDet").click(function () {
+            $("#txtCancelReasonDet").val("");
+            $("#txtCancelReasonDet").attr("data-content", $(this).attr("data-content"));
+            $("#txtCancelReasonDet").attr("data-interval", $(this).attr("data-interval"));
+            $("#txtCancelReasonDet").attr("data-container", $(this).attr("data-container"));
+
+            var myModal = new bootstrap.Modal(document.getElementById('exampleModalDet'));
+            myModal.show();
+        })
+        $("#nav-home-tab").click(function () {
+            $("#btnAddNew").removeClass("disabled");
+        });
+        $("#nav-tab button").each(function () {
+            if ($(this).attr("id").length > 0 && $(this).attr("data-bind") != undefined) {
+                var tblId = $(this).attr("data-bind");
+                var liCount = $(this).attr("data-interval");
+                var sourceName = $(this).attr("data-content");
+                BindPendings(tblId, liCount, sourceName);
+            }
+        });
+        $('#btnExportCsv').on('click', function () {
+            ExportData("csv");
+        });
+        $('#btnExportExcel').on('click', function () {
+            ExportData("excel");
+        });
+        $('#btnExportPDF').on('click', function () {
+            ExportPDFData("pdf");
+        });
+        $(document).on("click", "[data-target='#mediumModal']", function () {
+            cleanData();
+        });
+        $("#textMyComment").on("keydown", function (e) {
+            // Enter key
+            if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault(); // Prevent new line
+                SubmitComments();   // Call your function
+            }
+        });
+        //BindGrid();
+        BindGridPagination();
+    });
+    function CreateRecord(tableId) {
+        let tableEntry = PendingSelected.find(entry => entry.TableName === tableId);
+        if (!tableEntry) {
+            ShowToastNotification("error", "Please select at least record");
+        }
+        else {
+            var paramItem_SRNo = (tableEntry?.FieldValues || "");
+            // Remove first comma if it exists at the beginning
+            paramItem_SRNo = paramItem_SRNo.replace(/^,/, '');
+            console.log("paramItem_SRNo : " + paramItem_SRNo);
+            // Split current values into array
+            if ($("#" + tableId).attr("data-bind") != undefined && $("#" + tableId).attr("data-bind").length > 0) {
+                var pendingId = parseInt($("#" + tableId).attr("data-bind"));
+                $.ajax({
+                    type: "GET",
+                    url: "@Url.Action("SelectedPendingData", "Home")",
+                    contentType: "application/json; charset=utf-8",
+                    data: { formPendingId: pendingId, ItemSrNos: paramItem_SRNo },
+                    dataType: "json",
+                    /*success: OnSuccess,*/
+                    success: function (response) {
+                        if (response != null) {
+                            if (response.IsSuccess) {
+                                var tablename = $("#hdnFormName").val();
+                                var urlred = '@Url.Action("PageDetail","Home", new { pagename = "_pagename", uId= "_Id", act= "_act" })';
+                                urlred = urlred.replace("amp;", "");
+                                urlred = urlred.replace("amp;", "");
+                                urlred = urlred.replace("_pagename", tablename);
+                                if (response.Id > 0) {
+                                    urlred = urlred.replace("_Id", response.Id);
+                                    urlred = urlred.replace("_act", "E");
+                                }
+                                else {
+                                    urlred = urlred.replace("_Id", "-1");
+                                    urlred = urlred.replace("_act", "A");
+                                }
+                                location.href = urlred;
+                            }
+                            else {
+                                ShowToastNotification("error", response.Response);
+                            }
+                        }
+                    },
+                    error: function (response) {
+                        ShowToastNotification("error", "Error fetching data!");
+                    }
+                });
+            }
+        }
+    }
+    function BindPendings(tblId, countid, objData) {
+        if ($("#nav-home-tab").hasClass("active") == false) {
+            if (tblId.indexOf("tblPending") >= 0) {
+                $("#btnAddNew").addClass("disabled");
+            }
+            else {
+                $("#btnAddNew").removeClass("disabled");
+            }
+        }
+        if (objData != null) {
+            $.ajax({
+                type: "GET",
+                url: "@Url.Action("getPendingData", "Home")",
+                contentType: "application/json; charset=utf-8",
+                data: { param: objData },
+                dataType: "json",
+                success: function (response) {
+                    BindPendingGrid(response, countid, tblId);
+                },
+                failure: function (response) {
+                    ShowToastNotification("error", response.d);
+                },
+                error: function (response) {
+                    ShowToastNotification("error", "Error fetching data!");
+                }
+            });
+        }
+    }
+    function adjustColumns(tblId) {
+        if ($("#nav-home-tab").hasClass("active") == false) {
+            if (tblId.indexOf("tblPending") >= 0) {
+                $("#btnAddNew").addClass("disabled");
+            }
+            else {
+                $("#btnAddNew").removeClass("disabled");
+            }
+        }
+        $("#" + tblId + "_wrapper .dataTables_scroll table th").click();
+    }
+    function BindPendingGrid(dataset, countid, tblId) {
+        var columns = [];
+        columns.push(
+            {
+                /* title: 'Select',*/
+                className: "grid-action-item select-checkbox",
+                render: function (data, type, row, meta) {
+                    var ddlhtml = '<input type="checkbox" data-bind="' + row["URNNo"] + '" data-content="' + row["Id"] + '" id="chkForNext" name="chkForNext" class="select-checkbox"/>';
+                    return ddlhtml;
+                    //return '<input type="checkbox" name="id[]" value="' + $('<div/>').text(data).html() + '">';
+                },
+                title: '<input type="checkbox" id="select-all">',
+                orderable: true,
+                targets: 0,
+                checkboxes: {
+                    'selectRow': true,
+                    'selectAllRender': '<div class="checkbox"><input type="checkbox" class="dt-checkboxes"><label></label></div>'
+                }
+            });
+        var tableData = JSON.parse(JSON.stringify(dataset.Data));    // Cannot read property '0' of undefined
+        var tableColumn = JSON.parse(JSON.stringify(dataset.Columns));
+        $("#" + countid).html("(" + dataset.Data.length + ")")
+        if (tableColumn.length > 0) {
+            columnNames = tableColumn;
+            for (var i in columnNames) {
+                if (columnNames[i] == "ParentId" || columnNames[i] == "Id") { }
+                else if (columnNames[i] == "Status") {
+                    columns.push({
+                        orderable: false, // disable sorting for all columns
+                        title: "Status",
+                        className: 'dt-center actions',
+                        defaultContent: '<button class="dropdown">Action</button>',
+                        orderable: true,
+                        render: function (data, type, row, meta) {
+                            return '<button class="dropdown" data-bind=' + row["Status"] + ' data-interval=' + row["ParentId"] + ' data-content=' + row["Id"] + ' >' + DisplayStatus(row["Status"]) + '</button>';
+                        },
+                    });
+                }
+                else {
+                    columns.push({
+                        orderable: false, // disable sorting for all columns
+                        data: columnNames[i],
+                        title: columnNames[i]
+                    });
+                }
+            }
+        }
+
+        // Assuming data is an array of objects
+        // Initialize DataTable
+        const tblPending = new DataTable('#' + tblId, {
+            destroy: true,
+            autoWidth: true,
+            scrollY: true,
+            scrollX: true,
+            scrollCollapse: true,
+            paging: true,
+            data: dataset.Data,
+            columns: columns,
+            deferRender: true,
+            autoFill: true,
+            orderable: false,
+            //order: [],   // ✅ Disable default auto ordering
+            lengthMenu: [[10, 25, 50, 100, 500, -1], ['10', '25', '50', '100', '500', 'All']],
+            select: {
+                style: 'multi',
+                selector: 'td:first-child',
+                headerCheckbox: 'select-page'
+            },
+            initComplete: function () {
+                this.api().columns.adjust();
+                const table = this.api();
+                // Adjust when visible and after render
+                console.log("Adjust column width");
+                $("#" + tblId + "_wrapper .dataTables_scroll table th").click();
+                //setTimeout(() => table.columns.adjust().draw(false), 500);
+                // Optional: adjust again when window resizes
+                $(window).on('resize', () => table.columns.adjust());
+                $('.dataTables_length select').on('change', function () {
+                    var len = $(this).val();
+                    console.log("Paing");
+                    $("#" + tblId + "_wrapper .dataTables_scroll table th").click();
+                });
+                $('.dataTables_scrollBody').on('scroll', function () {
+                    table.columns.adjust();
+                });
+            }
+        });
+        // force adjust after load
+        setTimeout(() => {
+            tblPending.columns.adjust().draw();
+        }, 200);
+        // ⏳ wait for rendering and scroll container
+        $('#' + tblId).on('change', '.select-checkbox', function () {
+            if ($(this).data('content') != undefined && $(this).data('content') != null) {
+                const id = String($(this).data('content')).trim();
+                const isChecked = $(this).is(':checked');
+                addselectedPending(tblId, id, isChecked);
+                console.log(id + " Is Checked: " + isChecked);
+            }
+        });
+        let actions = document.querySelector('#actionsDet');
+        tblPending.on('click', 'button.dropdown', function (e) {
+            e.stopPropagation();
+            $("#actions").hide();
+            $("#PageAction").hide();
+            // Display and position the dropdown
+            var currectStatus = $(this).attr("data-bind");
+            var recordId = $(this).attr("data-content");
+            var ParentId = $(this).attr("data-interval");
+
+            $("#btnCancelledDet").show();
+
+            $("#btnCancelledDet").attr("data-container", $('#' + tblId).attr("data-content"));
+            $("#btnCancelledDet").attr("data-bind", currectStatus);
+            $("#btnCancelledDet").attr("data-content", recordId);
+            $("#btnCancelledDet").attr("data-interval", ParentId);
+            const currentOffsetLeft = e.pageX;
+            const currentOffsetTop = e.pageX;// + e.offsetHeight - 5;
+            if (actions != null) {
+                this.parentNode.append(actions);
+                if (actions.style != null) {
+                    actions.style.display = 'block';
+                    //actions.style.right = this.offsetLeft + 'px';
+                }
+            }
+            // Remove with the next click on the document
+            document.addEventListener('click', function () {
+                if (actions != null) {
+                    actions.remove();
+                }
+            });
+        });
+
+        // Handle row click
+        $('#' + tblId + ' tbody').off('click', 'tr').on('click', 'tr', function (e) {
+
+            // Prevent triggering when clicking directly on the checkbox
+            if (!$(e.target).is('input[type="checkbox"]')) {
+
+                // Find checkbox inside the clicked row
+                var checkbox = $(this).find('input[type="checkbox"]');
+
+                // Toggle checkbox
+                checkbox.prop('checked', !checkbox.prop('checked')).trigger('change');
+            }
+            // Toggle highlight class for row color
+            $(this).toggleClass('row-selected');
+        });
+        $(document).on('change', '#select-all', function () {
+            const isChecked = $(this).is(':checked');
+            $('#' + tblId).find('tbody input.select-checkbox').prop('checked', isChecked);
+            $('#' + tblId).find('tbody input.select-checkbox:checked').each(function () {
+                const value = $(this).data('content'); // or .attr('data-content') if needed
+                if (value !== undefined) {
+                    addselectedPending(tblId, value, true);
+                }
+            });
+        });
+        //document.addEventListener('change', '#select-all', function (e) {
+        //    var isChecked = this.checked;
+        //    $('#' + tblId).find('tbody input.select-checkbox').prop('checked', isChecked);
+        //});
+        // Sync header checkbox when individual checkboxes change
+        $('#' + tblId + ' tbody').on('change', 'input.select-checkbox', function () {
+            var all = $('#' + tblId + ' tbody input.select-checkbox').length;
+            var checked = $('#' + tblId + ' tbody input.select-checkbox:checked').length;
+            $('#' + tblId).find('tbody input.select-checkbox:checked').each(function () {
+                const value = $(this).data('content'); // or .attr('data-content') if needed
+                //if (value !== undefined) {
+                //    addselectedPending(tblId, value, checked);
+                //}
+            });
+            $('#select-all').prop('checked', all === checked);
+        });
+    }
+    function ExportData(exportType) {
+        try {
+            var filterData = [];
+            var model = {
+                FormId: '@Model.Design.FormId',
+                FormTitle: '@Model.Design.FormTitle',
+                FormName: '@Model.Design.FormName',
+                ExportType : exportType
+            }
+            $("#btnExportCsv").addClass("disabled");
+            $("#btnExportCsv").attr("title", "Report is exporting. Please wait..")
+            ShowToastNotification("info", "Report is downloading... Please wait.");
+            $.ajax({
+                url: "@Url.Action("ExportPageList", "Transaction")",
+                type: "POST",
+                contentType: "application/json;",
+                data: JSON.stringify(model),
+                async: false,
+                skipLoading: true,
+                beforeSend: function () {
+                    /*$('#btnDownloadCsv').text('Preparing...').prop('disabled', true);*/
+                    /*ShowToastNotification("info", "Report is downloading... Please wait.");*/
+                },
+                success: function (response) {
+                    if (response != null && response != null && response.IsSuccess) {
+                        //ShowToastNotification("success", response.Response);
+                        // Poll every 5 seconds to check export completion
+                        let pollInterval = setInterval(function () {
+                            $.ajax({
+                                url: '@Url.Action("CheckExportStatus", "Reports")',
+                                type: 'GET',
+                                async: true,
+                                skipLoading: true,
+                                data: { fileName: response.Action },
+                                success: function (res) {
+                                    if (res.IsReady) {
+                                        $("#lblExportNotification").hide();
+                                        $("#btnExportCsv").removeClass("disabled");
+                                        $("#btnExportCsv").attr("title", "Export");
+                                        clearInterval(pollInterval);
+                                        const downloadBaseUrl = '@Url.Content("~/TempDownload/")';
+                                        const url = downloadBaseUrl + encodeURIComponent(res.FileName);
+                                        // Construct download URL
+                                        //const downloadUrl = '@Url.Content("~/TempDownload/")' + res.FileName;
+
+                                        /*ShowToastNotification("success", "Report is ready. Downloading...");*/
+                                        window.open(url, '_blank');
+                                    }
+                                }
+                            });
+                        }, 5000);
+                    }
+                    else {
+                        $("#btnExportCsv").removeClass("disabled");
+                        $("#lblExportNotification").hide();
+                        $("#btnExportCsv").attr("title", "Export");
+                        ShowToastNotification("error", response.Response);
+                    }
+                },
+                complete: function () {
+                    /*$('#btnDownloadCsv').text('Preparing...').prop('disabled', true);*/
+                    //ShowToastNotification("success", "Report downloaded success.");
+                },
+                error: function () {
+                    $("#btnExportCsv").removeClass("disabled");
+                    $("#lblExportNotification").hide();
+                    $("#btnExportCsv").attr("title", "Export");
+                    ShowToastNotification("error", "Report downloaded failed. Please try again..");
+                }
+            });
+        } catch (e) {
+            $("#btnExportCsv").attr("title", "Export");
+            $("#lblExportNotification").hide();
+            $("#btnExportCsv").removeClass("disabled");
+            ShowToastNotification("error", "Report downloaded failed. Please try again..");
+        }
+    }
+     function ExportPDFData(exportType) {
+     try {
+         var filterData = [];
+         var model = {
+             FormId: '@Model.Design.FormId',
+             FormTitle: '@Model.Design.FormTitle',
+             FormName: '@Model.Design.FormName',
+             ExportType : exportType
+         }
+         $("#btnExportPDF").addClass("disabled");
+         $("#btnExportPDF").attr("title", "Report is exporting. Please wait..")
+         ShowToastNotification("info", "Report is downloading... Please wait.");
+         $.ajax({
+             url: "@Url.Action("ExportPageList", "Transaction")",
+             type: "POST",
+             contentType: "application/json;",
+             data: JSON.stringify(model),
+             async: false,
+             skipLoading: true,
+             beforeSend: function () {
+                 /*$('#btnDownloadCsv').text('Preparing...').prop('disabled', true);*/
+                 /*ShowToastNotification("info", "Report is downloading... Please wait.");*/
+             },
+             success: function (response) {
+                 if (response != null && response != null && response.IsSuccess) {
+                     //ShowToastNotification("success", response.Response);
+                     // Poll every 5 seconds to check export completion
+                     let pollInterval = setInterval(function () {
+                         $.ajax({
+                             url: '@Url.Action("CheckExportStatus", "Reports")',
+                             type: 'GET',
+                             async: true,
+                             skipLoading: true,
+                             data: { fileName: response.Action },
+                             success: function (res) {
+                                 if (res.IsReady) {
+                                     $("#lblExportNotification").hide();
+                                     $("#btnExportPDF").removeClass("disabled");
+                                     $("#btnExportPDF").attr("title", "Export");
+                                     clearInterval(pollInterval);
+                                     const downloadBaseUrl = '@Url.Content("~/TempDownload/")';
+                                     const url = downloadBaseUrl + encodeURIComponent(res.FileName);
+                                     // Construct download URL
+                                     //const downloadUrl = '@Url.Content("~/TempDownload/")' + res.FileName;
+
+                                     /*ShowToastNotification("success", "Report is ready. Downloading...");*/
+                                     var link = document.createElement('a');
+                                     link.href = url;
+                                     link.download = res.FileName;
+                                     document.body.appendChild(link);
+                                     link.click();
+                                     document.body.removeChild(link);
+                                 }
+                             }
+                         });
+                     }, 5000);
+                 }
+                 else {
+                     $("#btnExportCsv").removeClass("disabled");
+                     $("#lblExportNotification").hide();
+                     $("#btnExportCsv").attr("title", "Export");
+                     ShowToastNotification("error", response.Response);
+                 }
+             },
+             complete: function () {
+                 /*$('#btnDownloadCsv').text('Preparing...').prop('disabled', true);*/
+                 //ShowToastNotification("success", "Report downloaded success.");
+             },
+             error: function () {
+                 $("#btnExportCsv").removeClass("disabled");
+                 $("#lblExportNotification").hide();
+                 $("#btnExportCsv").attr("title", "Export");
+                 ShowToastNotification("error", "Report downloaded failed. Please try again..");
+             }
+         });
+     } catch (e) {
+         $("#btnExportCsv").attr("title", "Export");
+         $("#lblExportNotification").hide();
+         $("#btnExportCsv").removeClass("disabled");
+         ShowToastNotification("error", "Report downloaded failed. Please try again..");
+     }
+ }
+    function addselectedPending(tblId, id, isChecked) {
+        // Find or create table entry
+        id = id.toString();
+        let tableEntry = PendingSelected.find(entry => entry.TableName === tblId);
+        if (!tableEntry) {
+            if (isChecked) {
+                PendingSelected.push({ TableName: tblId, FieldValues: id });
+            }
+            return;
+        }
+        else {
+            const fieldValues = (tableEntry?.FieldValues || "");
+            // Normalize existing values to array
+            if (fieldValues != null && fieldValues.length> 0 && fieldValues.includes(',')) {
+                let values = (tableEntry.FieldValues || "")
+                    .split(',')
+                    .map(v => v.trim())
+                    .filter(v => v !== "");
+
+                // Update values array
+                if (isChecked) {
+                    if ($.inArray(id, values) == -1) { values.push(id) };
+                } else {
+                    values = values.filter(val => val !== id);
+                }
+                if (values != null && values.length > 0) {
+                    tableEntry.FieldValues = values.join(',');
+                }
+                else {
+                    tableEntry.FieldValues = '';
+                }
+            }
+            else {
+                if (isChecked) {
+                    if (tableEntry.FieldValues != id) {
+                        tableEntry.FieldValues = tableEntry.FieldValues + "," + id;
+                    }
+                    else {
+                        tableEntry.FieldValues = id;
+                    }
+                } else if (tableEntry.FieldValues == id) {
+                    tableEntry.FieldValues = "";
+                }
+            }
+            // Save back to FieldValues as comma-separated string
+        }
+    }
+    function cleanData() {
+        $("#mediumModal input").each(function () {
+            var bindValue = $(this).data("bind");
+            if (bindValue && bindValue.length > 0) {
+                $(this).val("");
+             }
+        });
+        $("#btnSave").show(); // Hide Save button
+        var modalTitle = $("#mediumModalLabel").text();
+        $("#mediumModalLabel").text(modalTitle.replace("Edit", "Add New").replace("View", "Add New"));
+
+        $("#hdnRecordId").val(""); // Reset the hidden record ID field
+    }
+    function SavePagefield() {
+        var isFormValid = true;
+        $("#mediumModal input").each(function () {
+            if ($.trim($(this).val()).length == 0 && $(this).data("content") == "required") {
+                $(this).addClass("input-validation-error");
+                if (isFormValid == true) {
+                    $(this).focus();
+                }
+                isFormValid = false;
+            }
+            else {
+                $(this).removeClass("input-validation-error");
+            }
+        });
+
+        if (!isFormValid) {
+            ShowToastNotification("error", "Please fill in all the required fields (indicated by *)");
+            return;
+        }
+        try {
+            var tablename = $("#hdnTableName").val();
+            var recordId = $("#hdnRecordId").val(); // Get the hidden ID field
+            var PageFieldData = [];
+            $("#mediumModal input").each(function () {
+                var bindValue = $(this).data("bind");
+                if (bindValue && bindValue.length > 0) {
+                    PageFieldData.push({
+                        FieldName: $(this).data("bind"),
+                        FieldValue: $(this).val()
+                    });
+                }
+            });
+            var model = {
+                PageTablename: tablename,
+                FieldData: PageFieldData,
+                Id: recordId  // Pass record ID for update
+            }
+
+            $.ajax({
+                type: "POST", url: '@Url.Action("SavePageData", "Home")',
+                contentType: "application/json;",
+                data: JSON.stringify(model),
+                async: false,
+                success: function (response) {
+                    if (response.IsSuccess) {
+                        ShowToastNotification("success", "Record saved successfully.")
+                        $("#btnCancel").click();
+                        cleanData();
+                        BindGridPagination();
+                    }
+                    else {
+                        ShowToastNotification("error", response.Response);
+                    }
+                },
+                failure: function (response) { },
+                error: function (response) { }
+            });
+        }
+        catch (e) {
+            ShowToastNotification("error", e.message);
+            }
+
+        }
+    $('.PendingRefresh').on('click', function () {
+        var icon = $(this).find('i');
+        // add spinning effect
+        icon.addClass('fa-spin');
+        // simulate async action (e.g. AJAX or reload)
+        setTimeout(function () {
+            // remove spinning effect after loading
+            icon.removeClass('fa-spin');
+        }, 5000); // 3 seconds for demo
+    });
+    function BindGrid() {
+        var tablename = $("#hdnFormName").val()
+        $.ajax({
+            type: "GET",
+            url: "@Url.Action("getPageData", "Home")",
+            contentType: "application/json; charset=utf-8",
+            data: { tblName: tablename },
+            /*dataType: "json",*/
+            success: OnSuccess,
+            failure: function (response) {
+                ShowToastNotification("success", response.d);
+            },
+            error: function (response) {
+                ShowToastNotification("error", "Error fetching data!");
+            }
+        });
+    }
+    function OnSuccess(response) {
+        bindDataTable(response);
+    };
+    function deleteRecord() {
+        if (confirm("Are you sure you want to delete this record?   ")) {
+
+        }
+    }
+    function bindDataTable(dataset)
+    {
+        try {
+           var formname = $("#hdnFormName").val();
+           var columns = [];
+           columns.push({
+                title: "",
+                orderable: false,
+                className: 'grid-action-item dt-center actions',
+                orderable: true,
+                render: function (data, type, row, meta) {
+                    var pageType = "PageAction"
+                    return '<button class="linkmenu" data-bind=' + row["Status"] + ' data-html=' + pageType +'  data-content=' + row["Id"] + ' ><i class="fa fa-ellipsis-v a-black"></i></button>';
+                },
+            });
+           columns.push({
+               title: "Status",
+               orderable: false,
+               className: 'dt-center actions',
+                orderable: true,
+               render: function (data, type, row, meta) {
+                   if ($("#hdnCanApprove").val() == "True" && row["Status"] != "6" && row["Status"] != "3" && row["Status"] != "7") {
+                       return '<button class="dropdown" data-bind=' + row["Status"] + ' data-content=' + row["Id"] + ' >' + DisplayStatus(row["Status"]) + '</button>';
+                   }
+                   else if (row["Status"] == "7") {
+                       return '<lable class="form-control-label text-center" style="color:lightseagreen;">PA</lable>';
+                   }
+                   else if (row["Status"] == "3") {
+                       return '<lable class="form-control-label text-center text-danger" title="Cancelled Record">C</lable>';
+                   }
+                   else if (row["Status"] == "6") {
+                       return '<lable class="form-control-label text-center" title="Forwared Record" style="color:#ccc;"><i class="fa fa-lock" aria-hidden="true"></i></lable>';
+                   }
+                   else if ($("#hdnCanDelete").val() == "True" && row["Status"] == "1") {
+                       return '<button class="dropdown" data-bind=' + row["Status"] + ' data-content=' + row["Id"] + ' >' + DisplayStatus(row["Status"]) + '</button>';
+                   }
+                   else {
+                       return '<span data-bind=' + row["Status"] + '>' + DisplayStatus(row["Status"]) + '</span>';
+                   }
+                },
+            });
+           var tableData = JSON.parse(JSON.stringify(dataset.Data));    // Cannot read property '0' of undefined
+           var tableColumn = JSON.parse(JSON.stringify(dataset.Columns));
+           var tableColumnNew = JSON.parse(JSON.stringify(dataset.PageData));
+           $("#lblRecordCount").html("(" + dataset.Data.length +")")
+            if (tableColumnNew.length > 0) {
+                columnNames = tableColumnNew;
+                for (var i in columnNames) {
+                    if (columnNames[i].ColumnName != "FiancialYearId"
+                        && columnNames[i].ColumnName != "Status" && columnNames[i].ColumnName != "Id" && columnNames[i].ColumnName != "CompanyId"
+                        && columnNames[i].ColumnName != "CreatedBy" && columnNames[i].ColumnName != "UpdatedBy"
+                        && columnNames[i].ColumnName != "CreatedOn" && columnNames[i].ColumnName != "UpdatedOn"
+                        && columnNames[i].ColumnName != "RevisionCount") {
+                        var dataVal = columnNames[i].ColumnName;
+                        if (columnNames[i].ColumnName == "URNNo") {
+                            columns.push({
+                                title: "URN #",
+                                orderable: false,
+                                render: function (data, type, row, meta) {
+                                    var pagedetial = '@Url.Action("PageDetail","Home", new { pagename = "_pagename", uId= "_uId", act = "_act" })';
+                                    pagedetial = pagedetial.replace("amp;", "");
+                                    pagedetial = pagedetial.replace("amp;", "");
+                                    pagedetial = pagedetial.replace("_pagename", formname);
+                                    pagedetial = pagedetial.replace("_uId", row["Id"]);
+                                    var viewlink = pagedetial.replace("_act", "V");
+                                    /*var viewlink = "/Home/PageDetail?pagename=" + formname + "&uId=" + row.Id + "&act=V";*/
+                                    if (row["URNNo"] != null) {
+                                        return "<a title='View Record' href='" + viewlink + "';>" + row["URNNo"] + "</a>";
+                                    }
+                                    else {
+                                        return "<a title='View Record' href='" + viewlink + "';>NA</a>";
+                                    }
+
+                                },
+                            });
+                        }
+                        if (columnNames[i].ColumnName == "DocNo") {
+                            columns.push({
+                                title: "Doc No",
+                                orderable: false,
+                                render: function (data, type, row, meta) {
+                                    if (row["RevisionCount"] != null && row["RevisionCount"] != undefined && row["RevisionCount"] != "") {
+                                        return "<span>" + row["DocNo"] + "(R" + row["RevisionCount"] +")</span>";
+                                    }
+                                    else {
+                                        return "<span>" + row["DocNo"] + "</span>";
+                                    }
+                                },
+                            });
+                        }
+                        if (columnNames[i].ColumnName == "DocDate") {
+                            columns.push({
+                                title: "Doc Date",
+                                orderable: false,
+                                render: function (data, type, row, meta) {
+                                    return "<span>" + row["DocDate"] + "</span>";
+                                },
+                            });
+                        }
+                        if (columnNames[i].ColumnName != "DocDate" && columnNames[i].ColumnName != "DocNo" && columnNames[i].ColumnName != "URNNo" && columnNames[i].ColumnName != "FiancialYearId" && columnNames[i].ColumnName != "Status"
+                            && columnNames[i].ColumnName != "Id" && columnNames[i].ColumnName != "CompanyId" && columnNames[i].ColumnName != "CreatedBy"
+                            && columnNames[i].ColumnName != "UpdatedBy" && columnNames[i].ColumnName != "CreatedOn" && columnNames[i].ColumnName != "UpdatedOn") {
+                            columns.push({
+                                data: columnNames[i].ColumnName,
+                                title: columnNames[i].ColumnTitle
+                            });
+                        }
+                    }
+                }
+            }
+           // Assuming data is an array of objects
+           // Initialize DataTable
+            let table =  new DataTable('#tblpage', {
+                    /*dom: 'Bfrtip',*/
+                    //buttons: [
+                    //    'copy', 'csv', 'excel', 'pdf', 'print'
+                    //],
+                    /*"sDom": "Rfrtlip",*/
+                    clear: true,
+                    //serverSide: false,
+                    destroy: true,
+                    searching: true,
+                    ordering: false,
+                    info: true,
+                    fixedHeader: false,
+                    data: dataset.Data,
+                    rowId: 'Id',
+                    columns: columns,
+                    pageLength: 10,
+                    /*orderable: false,*/
+                    /*scrollY: '60vh',*/
+                    /*scrollY: true,*/
+                    /*scrollX: true,*/
+                    scrollY: true,
+                    scrollX: 300,
+                    scrollCollapse: true,
+                    paging: true,
+                    autoFill: true,
+                    language: {
+                        infoEmpty: "No records available - Got it?",
+                    }
+            });
+            setTimeout(() => {
+                table.columns.adjust().draw();
+            }, 100);
+            let pageAction = document.querySelector('#PageAction');
+            table.on('click', 'button.linkmenu', function (e) {
+                e.stopPropagation();
+                var $tr = $(this).closest('tr');
+                // Index of this row among visible rows in tbody (i.e., on current page)
+                var trIndex = $tr.index();
+                //$("#tblpage tbody tr").length;
+                // Display and position the dropdown
+                $("#actions").hide();
+                $("#actionsDet").hide();
+                var actionType = $(this).attr("data-html");
+                var currectStatus = $(this).attr("data-bind");
+                var recordId = $(this).attr("data-content");
+
+                var pagedetial = '@Url.Action("PageDetail","Home", new { pagename = "_pagename", uId= "_uId", act = "_act" })';
+                pagedetial = pagedetial.replace("_pagename", formname);
+                pagedetial = pagedetial.replace("_uId", recordId);
+                pagedetial = pagedetial.replace("amp;", "");
+                pagedetial = pagedetial.replace("amp;", "");
+                var editlink = pagedetial.replace("_act", "E");
+                var viewlink = pagedetial.replace("_act", "V");
+                $("#btnActionEdit").hide();
+                $("#btnActionDelete").hide();
+                if (currectStatus == "1") {
+                    if ($("#hdnCanEdit").val() == "True"){
+                        $("#btnActionEdit").show();
+                        $("#btnActionEdit").attr("href", editlink);
+                    }
+                    if ($("#hdnCanDelete").val() == "True"){
+                        $("#btnActionDelete").show();
+                        $("#btnActionDelete").attr("href", 'javascript:deleteRecord(' + recordId + ')');
+                    }
+                }
+                $("#btnActionView").attr("href", viewlink);
+
+                if (pageAction != null) {
+                    this.parentNode.append(pageAction);
+                    const currentOffsetLeft = e.pageX;
+                    const currentOffsetTop = e.pageX;
+                    if (pageAction.style != null) {
+                        const $pageAction = $(pageAction);
+                        $pageAction.css({
+                            display: 'block',
+                            position: 'fixed',
+                            left: e.pageX + 'px',
+                            top: event.clientY + 'px'
+                        });
+                    }
+                }
+                // Remove with the next click on the document
+                document.addEventListener('click', function () {
+                    if (pageAction != null) {
+                        pageAction.remove();
+                    }
+                });
+            });
+            let actions = document.querySelector('#actions');
+            table.on('click', 'button.dropdown', function (e) {
+                e.stopPropagation();
+                var $tr = $(this).closest('tr');
+                // Index of this row among visible rows in tbody (i.e., on current page)
+                var trIndex = $tr.index();
+                //$("#tblpage tbody tr").length;
+                // Display and position the dropdown
+                $("#PageAction").hide();
+                $("#actionsDet").hide();
+                var actionType = $(this).attr("data-html");
+                var currectStatus = $(this).attr("data-bind");
+                var recordId = $(this).attr("data-content");
+                var urnNo = $(this).attr("data-URNNo");
+                $("#btnApproved").hide();
+                $("#btnNotApproved").hide();
+                $("#btnCancelled").hide();
+                if (currectStatus == "1") {
+                    if ($("#hdnCanApprove").val() == "True") {
+                        $("#btnApproved").show();
+                    }
+                    $("#btnCancelled").show();
+                }
+                else if (currectStatus == "2") {
+                    $("#btnNotApproved").show();
+                    $("#btnCancelled").show();
+                }
+                else if (currectStatus == "3") {
+                    if ($("#hdnCanApprove").val() == "True") {
+                        $("#btnApproved").show();
+                    }
+                    $("#btnNotApproved").show();
+                }
+                else {
+                    $("#btnNotApproved").show();
+                }
+                $("#btnApproved").attr("data-bind", currectStatus);
+                $("#btnApproved").attr("data-content", recordId);
+                $("#btnNotApproved").attr("data-bind", currectStatus);
+                $("#btnNotApproved").attr("data-content", recordId);
+                $("#btnCancelled").attr("data-bind", currectStatus);
+                $("#btnCancelled").attr("data-content", recordId);
+                $("#btnSubmitComment").attr("data-content", recordId);
+                $("#statusCommentModel .modal-title").html(urnNo + " : Comment")
+                if (actions != null) {
+                    this.parentNode.append(actions);
+                    const currentOffsetLeft = e.pageX;
+                    const currentOffsetTop = e.pageX;
+                    if (actions.style != null) {
+                        const $actions = $(actions);
+                        $actions.css({
+                            display: 'block',
+                            position: 'fixed',
+                            left: e.pageX + 'px',
+                            top: event.clientY + 'px'
+                        });
+                    }
+                }
+                // Remove with the next click on the document
+                document.addEventListener('click', function () {
+                    if (actions != null) {
+                        actions.remove();
+                    }
+                });
+            });
+
+        } catch (e) {
+        }
+     }
+
+    function editRecord(id,isEdit) {
+        var tablename = $("#hdnTableName").val();
+        try {
+            $.ajax({
+                type: "GET",
+                url: "@Url.Action("GetPageRecord", "Home")",
+                data: { id: id, tblName: tablename },
+                success: function (response) {
+                        if (response && response.PageTablename) {
+                            var data = response; // Directly assign respons
+                            // Set record ID
+                            $("#hdnRecordId").val(data.Id);
+                            // Populate input fields dynamically
+                            data.FieldData.forEach(field => {
+                                var $inputField = $("input[data-bind='" + field.FieldName + "']");
+                                // Set the field value
+                                $inputField.val(field.FieldValue);
+                                 if (isEdit == 0) {
+                                    $inputField.prop("readonly", true); // Make fields readonly
+                                } else {
+                                    $inputField.prop("readonly", false); // Enable editing
+                                }
+                            });
+                            // Show/hide Save button based on isEdit flag
+                            var modalTitle = $("#mediumModalLabel").text();
+                            if (isEdit == 0) {
+                                $("#btnSave").hide(); // Hide Save button
+                                $("#mediumModalLabel").text(modalTitle.replace("Add New", "View").replace("Edit", "View"));
+                            } else {
+                                $("#btnSave").show(); // Show Save button
+                                $("#mediumModalLabel").text(modalTitle.replace("Add New", "Edit").replace("View", "Edit"));
+                            }
+                            var myModal = new bootstrap.Modal(document.getElementById('mediumModal'));
+                            myModal.show();
+                        }
+                },
+                error: function () { ShowToastNotification("error", "Error fetching record details."); }
+            });
+        }
+        catch (e) {
+            ShowToastNotification("error", e.message);
+        }
+    }
+
+    function deleteRecord(id) {
+        customConfirm({
+            message: "Are you sure you want to delete this record?",
+            type: "delete", // success | warning | delete
+            title: "Delete Record"}, function (result) {
+            if (result) {
+               var tablename = $("#hdnTableName").val();
+                try {
+                    $.ajax({
+                        type: "POST",
+                        url: "@Url.Action("DeletePageRecord", "Home")",
+                        data: { id: id, tblName: tablename, URNNo: "", ParentFormName: '@Model.Design.ParentFormName', FormName: '@Model.Design.FormName' },
+                        success: function (response) {
+                            if (response.IsSuccess) {
+                                ShowToastNotification("success", "Record has been deleted successfully.");
+                                BindGridPagination();
+                            } else {
+                                ShowToastNotification("error", "Error Record Status record.");
+                            }
+                        },
+                        error: function () {
+                            ShowToastNotification("error", "Error Record Status record.");
+                        }
+                    });
+                }
+                catch (e) {
+                    ShowToastNotification("error", e.message);
+                }
+                return true;
+            }
+        });
+    }
+
+    function UpdateRecordStatus(fromId, paramId, paraparentId, paramStatus, cancelreason)
+    {
+        var tablename = $("#hdnTableName").val();
+        try {
+             $.ajax({
+                 type: "POST",
+                 url: "@Url.Action("UpdateRecordStatus", "Home")",
+                 data: {
+                     formId: fromId,
+                     status: paramStatus,
+                     ParentId: paraparentId,
+                     Id: paramId,
+                     CancelReason: cancelreason
+                 },
+                 success: function (response) {
+                     if (response.IsSuccess) {
+                         //alert("Record Status has been successfully.");
+                         ShowToastNotification("success", "Record Status has been successfully.");
+                         $("#btnCancelReasonDet").click();
+                         $("#btnCancelReason").click();
+                         $('#tblpage').DataTable().destroy();
+                         $('#tblpage tbody').empty();
+                         BindGridPagination();
+
+                     } else {
+                         ShowToastNotification("error", response.Response);
+                     }
+                 },
+                 error: function () {
+                     ShowToastNotification("error", "Error status update record.");
+                 }
+            });
+        }
+        catch (e) {
+            ShowToastNotification("error", e.message);
+        }
+    }
+    function openReport(_ReportId) {
+        try {
+            var url = '@Url.Action("DisplayReport.aspx", "ReportTemplate")';
+            window.open(url + "?Id=" + _ReportId, "_blank");
+            ShowToastNotification("success", "Report has been exported successfully.");
+        } catch (e) {
+            ShowToastNotification("error", "Report not opening, Please try again.");
+        }
+    }
+
+    function BindGridPagination() {
+        try {
+            var tablename = $("#hdnFormName").val()
+            $.ajax({
+                url: "@Url.Action("getPageColumns", "Home")",
+                type: 'POST',
+                data: { tblName: tablename },
+                success: function (response) {
+                    var columns = [];
+                    columns.push({
+                        title: "",
+                        orderable: false,
+                        className: 'grid-action-item dt-center actions',
+                        orderable: true,
+                        render: function (data, type, row, meta) {
+                            var pageType = "PageAction"
+                            return '<button class="linkmenu" data-URNNo=' + row["URNNo"] + ' data-bind=' + row["Status"] + ' data-html=' + pageType + '  data-content=' + row["Id"] + ' ><i class="fa fa-ellipsis-v a-black"></i></button>';
+                        },
+                    });
+                    columns.push({
+                        title: "Status",
+                        orderable: false,
+                        className: 'dt-center actions',
+                        orderable: true,
+                        render: function (data, type, row, meta) {
+                            if ($("#hdnCanApprove").val() == "True" && row["Status"] != "6" && row["Status"] != "7") {
+                                return '<button class="dropdown" data-URNNo=' + row["URNNo"] + ' data-bind=' + row["Status"] + ' data-content=' + row["Id"] + ' >' + DisplayStatus(row["Status"]) + '</button>';
+                            }
+                            else if (row["Status"] == "7") {
+                                return '<lable class="form-control-label text-center" style="color:lightseagreen;">PA</lable>';
+                            }
+                            else if (row["Status"] == "3") {
+                                return '<lable class="form-control-label text-center text-danger" title="Cancelled Record">C</lable>';
+                            }
+                            else if (row["Status"] == "6") {
+                                return '<lable class="form-control-label text-center" title="Forwared Record" style="color:#ccc;"><i class="fa fa-lock" aria-hidden="true"></i></lable>';
+                            }
+                            else {
+                                return '<span>' + DisplayStatus(row["Status"]) + '</span>';
+                            }
+                        },
+                    });
+                    var tableColumnNew = JSON.parse(JSON.stringify(response.PageData));
+
+                    /*$("#lblRecordCount").html("(" + response.Data.length + ")")*/
+                    if (tableColumnNew.length > 0) {
+                        columnNames = tableColumnNew;
+                        for (var i in columnNames) {
+                            if (columnNames[i].ColumnName != "FiancialYearId"
+                                && columnNames[i].ColumnName != "Status" && columnNames[i].ColumnName != "Id" && columnNames[i].ColumnName != "CompanyId"
+                                && columnNames[i].ColumnName != "RevisionCount"
+                                && columnNames[i].ColumnName != "CreatedBy"
+                                && columnNames[i].ColumnName != "UpdatedBy") {
+                                var dataVal = columnNames[i].ColumnName;
+                                if (columnNames[i].ColumnName == "URNNo" || columnNames[i].ColumnName == "URN No") {
+                                    columns.push({
+                                        title: "URN #",
+                                        orderable: false,
+                                        render: function (data, type, row, meta) {
+                                            var pagedetial = '@Url.Action("PageDetail","Home", new { pagename = "_pagename", uId= "_uId", act = "_act" })';
+                                            pagedetial = pagedetial.replace("amp;", "");
+                                            pagedetial = pagedetial.replace("amp;", "");
+                                            pagedetial = pagedetial.replace("_pagename", tablename);
+                                            pagedetial = pagedetial.replace("_uId", row["Id"]);
+                                            var viewlink = pagedetial.replace("_act", "V");
+                                            /*var viewlink = "/Home/PageDetail?pagename=" + formname + "&uId=" + row.Id + "&act=V";*/
+                                            if (row["URNNo"] != null) {
+                                                return "<a title='View Record' href='" + viewlink + "';>" + row["URNNo"] + "</a>";
+                                            }
+                                            if (row["URN No"] != null) {
+                                                return "<a title='View Record' href='" + viewlink + "';>" + row["URN No"] + "</a>";
+                                            }
+                                            else {
+                                                return "<a title='View Record' href='" + viewlink + "';>NA</a>";
+                                            }
+                                        },
+                                    });
+                                }
+                                if (columnNames[i].ColumnName == "DocNo") {
+                                    columns.push({
+                                        title: "Doc No",
+                                        orderable: false,
+                                        render: function (data, type, row, meta) {
+                                            if (row["RevisionCount"] != null && row["RevisionCount"] != undefined && row["RevisionCount"] != "") {
+                                                return "<span>" + row["DocNo"] + "(R" + row["RevisionCount"] +")</span>";
+                                            }
+                                            else {
+                                                return "<span>" + row["DocNo"] + "</span>";
+                                            }
+                                        },
+                                    });
+                                }
+                                if (columnNames[i].ColumnName == "DocDate") {
+                                    columns.push({ title: "Doc Date", orderable: false, render: function (data, type, row, meta) { return "<span>" + row["DocDate"] + "</span>"; } });
+                                }
+                                if (columnNames[i].ColumnName == "CreatedOn") {
+                                    columns.push({ title: "Created Date", orderable: false, render: function (data, type, row, meta) { return "<span>" + row["CreatedOn"] + "</span>"; } });
+                                }
+                                if (columnNames[i].ColumnName == "CreatedBy") {
+                                    columns.push({ title: "Created By", orderable: false, render: function (data, type, row, meta) { return "<span>" + row["CreatedBy"] + "</span>"; } });
+                                }
+                                if (columnNames[i].ColumnName == "UpdatedBy") {
+                                    columns.push({
+                                        title: "Updated By", orderable: false, render: function (data, type, row, meta) {
+                                            if (row["UpdatedBy"] != null) {
+                                                return "<span>" + row["UpdatedBy"] + "</span>";
+                                            }
+                                            else {
+                                                return "<span></span>";
+                                            }
+                                        }
+                                    });
+                                }
+                                if (columnNames[i].ColumnName == "UpdatedOn") {
+                                    columns.push({
+                                        title: "Updated Date", orderable: false, render: function (data, type, row, meta) {
+                                            if (row["UpdatedOn"] != null) {
+                                                return "<span>" + row["UpdatedOn"] + "</span>";
+                                            }
+                                            else {
+                                                return "<span></span>";
+                                            }
+                                        }
+                                    });
+                                }
+                                if (columnNames[i].ColumnName != "DocDate" && columnNames[i].ColumnName != "DocNo" && columnNames[i].ColumnName != "URNNo" && columnNames[i].ColumnName != "URN No" && columnNames[i].ColumnName != "FiancialYearId" && columnNames[i].ColumnName != "Status"
+                                    && columnNames[i].ColumnName != "Id" && columnNames[i].ColumnName != "CompanyId" && columnNames[i].ColumnName != "CreatedBy"
+                                    && columnNames[i].ColumnName != "UpdatedBy" && columnNames[i].ColumnName != "CreatedOn" && columnNames[i].ColumnName != "UpdatedOn") {
+                                    columns.push({
+                                        data: columnNames[i].ColumnName,
+                                        title: columnNames[i].ColumnTitle
+                                    });
+                                }
+                            }
+                        }
+                    }
+                    console.log("Call Page Render:")
+                    // Step 3: Initialize DataTable with server-side processing
+                    let table = new DataTable('#tblpage', {
+                        destroy: true,
+                        searching: true,
+                        ordering: false,
+                        fixedHeader: true,
+                        info: true,
+                        rowId: 'Id',
+                        scrollY: true,
+                        scrollX: true,
+                        scrollCollapse: true,
+                        paging: true,
+                        autoFill: true,
+                        language: {
+                            infoEmpty: "No records available - Got it?",
+                            processing: '<i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color: #27a9d7;"></i>'
+                        },
+                        processing: true,
+                        serverSide: true,
+                        //deferLoading: 0,   // 👈 prevents initial double call
+                        stateSave: true,
+                        filter: true,
+                        ajax: {
+                            url: "@Url.Action("getPageDataOnly","Home")",
+                            type: "POST",
+                            data: function (d) {   // 👈 d already contains draw, start, length, search etc.
+                                d.tblName = tablename;  // add custom param
+                                // remove pageNumber since DataTables already handles paging with `start` and `length`
+                            },
+                            complete: function (event) {
+                                if (event && event.responseJSON) {
+                                    $("#lblRecordCount").html("(" + event.responseJSON.recordsTotal + ")")
+                                }
+                            }
+                        },
+                        columns: columns,
+                        deferRender: true,     // speeds up rendering for large data
+                        scrollCollapse: true,  // avoid UI freeze on large scroll
+                    });
+                    /*table.columns.adjust().draw();*/
+                    table.columns.adjust();
+                    $('#tblpage tbody tr').off('click', 'a.row-btn').on('click', 'a.row-btn', function (e) {
+                        let next = $(this).parent().parent().next('.detail-row');
+                        if (next.length) {
+                            let id = $(this).parent().parent().attr("id");
+                            var tableId = $(next).find("table").attr("Id");
+                            var tbId = $("#hdnSelectedTabId").val();
+                            BindGrid(tableId, tbId, "Detail", id);
+                            next.toggle(700); // show/hide
+                            let icon = $(this).find('i'); // Find the <i> inside <a>
+                            // Toggle class between plus and minus
+                            icon.toggleClass('fa-plus-square fa-minus-square');
+                            // ❗ Remove event for this row (only once)
+                            $(this).off('click', e);
+                        }
+                    });
+                    /*$("#lblRecordCount").html("(" + response.Data.length + ")")*/
+                    let actions = document.querySelector('#actions');
+                    let pageAction = document.querySelector('#PageAction');
+                    table.on('click', 'button.linkmenu', function (e) {
+                        e.stopPropagation();
+                        var $tr = $(this).closest('tr');
+                        // Index of this row among visible rows in tbody (i.e., on current page)
+                        var trIndex = $tr.index();
+                        //$("#tblpage tbody tr").length;
+                        // Display and position the dropdown
+                        $("#actions").hide();
+                        $("#actionsDet").hide();
+                        var actionType = $(this).attr("data-html");
+                        var currectStatus = $(this).attr("data-bind");
+                        var recordId = $(this).attr("data-content");
+                        var pagedetial = '@Url.Action("PageDetail","Home", new { pagename = "_pagename", uId= "_uId", act = "_act" })';
+                        pagedetial = pagedetial.replace("_pagename", tablename);
+                        pagedetial = pagedetial.replace("_uId", recordId);
+                        pagedetial = pagedetial.replace("amp;", "");
+                        pagedetial = pagedetial.replace("amp;", "");
+                        var editlink = pagedetial.replace("_act", "E");
+                        var viewlink = pagedetial.replace("_act", "V");
+                        $("#btnActionEdit").hide();
+                        $("#btnActionDelete").hide();
+                        if (currectStatus == "1") {
+                            if ($("#hdnCanEdit").val() == "True"){
+                                $("#btnActionEdit").show();
+                                $("#btnActionEdit").attr("href", editlink);
+                            }
+                            if ($("#hdnCanDelete").val() == "True"){
+                                $("#btnActionDelete").show();
+                                $("#btnActionDelete").attr("href", 'javascript:deleteRecord(' + recordId + ')');
+                            }
+                        }
+                        $("#btnActionView").attr("href", viewlink);
+                        if (pageAction != null) {
+                            this.parentNode.append(pageAction);
+                            const currentOffsetLeft = e.pageX;
+                            const currentOffsetTop = e.pageX;
+                            if (pageAction.style != null) {
+                                const $pageAction = $(pageAction);
+                                $pageAction.css({
+                                    display: 'block',
+                                    position: 'fixed',
+                                    left: e.pageX + 'px',
+                                    top: e.clientY + 'px'
+                                });
+                            }
+                        }
+                        // Remove with the next click on the document
+                        document.addEventListener('click', function () {
+                            if (pageAction != null) {
+                                pageAction.remove();
+                            }
+                        });
+                    });
+                    table.on('click', 'button.dropdown', function (e) {
+                        e.stopPropagation();
+                        var $tr = $(this).closest('tr');
+                        // Index of this row among visible rows in tbody (i.e., on current page)
+                        var trIndex = $tr.index();
+                        //$("#tblpage tbody tr").length;
+                        // Display and position the dropdown
+                        $("#PageAction").hide();
+                        $("#actionsDet").hide();
+                        var actionType = $(this).attr("data-html");
+                        var currectStatus = $(this).attr("data-bind");
+                        var recordId = $(this).attr("data-content");
+                        var urnNo = $(this).attr("data-URNNo");
+
+                        $("#btnApproved").hide();
+                        $("#btnNotApproved").hide();
+                        $("#btnCancelled").hide();
+                        if (currectStatus == "1") {
+                            if ($("#hdnCanApprove").val() == "True") {
+                                $("#btnApproved").show();
+                            }
+                            $("#btnCancelled").show();
+                        }
+                        else if (currectStatus == "2") {
+                            $("#btnNotApproved").show();
+                            $("#btnCancelled").show();
+                        }
+                        else if (currectStatus == "3") {
+                            if ($("#hdnCanApprove").val() == "True") {
+                                $("#btnApproved").show();
+                            }
+                            $("#btnNotApproved").show();
+                        }
+                        else {
+                            $("#btnNotApproved").show();
+                        }
+                        $("#btnApproved").attr("data-bind", currectStatus);
+                        $("#btnApproved").attr("data-content", recordId);
+                        $("#btnNotApproved").attr("data-bind", currectStatus);
+                        $("#btnNotApproved").attr("data-content", recordId);
+                        $("#btnCancelled").attr("data-bind", currectStatus);
+                        $("#btnCancelled").attr("data-content", recordId);
+                        $("#btnSubmitComment").attr("data-content", recordId);
+                        $("#statusCommentModel .modal-title").html(urnNo + " : Comment")
+                        if (actions != null) {
+                            this.parentNode.append(actions);
+                            const currentOffsetLeft = e.pageX;
+                            const currentOffsetTop = e.pageX;
+                            if (actions.style != null) {
+                                const $actions = $(actions);
+                                $actions.css({
+                                    display: 'block',
+                                    position: 'fixed',
+                                    left: e.pageX + 'px',
+                                    top: event.clientY + 'px'
+                                });
+                            }
+                        }
+                        // Remove with the next click on the document
+                        document.addEventListener('click', function () {
+                            if (actions != null) {
+                                actions.remove();
+                            }
+                        });
+                    });
+                },
+                error: function (response) {
+                    ShowToastNotification("error", "Error fetching data!");
+                }
+            });
+        } catch (e) {
+            ShowToastNotification("error", e.message);
+        }
+    }
+    function SubmitComments() {
+        try {
+            var comment = $("#textMyComment").val();
+            var model = {
+                FormId: '@Model.Design.FormId',
+                ParentId: 0,
+                DetailId: 0,
+                CommentText: comment
+            };
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("AddFormComment", "Transaction")",
+                data: JSON.stringify(model),
+                skipLoading: true,
+                contentType: "application/json; charset=utf-8",
+                success: function (response) {
+                    if (response.IsSuccess) {
+                        $("#textMyComment").val('');
+                        $("#textMyComment").focus();
+                        ShowComments();
+                    } else {
+                        ShowToastNotification("error", "Comment not added.");
+                    }
+                },
+                error: function () {
+                    ShowToastNotification("error", "Comment not added.");
+                }
+            });
+        } catch (e) {
+
+        }
+    }
+    function ShowComments() {
+        try {
+            if ($("#showCommentsModel").hasClass("show")) {
+                var model = {
+                    FormId: '@Model.Design.FormId',
+                    ParentId: 0,
+                    DetailId: 0
+                };
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("GetUserComments", "Transaction")",
+                    data: JSON.stringify(model),
+                    skipLoading: true,
+                    contentType: "application/json; charset=utf-8",
+                    success: function (response) {
+                        if (response != null && response.IsSuccess) {
+                            loadComments(response.Data);
+                        }
+                    }
+                });
+            }
+        } catch (e) {
+
+        }
+    }
+    function loadComments(CommentData) {
+        try {
+            var objCommentId = parseInt($("#LastCommentId").val());
+            for (var i = 0; i < CommentData.length; i++) {
+                var obj = CommentData[i];
+                if (objCommentId < obj.CommentId) {
+                    $("#LastCommentId").val(obj.CommentId)
+                    var html = "";
+                    if (obj.IsYou) {
+                        html = `<div class="chat-message right comment-animate">
+                    <div class="chat-bubble">
+                        <div class="chat-username">You</div>
+                         <div class="chat-text ${obj.CommentText.startsWith('*') && obj.CommentText.endsWith('*') ? 'blue-text' : ''}">
+                            ${obj.CommentText && obj.CommentText.startsWith('*') && obj.CommentText.endsWith('*')
+                                ? obj.CommentText.slice(1, -1)
+                                : obj.CommentText}
+                        </div>
+                        <div class="chat-meta"><span class="chat-date">${obj.CommentedOn}</span></div>
+                    </div>
+                </div>`;
+                    } else {
+                        html = `<div class="chat-message left comment-animate">
+                    <div class="chat-avatar">
+                        <div class="avatar-wrapper ${obj.IsLoggedIn ? 'online' : 'offline'}">
+                            <div class="avatar-initials">${obj.ShortName}</div>
+                            <span class="status-dot"></span>
+                        </div>
+                    </div>
+                    <div class="chat-bubble">
+                        <div class="chat-username">${obj.CreatedBy}</div>
+                        <div class="chat-text">${obj.CommentText}</div>
+                        <div class="chat-meta"><span class="chat-date">${obj.CommentedOn}</span></div>
+                    </div>
+                </div>`;
+                    }
+                    $("#divChat").append(html);
+                }
+            }
+            // Auto scroll to bottom
+            $("#divChat").scrollTop($("#divChat")[0].scrollHeight);
+        } catch (e) {
+            console.log(e);
+        }
+    }
+</script>

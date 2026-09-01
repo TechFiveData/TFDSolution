@@ -1,0 +1,14 @@
+D:\Amit\TFD\Source\TFDSolution\TFDSolution\TFDSolution.Transport\bin\Release\TFDSolution.Transport.dll.config
+D:\Amit\TFD\Source\TFDSolution\TFDSolution\TFDSolution.Transport\bin\Release\TFDSolution.Transport.dll
+D:\Amit\TFD\Source\TFDSolution\TFDSolution\TFDSolution.Transport\bin\Release\TFDSolution.Transport.pdb
+D:\Amit\TFD\Source\TFDSolution\TFDSolution\TFDSolution.Transport\bin\Release\EntityFramework.dll
+D:\Amit\TFD\Source\TFDSolution\TFDSolution\TFDSolution.Transport\bin\Release\EntityFramework.SqlServer.dll
+D:\Amit\TFD\Source\TFDSolution\TFDSolution\TFDSolution.Transport\bin\Release\Newtonsoft.Json.dll
+D:\Amit\TFD\Source\TFDSolution\TFDSolution\TFDSolution.Transport\bin\Release\EntityFramework.xml
+D:\Amit\TFD\Source\TFDSolution\TFDSolution\TFDSolution.Transport\bin\Release\EntityFramework.SqlServer.xml
+D:\Amit\TFD\Source\TFDSolution\TFDSolution\TFDSolution.Transport\bin\Release\Newtonsoft.Json.xml
+D:\Amit\TFD\Source\TFDSolution\TFDSolution\TFDSolution.Transport\obj\Release\TFDSolution.Transport.csproj.AssemblyReference.cache
+D:\Amit\TFD\Source\TFDSolution\TFDSolution\TFDSolution.Transport\obj\Release\TFDSolution.Transport.csproj.CoreCompileInputs.cache
+D:\Amit\TFD\Source\TFDSolution\TFDSolution\TFDSolution.Transport\obj\Release\TFDSolut.1BFAD9EC.Up2Date
+D:\Amit\TFD\Source\TFDSolution\TFDSolution\TFDSolution.Transport\obj\Release\TFDSolution.Transport.dll
+D:\Amit\TFD\Source\TFDSolution\TFDSolution\TFDSolution.Transport\obj\Release\TFDSolution.Transport.pdb

@@ -1,0 +1,139 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\Amit\\TFD\\Source\\TFDSolution\\TFDSolution\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{CBC5A2B9-4A65-4335-B524-96D6CA8392E9}|TFDSolution.Business\\TFDSolution.Business.csproj|d:\\amit\\tfd\\source\\tfdsolution\\tfdsolution\\tfdsolution.business\\transactionbusiness.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CBC5A2B9-4A65-4335-B524-96D6CA8392E9}|TFDSolution.Business\\TFDSolution.Business.csproj|solutionrelative:tfdsolution.business\\transactionbusiness.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D5677E52-C60E-45A3-AF9C-C46A3E1F9A54}|TFDSolution\\TFDSolution.csproj|d:\\amit\\tfd\\source\\tfdsolution\\tfdsolution\\tfdsolution\\controllers\\homecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D5677E52-C60E-45A3-AF9C-C46A3E1F9A54}|TFDSolution\\TFDSolution.csproj|solutionrelative:tfdsolution\\controllers\\homecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D5677E52-C60E-45A3-AF9C-C46A3E1F9A54}|TFDSolution\\TFDSolution.csproj|d:\\amit\\tfd\\source\\tfdsolution\\tfdsolution\\tfdsolution\\controllers\\commoncontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D5677E52-C60E-45A3-AF9C-C46A3E1F9A54}|TFDSolution\\TFDSolution.csproj|solutionrelative:tfdsolution\\controllers\\commoncontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CBC5A2B9-4A65-4335-B524-96D6CA8392E9}|TFDSolution.Business\\TFDSolution.Business.csproj|d:\\amit\\tfd\\source\\tfdsolution\\tfdsolution\\tfdsolution.business\\commonbusiness.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CBC5A2B9-4A65-4335-B524-96D6CA8392E9}|TFDSolution.Business\\TFDSolution.Business.csproj|solutionrelative:tfdsolution.business\\commonbusiness.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D5677E52-C60E-45A3-AF9C-C46A3E1F9A54}|TFDSolution\\TFDSolution.csproj|d:\\amit\\tfd\\source\\tfdsolution\\tfdsolution\\tfdsolution\\views\\home\\_particaltabpopup.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{D5677E52-C60E-45A3-AF9C-C46A3E1F9A54}|TFDSolution\\TFDSolution.csproj|solutionrelative:tfdsolution\\views\\home\\_particaltabpopup.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D5677E52-C60E-45A3-AF9C-C46A3E1F9A54}|TFDSolution\\TFDSolution.csproj|d:\\amit\\tfd\\source\\tfdsolution\\tfdsolution\\tfdsolution\\views\\home\\pagedetail.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{D5677E52-C60E-45A3-AF9C-C46A3E1F9A54}|TFDSolution\\TFDSolution.csproj|solutionrelative:tfdsolution\\views\\home\\pagedetail.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D5677E52-C60E-45A3-AF9C-C46A3E1F9A54}|TFDSolution\\TFDSolution.csproj|d:\\amit\\tfd\\source\\tfdsolution\\tfdsolution\\tfdsolution\\controllers\\transactioncontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D5677E52-C60E-45A3-AF9C-C46A3E1F9A54}|TFDSolution\\TFDSolution.csproj|solutionrelative:tfdsolution\\controllers\\transactioncontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 2,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "HomeController.cs",
+              "DocumentMoniker": "D:\\Amit\\TFD\\Source\\TFDSolution\\TFDSolution\\TFDSolution\\Controllers\\HomeController.cs",
+              "RelativeDocumentMoniker": "TFDSolution\\Controllers\\HomeController.cs",
+              "ToolTip": "D:\\Amit\\TFD\\Source\\TFDSolution\\TFDSolution\\TFDSolution\\Controllers\\HomeController.cs",
+              "RelativeToolTip": "TFDSolution\\Controllers\\HomeController.cs",
+              "ViewState": "AgIAAKQDAAAAAAAAAAAhwLoDAAA9AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-01T15:53:00.708Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "_ParticalTabPopup.cshtml",
+              "DocumentMoniker": "D:\\Amit\\TFD\\Source\\TFDSolution\\TFDSolution\\TFDSolution\\Views\\Home\\_ParticalTabPopup.cshtml",
+              "RelativeDocumentMoniker": "TFDSolution\\Views\\Home\\_ParticalTabPopup.cshtml",
+              "ToolTip": "D:\\Amit\\TFD\\Source\\TFDSolution\\TFDSolution\\TFDSolution\\Views\\Home\\_ParticalTabPopup.cshtml",
+              "RelativeToolTip": "TFDSolution\\Views\\Home\\_ParticalTabPopup.cshtml",
+              "ViewState": "AgIAABEFAAAAAAAAAAArwCMFAAAuAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-09-01T15:46:23.612Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "TransactionBusiness.cs",
+              "DocumentMoniker": "D:\\Amit\\TFD\\Source\\TFDSolution\\TFDSolution\\TFDSolution.Business\\TransactionBusiness.cs",
+              "RelativeDocumentMoniker": "TFDSolution.Business\\TransactionBusiness.cs",
+              "ToolTip": "D:\\Amit\\TFD\\Source\\TFDSolution\\TFDSolution\\TFDSolution.Business\\TransactionBusiness.cs",
+              "RelativeToolTip": "TFDSolution.Business\\TransactionBusiness.cs",
+              "ViewState": "AgIAAD4HAAAAAAAAAAAhwFwHAABFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-01T15:43:56.644Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "CommonController.cs",
+              "DocumentMoniker": "D:\\Amit\\TFD\\Source\\TFDSolution\\TFDSolution\\TFDSolution\\Controllers\\CommonController.cs",
+              "RelativeDocumentMoniker": "TFDSolution\\Controllers\\CommonController.cs",
+              "ToolTip": "D:\\Amit\\TFD\\Source\\TFDSolution\\TFDSolution\\TFDSolution\\Controllers\\CommonController.cs",
+              "RelativeToolTip": "TFDSolution\\Controllers\\CommonController.cs",
+              "ViewState": "AgIAACwAAAAAAAAAAAAYwDgAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-01T15:43:40.86Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "CommonBusiness.cs",
+              "DocumentMoniker": "D:\\Amit\\TFD\\Source\\TFDSolution\\TFDSolution\\TFDSolution.Business\\CommonBusiness.cs",
+              "RelativeDocumentMoniker": "TFDSolution.Business\\CommonBusiness.cs",
+              "ToolTip": "D:\\Amit\\TFD\\Source\\TFDSolution\\TFDSolution\\TFDSolution.Business\\CommonBusiness.cs",
+              "RelativeToolTip": "TFDSolution.Business\\CommonBusiness.cs",
+              "ViewState": "AgIAABEBAAAAAAAAAAAEwEABAAArAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-01T15:40:17.545Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "TransactionController.cs",
+              "DocumentMoniker": "D:\\Amit\\TFD\\Source\\TFDSolution\\TFDSolution\\TFDSolution\\Controllers\\TransactionController.cs",
+              "RelativeDocumentMoniker": "TFDSolution\\Controllers\\TransactionController.cs",
+              "ToolTip": "D:\\Amit\\TFD\\Source\\TFDSolution\\TFDSolution\\TFDSolution\\Controllers\\TransactionController.cs",
+              "RelativeToolTip": "TFDSolution\\Controllers\\TransactionController.cs",
+              "ViewState": "AgIAADoBAAAAAAAAAAAhwE4BAAA7AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-01T15:35:15.541Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "PageDetail.cshtml",
+              "DocumentMoniker": "D:\\Amit\\TFD\\Source\\TFDSolution\\TFDSolution\\TFDSolution\\Views\\Home\\PageDetail.cshtml",
+              "RelativeDocumentMoniker": "TFDSolution\\Views\\Home\\PageDetail.cshtml",
+              "ToolTip": "D:\\Amit\\TFD\\Source\\TFDSolution\\TFDSolution\\TFDSolution\\Views\\Home\\PageDetail.cshtml",
+              "RelativeToolTip": "TFDSolution\\Views\\Home\\PageDetail.cshtml",
+              "ViewState": "AgIAAKECAAAAAAAAAAArwLwCAAAYAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-09-01T15:21:41.191Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

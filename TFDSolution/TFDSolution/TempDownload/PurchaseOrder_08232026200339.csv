@@ -1,0 +1,16 @@
+﻿Company Name: SUNCITY STAINLESS LLP
+Form : PurchaseOrder
+
+
+URNNo,Id,DocNo,DocDate,AcCode,GSTNo,RefNo,RefDate,PaymentTerms,DeliveryTerms,Remarks,CreatedBy,CreatedOn,FiancialYearId,Status,UpdatedBy,UpdatedOn
+"PORC010000050","50","PO/26-27/9","30-06-2026 00:00:00","MICRO STEEL INDUSTRIES","08ABKFM7359P1Z9","Mail on Dated","30-06-2026 00:00:00","","","","Gajanand Agarwal","19-08-2026 16:57:58","2","6","Gajanand Agarwal","19-08-2026 16:58:55"
+"PORC010000049","49","PO/26-27/8","19-08-2026 00:00:00","BAJAJ AGENCIES","08ADIPB4405F1Z1","","20-07-2026 00:00:00","","","25 Rolls","Gajanand Agarwal","19-08-2026 11:29:21","2","6","",""
+"PORC010000048","48","PO/26-27/7","05-08-2026 00:00:00","MICRO STEEL INDUSTRIES","08ABKFM7359P1Z9","777","01-08-2026 00:00:00","","FOR","","Gajanand Agarwal","05-08-2026 17:18:41","2","1","Gajanand Agarwal","05-08-2026 17:20:56"
+"PORC010000047","47","PO/26-27/6","04-08-2026 00:00:00","SUNCITY METALS AND TUBE PVT LTD","08AAHCS3761Q1ZM","777","31-07-2026 00:00:00","","FOR","As Per Gaju Sa","Vikash Patel","04-08-2026 16:46:22","2","1","Vikash Patel","04-08-2026 17:22:31"
+"PORC010000045","46","PO/26-27/5","04-08-2026 00:00:00","SUNCITY METALS AND TUBE PVT LTD","08AAHCS3761Q1ZM","777","31-07-2026 00:00:00","45 DAYS","FOR","As Per Gaju Sa","Gajanand Agarwal","04-08-2026 16:19:12","2","6","Gajanand Agarwal","04-08-2026 16:21:27"
+"PORC010000044","44","PO/26-27/4","03-08-2026 00:00:00","MICRO STEEL INDUSTRIES","08ABKFM7359P1Z9","591","30-07-2026 00:00:00","","","","Gajanand Agarwal","03-08-2026 18:11:29","2","1","Amit Gorvadiya","04-08-2026 16:19:00"
+"PORC010000043","43","PO/26-27/3","03-08-2026 00:00:00","MICRO STEEL INDUSTRIES","08ABKFM7359P1Z9","589","31-07-2026 00:00:00","","","","Gajanand Agarwal","03-08-2026 17:37:21","2","1","Vikash Patel","04-08-2026 13:51:46"
+"PORC010000042","42","PO/26-27/2","03-08-2026 00:00:00","SUNCITY METALS AND TUBE PVT LTD","08AAHCS3761Q1ZM","12345","01-07-2026 00:00:00","","","","Gajanand Agarwal","03-08-2026 16:18:05","2","1","Gajanand Agarwal","03-08-2026 16:24:53"
+"PORC010000001","41","PO/26-27/1","04-07-2026 00:00:00","Arihant Adita Resident Welface Soc","08AAKAA8280B1ZS","","","","","","Vikash Patel","04-07-2026 12:41:20","2","1","",""
+
+Total Records: 9

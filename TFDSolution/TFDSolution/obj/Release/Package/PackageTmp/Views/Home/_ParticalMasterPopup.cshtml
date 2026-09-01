@@ -1,0 +1,1382 @@
+﻿@model TFDSolution.Models.PageModel
+@{
+    string status = ViewBag.Status, statusName = "";
+    string docNo = ViewBag.DocNo, docNoDB = ViewBag.DocNo;
+    string currencyid = ViewBag.currenctyId;
+    bool isStatusField = false;
+    string urnNo = ViewBag.URNNo, CancelReason = "";
+    string exchangeRate = "";
+    DateTime docDate = DateTime.Today.Date;
+    if (Model.Design.Data != null && Model.Design.Data.Count() > 0)
+    {
+        foreach (var item in Model.Design.Data.ToList())
+        {
+            if (item.ContainsKey("DocNo"))
+            {
+                docNo = Convert.ToString(item["DocNo"]);
+                docNoDB = Convert.ToString(item["DocNo"]);
+                if (item.ContainsKey("RevisionCount") && Convert.ToString(item["RevisionCount"]) != "0" && Convert.ToString(item["RevisionCount"]) != "")
+                {
+                    docNo = docNo + "(R" + Convert.ToString(item["RevisionCount"]) + ")";
+                }
+            }
+
+            if (item.ContainsKey("StatusName"))
+            {
+                statusName = Convert.ToString(item["StatusName"]);
+            }
+            if (item.ContainsKey("URNNo"))
+            {
+                urnNo = Convert.ToString(item["URNNo"]);
+            }
+            if (item.ContainsKey("CancelReason"))
+            {
+                CancelReason = Convert.ToString(item["CancelReason"]);
+            }
+            if (item.ContainsKey("CurrencyId") && !string.IsNullOrEmpty(Convert.ToString(item["CurrencyId"])))
+            {
+                currencyid = Convert.ToString(item["CurrencyId"]);
+            }
+            if (item.ContainsKey("Status"))
+            {
+                isStatusField = true;
+                status = Convert.ToString(item["Status"]);
+            }
+            if (item.ContainsKey("DocDate"))
+            {
+                docDate = Convert.ToDateTime(item["DocDate"]);
+            }
+            if (item.ContainsKey("ExchangeRate"))
+            {
+                exchangeRate = "₹" + Convert.ToString(item["ExchangeRate"]);
+            }
+        }
+    }
+}
+<input value="@Model.PageAction" type="hidden" id="hdnPageAction" />
+<input type="hidden" id="hdnRecordId" value="@ViewBag.PrimaryId" />
+<input type="hidden" id="hdnParentRecordId" value="@ViewBag.ParentId" />
+<input type="hidden" value="" id="hdnSelectedTabId" />
+<input type="hidden" value="" id="hdnTabTableName" />
+<input type="hidden" value="" id="hdnSelectedSecionId" />
+<input type="hidden" value="@Model.Design.SQLTableName" id="hdnTableName" />
+<input type="hidden" value="@Model.Design.FormName" id="hdnFormName" />
+<input type="hidden" data-bind="SqlTemplateId" data-html="SqlTemplateId" value="@Model.Design.SqlTemplateId" id="SqlTemplateId" />
+<input id="hdnDocId" type="hidden" value="@ViewBag.DocId" />
+<input type="hidden" value="@Convert.ToString(Model.Design.CanApprove)" id="hdnCanApprove" />
+<input type="hidden" value="@Convert.ToString(Model.Design.CanDelete)" id="hdnCanDelete" />
+<input type="hidden" value="@Convert.ToString(Model.Design.CanEdit)" id="hdnCanEdit" />
+<div class="modal-content">
+    <div class="modal-header">
+        <h5 class="modal-title" id="mediumModalLabel">@Model.Design.FormTitle</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div>
+            <div id="DataTabPopup" class="row">
+                @{
+                    if (Model.Design.Sections != null && Model.Design.Sections.Count > 0)
+                    {
+                        foreach (var section in Model.Design.Sections.OrderByDescending(x => x.SectionName).ToList())
+                        {
+                            string headdcls = "";
+                            string secId = Convert.ToString(section.FormSectionId);
+                            string detailtabCSS = "";
+
+                            <div id="@($"{section.SectionName}Tabs")" class="@headdcls">
+                                <div class="row">
+                                    <div class="col col-md-12">
+                                        <label for="text-input" class="font-weight-bold form-control-label">URN</label>
+                                        @if (ViewBag.PrimaryId != null && Convert.ToInt32(ViewBag.PrimaryId) > 0)
+                                        {
+                                            <label id="LabelURN" class="form-control-label">@urnNo</label>
+                                        }
+                                        else
+                                        {
+                                            <label id="LabelURN" class="form-control-label">
+                                                @ViewBag.URNNo
+                                            </label>
+                                        }
+                                        <input type="text" value="@urnNo" class="form-control d-none" data-html="URNNo" data-content="TextBox" data-bind="URNNo" id="txtURNNo" />
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col col-md-12">
+                                        <label for="text-input" class="font-weight-bold form-control-label" style="display:inline-block">Status</label>
+                                        <button title="Click here to view status history" class="btn btn-secondary dropdown-toggle display-block" type="button" id="dropdownStatus"
+                                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                                style="background: transparent;color: #000;border: none;padding: 0; display:inline-block">
+                                        </button>
+                                        <div class="dropdown-menu" aria-labelledby="dropdownStatus" style="margin-top:25px;margin-left:62px;">
+                                            <div id="approvalHierarchy" class="approval-flow">
+                                            </div>
+                                        </div>
+                                        @{
+                                            string _statusname = "", statuscss = "text-info";
+                                        }
+                                        @if (status == "2")
+                                        {
+                                            _statusname = "Approved";
+                                            statuscss = "text-success";
+                                        }
+                                        else if (status == "1")
+                                        {
+                                            _statusname = "Not Approved";
+                                            statuscss = "text-primary";
+                                        }
+                                        else if (status == "3")
+                                        {
+                                            _statusname = "Cancelled";
+                                            statuscss = "text-danger";
+                                        }
+                                        else if (status == "4")
+                                        {
+                                            _statusname = "Pending";
+                                            statuscss = "text-primary";
+                                        }
+                                        else if (status == "5")
+                                        {
+                                            _statusname = "Partial";
+                                            statuscss = "text-info";
+                                        }
+                                        else if (status == "6")
+                                        {
+                                            _statusname = "Forwarded";
+                                            statuscss = "text-info";
+                                        }
+                                        else if (status == "6")
+                                        {
+                                            _statusname = "Forwarded";
+                                            statuscss = "text-info";
+                                        }
+                                        else if (status == "7")
+                                        {
+                                            _statusname = "Partial Approved";
+                                            statuscss = "text-info";
+                                            if (statusName == "Approved" || statusName == "ApprovedNA")
+                                            {
+                                                _statusname = "Approved";
+                                                statuscss = "text-success";
+                                            }
+                                            else if (statusName == "Not Approved")
+                                            {
+                                                _statusname = "Not Approved";
+                                                statuscss = "text-primary";
+                                            }
+                                        }
+                                        else
+                                        {
+                                            status = "1";
+                                            _statusname = "Draft";
+                                            statuscss = "text-info";
+                                        }
+                                        @if (ViewBag.PrimaryId > 0 && status != "6" &&
+                                            ((!string.IsNullOrEmpty(statusName) && statusName != "Awaiting" && (statusName == "ApprovedNA" || statusName == "Not Approved"))
+                                            || (string.IsNullOrEmpty(statusName))))
+                                        {
+                                            <div class="dropdown" style="padding: 0 !important;display: inline-block">
+                                                <button class="btn btn-secondary dropdown-toggle @statuscss" type="button" id="dropdownMenuButton"
+                                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                                        style="background: transparent;color: #000;border: none;padding: 0">
+                                                    @_statusname
+                                                </button>
+                                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" style="margin-top:25px;">
+                                                    <a class="dropdown-item" href="#" onclick="UpdateRecordStatus(1,'Not Approved','')">
+                                                        <lable class="form-control-label text-primary p-0">
+                                                            <i class="fa fa-thumbs-o-down" aria-hidden="true"></i>
+                                                            Not Approved
+                                                        </lable>
+                                                    </a>
+                                                    @if (Model.Design.CanApprove == true && (status != "7" || (status == "7" && statusName == "Not Approved")))
+                                                    {
+                                                        <a class="dropdown-item" href="#" onclick="UpdateRecordStatus(2,'Approved','')">
+                                                            <lable class="form-control-label text-success p-0">
+                                                                <i class="fa fa-thumbs-o-up" aria-hidden="true"></i>
+                                                                Approved
+                                                            </lable>
+                                                        </a>
+                                                        <a class="dropdown-item" href="#" data-toggle='modal' data-target='#cancelModel'>
+                                                            <lable class="form-control-label text-danger p-0">
+                                                                <i class="fa fa-ban" aria-hidden="true"></i>
+                                                                Cancelled
+                                                            </lable>
+                                                        </a>
+                                                    }
+                                                    else if (Model.Design.CanApprove == true && ((status == "7" && statusName == "ApprovedNA")))
+                                                    {
+                                                        <a class="dropdown-item" href="#" data-toggle='modal' data-target='#cancelModel'>
+                                                            <lable class="form-control-label text-danger p-0">
+                                                                <i class="fa fa-ban" aria-hidden="true"></i>
+                                                                Cancelled
+                                                            </lable>
+                                                        </a>
+                                                    }
+                                                    <a class="dropdown-item" href="javascript:void(0);" onclick="AddComment();">
+                                                        <lable class="form-control-label p-0"><i class="fa fa-commenting-o" aria-hidden="true"></i> Add Comment</lable>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        }
+                                        else if (status == "3")
+                                        {
+                                            <div style="float: left; padding: 0 !important;">
+                                                <lable class="form-control-label text-center text-danger" title="Cancelled Record" style="color: deeppink;">@_statusname</lable>
+                                            </div>
+                                        }
+                                        else if (status == "6")
+                                        {
+                                            <div style="float: left; padding: 0 !important;">
+                                                <lable class="form-control-label text-center" title="Record is forwared" style="color: deeppink;">@_statusname&nbsp;<i class="fa fa-lock" aria-hidden="true"></i></lable>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            if ((!string.IsNullOrEmpty(statusName) && statusName == "Awaiting"))
+                                            {
+                                                <lable class="form-control-label text-right" style="color: lightseagreen;">Awaiting for Approval</lable>
+                                            }
+                                            else
+                                            {
+                                                <lable class="form-control-label text-right @statuscss" style="color:#ccc;">@_statusname</lable>
+                                            }
+                                        }
+                                        <input type="text" value="@status" class="form-control d-none" data-html="Status" data-content="int" data-bind="Status" id="txtStatus" />
+                                    </div>
+                                </div>
+                                @if (Model.Design.SqlTemplateId == 2)
+                                {
+                                    <div class="row">
+                                        <div class="col col-md-12">
+                                            <label for="text-input" class="font-weight-bold form-control-label">Doc No</label>
+                                            @if (Model.PageAction == "A" || Model.PageAction == "E")
+                                            {
+                                                <a href="#" id="docNumbering" aria-haspopup="true" aria-expanded="false" data-toggle="dropdown" title="Update Category"><i class="fa fa-cog"></i></a>
+                                                <div class="user-menu dropdown-menu" aria-labelledby="docNumbering">
+                                                    @if (Model.DocNumberSetting != null && Model.DocNumberSetting.Count > 0)
+                                                    {
+                                                        foreach (var item in Model.DocNumberSetting)
+                                                        {
+                                                            <a class="nav-link" onclick="getDocumentNo(@item.DocNoSettingId)" href="#">@item.DocName (@item.DocAlias)</a>
+                                                        }
+                                                    }
+                                                </div>
+                                            }
+                                            @if (!string.IsNullOrEmpty(ViewBag.PrimaryId))
+                                            {
+                                                <label id="lblDocNo" class="form-control-label">@docNo</label>
+                                            }
+                                            else
+                                            {
+                                                <label id="lblDocNo" class="form-control-label">@ViewBag.DocNo</label>
+                                            }
+                                            <input type="text" value="@docNoDB" class="form-control d-none" data-html="DocNo" data-content="TextBox" data-bind="DocNo" id="txtDocNo" />
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col col-md-12 d-flex align-items-center justify-content-between">
+                                            <label for="text-input" class="font-weight-bold form-control-label">Doc Date</label>
+                                            <label class="form-control-label p-0 m-0">
+                                                @if (Model.PageAction == "V")
+                                                {
+                                                    @docDate.ToString("dd-MM-yyyy")
+                                                }
+                                                else
+                                                {
+                                                    @Html.TextBox("DocDate", docDate.ToString("yyyy-MM-dd"), new { type = "date", @class = "form-control", @style = "border:none; width: 104px; padding-right:0", @data_content = "DateTimeField", dat_html = "Doc Date", data_bind = "DocDate" })
+                                                }
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col col-md-12">
+                                            <label for="text-input" class="font-weight-bold form-control-label">Currency</label>
+                                            @if (Model.PageAction == "A" || Model.PageAction == "E")
+                                            {
+                                                <a href="#" id="pageCurrency" aria-haspopup="true" aria-expanded="false" data-toggle="dropdown" title="Update Currency"><i class="fa fa-cog"></i></a>
+                                                <div class="user-menu dropdown-menu" aria-labelledby="pageCurrency">
+                                                    @if (ViewBag.CurrencyList != null && ViewBag.CurrencyList.Count > 0)
+                                                    {
+                                                        foreach (var item in ViewBag.CurrencyList)
+                                                        {
+                                                            <a class="nav-link" onclick="getCurrency('@item.Value','@item.Text')" href="#">@item.Text</a>
+                                                        }
+                                                    }
+                                                </div>
+                                            }
+                                            <label class="form-control-label float-right">
+                                                <input type="text" value="@currencyid" class="form-control d-none" data-html="CurrencyId"
+                                                       data-content="TextBox" data-bind="CurrencyId" id="txtCurrencyId" />
+                                                &nbsp;
+                                                <label id="lblCurrency" class="form-control-label">@ViewBag.currentCurrencyName</label>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col col-md-12">
+                                            <label for="text-input" class="font-weight-bold form-control-label">Exchange Rate</label>
+                                            <lable id="lblCurrencyExchnage" class="form-control-label d-none">@ViewBag.currentExchangeCurrencyName</lable>
+                                            @if (Model.PageAction == "V")
+                                            {
+
+                                                <input id="ExchangeRate" name="ExchangeRate" data-bind="ExchangeRate" data-content="TextBox" style="max-width:100px;margin-bottom:-11px; margin-top: -4px;background: none;" class="form-control float-right border-0 text-right p-0" value="@ViewBag.currentExchangeCurrencyName" />
+                                            }
+                                            else
+                                            {
+
+                                                <input id="ExchangeRate" name="ExchangeRate" data-bind="ExchangeRate" data-content="TextBox" style="max-width:100px;margin-bottom:-11px; margin-top: -4px;" class="form-control float-right border-0 text-right p-0" value="@ViewBag.currentExchangeCurrencyName" />
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                                @if (section.Tabs != null && section.Tabs.Count > 0)
+                                {
+                                    <!-- Tabs -->
+                                    List<TFDSolution.Transport.Master.FormTab> objectTabs = section.Tabs.OrderBy(x => x.SortOrder).ToList();
+                                    foreach (var tab in objectTabs)
+                                    {
+                                        int ListCount = section.Tabs.Count();
+                                        string tabName = tab.TabName.Replace(" ", "").Trim();
+                                        string tabGrid = "tbl" + tabName;
+                                        string tabInlineGrid = "tblInline" + tabName;
+                                        string hdntab = "hdn" + tabName;
+                                        string tabid = "tab" + tabName;
+                                        string tabModel = "model" + tabName;
+                                        string btnCancel = "btnCancelmodel" + tabName;
+                                        if (section.SectionName == "Header")
+                                        {
+                                            <div class="row form-group">
+                                                @if (tab.Fields != null && tab.Fields.Count > 0)
+                                                {
+                                                    var objfields = tab.Fields.ToList();
+                                                    foreach (var field in objfields)
+                                                    {
+                                                        string cls = "col-md-12";
+                                                        <div class="col @cls form-group">
+                                                            @if (field.FieldType != "CheckBox")
+                                                            {
+                                                                <label for="@field.FieldName" class="form-control-label">@field.FieldCaption</label>
+                                                                if (field.IsRequired)
+                                                                {
+                                                                    <span class="text-danger p-1">(*)</span>
+                                                                }
+                                                                if (field.FieldType == "Selection")
+                                                                {
+                                                                    <a href="javascript:void(0);" onclick="CopySelectedOption('@field.FieldName.Trim()')" title="Click to copy" class="text-black"><i class="fa fa-copy"></i></a>
+                                                                }
+                                                            }
+                                                            @if (field.FieldType == "Attachment")
+                                                            {
+                                                                <a href="javascript:void(0);" data-toggle="modal" onclick="OpenDetailAttachment(-1, '@field.FieldCaption', '@field.FieldId',1);" data-target="#attachModal" title="Attachments" class="text-black">
+                                                                    <i class="fa fa-paperclip"></i>
+                                                                </a>
+                                                            }
+                                                            @switch (field.FieldType)
+                                                            {
+                                                                case "Label":
+                                                                    if (!string.IsNullOrEmpty(field.FieldValue))
+                                                                    {
+                                                                        <label class="form-control text-success" data-container="@field.FieldValue" data-html="@field.FieldCaption" data-bind="@field.FieldName" style="padding:0;border:none;" id="@field.FieldName">@field.FieldValue</label>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <label class="form-control text-danger" data-container="@field.FieldValue" data-html="@field.FieldCaption" data-bind="@field.FieldName" style="padding:0;border:none;" id="@field.FieldName">N/A</label>
+                                                                    }
+                                                                    break;
+                                                                case "TextBox":
+                                                                    if (field.IsRequired)
+                                                                    {
+                                                                        @Html.TextBox(field.FieldName, field.FieldValue, new { @class = "form-control", data_decimal = field.FieldDecimal, data_path = field.FieldFormula, data_html = @field.FieldCaption, data_content = field.FieldType, data_bind = field.FieldName, @maxlength = field.FieldLength, @required = field.IsRequired == true ? "required" : null })
+                                                                    }
+                                                                    else if (field.IsReadOnly == true)
+                                                                    {
+                                                                        @Html.TextBox(field.FieldName, field.FieldValue, new { @class = "form-control", data_decimal = field.FieldDecimal, data_path = field.FieldFormula, data_html = @field.FieldCaption, data_content = field.FieldType, data_bind = field.FieldName, @maxlength = field.FieldLength, @readonly = "readonly" })
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        @Html.TextBox(field.FieldName, field.FieldValue, new { @class = "form-control", data_decimal = field.FieldDecimal, data_path = field.FieldFormula, data_html = @field.FieldCaption, data_content = field.FieldType, data_bind = field.FieldName, @maxlength = field.FieldLength })
+                                                                    }
+                                                                    @Html.ValidationMessage(field.FieldName, "", new { @class = "text-danger" })
+                                                                    break;
+                                                                case "MultiText":
+                                                                    if (field.IsRequired)
+                                                                    {
+                                                                        @Html.TextArea(field.FieldName, field.FieldValue, new { @class = "form-control", data_html = @field.FieldCaption, data_content = field.FieldType, data_bind = field.FieldName, @rows = "2", @required = field.IsRequired == true ? "required" : null })
+                                                                    }
+                                                                    else if (field.IsReadOnly == true)
+                                                                    {
+                                                                        @Html.TextArea(field.FieldName, field.FieldValue, new { @class = "form-control", data_html = @field.FieldCaption, data_content = field.FieldType, data_bind = field.FieldName, @rows = "2", @readonly = "readonly" })
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        @Html.TextArea(field.FieldName, field.FieldValue, new { @class = "form-control", data_html = @field.FieldCaption, data_content = field.FieldType, data_bind = field.FieldName, @rows = "2" })
+                                                                    }
+                                                                    @Html.ValidationMessage(field.FieldName, "", new { @class = "text-danger" })
+                                                                    break;
+                                                                case "Numeric":
+                                                                    if (field.IsRequired)
+                                                                    {
+                                                                        @Html.TextBox(field.FieldName, field.FieldValue, new { @class = "form-control", data_decimal = field.FieldDecimal, data_path = field.FieldFormula, data_html = @field.FieldCaption, data_content = field.FieldType, data_bind = field.FieldName, @type = "number", @required = field.IsRequired == true ? "required" : null })
+                                                                    }
+                                                                    else if (field.IsReadOnly == true)
+                                                                    {
+                                                                        @Html.TextBox(field.FieldName, field.FieldValue, new { @class = "form-control", data_decimal = field.FieldDecimal, data_path = field.FieldFormula, data_html = @field.FieldCaption, data_content = field.FieldType, data_bind = field.FieldName, @type = "number", @readonly = "readonly" })}
+                                                                    else
+                                                                    {
+                                                                        @Html.TextBox(field.FieldName, field.FieldValue, new { @class = "form-control", data_decimal = field.FieldDecimal, data_path = field.FieldFormula, data_html = @field.FieldCaption, data_content = field.FieldType, data_bind = field.FieldName, @type = "number" })
+                                                                    }
+                                                                    @Html.ValidationMessage(field.FieldName, "", new { @class = "text-danger" })
+                                                                    break;
+                                                                case "Selection":
+                                                                    if (!string.IsNullOrEmpty(field.FieldValue) && Convert.ToString(field.FieldValue).Length > 0)
+                                                                    {
+                                                                        field.FieldValue = Convert.ToString(field.FieldValue).Trim();
+                                                                    }
+                                                                    var _fieldValue = field.FieldValue;
+                                                                    var _fieldText = field.FieldValue;
+                                                                    if (Model.Design != null && Model.Design.Data != null)
+                                                                    {
+                                                                        foreach (var _it in Model.Design.Data)
+                                                                        {
+                                                                            object value;
+                                                                            if (_it.TryGetValue(field.FieldName + "_Id", out value))
+                                                                            {
+                                                                                _fieldValue = Convert.ToString(value);
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                    if (field.IsRequired)
+                                                                    {
+                                                                        <select class="form-select select2 form-control selectpicker" data-dependency="@field.IsDependencyField" data-MultiDocument="@field.AllowMultiDocument" data-display="@_fieldText" multiple="@((field.IsMultiSelection.HasValue ? field.IsMultiSelection.Value : false) ? "multiple" : null)" data-multiselection="@field.IsMultiSelection" onchange="selectChange(this)" data-live-search="true" data-sourcetype="@field.DDLSourceType" data-wrap="@field.DDLTextField" data-spy="@field.DDLValueField" data-delay="@field.DDLSourceName" data-interval="@_fieldValue" required id="@field.FieldName.Trim()" data-container="@field.FieldId" data-html="@field.FieldCaption" data-bind="@field.FieldName" data-content="@field.FieldType" data-disabled="@field.IsReadOnly"></select>
+                                                                    }
+                                                                    else if (field.IsReadOnly == true)
+                                                                    {
+                                                                        <select class="form-select select2 form-control selectpicker" data-dependency="@field.IsDependencyField" data-MultiDocument="@field.AllowMultiDocument" data-display="@_fieldText" multiple="@((field.IsMultiSelection.HasValue ? field.IsMultiSelection.Value : false) ? "multiple" : null)" data-multiselection="@field.IsMultiSelection" onchange="selectChange(this)" data-wrap="@field.DDLTextField" data-sourcetype="@field.DDLSourceType" data-spy="@field.DDLValueField" data-delay="@field.DDLSourceName" data-interval="@_fieldValue" id="@field.FieldName.Trim()" data-container="@field.FieldId" data-html="@field.FieldCaption" data-bind="@field.FieldName" data-content="@field.FieldType" data-disabled="@field.IsReadOnly"></select>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <select class="form-select select2 form-control selectpicker" data-dependency="@field.IsDependencyField" data-MultiDocument="@field.AllowMultiDocument" data-display="@_fieldText" multiple="@((field.IsMultiSelection.HasValue ? field.IsMultiSelection.Value : false) ? "multiple" : null)" data-multiselection="@field.IsMultiSelection" onchange="selectChange(this)" data-wrap="@field.DDLTextField" data-sourcetype="@field.DDLSourceType" data-spy="@field.DDLValueField" data-delay="@field.DDLSourceName" data-interval="@_fieldValue" id="@field.FieldName.Trim()" data-container="@field.FieldId" data-html="@field.FieldCaption" data-bind="@field.FieldName" data-content="@field.FieldType" data-disabled="@field.IsReadOnly"></select>
+                                                                    }
+                                                                    @Html.ValidationMessage(field.FieldName, "", new { @class = "text-danger" })
+                                                                    break;
+                                                                case "CheckBox":
+                                                                    <div class="form-check">
+                                                                        @if (field.IsRequired)
+                                                                        {
+                                                                            if (field.FieldValue == "True")
+                                                                            {
+                                                                                @Html.CheckBox(field.FieldName, new { @checked = (field.FieldValue == "True" ? "checked" : ""), @class = "form-check-input", data_html = @field.FieldCaption, data_content = field.FieldType, data_bind = field.FieldName, @required = field.IsRequired == true ? "required" : null })
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                @Html.CheckBox(field.FieldName, new { @class = "form-check-input", data_html = @field.FieldCaption, data_content = field.FieldType, data_bind = field.FieldName, @required = field.IsRequired == true ? "required" : null })
+                                                                            }
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            if (field.FieldValue == "True")
+                                                                            {
+                                                                                @Html.CheckBox(field.FieldName, new { @checked = (field.FieldValue == "True" ? "checked" : ""), @class = "form-check-input", data_html = @field.FieldCaption, data_content = field.FieldType, data_bind = field.FieldName })
+                                                                            }
+                                                                            else if (field.IsReadOnly == true)
+                                                                            {
+                                                                                @Html.CheckBox(field.FieldName, new { @class = "form-check-input", data_html = @field.FieldCaption, data_content = field.FieldType, data_bind = field.FieldName, @readonly = "readonly" })}
+                                                                            else
+                                                                            {
+                                                                                @Html.CheckBox(field.FieldName, new { @class = "form-check-input", data_html = @field.FieldCaption, data_content = field.FieldType, data_bind = field.FieldName })
+                                                                            }
+                                                                        }
+                                                                        <label class="form-check-label" for="@field.FieldName">@field.FieldCaption</label>
+                                                                    </div>
+                                                                    @Html.ValidationMessage(field.FieldName, "", new { @class = "text-danger" })
+                                                                    break;
+                                                                case "RadioButton":
+                                                                    @Html.ValidationMessage(field.FieldName, "", new { @class = "text-danger" })
+                                                                    break;
+                                                                case "DateTimeField":
+                                                                    if (!string.IsNullOrEmpty(field.FieldValue))
+                                                                    {
+                                                                        try
+                                                                        {
+                                                                            DateTime _dt = Convert.ToDateTime(field.FieldValue);
+                                                                            field.FieldValue = (_dt == new DateTime(1900, 1, 1, 0, 0, 0)) ? "" : _dt.ToString("yyyy-MM-dd"); ;
+                                                                            if (Model.PageAction == "V")
+                                                                            {
+                                                                                if (!string.IsNullOrEmpty(field.FieldValue))
+                                                                                {
+                                                                                    @Html.TextBox(field.FieldName, field.FieldValue, new { type = "date", @class = "form-control", @data_content = "DateTimeField", dat_html = @field.FieldCaption, data_bind = field.FieldName })
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    @Html.TextBox(field.FieldName, field.FieldValue, new { @class = "form-control", data_html = @field.FieldCaption, @placeholder = "", data_content = field.FieldType, data_bind = field.FieldName, @type = "text" })
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                        catch (Exception)
+                                                                        {
+                                                                            @Html.TextBox(field.FieldName, field.FieldValue, new { @class = "form-control", data_html = @field.FieldCaption, @placeholder = "", data_content = field.FieldType, data_bind = field.FieldName, @type = "text" })
+                                                                        }
+                                                                    }
+                                                                    else if (Model.PageAction == "V")
+                                                                    {
+                                                                        @Html.TextBox(field.FieldName, field.FieldValue, new { @class = "form-control", data_html = @field.FieldCaption, @placeholder = "", data_content = field.FieldType, data_bind = field.FieldName, @type = "text" })
+                                                                    }
+                                                                    if (Model.PageAction == "E" || Model.PageAction == "A")
+                                                                    {
+                                                                        if (field.IsRequired)
+                                                                        {
+                                                                            @Html.TextBox(field.FieldName, field.FieldValue, new { @class = "form-control", data_html = @field.FieldCaption, data_content = field.FieldType, data_bind = field.FieldName, @type = "date", @required = field.IsRequired == true ? "required" : null })
+                                                                        }
+                                                                        else if (field.IsReadOnly == true)
+                                                                        {
+                                                                            @Html.TextBox(field.FieldName, field.FieldValue, new { @class = "form-control", data_html = @field.FieldCaption, data_content = field.FieldType, data_bind = field.FieldName, @type = "date", @readonly = "readonly" })}
+                                                                        else
+                                                                        {
+                                                                            @Html.TextBox(field.FieldName, field.FieldValue, new { @class = "form-control", data_html = @field.FieldCaption, data_content = field.FieldType, data_bind = field.FieldName, @type = "date" })
+                                                                        }
+                                                                        @Html.ValidationMessage(field.FieldName, "", new { @class = "text-danger" })
+                                                                    }
+                                                                    break;
+                                                                case "Hidden":
+                                                                    @Html.Hidden(field.FieldName)
+                                                                    break;
+                                                                case "TimeField":
+                                                                    if (field.IsRequired)
+                                                                    {
+                                                                        @Html.TextBox(field.FieldName, field.FieldValue, new { @class = "form-control", data_html = @field.FieldCaption, data_content = field.FieldType, data_bind = field.FieldName, @type = "time", @required = field.IsRequired == true ? "required" : null })
+                                                                    }
+                                                                    else if (field.IsReadOnly == true)
+                                                                    {
+                                                                        @Html.TextBox(field.FieldName, field.FieldValue, new { @class = "form-control", data_html = @field.FieldCaption, data_content = field.FieldType, data_bind = field.FieldName, @type = "time", @readonly = "readonly" })}
+                                                                    else
+                                                                    {
+                                                                        @Html.TextBox(field.FieldName, field.FieldValue, new { @class = "form-control", data_html = @field.FieldCaption, data_content = field.FieldType, data_bind = field.FieldName, @type = "time" })
+                                                                    }
+                                                                    @Html.ValidationMessage(field.FieldName, "", new { @class = "text-danger" })
+                                                                    break;
+                                                                default:
+                                                                    if (field.IsRequired)
+                                                                    {
+                                                                        @Html.TextBox(field.FieldName, field.FieldValue, new { @class = "form-control", data_html = @field.FieldCaption, data_content = field.FieldType, data_bind = field.FieldName, @maxlength = field.FieldLength, @required = field.IsRequired == true ? "required" : null })
+                                                                    }
+                                                                    else if (field.IsReadOnly == true)
+                                                                    {
+                                                                        @Html.TextBox(field.FieldName, field.FieldValue, new { @class = "form-control", data_html = @field.FieldCaption, data_content = field.FieldType, data_bind = field.FieldName, @maxlength = field.FieldLength, @readonly = "readonly" })
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        @Html.TextBox(field.FieldName, field.FieldValue, new { @class = "form-control", data_html = @field.FieldCaption, data_content = field.FieldType, data_bind = field.FieldName, @maxlength = field.FieldLength })
+                                                                    }
+                                                                    @Html.ValidationMessage(field.FieldName, "", new { @class = "text-danger" })
+                                                                    break;
+                                                            }
+                                                            @if (!string.IsNullOrEmpty(field.FieldHelpText))
+                                                            {
+                                                                <small class="form-text text-muted">@field.FieldHelpText</small>
+                                                            }
+                                                        </div>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <p>No fields available.</p>
+                                                }
+                                            </div>
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    <p>No tabs available in this section.</p>
+                                }
+                            </div>
+                        }
+                    }
+                }
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer navigation-footer">
+        @*@if (Model.PageAction == "V" || Model.PageAction == "E")
+        {
+            <div class="navigation-controls">
+                @if (Model.PrevId > 0)
+                {
+                    <a class="btn btn-sm btn-primary btn-add enableButton disabled" onclick="_ClickPrevButton();" title="Click Here to Previous Item" href="#"><i class="fa fa-chevron-left"></i></a>
+                }
+                else
+                {
+                    <a class="btn btn-sm btn-primary btn-add disabled" title="Click Here to Previous Item" href="#"><i class="fa fa-chevron-left"></i></a>
+                }
+                @if (Model.NextId > 0)
+                {
+                    <a class="btn btn-sm btn-primary btn-add enableButton disabled" onclick="_ClickNextButton();" style="margin: 0 3px;" title="Click Here to Next Item" href="#"><i class="fa fa-chevron-right"></i></a>
+                }
+                else
+                {
+                    <a class="btn btn-sm btn-primary btn-add disabled" style="margin: 0 3px;" title="Click Here to Next Item" href="#"><i class="fa fa-chevron-right"></i></a>
+                }
+            </div>
+        }*@
+        <div class="action-controls">
+            @if (Model.PageAction == "V")
+            {
+                <button type="button" id="btnCanceldet" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            }
+            else
+            {
+                <div class="form-check">
+                    <label for="chkForNext" class="form-check-label ">
+                        <input type="checkbox" id="chkForNext" name="chkForNext" class="form-check-input">Copy For Next
+                    </label>
+                </div>
+                <button type="button" id="btnCanceldet" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" id="btnSave" class="btn btn-primary" onclick="SavePageData(true);">Submit</button>
+            }
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    function loadPageDropdown(_fieldId, dropdownId, fieldcap) {
+        $.ajax({
+            url: '@Url.Action("getFieldSelection", "Common")',
+            type: 'GET',
+            data: { fieldId: _fieldId },
+            success: function (data) {
+                /*$('#' + dropdownId + '_select-loader').hide();*/
+                var dropdown = $('#' + dropdownId);
+                var fieldvalue = $('#' + dropdownId).attr("data-interval");
+                dropdown.empty().append('<option value="">Select ' + fieldcap + '</option>');
+                var isData = false;
+                $.each(data, function (i, item) {
+                    isData = true;
+                    if (fieldvalue != null && fieldvalue != "" && fieldvalue == item.Value) {
+                        dropdown.append($('<option selected></option>').val(item.Value).text(item.Text));
+                    }
+                    else {
+                        dropdown.append($('<option></option>').val(item.Value).text(item.Text));
+                    }
+                });
+                /*$('#' + dropdownId + '_select-loader').hide();*/
+                /*$("#pageLoader").hide();*/
+            },
+            error: function () {
+                //$('#' + dropdownId + '_select-loader').hide();
+                //$("#pageLoader").hide();
+                console.log("Error loading dropdown: " + fieldcap);
+            }
+        });
+    }
+    $(document).ready(function () {
+        try {
+            var action = $("#hdnPageAction").val();
+            $("#DataTabPopup").find("select, input, textarea").each(function () {
+                    var $ctrl = $(this);
+                    var ctrlId = $ctrl.attr("id");
+                    if (!ctrlId) return;
+                    // ===== Enable / Disable Logic =====
+                    if (action === "V") {
+                        $ctrl.prop("disabled", true);
+                    }
+                    else if (action === "E" || action === "A") {
+                        if ($ctrl.is("select") && $ctrl.attr("data-disabled") === "True") {
+                            $ctrl.prop("disabled", true);
+                        } else {
+                            $ctrl.prop("disabled", false);
+                        }
+                    } else {
+                        $ctrl.prop("disabled", true);
+                    }
+                    // ===== Dropdown Load Logic =====
+                    if ($ctrl.is("select")) {
+                        var sourceType = $ctrl.data("sourcetype");
+                        if (sourceType === "StoredProcedure") {
+                            loadDropdown($ctrl.data("container"),ctrlId,$ctrl.data("html"));
+                        }
+                    }
+            });
+            $('#DataTabPopup .select2').each(function () {
+                let selectId = $(this).attr('id');
+                if (selectId) {
+                    try {
+                        let parentWrapper = $(this).parent();
+                        var sourceType = $("#DataTabPopup #" + selectId).attr("data-sourcetype");
+                        var _fieldId = $("#DataTabPopup #" + selectId).attr("data-container");
+                        let selectedValues = $("#DataTabPopup #" + selectId).attr("data-interval");
+                        let selectedText = $("#DataTabPopup #" + selectId).attr("data-display");
+                        let caption = $("#DataTabPopup #" + selectId).attr("data-html");
+                        let firstFive = selectedText ? selectedText.substring(0, 40) : "";
+                        let isDependency = $("#DataTabPopup #" + selectId).attr("data-dependency");
+                        if (sourceType == "StoredProcedure" && isDependency != "True") {
+                            const pageFieldData = getPageFieldData();
+                            const $selectElement = $('#DataTabPopup #' + selectId);
+                            $selectElement.select2({
+                                dropdownParent: parentWrapper,
+                                placeholder: `Select ${caption}`,
+                                allowClear: true,
+                                skipLoading: true, // Custom flag
+                                delay: 250,
+                                minimumInputLength: 0, // Set to 0 to allow dropdown without typing
+                                ajax: {
+                                    url: '@Url.Action("FillSelctionPagingSP", "Common")',
+                                    type: 'POST', // <-- Use POST instead of GET
+                                    contentType: 'application/json', // <-- Send JSON body
+                                    dataType: 'json',
+                                    skipLoading: true, // Custom flag
+                                    delay: 250,
+                                    cache: true,cache: true,
+                                    data: function (params) {
+                                        return JSON.stringify({
+                                            FieldId: _fieldId,
+                                            searchTerm: params.term || '',
+                                            page: params.page || 1,
+                                            fieldValue: '',
+                                            pageFieldData: pageFieldData
+                                        });
+                                    },
+                                    processResults: function (data) {
+                                        return {
+                                            results: data.results,
+                                            pagination: {
+                                                more: data.pagination?.more || false
+                                            }
+                                        };
+                                    },
+                                    error: function (xhr, status, error) {
+                                        console.error("Select2 AJAX Error:", {
+                                            error,
+                                            status,
+                                            response: xhr.responseText
+                                        });
+                                    }
+                                }
+                            });
+
+                            if (selectedValues.length) {
+                                $.ajax({
+                                    url: '@Url.Action("FillSelctionPagingSP", "Common")',
+                                    skipLoading: true, // <-- Custom flag
+                                    type: 'POST', // <-- Use POST instead of GET
+                                    contentType: 'application/json', // <-- Send JSON body
+                                    data: JSON.stringify({ FieldId: _fieldId, searchTerm: '', page: 1, fieldValue: '', pageFieldData: pageFieldData }),
+                                    success: function (data) {
+                                        var isMultiSelection = $selectElement.attr("data-multiselection");
+                                        if (isMultiSelection != undefined && isMultiSelection != "" && isMultiSelection == "True") {
+                                            const multiVal = selectedValues.split(',');
+                                            $selectElement.val([]).trigger('change');
+                                            multiVal.forEach(function (val) {
+                                                let item = data.results.find(x => x.id.trim().toLowerCase() == val.trim().toLowerCase());
+                                                if (item) {
+                                                    let option = new Option(item.text, item.id, true, true);
+                                                    $selectElement.append(option);
+                                                    $selectElement.trigger('change');
+                                                }
+                                            });
+                                        }
+                                        else {
+                                            if (data != null && data.results != null) {
+                                                let item = data.results.find(x => x.id.trim().toLowerCase() == selectedValues.trim().toLowerCase());
+                                                if (item) {
+                                                    let option = new Option(item.text, item.id, true, true);
+                                                    $selectElement.append(option).trigger('change');
+                                                }
+                                            }
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                        else if (isDependency != "True") {
+                            $('#DataTabPopup #' + selectId).select2({
+                                dropdownParent: parentWrapper,
+                                placeholder: 'Select ' + caption,
+                                allowClear: true,
+                                skipLoading: true, // <-- Custom flag
+                                delay: 250,
+                                minimumInputLength: 0, // change to 0 if you want scrolling without typing
+                                ajax: {
+                                    url: '@Url.Action("FillSelctionPaging", "Common")',
+                                    dataType: 'json',
+                                    skipLoading: true, // <-- Custom flag
+                                    delay: 250,
+                                    data: function (params) {
+                                        return {
+                                            FieldId: _fieldId,
+                                            searchTerm: params.term || '', // search term
+                                            page: params.page || 1,
+                                            fieldValue: ''
+                                        };
+                                    },
+                                    processResults: function (data) {
+                                        return {
+                                            results: data.results,
+                                            pagination: {
+                                                more: data.pagination.more
+                                            }
+                                        };
+                                    },
+                                    error: function (xhr, status, error) {
+                                        console.error("Select2 AJAX Error:", error);
+                                        console.error("Status:", status);
+                                        console.error("Response:", xhr.responseText);
+                                    },
+                                    cache: true
+                                }
+                            });
+
+                            /// Pre-load selected values (important when editing)
+                            if (selectedValues.length) {
+                                $.ajax({
+                                    url: '@Url.Action("FillSelctionPaging", "Common")',
+                                    type: 'GET',
+                                    skipLoading: true, // <-- Custom flag
+                                    data: { FieldId: _fieldId, searchTerm: firstFive, page: 1, fieldValue: '' },
+                                    success: function (data) {
+                                        var isMultiSelection = $(this).attr("data-multiselection");
+                                        if (isMultiSelection != undefined && isMultiSelection != "" && isMultiSelection == "True") {
+                                            selectedValues.forEach(function (val) {
+                                                let item = data.results.find(x => x.id.trim().toLowerCase() == val.trim().toLowerCase());
+                                                if (item) {
+                                                    let option = new Option(item.text, item.id, true, true);
+                                                    $('#DataTabPopup #' + selectId).append(option);
+                                                    $('#DataTabPopup #' + selectId).trigger('change');
+                                                }
+                                            });
+                                        }
+                                        else {
+                                            if (data != null && data.results != null) {
+                                                let item = data.results.find(x => x.id.trim().toLowerCase() == selectedValues.trim().toLowerCase());
+                                                if (item) {
+                                                    let option = new Option(item.text, item.id, true, true);
+                                                    $('#DataTabPopup #' + selectId).append(option).trigger('change');
+                                                    //$('#DataTabPopup #' + selectId).trigger('change');
+                                                }
+                                            }
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                    } catch (e) {
+                        console.error("Select2 AJAX Error:", e);
+                    }
+                    //$('#' + selectId).select2()
+                    //console.log("Selected : " + $('#DataTabPopup #' + selectId).val());
+                }
+            });
+        } catch (e) {
+            console.error(e);
+        }
+
+    });
+    function selectChange(ctrl) {
+        let selectId = $(ctrl).attr('id');
+        BindHeaderDependencyData(selectId + "_Id", false);
+    }
+    function BindHeaderDependencyData(_fromFieldName, Isloaded) {
+        var PageFieldData = [];
+        var loadname = _fromFieldName.replace('_Id', '');
+        try {
+            var isMultiSelection = $("#" + loadname).attr("data-multiselection");
+            if (isMultiSelection != undefined && isMultiSelection != "" && isMultiSelection == "True") {
+                console.log("Multiple Selection");
+            }
+            else {
+                $("#DataTabPopup input").each(function () {
+                    if ($(this) != undefined && $(this) != null && $(this).attr("id") != undefined && $(this).attr("id").length > 0) {
+                        var ctrlId = $(this).attr("id");
+                        var fieldId = $(this).attr("data-bind");
+                        var fieldtype = $(this).attr("data-content");
+                        var fieldcap = $(this).attr("data-html");
+
+                        if (fieldId != null && fieldId != undefined && fieldId.length > 0) {
+                            PageFieldData.push({
+                                FieldName: fieldId,
+                                FieldValue: $(this).val()
+                            });
+                        }
+                    }
+                });
+                $("#DataTabPopup textarea").each(function () {
+                    if ($(this) != undefined && $(this) != null && $(this).attr("id") != undefined && $(this).attr("id").length > 0) {
+                        var ctrlId = $(this).attr("id");
+                        var fieldId = $(this).attr("data-bind");
+                        var fieldtype = $(this).attr("data-content");
+                        var fieldcap = $(this).attr("data-html");
+                        if (fieldId != null && fieldId != undefined && fieldId.length > 0) {
+                            PageFieldData.push({
+                                FieldName: fieldId,
+                                FieldValue: $(this).val()
+                            });
+                        }
+                    }
+                });
+                $("#DataTabPopup select").each(function () {
+                    if ($(this) != undefined && $(this) != null && $(this).attr("id") != undefined && $(this).attr("id").length > 0) {
+                        var ctrlId = $(this).attr("id");
+                        var fieldId = $(this).attr("data-bind");
+                        var fieldcap = $(this).attr("data-html");
+                        if (fieldId != null && fieldId != undefined && fieldId.length > 0) {
+                            PageFieldData.push({
+                                FieldName: fieldId,
+                                FieldValue: $("#DataTabPopup #" + $(this).attr("id") + "  option:selected").text()
+                            });
+                            PageFieldData.push({
+                                FieldName: fieldId + "_Id",
+                                FieldValue: $(this).val()
+                            });
+                        }
+                    }
+                });
+                var tablename = $("#hdnTableName").val();
+                var model = {
+                    PageTablename: tablename,
+                    FieldData: PageFieldData,
+                    FromFieldName: _fromFieldName,
+                    Id: parseInt($("#hdnRecordId").val()),
+                    PageType: "Header",
+                    FormId: '@Model.Design.FormId',
+                    FieldId: (Isloaded == true ? $("#" + loadname).attr("data-container") : "")
+                }
+                $.ajax({
+                    type: "POST", url: '@Url.Action("getHeaderDependencyData", "Home")',
+                    contentType: "application/json;",
+                    data: JSON.stringify(model),
+                    skipLoading: true, // <-- Custom flag
+                    beforeSend: function () {
+                        $('#ajaxLoader').hide();  // Show loader before the call
+                    },
+                    complete: function () {
+                        $('#ajaxLoader').hide();  // Hide loader after call finishes (success or fail)
+                    },
+                    async: false,
+                    success: function (response) {
+                        if (response != null && response != undefined && response.length > 0) {
+                            $.each(response, function (index, item) {
+                                var element = $('#' + item.FieldName);
+                                var dataset = item.FieldValue;
+                                if (element != undefined && element.length > 0) {
+                                    if (element[0].localName == "label") {
+                                        $('#' + item.FieldName).removeClass("text-success");
+                                        $('#' + item.FieldName).addClass("text-danger");
+                                        if (dataset != null && dataset != undefined && dataset.length > 0) {
+                                            $.each(dataset, function (index, Dataitem) {
+                                                if (Dataitem.FieldValue != null && Dataitem.FieldValue.length > 0) {
+                                                    $('#' + item.FieldName).addClass("text-success");
+                                                    $('#' + item.FieldName).removeClass("text-danger");
+                                                    element.text(Dataitem.FieldValue);
+                                                }
+                                                else {
+                                                    element.text('N/A');
+                                                }
+                                            });
+                                        }
+                                        else {
+                                            element.text('N/A');
+                                        }
+                                    }
+                                    else if (element[0].localName == "input") {
+                                        if (dataset != null && dataset != undefined && dataset.length > 0) {
+                                            //if (element[0].type == "text") {
+                                            //    element.val('');
+                                            //}
+                                            //else if (element[0].type == "number") {
+                                            //    element.val('');
+                                            //}
+                                            $.each(dataset, function (index, Dataitem) {
+                                                if (Dataitem.FieldValue != null && Dataitem.FieldValue.length > 0) {
+                                                    if (element[0].type == "text") {
+                                                        var exVal = element.attr("value");
+                                                        if ('@Model.PageAction' == 'V' && exVal != undefined && exVal != null && exVal.length > 0) {
+                                                            element.val(exVal);
+                                                        }
+                                                        else {
+                                                            element.val(Dataitem.FieldValue);
+                                                        }
+                                                    }
+                                                    else if (element[0].type == "number") {
+                                                        var exVal = element.attr("value");
+                                                        if ('@Model.PageAction' == 'V' && exVal != undefined && exVal != null && exVal.length > 0) {
+                                                            element.val(exVal);
+                                                        }
+                                                        else {
+                                                            element.val(Dataitem.FieldValue);
+                                                        }
+                                                    }
+                                                }
+                                            });
+                                        }
+                                    }
+                                    else if (element[0].localName == "textarea") {
+                                        if (dataset != null && dataset != undefined && dataset.length > 0) {
+                                            element.val('');
+                                            $.each(dataset, function (index, Dataitem) {
+                                                if (Dataitem.FieldValue != null && Dataitem.FieldValue.length > 0) {
+                                                    element.val(Dataitem.FieldValue);
+                                                }
+                                            });
+                                        }
+                                    }
+                                    else if (element[0].localName == "select") {
+                                        if (dataset != null && dataset != undefined && dataset.length > 0) {
+                                            var dropdown = $('#DataTabPopup #' + item.FieldName);
+                                            var fieldvalue = $('#DataTabPopup #' + item.FieldName).attr("data-interval");
+                                            var DDLTextField = $('#DataTabPopup #' + item.FieldName).attr("data-wrap");
+                                            var DDLValueField = $('#DataTabPopup #' + item.FieldName).attr("data-spy");
+                                            var fieldTitle = $('#DataTabPopup #' + item.FieldName).attr("data-html");
+                                            dropdown.empty();
+                                            dropdown.append('<option value="">Select ' + fieldTitle + '</option>');
+                                            var optionItem = "";
+                                            var optionItemValue = "";
+                                            var selectedVal = false;
+                                            for (var irow = 0; irow < dataset.length; irow++) {
+                                                if (dataset[irow].FieldName == DDLTextField) {
+                                                    optionItem = dataset[irow].FieldValue;
+                                                }
+                                                else if (dataset[irow].FieldName == DDLValueField) {
+                                                    optionItemValue = dataset[irow].FieldValue;
+                                                }
+                                                if (irow % 2) {
+                                                    if (DDLTextField == DDLValueField) {
+                                                        var fieldvalue = $('#DataTabPopup #' + item.FieldName).attr("data-interval");
+                                                        if (fieldvalue != null && fieldvalue != "" && fieldvalue == optionItem) {
+                                                            selectedVal = true;
+                                                            dropdown.append($('<option selected></option>').val(optionItem).text(optionItem));
+                                                        }
+                                                        else {
+                                                            dropdown.append($('<option></option>').val(optionItem).text(optionItem));
+                                                        }
+                                                    }
+                                                    else {
+                                                        var fieldvalue = $('#DataTabPopup #' + item.FieldName).attr("data-interval");
+                                                        if (fieldvalue != null && fieldvalue != "" && fieldvalue == optionItemValue) {
+                                                            selectedVal = true;
+                                                            dropdown.append($('<option selected></option>').val(optionItemValue).text(optionItem));
+                                                        }
+                                                        else {
+                                                            dropdown.append($('<option></option>').val(optionItemValue).text(optionItem));
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            $('#DataTabPopup #' + item.FieldName).select2({
+                                                width: '100%'
+                                            });
+                                            if (selectedVal) {
+                                                if ($('#DataTabPopup #' + item.FieldName).attr("data-dependency") != "True"){
+                                                    dropdown.trigger('select');
+                                                }
+                                                else {
+                                                    BindHeaderDependencyData(item.FieldName + "_Id", false);
+                                                }
+                                            }
+
+                                            //if (selectedVal == false && dataset.length > 0) {
+                                            //    $('#DataTabPopup #' + item.FieldName).prop('selectedIndex', 1);
+                                            //}
+                                        }
+                                        else {
+                                            dropdown.empty();
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                    },
+                    failure: function (response) { },
+                    error: function (response) { }
+                });
+            }
+        } catch (e) {
+        }
+    }
+    function loadDropdown(_fieldId, dropdownId, fieldcap) {
+        try {
+            var sourceType = $("#" + dropdownId).attr("data-sourcetype");
+            if (sourceType == "StoredProcedure") {
+                var fieldname = $("#" + dropdownId).attr('id') + "_Id";
+                /*console.log("Load Stored Procedure Bind for " + fieldname);*/
+                BindHeaderDependencyData(fieldname, true);
+            }
+            else {
+                $.ajax({
+                    url: '@Url.Action("getFieldSelection", "Common")',
+                    type: 'GET',
+                    data: { fieldId: _fieldId },
+                    cache: true,
+                    success: function (data) {
+                        var dropdown = $('#' + dropdownId);
+                        var fieldvalue = $('#' + dropdownId).attr("data-interval");
+                        dropdown.empty().append('<option value="">Select ' + fieldcap + '</option>');
+                        $.each(data, function (i, item) {
+                            if (fieldvalue != null && fieldvalue != "" && fieldvalue == item.Value) {
+                                var isMultiSelection = $('#' + dropdownId).attr("data-multiselection");
+                                if (isMultiSelection != undefined && isMultiSelection != "" && isMultiSelection == "True") {
+                                    var values = fieldvalue.split(",");
+                                    dropdown.append($('<option selected></option>').val(values).text(item.Text));
+                                }
+                                else {
+                                    dropdown.append($('<option selected></option>').val(item.Value).text(item.Text));
+                                }
+                            }
+                            else {
+                                dropdown.append($('<option></option>').val(item.Value).text(item.Text));
+                            }
+                        });
+                        var isMultiSelection = $('#' + dropdownId).attr("data-multiselection");
+                        if (isMultiSelection != undefined && isMultiSelection != "" && isMultiSelection == "True") {
+                            var values = fieldvalue.split(",");
+                            $('#' + dropdownId).val(values);
+                        }
+                        BindHeaderDependencyData(dropdownId + "_Id", true);
+                        $("#pageLoader").hide();
+                    },
+                    error: function () {
+                        $("#pageLoader").hide();
+                        console.log("Error loading dropdown: " + fieldcap);
+                    }
+                });
+            }
+        } catch (e) {
+            console.error("Select2 AJAX Error:", e);
+
+        }
+    }
+    function CleanRecord() {
+        $("#DataTabPopup input").each(function () {
+            if ($(this) != undefined && $(this) != null && $(this).attr("id") != undefined && $(this).attr("id").length > 0) {
+                if ($(this).attr("id") != "hdnTabSQLTableName" && $(this).attr("id") != "BOMProcessId") {
+                    $(this).val('');
+                }
+            }
+        });
+        $("#DataTabPopup select").each(function () {
+            if ($(this) != undefined && $(this) != null && $(this).attr("id") != undefined && $(this).attr("id").length > 0) {
+                $(this).val('');
+                $(this).val([]).trigger('change');
+            }
+        });
+        $("#DataTabPopup textarea").each(function () {
+            if ($(this) != undefined && $(this) != null && $(this).attr("id") != undefined && $(this).attr("id").length > 0) {
+                $(this).val('');
+            }
+        });
+        $("#DataTabPopup label").each(function () {
+            if ($(this) != undefined && $(this) != null && $(this).attr("id") != undefined && $(this).attr("id").length > 0) {
+                $(this).removeClass("text-success");
+                $(this).addClass("text-danger");
+                $(this).text('N/A');
+            }
+        });
+        $("#DataTabPopup input").each(function () {
+            if ($(this) != undefined && $(this) != null && $(this).attr("id") != undefined && $(this).attr("id").length > 0) {
+                if ($(this).attr("id") != "hdnTabSQLTableName" && $(this).attr("id") != "BOMProcessId") {
+                    $(this).val('');
+                }
+            }
+        });
+        $("#hdnDetailId").val(0);
+        $("#hdnChargesId").val(0);
+        $('#DataTabPopup .select2').val([]).trigger('change');
+    }
+    function SavePageData(isSubmited) {
+        var isFormValid = true, isAllowMultipleDoc = false;
+        var multipleDocFieldName = "";
+        var PageFieldData = [];
+        PageFieldData.push({
+            FieldName: "ParentId",
+            FieldValue: $("#hdnParentRecordId").val()
+        });
+        $("#DataTabPopup input").each(function () {
+            if ($(this) != undefined && $(this) != null && $(this).attr("id") != undefined && $(this).attr("id").length > 0) {
+                var ctrlId = $(this).attr("id");
+                var fieldId = $(this).attr("data-bind");
+                var fieldtype = $(this).attr("data-content");
+                var fieldcap = $(this).attr("data-html");
+                if (fieldId != null && fieldId != undefined && fieldId.length > 0) {
+                    if ($(this).attr("type") == "checkbox") {
+                        var checkVal = ($(this).is(":checked") == true? "true": "false");
+                        PageFieldData.push({
+                            FieldName: fieldId,
+                            FieldValue: checkVal,
+                            FieldType: $(this).attr("type"),
+                        });
+                    }
+                    else if ($(this).attr("type") == "radio") {
+                        var checkVal = ($(this).is(":checked") == true ? "true" : "false");
+                        PageFieldData.push({
+                            FieldName: fieldId,
+                            FieldValue: checkVal,
+                            FieldType: $(this).attr("type"),
+                        });
+                    }
+                    else if ($(this).attr("type") != "file") {
+                        PageFieldData.push({
+                            FieldName: fieldId,
+                            FieldValue: $(this).val(),
+                            FieldType: $(this).attr("type"),
+                        });
+                    }
+                }
+                $(this).next(".validation").remove();
+                if ($(this).prop('required') && $(this).attr("type") != "file" && $.trim($(this).val()).length == 0) {
+                    $(this).addClass("input-validation-error");
+                    $(this).after("<div class='validation' style='color:red;margin-bottom: 2px;'>Please enter " + fieldcap +"</div>");
+                    if (isFormValid == true) {
+                        $(this).focus();
+                    }
+                    isFormValid = false;
+                } else {
+                    $(this).removeClass("input-validation-error");
+                }
+            }
+        });
+        $("#DivTotal input").each(function () {
+            if ($(this) != undefined && $(this) != null && $(this).attr("id") != undefined && $(this).attr("id").length > 0) {
+                var fieldId = $(this).attr("data-bind");
+                if (fieldId != null && fieldId != undefined && fieldId.length > 0) {
+                    PageFieldData.push({
+                        FieldName: fieldId,
+                        FieldValue: $(this).val(),
+                        FieldType: $(this).attr("type"),
+                    });
+                }
+            }
+        });
+        $("#DataTabPopup select").each(function () {
+            if ($(this) != undefined && $(this) != null && $(this).attr("id") != undefined && $(this).attr("id").length > 0) {
+                var ctrlId = $(this).attr("id");
+                var fieldId = $(this).attr("data-bind");
+                var fieldcap = $(this).attr("data-html");
+                if (fieldId != null && fieldId != undefined && fieldId.length > 0) {
+                    var isMultiSelection = $(this).attr("data-multiselection");
+                    if (isMultiSelection != undefined && isMultiSelection != "" && isMultiSelection == "True") {
+                        var multiText = $(this).find('option:selected').map(function () {
+                            return $(this).text(); // Use .val() if you want IDs
+                        }).get().join(',');
+                        isAllowMultipleDoc = $(this).data("multidocument") === true || $(this).data("multidocument") === "True";
+                        multipleDocFieldName = fieldId;
+                        PageFieldData.push({
+                            FieldName: fieldId,
+                            FieldValue: multiText,
+                            FieldType: $(this).attr("type"),
+                        });
+                        PageFieldData.push({
+                            FieldName: fieldId + "_Id",
+                            FieldValue: $(this).val().join(','),
+                            FieldType: $(this).attr("type"),
+                        });
+                    }
+                    else {
+                        if ($(this).val() != null && $(this).val() != undefined && $(this).val().length > 0 && $(this).val() != "0" && $(this).val() != "") {
+                            PageFieldData.push({
+                                FieldName: fieldId,
+                                FieldValue: $('#' + $(this).attr("Id") + ' option:selected').text(),
+                                FieldType: $(this).attr("type"),
+                            });
+                        }
+                        PageFieldData.push({
+                            FieldName: fieldId + "_Id",
+                            FieldValue: $(this).val(),
+                            FieldType: $(this).attr("type"),
+                        });
+                    }
+                }
+                $(this).next(".validation").remove();
+                if ($(this).prop('required') && $.trim($(this).val()).length == 0) {
+                    $(this).addClass("input-validation-error");
+                    $(this).after("<div class='validation' style='color:red;margin-bottom: 2px;'>Please select " + fieldcap +"</div>");
+                    if (isFormValid == true) {
+                        $(this).focus();
+                    }
+                    isFormValid = false;
+                } else {
+                    $(this).removeClass("input-validation-error");
+                }
+            }
+        });
+        //textarea
+        $("#DataTabPopup textarea").each(function () {
+            if ($(this) != undefined && $(this) != null && $(this).attr("id") != undefined && $(this).attr("id").length > 0) {
+                var ctrlId = $(this).attr("id");
+                var fieldId = $(this).attr("data-bind");
+                var fieldtype = $(this).attr("data-content");
+                var fieldcap = $(this).attr("data-html");
+
+                if (fieldId != null && fieldId != undefined && fieldId.length > 0) {
+                    PageFieldData.push({
+                        FieldName: fieldId,
+                        FieldValue: $(this).val(),
+                        FieldType: $(this).attr("type"),
+                    });
+                }
+                $(this).next(".validation").remove();
+                if ($(this).prop('required') && $.trim($(this).val()).length == 0) {
+                    $(this).addClass("input-validation-error");
+                    $(this).after("<div class='validation' style='color:red;margin-bottom: 2px;'>Please enter " + fieldcap + "</div>");
+                    if (isFormValid == true) {
+                        $(this).focus();
+                    }
+                    isFormValid = false;
+                } else {
+                    $(this).removeClass("input-validation-error");
+                }
+            }
+        });
+        $("#DataTabPopup label").each(function () {
+            if ($(this) != undefined && $(this) != null && $(this).attr("id") != undefined && $(this).attr("id").length > 0) {
+                var fieldId = $(this).attr("data-bind");
+                if (fieldId != null && fieldId != undefined && fieldId.length > 0) {
+                    PageFieldData.push({
+                        FieldName: fieldId,
+                        FieldValue: $(this).text()
+                    });
+                }
+            }
+        });
+        if (!isFormValid) {
+            ShowToastNotification("error","Please fill in all the required fields (indicated by *)");
+            return;
+        }
+        else {
+            try {
+                var tablename = $("#hdnTableName").val();
+                var recordId = $("#hdnRecordId").val(); // Get the hidden ID field
+                var model = {
+                    PageTablename: tablename,
+                    FieldData: PageFieldData,
+                    Id: recordId,  // Pass record ID for update
+                    PageType: "Header",
+                    FormId: '@Model.Design.FormId',
+                    DocId: $("#hdnDocId").val(),
+                    AllowMultipleDocument: isAllowMultipleDoc,
+                    MultipleDocFieldName: multipleDocFieldName
+                }
+
+                 $.ajax({
+                     type: "POST", url: '@Url.Action("SavePageData", "Home")',
+                     contentType: "application/json;",
+                     data: JSON.stringify(model),
+                     async: false,
+                     success: function (response) {
+                         if (response.IsSuccess) {
+                             CleanRecord();
+                             ShowToastNotification("success", response.Response)
+                             setTimeout(function () {
+                                 BindGridPagination();
+                             }, 1000);
+                         }
+                         else {
+                             ShowToastNotification("error",response.Response);
+                         }
+                     },
+                     failure: function (response) { },
+                     error: function (response) { }
+                 });
+            } catch (e) {
+
+            }
+        }
+    }
+</script>

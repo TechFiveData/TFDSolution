@@ -1,0 +1,217 @@
+﻿@model TFDSolution.Transport.Master.RFQDataModel
+@{
+    Layout = null;
+}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quotation Submitted Successfully</title>
+    <style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        min-height: 100vh;
+        font-family: Arial, Helvetica, sans-serif;
+        background: #f4f7fb;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    }
+
+    .success-container {
+        width: 100%;
+        max-width: 850px;
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        overflow: hidden;
+    }
+
+    .header {
+        background: #27a9d7;
+        color: #fff;
+        padding: 8px;
+        text-align: center;
+    }
+
+    .header h2 {
+        margin: 0;
+        font-size: 16px;
+    }
+
+    .content {
+        padding: 30px;
+        text-align: center;
+    }
+
+    .success-icon {
+        width: 35px;
+        height: 35px;
+        margin: 0 auto 15px;
+        border-radius: 50%;
+        background: #28a745;
+        color: #fff;
+        font-size: 25px;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .success-title {
+        color: #28a745;
+        font-size: 20px;
+        margin-bottom: 10px;
+    }
+
+    .message {
+        color: #555;
+        font-size: 12px;
+        line-height: 1.8;
+        margin-bottom: 20px;
+    }
+
+    .quote-details {
+        background: #E9F8FD;
+        border: 1px solid #e5e5e5;
+        border-radius: 8px;
+        padding: 10px;
+        text-align: left;
+        margin: 15px 0;
+    }
+
+    .detail-row {
+        display: flex;
+        padding: 5px 0;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .detail-row:last-child {
+        border-bottom: none;
+    }
+
+    .detail-label {
+        width: 180px;
+        font-weight: bold;
+        color: #333;
+		font-size: 14px;
+    }
+
+    .detail-value {
+        color: #555;
+		font-size: 14px;
+    }
+
+    .btn-home {
+        display: inline-block;
+        background: #0056b3;
+        color: #fff;
+        text-decoration: none;
+        padding: 12px 20px;
+        border-radius: 5px;
+        font-weight: 600;
+        margin-top: 12px;
+    }
+
+    .btn-home:hover {
+        background: #004494;
+    }
+
+    .footer {
+        background: #f8f9fa;
+        border-top: 1px solid #e5e5e5;
+        padding: 15px;
+        text-align: center;
+    }
+
+    .footer h4 {
+        color: #333;
+        margin-bottom: 5px;
+    }
+
+    .footer p {
+        color: #666;
+        margin: 4px 0;
+        font-size: 12px;
+    }
+
+    .copyright {
+        margin-top: 10px;
+        color: #999;
+        font-size: 12px;
+    }
+
+    @*@media (max-width: 768px) {
+
+        .content {
+            padding: 10px;
+        }
+
+        .detail-row {
+            flex-direction: column;
+        }
+
+        .detail-label {
+            width: 100%;
+            margin-bottom: 5px;
+        }
+
+        .success-title {
+            font-size: 15px;
+        }
+    }*@
+    </style>
+</head>
+<body>
+    <div class="success-container">
+        <div class="header">
+            <h2>Vendor Quotation Portal</h2>
+        </div>
+        <div class="content" style="padding-bottom:10px">
+            <div class="success-icon">
+                ✓
+            </div>
+            <h1 class="success-title">
+                Quotation Submitted Successfully
+            </h1>
+            <p class="message">
+                Thank you for participating in our procurement process.
+                Your quotation has been successfully submitted and is currently under review by our procurement team.
+            </p>
+            <div class="quote-details">
+                <div class="detail-row">
+                    <div class="detail-label">RFQ Number:</div>
+                    <div class="detail-value">@Model.URNno</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Submission Date:</div>
+                    <div class="detail-value">@ViewBag.SubmittedDate</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Status:</div>
+                    <div class="detail-value">Submitted Successfully</div>
+                </div>
+            </div>
+            <p class="message">
+                A confirmation of your submission has been recorded. If additional information or clarification is required, our procurement team will contact you using the information provided in your quotation.
+            </p>
+        </div>
+
+        <div class="footer">
+            <h4>@Model.CompanyMast.CompanyName</h4>
+            <p>@Model.CompanyMast.RegisterAddress1, @Model.CompanyMast.RegisterAddress2</p>
+            <p>Email: @Model.CompanyMast.Email | Phone: @Model.CompanyMast.Phone</p>
+            <p>Website: @Model.CompanyMast.WebStite</p>
+            <div class="copyright">
+                @DateTime.Now.Year.ToString() @Model.CompanyMast.CompanyName. All Rights Reserved.
+            </div>
+        </div>
+    </div>
+</body>
+</html>

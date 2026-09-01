@@ -1,0 +1,500 @@
+﻿
+@{
+    ViewBag.Title = "My Nofications";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- /header -->
+<div class="breadcrumbs">
+    <div class="col-sm-4">
+        <div class="page-header float-left">
+            <div class="page-title">
+                <h1>My Notifications</h1>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-8">
+        <div class="page-header float-right">
+            <div class="page-title">
+                <ol class="breadcrumb text-right">
+                    <li><a href="@Url.Action("Index","Home")">Home</a></li>
+                    <li class="active">Notification</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+<input id="hdnFormId" type="hidden" value=""/>
+<div class="animated fadeIn">
+    <div class="row m-0">
+        <div class="col-md-12 p-0">
+            <div class="card">
+                <div class="card-header">
+                    <div class="col-lg-6">
+                        <strong class="card-title"></strong>
+                    </div>
+                    <div class="col-lg-6 text-right">
+                        <a class="btn btn-sm" href="javascript:void(0);" onclick="getNofictions();"><i class="fa fa-refresh"></i>&nbsp; Refresh</a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12 form-group">
+                            <table id="tblNotifications" class="table display"></table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="actions" class="dropdown" style="display:none;position:absolute;z-index:9999999;">
+    <button id="btnApproved" data-bind="2" class="text-success" value="approved">Approved</button>
+    <button id="btnNotApproved" data-bind="1" class="text-primary" value="notapproved">Not Approved</button>
+    @*<button id="btnCancelled" data-bind="3" class="text-danger" value="cancelled">Cancelled</button>*@
+    @*<button id="btnAddComment" onclick="AddComment();" data-bind="4" class="text-dark" value="comment">Add Comment</button>*@
+</div>
+<div class="modal fade" id="statusCommentModel" tabindex="-1" role="dialog" aria-labelledby="statusCommentModel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document" style="float:none;height: auto;">
+        <div class="modal-content" style="height:300px;">
+            <div class="modal-header">
+                <h5 class="modal-title">Comment</h5>
+                <button type="button" id="btnCancelComment1" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row form-group">
+                    <div class="col col-md-12">
+                        <label for="text-input" class="form-control-label">Enter your commnet<span class="text-danger p-1">(*)</span></label>
+                    </div>
+                    <div class="col col-md-12">
+                        <textarea class="form-control" id="txtStatusComment" rows="6" placeholder="Enter your comment" required></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="btnCancelComment" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" id="btnSubmitComment" class="btn btn-primary">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="notificationModal" tabindex="-1" role="dialog" aria-labelledby="notificationModalLabel" data-backdrop="static" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="width:500px;">
+            <div class="modal-header">
+                <h5 class="modal-title" id="notificationModalLabel">View Notification</h5>
+                <button type="button" id="btnCancelnotification" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body viewOnly" style="overflow:hidden;">
+                <div class="m-2">
+                    <div class="row form-group">
+                        <div class="col-md-12">
+                            <label for="text-input" class="form-control-label">Type</label>
+                            <input type="text" id="txtType" data-content="0" disabled="disabled" maxlength="50" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="col-md-12">
+                            <label for="text-input" class="form-control-label">Title</label>
+                            <input type="text" id="txtTitle" data-content="0" disabled="disabled" maxlength="50" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="col-md-12">
+                            <label for="text-input" class="form-control-label">Message</label>
+                            <textarea id="txtMessage" rows="5" class="form-control" disabled="disabled"></textarea>
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="col-md-12">
+                            <label for="text-input" class="form-control-label">URN #</label>
+                            <input type="text" id="spnURNNo" disabled="disabled" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="col-md-12">
+                            <label for="text-input" class="form-control-label">Created By</label>
+                            <input type="text" id="spnCreatedBy" disabled="disabled" class="form-control" />
+                        </div>
+                    </div>
+                    @*<div class="row form-group">
+                        <div class="col-md-12">
+                            <label for="text-input" class="form-control-label">Status</label>
+                            <select id="ddlStatus" class="form-select">
+                                <option value="1" class="text-primary">Not Appproved</option>
+                                <option value="2" class="text-success">Appproved</option>
+                                <option value="3" class="text-danger">Cancelled</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="divComments" class="row form-group">
+                        <div class="col-md-12">
+                            <label for="text-input" class="form-control-label">Comments</label>
+                            <textarea id="txtComments" rows="5" class="form-control"></textarea>
+                        </div>
+                    </div>*@
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary">Submit Status</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" aria-label="Close">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    function AddComment() {
+        $("#txtStatusComment").val("");
+        $("#txtStatusComment").focus();
+        $('#statusCommentModel').modal('show');
+    }
+    $(document).ready(function () {
+        getNofictions();
+        $("#btnCancelnotification").click(function () {
+            $("#notificationModal").modal("hide");
+        })
+        // Initially hide
+        $('#divComments').hide();
+        $('#ddlStatus').on('change', function () {
+            var selectedValue = $(this).val();
+            $('#divComments').val('');
+            if (selectedValue == "3") {
+                $('#divComments').show();   // Show when Cancelled
+            } else {
+                $('#divComments').hide();   // Hide otherwise
+            }
+        });
+        $("#btnApproved").click(function () {
+            UpdateRecordStatus($("#hdnFormId").val(), 0, $(this).attr("data-content"), 2, "");
+        })
+        $("#btnNotApproved").click(function () {
+            UpdateRecordStatus($("#hdnFormId").val(), 0, $(this).attr("data-content"), 1, "");
+        })
+    });
+
+    function getNofictions() {
+        $.ajax({
+            type: "GET",
+            url: "@Url.Action("getMyNofications", "Account")",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: OnSuccess,
+            failure: function (response) {
+                ShowToastNotification("success", response.d);
+            },
+            error: function (response) {
+                ShowToastNotification("error", "Error fetching data!");
+            }
+        });
+    }
+
+    function OnSuccess(response) {
+        bindDataTable(response);
+    }
+
+    function bindDataTable(dataset) {
+        dataset = Array.isArray(dataset) ? dataset : [];
+        // Initialize DataTable
+        let table = new DataTable('#tblNotifications', {
+            layout: {
+                topStart: {
+                    pageLength: {
+                        menu: [10, 25, 50, 100]
+                    }
+                },
+                topEnd: {
+                    search: {
+                        placeholder: 'Type search here'
+                    }
+                },
+                bottomEnd: {
+                    paging: {
+                        buttons: 5
+                    }
+                }
+            },
+            paging: true,
+            "destroy": true,
+            searching: false,
+            scrollCollapse: false,
+            data: dataset,
+            rowCallback: function (row, data) {
+                if (data.IsRead != 1) {
+                    $(row).addClass('highlight-row');
+                }
+            },
+            columns: [
+                {
+                    title: "Status",
+                    orderable: false,
+                    className: 'dt-center actions',
+                    orderable: true,
+                    render: function (data, type, row, meta) {                        
+                        var _status = row["Status"];
+                        var rowId = row["Id"];
+                        if (_status == "1") {
+                            return '<button class="dropdown" data-FormId=' + row["FormId"] +' data-bind=' + _status + ' data-content=' + rowId + ' >' + DisplayStatus(_status) + '</button>';
+                        }
+                        else {
+                            return '<span data-bind=' + _status + '>' + DisplayStatus(_status) + '</span>';
+                        }
+                    },
+                },
+                {
+                    title: 'Action',
+                    className: "grid-action-item",
+                    render: function (data, type, row, meta) {
+                        return "<a title='View Notification' href='javascript:ViewNotification(\"" + row.UserNotificationId + "\")';><i class='fa fa-eye'></i></a>";
+                    },
+                },
+                {
+                    title: 'Date',
+                    render: function (data, type, row, meta) {
+                        var editlink = formatDate(parseMSDate(row.AssignedDate));
+                        return "<span>" + editlink + "</span>";
+                    },
+                },
+                {
+                    title: 'URN #',
+                    className: "grid-action-item",
+                    render: function (data, type, row, meta) {
+                        if (row.UserNotificationId != null) {
+                            return "<a title='View Record' href='javascript:void(0)'; onclick='javascript:ViewNotificationRedirection(\"" + row.UserNotificationId + "\")';>" + row.URNNo + "</a>";
+                        }
+                        else {
+                            return "";
+                        }
+                    },
+                },
+                {
+                    title: 'Doc #',
+                    className: "grid-action-item",
+                    render: function (data, type, row, meta) {
+                        if (row.UserNotificationId != null) {
+                            return "<a title='View Record'  href='javascript:void(0)'; onclick='javascript:ViewNotificationRedirection(\"" + row.UserNotificationId + "\")'>" + row.DocNo + "</a>";
+                        }
+                        else {
+                            return "";
+                        }
+                    },
+                },
+                { title: 'Title', data: 'Title' },
+                { title: 'Type', data: 'Type' },
+                { title: 'Form', data: 'FormTitle' },
+                {
+                    title: 'Is Read',
+                    className: 'text-center',
+                    render: function (data, type, row, meta) {
+                        return (row.IsRead === true) ? '<span class="fa fa-check text-success"></span>' : '<span class="fa fa-remove text-danger"></span>';
+                    },
+                },
+                {
+                    title: 'Read On',
+                    render: function (data, type, row, meta) {
+                        if (row.ReadDate == null) {
+                            return "<span></span>";
+                        }
+                        else {
+                            var editlink = formatDate(parseMSDate(row.ReadDate));
+                            return "<span>" + editlink + "</span>";
+                        }
+                    },
+                },
+                { title: 'Notify By', data: 'CreatedBy' },
+            ],
+            language: {
+                emptyTable: "No records found", // Message when no data is available
+                zeroRecords: "No matching records found"
+            }
+        });
+        let actions = document.querySelector('#actions');
+        table.on('click', 'button.dropdown', function (e) {
+            e.stopPropagation();
+            var $tr = $(this).closest('tr');
+            // Index of this row among visible rows in tbody (i.e., on current page)
+            var trIndex = $tr.index();
+            $("#PageAction").hide();
+            $("#actionsDet").hide();
+            var actionType = $(this).attr("data-html");
+            var currectStatus = $(this).attr("data-bind");
+            var recordId = $(this).attr("data-content");
+            var urnNo = $(this).attr("data-URNNo");
+            var formId = $(this).attr("data-FormId");
+            $("#hdnFormId").val(formId);
+            $("#btnApproved").hide();
+            $("#btnNotApproved").hide();
+            $("#btnCancelled").hide();
+            if (currectStatus == "1") {
+                $("#btnApproved").show();
+                $("#btnCancelled").show();
+            }
+            else if (currectStatus == "2") {
+                $("#btnNotApproved").show();
+                $("#btnCancelled").show();
+            }
+            else if (currectStatus == "3") {
+                $("#btnApproved").show();
+                $("#btnNotApproved").show();
+            }
+            else {
+                $("#btnNotApproved").show();
+            }
+            $("#btnApproved").attr("data-bind", currectStatus);
+            $("#btnApproved").attr("data-content", recordId);
+            $("#btnNotApproved").attr("data-bind", currectStatus);
+            $("#btnNotApproved").attr("data-content", recordId);
+            $("#btnCancelled").attr("data-bind", currectStatus);
+            $("#btnCancelled").attr("data-content", recordId);
+            $("#btnSubmitComment").attr("data-content", recordId);
+            $("#statusCommentModel .modal-title").html(urnNo + " : Comment")
+            if (actions != null) {
+                this.parentNode.append(actions);
+                if (actions.style != null) {
+                    actions.style.display = 'block';
+                }
+                // Remove with the next click on the document
+                document.addEventListener('click', function () {
+                    if (actions != null) {
+                        actions.remove();
+                    }
+                });
+            }
+        });
+    }
+    function formatDate(d) {
+        if (hasTime(d)) {
+            let n = d.toLocaleString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+            });
+            var s = (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear();
+            s += ' ' + n;
+        } else {
+            var s = (d.getDate() + '/' + d.getMonth() + 1) + '/' + d.getFullYear();
+        }
+        return s;
+    }
+    function hasTime(d) {
+        return !!(d.getUTCHours() || d.getUTCMinutes() || d.getUTCSeconds());
+    }
+
+    function zeroFill(n) {
+        if ((n + '').length == 1)
+            return '0' + n;
+
+        return n;
+    }
+    function parseMSDate(s) {
+        // Jump forward past the /Date(, parseInt handles the rest
+        return new Date(parseInt(s.substr(6)));
+    }
+    function DeleteNotification(UserNotificationId) {
+        if (confirm("Are you sure you want to delete record?")) {
+            try
+            {
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("DeleteNotification", "Account")',
+                    data: { UserNotificationId: UserNotificationId },
+                    async: false,
+                    success: function (response) {
+                        ShowToastNotification("success", response.Response);
+                        location.reload(); // Refresh the table
+                    },
+                    error: function (response) {
+                        ShowToastNotification("error", response.Response);
+                    }
+                });
+            }
+            catch (e) {
+            }
+        }
+    }
+
+    function ViewNotificationRedirection(UserNotificationId) {
+        try {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("GetNotificationDetail", "Account")',
+                data: { notificationId: UserNotificationId },
+                async: false,
+                success: function (response) {
+                    if (response != null) {
+                        const pathParts = window.location.pathname.split('/');
+                        const appName = pathParts[1]; // PBalajiERP
+
+                        const baseUrl = window.location.origin + '/' + appName + '/';
+                        const url = new URL(response.LinkUrl, baseUrl);
+
+                        window.open(url.href, '_blank', 'noopener,noreferrer');
+                    }
+                },
+                error: function (response) {
+                    ShowToastNotification("error", response.Response);
+                }
+            });
+        } catch (e) {
+
+        }
+    }
+
+    function ViewNotification(UserNotificationId) {
+        try {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("GetNotificationDetail", "Account")',
+                data: { notificationId: UserNotificationId },
+                async: false,
+                success: function (response) {
+                    if (response != null) {
+                        $("#spnURNNo").val(response.URNNo);
+                        $("#txtTitle").val(response.Title);
+                        $("#txtMessage").val(response.Message);
+                        $("#txtType").val(response.Type);
+                        $("#spnCreatedBy").val(response.CreatedBy);
+                    }
+                },
+                error: function (response) {
+                    ShowToastNotification("error", response.Response);
+                }
+            });
+            $("#notificationModal").modal("show");
+        } catch (e) {
+
+        }
+    }
+
+    function UpdateRecordStatus(fromId, paramId, paraparentId, paramStatus, cancelreason)
+    {
+        try {
+             $.ajax({
+                 type: "POST",
+                 url: "@Url.Action("UpdateRecordStatus", "Home")",
+                 data: {
+                     formId: fromId,
+                     status: paramStatus,
+                     ParentId: paraparentId,
+                     Id: paramId,
+                     CancelReason: cancelreason
+                 },
+                 success: function (response) {
+                     if (response.IsSuccess) {
+                         ShowToastNotification("success", "Record Status has been successfully.");                         
+                     } else {
+                         ShowToastNotification("error", "Error status update record.");
+                     }
+                 },
+                 error: function () {
+                     ShowToastNotification("error", "Error status update record.");
+                 }
+            });
+        }
+        catch (e) {
+            ShowToastNotification("error", e.message);
+        }
+    }
+</script>

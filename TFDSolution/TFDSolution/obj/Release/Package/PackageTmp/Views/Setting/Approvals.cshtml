@@ -1,0 +1,73 @@
+﻿
+@{
+    ViewBag.Title = "Approvals";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="breadcrumbs">
+    <div class="col-sm-4">
+        <div class="page-header float-left">
+            <div class="page-title">
+                <h1>Approval  Settings</h1>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-8">
+        <div class="page-header float-right">
+            <div class="page-title">
+                <ol class="breadcrumb text-right">
+                    <li><a href="@Url.Action("Index","Home")">Home</a></li>
+                    <li class="active">Approval Settings</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="animated fadeIn">
+    <div class="row m-0">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="col-lg-9">
+                        <div>
+                            <select id="ddlSelect" class="form-control form-select" style="width:200px;float:left;">
+                                @*@if (Model != null && Model.ChildForm != null)
+                                {
+                                    foreach (var item in Model.ChildForm)
+                                    {
+                                        <option data-bind="@item.Prefix" value="@item.FormId">@item.FormTitle</option>
+                                    }
+                                }*@
+                            </select>
+                        </div>
+                        <div>
+                            <select id="ddlSubForm" class="form-control form-select" style="width:220px;float:left;"></select>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 text-right">
+                        @*<a class="btn btn-sm" href="javascript:void(0);"><i class="fa fa-refresh"></i>&nbsp; Refresh</a>*@
+                        <a class="btn btn-sm" href="@Url.Action("Index","Home")"><i class="fa fa-arrow-circle-left"></i>&nbsp; Back</a>
+                        @*<a class="btn btn-sm" id="btnAddNewChildForm" href="javascript:void(0);" title="Add New Form" data-toggle="modal" data-target="#formModal"><i class="fa fa-plus"></i>&nbsp; Add New Form</a>*@
+                        @*<a class="btn btn-sm" href="@Url.Action("ItemAction","Master")"><i class="fa fa-save"></i>&nbsp; Save</a>*@
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="card" id="btnFormData">
+                        <div class="card-header">
+                            <div class="col-lg-6">
+                                <strong class="card-title">Form: </strong>
+                                <label id="lblFormname"></label>
+                            </div>
+                            <div class="col-lg-6 text-right">
+                                <a class="btn btn-sm" id="btnTabRefresh" href="javascript:void(0);"><i class="fa fa-refresh"></i>&nbsp; Refresh</a>
+                                <a class="btn btn-sm" id="btnAddNewField" href="javascript:void(0);" title="Add New Field" data-toggle="modal" data-target="#formfieldModal"><i class="fa fa-plus"></i>&nbsp;Add New Field</a>
+                            </div>
+                        </div>
+                        <div class="card-body">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

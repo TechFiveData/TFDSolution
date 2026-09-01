@@ -1,0 +1,980 @@
+﻿
+@{
+    ViewBag.Title = "OtherCharges";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="breadcrumbs">
+    <div class="col-sm-4">
+        <div class="page-header float-left">
+            <div class="page-title">
+                <h1>Other Charges</h1>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-8">
+        <div class="page-header float-right">
+            <div class="page-title">
+                <ol class="breadcrumb text-right">
+                    <li><a href="@Url.Action("Index","Home")">Home</a></li>
+                    <li class="active">Other Charges</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="divOtherCharges" class="animated fadeIn">
+    <div class="row">
+        <div class="col-md-12 p-0">
+            <div class="card">
+                <div class="card-header">
+                    <div class="col-lg-9"></div>
+                    <div class="col-lg-3 text-right">
+                        <a class="btn btn-sm" href="javascript:void(0);"><i class="fa fa-refresh"></i>&nbsp; Refresh</a>
+                        <a class="btn btn-sm" id="btnAddNew" href="javascript:void(0);" title="Add New Charges Template" data-toggle="modal" data-target="#editModal"><i class="fa fa-plus"></i>&nbsp; New</a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12 form-group">
+                            <table id="tblOtherCharges" class="display cell-border nowrap" cellspacing="0" width="100%"></table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="actions" class="dropdown" style="display:none;position:absolute;z-index:9999999;">
+    <button id="btnApproved" data-bind="2" class="text-success" value="approved">Approved</button>
+    <button id="btnNotApproved" data-bind="1" class="text-primary" value="notapproved">Not Approved</button>
+    <button id="btnCancelled" data-bind="3" class="text-danger" value="cancelled">Cancelled</button>
+</div>
+<div class="modal fade" id="editModal" tabindex="-1"
+     data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered float-none model-center-style" role="document" style="height: auto">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel">Other Charges</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="hgnChargesId" value="0" />
+                <div id="divheader" class="m-2">
+                    <div class="row form-group">
+                        <div class="col col-md-6">
+                            <label for="text-input" class="form-control-label">Description<span class="text-danger p-1">(*)</span></label>
+                            <input type="text" id="txtDescription" data-content="0" maxlength="100" class="form-control" />
+                        </div>
+                        <div class="col col-md-6">
+                            <label for="text-input" class="form-control-label">Short Name<span class="text-danger p-1">(*)</span></label>
+                            <input type="text" id="txtShortName" data-content="0" maxlength="50" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="row form-group d-none">
+                        <div class="col col-md-12">
+                            <label for="text-input" class="form-control-label">Form(s)<span class="text-danger p-1">(*)</span></label>
+                        </div>
+                        <div class="col col-md-12">
+                            <select id="ddlForms" class="form-control form-select">
+                                <option>Select Forms</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="col col-md-12">
+                            <label for="text-input" class="form-control-label">Form(s)<span class="text-danger p-1">(*)</span></label>
+                        </div>
+                        <div class="col col-md-12">
+                            <select id="ddlMultiForms" multiple class="form-control form-select select2">
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="col col-md-12">
+                            <label for="text-input" class="form-control-label">Ledger<span class="text-danger p-1">(*)</span></label>
+                        </div>
+                        <div class="col col-md-12">
+                            <select id="ddlLedger" class="form-control form-select select2">
+                                <option>Select Ledger</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="col col-md-6">
+                            <label for="text-input" class="form-control-label">Tax Slab<span class="text-danger p-1">(*)</span></label>
+                            <select id="ddlTaxSlab" class="form-control form-select">
+                                <option>Select Tax Slab</option>
+                            </select>
+                        </div>
+                        <div class="col col-md-6">
+                            <label for="text-input" class="form-control-label">Charges Type<span class="text-danger p-1">(*)</span></label>
+                            <select id="ddlChargesType" class="form-control form-select">
+                                <option>Select Charges Type</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div id="divDetail">
+                    <div class="page-breaker"></div>
+                    <div class="row">
+                        <div class="col col-md-12">
+                            <table id="tblDetails" class="display cell-border Width100 nowrap displayblock dataTable-scroll" style="width:100%!important;">
+                                <thead>
+                                    <tr>
+                                        <th>Action</th>
+                                        <th>#</th>
+                                        <th>Alias</th>
+                                        <th>Charge Name</th>
+                                        <th>Ledger</th>
+                                        <th>%/Amount</th>
+                                        <th>Based On</th>
+                                        <th>Value</th>
+                                        <th>Formula</th>
+                                        <th>Decimal</th>
+                                        <th>Effect</th>
+                                        <th>Change Value</th>
+                                        <th>Add In Cost</th>
+                                        <th>Display</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" title="Click here to replicate" onclick="CreateReplica()" type="button">
+                    <i class="fa fa-repeat font16"></i> Replication
+                </button>
+                <button type="button" id="btnAddNewDetail" data-toggle="modal" data-target="#DetailModal" class="btn btn-secondary">Add Detail</button>
+                <button type="button" id="btnCancel" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" onclick="SaveOtherCharges();" class="btn btn-primary">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade"
+     id="DetailModal"
+     tabindex="-1"
+     data-bs-backdrop="static"
+     data-bs-keyboard="false">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="width:500px;">
+            <div class="modal-header">
+                <h5 class="modal-title" id="DetailModalLabel">Add Item</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="divheader" class="m-2">
+                    <input type="hidden" id="hdnDetailRowNm" value="0" />
+                    <div class="row form-group">
+                        <div class="col-md-12">
+                            <label for="text-input" class="form-control-label">Alias<span class="text-danger p-1">(*)</span></label>
+                            <input type="text" id="txtAlias" data-content="0" maxlength="100" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="col-md-12">
+                            <label for="text-input" class="form-control-label">Tax Charge Name<span class="text-danger p-1">(*)</span></label>
+                            <input type="text" id="txtTaxChargeName" data-content="0" maxlength="50" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="col col-md-12">
+                            <label for="text-input" class="form-control-label">Ledger<span class="text-danger p-1">(*)</span></label>
+                            <select id="ddlLedgerDet" class="form-control form-select select2">
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="col col-md-12">
+                            <label for="text-input" class="form-control-label">% / Amount<span class="text-danger p-1">(*)</span></label>
+                            <select id="ddlPerAmount" class="form-control form-select">
+                                <option value="Percentage">Percentage</option>
+                                <option value="Amount">Amount</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="col col-md-12">
+                            <label for="text-input" class="form-control-label">BasedOn<span class="text-danger p-1">(*)</span></label>
+                            <select id="ddlBasedOn" class="form-control form-select">
+                                <option value="Qty">Qauntity</option>
+                                <option value="Amount">Amount</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="col col-md-12">
+                            <label for="text-input" class="form-control-label">Value</label>
+                            <input type="number" id="txtValue" data-content="0" maxlength="5" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="col col-md-12">
+                            <label for="text-input" class="form-control-label">Formula</label>
+                            <input type="text" id="txtFormula" data-content="0" maxlength="500" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="col col-md-12">
+                            <label for="text-input" class="form-control-label">Decimal Point</label>
+                            <input type="number" id="txtDecimalPoint" data-content="0" maxlength="1" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="col col-md-12">
+                            <label for="text-input" class="form-control-label">Effect<span class="text-danger p-1">(*)</span></label>
+                            <select id="ddlEffect" class="form-control form-select">
+                                <option value="Addition">Addition</option>
+                                <option value="Deduction">Deduction</option>
+                                <option value="NA">Not Application</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="col col-md-12">
+                            <div class="form-check">
+                                <div class="checkbox">
+                                    <label for="chkChangeValue" class="form-check-label ">
+                                        <input type="checkbox" id="chkChangeValue" name="chkChangeValue" value="ChangeValue" class="form-check-input">Change Value
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-check">
+                                <div class="checkbox">
+                                    <label for="chkAddInCost" class="form-check-label ">
+                                        <input type="checkbox" id="chkAddInCost" name="chkAddInCost" value="AddInCost" class="form-check-input">Add In Cost
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-check">
+                                <div class="checkbox">
+                                    <label for="chkIsDisplayOnItemsPopup" class="form-check-label ">
+                                        <input type="checkbox" id="chkIsDisplayOnItemsPopup" name="chkIsDisplayOnItemsPopup" value="IsDisplayOnItemsPopup" class="form-check-input">Display On Items Popup
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="btnCancelDetail" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" id="btnSubmitDetail" class="btn btn-primary">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $('#editModal').on('click', function (e) {
+        if ($(e.target).hasClass('modal')) {
+           e.stopPropagation();
+        }
+    });
+    $('#editModal').on('shown.bs.modal', function () {
+        $(this).data('bs.modal').options.backdrop = 'static';
+        $(this).data('bs.modal').options.keyboard = false;
+    });
+    $('.select2').select2({
+        dropdownParent: $('#divOtherCharges'),
+        minimumResultsForSearch: 0,
+        placeholder: "Select",
+        allowClear: true
+    });
+    $('.select2').each(function () {
+        const $select = $(this);
+        const parentWrapper = $select.closest('.modal'); // or any appropriate container
+        $select.select2({
+            dropdownParent: parentWrapper.length ? parentWrapper : $('body')
+        });
+    });
+    $(document).ready(function () {
+        BindCharges();
+        loadDropdown("ddlTaxSlab", "TaxSlab");
+        loadDropdown("ddlChargesType", "ChargesType");
+        loadDropdown("ddlLedger", "Ledger");
+        loadDropdown("ddlLedgerDet", "Ledger");
+        loadDropdown("ddlForms", "Forms");
+        loadDropdown("ddlMultiForms", "Forms");
+        $("#btnAddNewDetail").click(function () {
+            CleanDetailPopup();
+        });
+        $("#btnApproved").click(function () {
+            UpdateOtherchargesStatus($(this).attr("data-content"), 2);
+        })
+        $("#btnNotApproved").click(function () {
+            UpdateOtherchargesStatus($(this).attr("data-content"), 1);
+        })
+        $("#btnCancelled").click(function () {
+            UpdateOtherchargesStatus($(this).attr("data-content"), 3);
+        })
+        $("#btnAddNew").click(function () {
+            BindData();
+        });
+        $("#btnSubmitDetail").click(function () {
+            var isFormValid = true;
+            if ($.trim($("#txtTaxChargeName").val()).length == 0) {
+                $("#txtTaxChargeName").addClass("input-validation-error");
+                $("#txtTaxChargeName").focus();
+                isFormValid = false;
+            }
+            if ($.trim($("#ddlLedgerDet").val()).length == 0) {
+                $("#ddlLedgerDet").addClass("input-validation-error");
+                isFormValid = false;
+            }
+
+            if ($.trim($("#txtAlias").val()).length == 0) {
+                $("#txtAlias").addClass("input-validation-error");
+                if (isFormValid) {
+                    $("#txtAlias").focus();
+                }
+                isFormValid = false;
+            }
+            
+            if (isFormValid) {
+                var UpdateRecord = false;
+                if ($("#tblDetails tbody tr td").length == 1) {
+                    $("#tblDetails tbody tr").remove();
+                }
+                else if (parseInt($("#hdnDetailRowNm").val()) > 0) {
+                    var rowNumber = parseInt($("#hdnDetailRowNm").val())
+                    $('#tblDetails tbody>tr').each(function () {
+                        if ($(this) != null && $(this).attr("id") != null && $(this).attr("id").length > 0) {
+                            if (("row" + rowNumber) == $(this).attr("id")) {
+                                UpdateRecord = true;
+                                $('td', this).each(function () {
+                                    if ($(this).attr("data-bind") != null && $(this).attr("data-bind").length > 0) {
+                                        if ($(this) != null && $(this).attr("data-bind").indexOf("chk") != -1) {
+                                            $(this).attr("data-content", $("#" + $(this).attr("data-bind")).is(":checked"));
+                                            $(this).html(($("#" + $(this).attr("data-bind")).is(":checked") == true ? '<span class="fa fa-check text-success"></span>' : '<span class="fa fa-remove text-danger"></span>'));
+                                        }
+                                        else if ($(this).attr("data-bind").indexOf("ddl") != -1) {
+                                            $(this).attr("data-content", $("#" + $(this).attr("data-bind")).val());
+                                            $(this).html($("#" + $(this).attr("data-bind") + " option:selected").text());
+                                        }
+                                        else {
+                                            $(this).attr("data-content", $("#" + $(this).attr("data-bind")).val());
+                                            $(this).html($("#" + $(this).attr("data-bind")).val());
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                    });
+                }
+                if (UpdateRecord == false) {
+                    var table = document.getElementById("tblDetails"); //get the table
+                    var rowcount = table.rows.length; //get no. of rows in the table
+                    var tblRow = '<tr id="row' + rowcount + '" data-bind=0">' +
+                        '<td><a href="#" data-toggle="modal" data-target="#DetailModal" onclick="EditDetailRow(' + rowcount + ');" title="Edit Record">Edit</a>&nbsp;|&nbsp;<a href="#" onclick="DeleteDetailRow(' + rowcount + ');" title="Delete Record">Delete</a></td>' +
+                        '<td data-bind="rownumber" data-content=' + rowcount + '>' + rowcount + '</td>' +
+                        '<td data-bind="txtAlias" data-content=' + htmlEncode($("#txtAlias").val()) + '>' + $("#txtAlias").val() + '</td>' +
+                        '<td data-bind="txtTaxChargeName" data-content=' + htmlEncode($("#txtTaxChargeName").val()) + '>' + $("#txtTaxChargeName").val() + '</td>' +
+                        '<td data-bind="ddlLedgerDet" data-content=' + $("#ddlLedgerDet").val() + '>' + $("#ddlLedgerDet option:selected").text() + '</td>' +
+                        '<td data-bind="ddlPerAmount" data-content=' + $("#ddlPerAmount").val() + '>' + $("#ddlPerAmount option:selected").text() + '</td>' +
+                        '<td data-bind="ddlBasedOn" data-content=' + $("#ddlBasedOn").val() + '>' + $("#ddlBasedOn option:selected").text() + '</td>' +
+                        '<td data-bind="txtValue" data-content=' + $("#txtValue").val() + '>' + $("#txtValue").val() + '</td>' +
+                        '<td data-bind="txtFormula" data-content=' + $("#txtFormula").val() + '>' + $("#txtFormula").val() + '</td>' +//ddlEffect
+                        '<td data-bind="txtDecimalPoint" data-content=' + $("#txtDecimalPoint").val() + '>' + $("#txtDecimalPoint").val() + '</td>' +//ddlEffect
+                        '<td data-bind="ddlEffect" data-content=' + $("#ddlEffect").val() + '>' + $("#ddlEffect option:selected").text() + '</td>' +
+                        '<td data-bind="chkChangeValue" data-content=' + $("#chkChangeValue").is(":checked") + '>' + ($("#chkChangeValue").is(":checked") == true ? '<span class="fa fa-check text-success"></span>' : '<span class="fa fa-remove text-danger"></span>') + '</td>' +
+                        '<td data-bind="chkAddInCost" data-content=' + $("#chkAddInCost").is(":checked") + '>' + ($("#chkAddInCost").is(":checked") == true ? '<span class="fa fa-check text-success"></span>' : '<span class="fa fa-remove text-danger"></span>') + '</td>' +
+                        '<td data-bind="chkIsDisplayOnItemsPopup" data-content=' + $("#chkIsDisplayOnItemsPopup").is(":checked") + '>' + ($("#chkIsDisplayOnItemsPopup").is(":checked") == true ? '<span class="fa fa-check text-success"></span>' : '<span class="fa fa-remove text-danger"></span>') + '</td>' +
+                        '</tr>'
+                    $("#tblDetails").append(tblRow);
+                    $("#btnCancelDetail").click();
+                }
+                $("#btnCancelDetail").click();
+                CleanDetailPopup();
+            }
+        });
+    });
+    function htmlEncode(value) {
+        return $('<div/>').text(value).html();
+    }
+    function DeleteDetailRow(rowNumber) {
+        if ($("#tblDetails tbody tr[id=row" + rowNumber + "]") != null && $("#tblDetails tbody tr[id=row" + rowNumber +"]").length > 0) {
+            $("#tblDetails tbody tr[id=row" + rowNumber + "]").remove();
+        }
+    }
+    function CreateReplica() {
+        try {
+            customConfirm({message: "Are you sure you want to replicate this record?",
+                type: "success", // success | warning | delete
+                title: "Replication Confirmation"}, function (result) {
+                if (result) {
+                    $.ajax({
+                        type: "POST",
+                        url: "@Url.Action("ReplicationOtherCharge", "Configuration")",
+                        data: { chargesId: $("#hgnChargesId").val()},
+                        success: function (response) {
+                                if (response.IsSuccess) {
+                                    ShowToastNotification("success", "Record has been successfully replicated.");
+                                    $('#tblOtherCharges').DataTable().destroy();
+                                    $('#tblOtherCharges tbody').empty();
+                                    BindCharges();
+                                } else {
+                                    ShowToastNotification("error", "Error occured in replicationg process. Please try again");
+                                }
+                            },
+                            error: function () {
+                                ShowToastNotification("error", "Error occured in replicationg process. Please try again");
+                            }
+                    });
+                }
+            });
+        } catch (e) {
+
+        }
+    }
+    function UpdateOtherchargesStatus(otherChargesId, paramStatus) {
+        try {
+             $.ajax({
+                 type: "POST",
+                 url: "@Url.Action("UpdateOtherChargesStatus", "Configuration")",
+                 data: { chargesId: otherChargesId, Status: paramStatus },
+                 success: function (response) {
+                     if (response.IsSuccess) {
+                         //alert("Record Status has been successfully.");
+                         ShowToastNotification("success", "Record Status has been successfully.");
+                         $('#tblOtherCharges').DataTable().destroy();
+                         $('#tblOtherCharges tbody').empty();
+                         BindCharges();
+                         window.location.reload();
+                     } else {
+                         ShowToastNotification("error", "Error status update record.");
+                     }
+                 },
+                 error: function () {
+                     ShowToastNotification("error", "Error status update record.");
+                 }
+            });
+        }
+        catch (e) {
+            ShowToastNotification("error", e.message);
+        }
+    }
+    function EditDetailRow(rowNumber){
+        CleanDetailPopup();
+        $("#DetailModalLabel").html("Edit Charges Item");
+        $('#tblDetails tbody>tr').each(function () {
+            if ($(this) != null && $(this).attr("id") != null && $(this).attr("id").length > 0) {
+                if (("row" + rowNumber) == $(this).attr("id")) {
+                    $("#hdnDetailRowNm").val(rowNumber);
+                    $('td', this).each(function () {
+                        if ($(this).attr("data-bind") != null && $(this).attr("data-bind").length > 0) {
+                            if ($(this) != null && $(this).attr("data-bind").indexOf("chk") != -1) {
+                                if ($(this).attr("data-content") == "true") {
+                                    $("#" + $(this).attr("data-bind")).prop('checked', true);
+                                }
+                            }
+                            else if ($(this).attr("data-bind").indexOf("ddl") != -1) {
+                                if ($(this).attr("data-bind") == "ddlLedgerDet") {
+                                    loadDropdown("ddlLedgerDet", "Ledger", $(this).attr("data-content"));
+                                }
+                                else {
+                                    $("#" + $(this).attr("data-bind")).val($(this).attr("data-content"));
+                                }
+                            }
+                            else {
+                                $("#" + $(this).attr("data-bind")).val($(this).attr("data-content"));
+                            }
+                        }
+                    });
+                }
+            }
+        });
+    }
+    function CleanDetailPopup() {
+        $("#txtTaxChargeName").val("");
+        $("#txtFormula").val("");
+        $("#txtValue").val("");
+        $("#txtAlias").val("");
+        $("#ddlPerAmount")[0].selectedIndex = 0;
+        $("#ddlBasedOn")[0].selectedIndex = 0;
+        $("#ddlEffect")[0].selectedIndex = 0;
+        $("#ddlLedgerDet")[0].selectedIndex = 0;
+        $("#ddlLedgerDet").val('');
+        $("#chkChangeValue").prop("checked", false);
+        $("#chkAddInCost").prop("checked", false);
+        $("#chkIsDisplayOnItemsPopup").prop("checked", false);
+        $("#hdnDetailRowNm").val(0);
+        loadDropdown("ddlLedgerDet", "Ledger");
+        $("#ddlPerAmount").removeClass("input-validation-error");
+        $("#ddlBasedOn").removeClass("input-validation-error");
+        $("#ddlEffect").removeClass("input-validation-error");
+        $("#ddlLedgerDet").removeClass("input-validation-error");
+        var counter = 0;
+        if ($("#tblDetails tbody tr td").length == 1) {
+            counter = counter + 1;
+        }
+        else {
+            counter = $("#tblDetails tbody tr").length + 1;
+        }
+        $("#DetailModalLabel").html("Add Charges Item");
+        $("#txtAlias").val(encodedLetterToNumber(counter));
+        $("#txtFormula").val("="+ $("#txtAlias").val());;
+        $("txtTaxChargeName").focus();
+    }
+    function loadDropdown(dropdownId, entryType, selectedType) {
+         $.ajax({
+             url: '@Url.Action("getSelection", "Master")',
+             type: 'GET',
+             data: {
+                 _type: entryType,
+                 _whareClause: "",
+                 _orderType: "",
+                 _entryType: ""
+             },
+             success: function (data) {
+                 var dropdown = $('#' + dropdownId);
+                 dropdown.empty()
+                 if (entryType != "Forms") {
+                     dropdown.empty().append('<option value="">Select ' + entryType + '</option>');
+                 }
+                 $.each(data, function (i, item) {
+                     if (selectedType != null && selectedType != undefined && selectedType.length && selectedType == item.Value) {
+                         dropdown.append($('<option selected></option>').val(item.Value).text(item.Text));
+                     }
+                     else {
+                         dropdown.append($('<option></option>').val(item.Value).text(item.Text));
+                     }
+                 });
+                 $("#pageLoader").hide();
+             },
+             error: function () {
+                 $("#pageLoader").hide();
+                 console.log("Error loading dropdown: " + entryType);
+             }
+         });
+    }
+    function BindData() {
+        CleanPopup();
+        loadDropdown("ddlMultiForms", "Forms");
+        BindDetailGrid();
+    }
+    function CleanPopup() {
+        loadDropdown("ddlLedger", "Ledger");
+        $("#txtDescription").val("");
+        $("#txtShortName").val("");
+        $("#ddlChargesType")[0].selectedIndex = 0;
+        $("#ddlTaxSlab")[0].selectedIndex = 0;
+        $("#ddlForms")[0].selectedIndex = 0;
+       /* $("#ddlMultiForms")[0].selectedIndex = 0;*/
+        //$("#ddlLedger")[0].selectedIndex = 0;
+        $("#hgnChargesId").val("0");
+        /* $('#ddlMultiForms')[0].selectize.clear();*/
+        // clear multi select dropdown
+        $('#ddlMultiForms').val(null).empty().trigger('change');
+        $("#ddlLedger").removeClass("input-validation-error");
+        //$("#ddlForms").find('option:not(:first)').remove();
+        //$("#ddlLedger").find('option:not(:first)').remove();
+        //$("#ddlTaxSlab").find('option:not(:first)').remove();
+        $("#ddlTaxSlab").removeClass("input-validation-error");
+        $("#ddlLedger").removeClass("input-validation-error");
+        $("#ddlForms").removeClass("input-validation-error");
+        $("#ddlMultiForms").removeClass("input-validation-error");
+        $("txtDescription").focus();
+    }
+    function BindDetailGrid()
+    {
+        let formTable = new DataTable("#tblDetails", {
+            destroy: true,
+            searching: false,
+            paging: true,
+            autoWidth: false,
+            info: true,
+            select: true,
+            language: {
+                emptyTable: "No records found",
+                zeroRecords: "No matching records found"
+            }
+        });
+    }
+    function BindCharges()
+    {
+         $.ajax({
+             type: "GET",
+             url: "@Url.Action("getOtherCharges", "Configuration")",
+             contentType: "application/json; charset=utf-8",
+             data: {},
+             dataType: "json",
+             success: SuccessBindGrid,
+             failure: function (response) {
+                 alert(response.d);
+             },
+             error: function (response) {
+                 ShowToastNotification("error", "Error fetching data!");
+             }
+          });
+    }
+    function DeleteOtherCharges(chargesId) {
+        customConfirm({
+            message: "Are you sure you want to delete this record?",
+            type: "delete", // success | warning | delete
+            title: "delete Confirmation"
+        }, function (result) {
+            if (result) {
+                    $.get('@Url.Action("DeleteOtherCharges", "Configuration")', { chargesId: chargesId }, function (data) {
+                        if (data != null && data.IsSuccess) {
+                            ShowToastNotification("success", "Record has been deleted successfully!");
+                            $('#tblOtherCharges').DataTable().destroy();
+                            $('#tblOtherCharges tbody').empty();
+                            BindCharges();
+                        }
+                    }).fail(function () {
+                        // Error callback if the request fails
+
+                    });
+                }
+            });
+    }
+    function EditOtherCharges(chargesId) {
+        CleanDetailPopup();
+        CleanPopup();
+        $.get('@Url.Action("GetOtherChargeDetails", "Configuration")', { chargesId: chargesId }, function (data) {
+            if (data != null) {
+                $("#txtDescription").val(data.Description);
+                $("#txtShortName").val(data.ShortName);
+                $("#ddlChargesType").val(data.ChargesTypeId);
+                $("#ddlTaxSlab").val(data.TaxSlabId);
+                $("#ddlLedger").val(data.LedgerId);
+                $("#ddlForms").val(data.FormId);
+                /*$("#ddlLedger").val(data.LedgerId).trigger('change');*/
+                if (data.LedgerId > 0) {
+                    var items = $('#ddlLedger option').map(function () {
+                        return { value: this.value, text: $(this).text() };
+                    }).get();
+
+                    let item = items.find(x => x.value == data.LedgerId);
+                    if (item) {
+                        let option = new Option(item.text, item.value, true, true);
+                        $('#ddlLedger').append(option);
+                    }
+                }
+                if (data.MultipleFormId != null && data.MultipleFormId != "") {
+                    var ddl = $('#ddlMultiForms');
+                    // clear all old options
+                    ddl.empty();
+                    // clone original dropdown options
+                    var addedText = [];
+                    $('#ddlForms option').each(function () {
+                        var text = $(this).text().trim();
+                        // skip duplicate text
+                        if (!addedText.includes(text)) {
+                            addedText.push(text);
+                            ddl.append(
+                                $('<option>', {
+                                    value: $(this).val(),
+                                    text: text
+                                })
+                            );
+                        }
+                    });
+                    // set selected values
+                    if (data.MultipleFormId != null && data.MultipleFormId != "") {
+                        // remove duplicate selected values
+                        var arr = [...new Set(
+                            data.MultipleFormId
+                                .split(',')
+                                .map(v => v.trim())
+                        )];
+
+                        ddl.val(arr);
+                    }
+
+                    // refresh select2
+                    ddl.trigger('change');
+                }
+                $("#hgnChargesId").val(data.ChargesId);
+                BindDetailGrid();
+                $("#tblDetails tbody tr").remove();
+                if (data.Details != null && data.Details.length > 0) {
+                    var table = document.getElementById("tblDetails"); //get the table
+                    data.Details.forEach((item) => {
+                        var rowcount = table.rows.length; //get no. of rows in the table
+                        var tblRow = '<tr id="row' + item.SrNo + '" data-bind=' + item.OtherChargesDetailId +'>' +
+                            '<td><a href="#" data-toggle="modal" data-target="#DetailModal" onclick="EditDetailRow(' + item.SrNo + ');" title="Edit Record">Edit</a>&nbsp;|&nbsp;<a href="#" onclick="DeleteDetailRow(' + item.SrNo + ');" title="Delete Record">Delete</a></td>' +
+                            '<td data-bind="rownumber" data-content=' + item.SrNo + '>' + item.SrNo + '</td>' +
+                            '<td data-bind="txtAlias" data-content="' + htmlEncode(item.Alias) + '">' + item.Alias + '</td>' +
+                            '<td data-bind="txtTaxChargeName" data-content="' + htmlEncode(item.TaxChargeName) + '">' + displayBlank(item.TaxChargeName) + '</td>' +
+                        //'<td data-bind="ddlLedgerDet" data-content=' + item.LedgerId + '>' + $("#ddlLedgerDet option:selected").text() + '</td>' +
+                            '<td data-bind="ddlLedgerDet" data-content=' + item.LedgerId + '>' + displayBlank(item.LedgerIdName) + '</td>' +
+                            '<td data-bind="ddlPerAmount" data-content=' + item.PerAmount + '>' + item.PerAmount + '</td>' +
+                            '<td data-bind="ddlBasedOn" data-content=' + item.BasedOn + '>' + item.BasedOn + '</td>' +
+                            '<td data-bind="txtValue" data-content=' + item.ChargesValue + '>' + item.ChargesValue + '</td>' +
+                            '<td data-bind="txtFormula" data-content=' + item.Formula + '>' + item.Formula + '</td>' +//ddlEffect
+                            '<td data-bind="txtDecimalPoint" data-content=' + item.DecimalPoint + '>' + item.DecimalPoint + '</td>' +//DecimalPoint
+                            '<td data-bind="ddlEffect" data-content=' + item.Effect + '>' + item.Effect + '</td>' +
+                            '<td data-bind="chkChangeValue" data-content=' + item.ChangeValue + '>' + (item.ChangeValue == true ? '<span class="fa fa-check text-success"></span>' : '<span class="fa fa-remove text-danger"></span>') + '</td>' +
+                            '<td data-bind="chkAddInCost" data-content=' + item.AddInCost + '>' + (item.AddInCost == true ? '<span class="fa fa-check text-success"></span>' : '<span class="fa fa-remove text-danger"></span>') + '</td>' +
+                            '<td data-bind="chkIsDisplayOnItemsPopup" data-content=' + item.IsDisplayOnItemsPopup + '>' + (item.IsDisplayOnItemsPopup == true ? '<span class="fa fa-check text-success"></span>' : '<span class="fa fa-remove text-danger"></span>') + '</td>' +
+                            '</tr>'
+                        $("#tblDetails").append(tblRow);
+                    });
+
+                }
+                var myModal = new bootstrap.Modal(document.getElementById('editModal'));
+                myModal.show();
+            }
+        }).fail(function () {
+            // Error callback if the request fails
+
+        });
+    }
+    function displayBlank(val) {
+        return (val === null || val === undefined || val === '' || val === 'null')
+            ? ''
+            : val;
+    }
+    function SuccessBindGrid(dataset) {
+        dataset = Array.isArray(dataset) ? dataset : [];
+        // Initialize DataTable
+        let formTable = new DataTable("#tblOtherCharges", {
+            "destroy": true,
+            searching: true,
+            paging: true,
+            scrollCollapse: true,
+            scrollX: true,
+            scrollY: true,
+            info: true,
+            // scrollY: '500px',
+            data: dataset,
+            select: true,
+            lengthMenu: [10, 25, 50, 100, 200],
+            pageLength: 25,
+            columns: [
+                {
+                    title: '',
+                    /*className: "grid-action-item",*/
+                    render: function (data, type, row, meta) {
+                        return "<a title='Edit Record' data-toggle='modal' data-target='#reportModal' onclick='EditOtherCharges(\"" + row.ChargesId + "\")' href='javascript:void(0)'><i class='fa fa-pencil'></i></a> &nbsp;|&nbsp; <a title='Delete Record' onclick='DeleteOtherCharges(\"" + row.ChargesId + "\")' href='javascript:void(0)';><i class='fa fa-trash text-danger'></i></a>";
+                    },
+                },
+                {
+                    orderable: false, // disable sorting for all columns
+                    title: "Status",
+                    className: 'dt-center actions',
+                    defaultContent: '<button class="dropdown">Action</button>',
+                    orderable: true,
+                    render: function (data, type, row, meta) {
+                        return '<button class="dropdown" data-bind=' + row["Status"] + ' data-interval=' + row["ChargesId"] + ' data-content=' + row["ChargesId"] + ' >' + DisplayStatus(row["Status"]) + '</button>';
+                    },
+                },
+                { title: "Description", data: "Description" },
+                { title: "Short Name", data: "ShortName" },
+                { title: "Tax Slab", data: "TaxSlab" },
+                { title: "Charges Type", data: "ChargesType" },
+            ],
+            language: {
+                emptyTable: "No records found", // Message when no data is available
+                zeroRecords: "No matching records found"
+            }
+        });
+        let actions = document.querySelector('#actions');
+        formTable.on('click', 'button.dropdown', function (e) {
+            e.stopPropagation();
+            $("#actions").hide();
+            // Display and position the dropdown
+            var currectStatus = $(this).attr("data-bind");
+            var recordId = $(this).attr("data-content");
+            var ParentId = $(this).attr("data-interval");
+            $("#btnApproved").attr("data-content", recordId);
+            $("#btnNotApproved").attr("data-content", recordId);
+            $("#btnCancelled").attr("data-content", recordId);
+            if (currectStatus == "1") {
+                $("#btnNotApproved").hide();
+                $("#btnApproved").show();
+                $("#btnCancelled").show();
+            }
+            else if (currectStatus == "2") {
+                $("#btnNotApproved").show();
+                $("#btnApproved").hide();
+                $("#btnCancelled").show();
+            }
+            else if (currectStatus == "3") {
+                $("#btnNotApproved").show();
+                $("#btnApproved").show();
+                $("#btnCancelled").hide();
+            }
+            // $("#btnCancelledDet").show();
+            // $("#btnCancelledDet").attr("data-container", $('#' + tblId).attr("data-content"));
+            // $("#btnCancelledDet").attr("data-bind", currectStatus);
+            // $("#btnCancelledDet").attr("data-content", recordId);
+            // $("#btnCancelledDet").attr("data-interval", ParentId);
+            const currentOffsetLeft = e.pageX;
+            const currentOffsetTop = e.pageX;// + e.offsetHeight - 5;
+            if (actions != null) {
+                this.parentNode.append(actions);
+                if (actions.style != null) {
+                    actions.style.display = 'block';
+                    //actions.style.right = this.offsetLeft + 'px';
+                }
+            }
+            // Remove with the next click on the document
+            document.addEventListener('click', function () {
+                if (actions != null) {
+                    actions.remove();
+                }
+            });
+        });
+    }
+    function SaveOtherCharges() {
+        try {
+            var isFormValid = true;
+            if ($.trim($("#txtDescription").val()).length == 0) {
+                $("#txtDescription").addClass("input-validation-error");
+                $("#txtDescription").focus();
+                isFormValid = false;
+            }
+            if ($.trim($("#txtShortName").val()).length == 0) {
+                $("#txtShortName").addClass("input-validation-error");
+                isFormValid = false;
+            }
+            //if ($.trim($("#ddlForms").val()).length == 0) {
+            //    $("#ddlForms").addClass("input-validation-error");
+            //    isFormValid = false;
+            //}
+            //var multiText = $("#ddlMultiForms").val().join(',');
+            if ($.trim($("#ddlMultiForms").val()).length == 0) {
+                $("#ddlMultiForms").addClass("input-validation-error");
+                isFormValid = false;
+            }
+            if ($.trim($("#ddlLedger").val()).length == 0) {
+                $("#ddlLedger").addClass("input-validation-error");
+                if (isFormValid) {
+                    $("#ddlLedger").focus();
+                }
+                isFormValid = false;
+            }
+            if (isFormValid) {
+                var _detail = [];
+                $('#tblDetails tbody>tr').each(function () {
+                    if ($(this) != null && $(this).attr("id") != null && $(this).attr("id").length > 0) {
+                        var _SrNo = 0, _LedgerId = 0;
+                        var _OtherChargesDetailId = parseInt($(this).attr("data-bind"));
+                        var _Alias = "", _TaxChargeName = "", _Formula = "", _ChargesValue = "", _PerAmount = "", _BasedOn = "", _Effect = "", _DecimalPoint = 0;
+                        var _ChangeValue = "", _AddInCost = "", _IsDisplayOnItemsPopup = "";
+                        $('td', this).each(function () {
+                            if ($(this).attr("data-bind") != null && $(this).attr("data-bind").length > 0) {
+                                if ($(this) != null && $(this).attr("data-bind").indexOf("chk") != -1) {
+                                    if ($(this).attr("data-bind") == "chkChangeValue") {
+                                        _ChangeValue = $(this).attr("data-content");
+                                    }
+                                    if ($(this).attr("data-bind") == "chkAddInCost") {
+                                        _AddInCost = $(this).attr("data-content");
+                                    }
+                                    if ($(this).attr("data-bind") == "chkIsDisplayOnItemsPopup") {
+                                        _IsDisplayOnItemsPopup = $(this).attr("data-content");
+                                    }                                    
+                                }
+                                else if ($(this).attr("data-bind").indexOf("ddl") != -1) {
+                                    if ($(this).attr("data-bind") == "ddlLedgerDet") {
+                                        _LedgerId = parseInt($(this).attr("data-content"));
+                                    }
+                                    else if ($(this).attr("data-bind") == "ddlPerAmount") {
+                                        _PerAmount = $(this).attr("data-content");
+                                    }
+                                    else if ($(this).attr("data-bind") == "ddlBasedOn") {
+                                        _BasedOn = $(this).attr("data-content");
+                                    }
+                                    else if ($(this).attr("data-bind") == "ddlEffect") {
+                                        _Effect = $(this).attr("data-content");
+                                    }
+                                }
+                                else {
+                                    if ($(this).attr("data-bind") == "txtAlias") {
+                                        _Alias = $(this).attr("data-content");
+                                    }
+                                    else if ($(this).attr("data-bind") == "txtTaxChargeName") {
+                                        _TaxChargeName = $(this).attr("data-content");
+                                    }
+                                    else if ($(this).attr("data-bind") == "rownumber") {
+                                        _SrNo = parseInt($(this).attr("data-content"));
+                                    }
+                                    else if ($(this).attr("data-bind") == "txtFormula") {
+                                        _Formula = $(this).attr("data-content");
+                                    }
+                                    else if ($(this).attr("data-bind") == "txtDecimalPoint") {
+                                        _DecimalPoint = $(this).attr("data-content");
+                                    }
+                                    else if ($(this).attr("data-bind") == "txtValue") {
+                                        _ChargesValue = $(this).attr("data-content");
+                                    }
+                                }
+                            }
+                        });
+                        _detail.push({
+                            ChargesId: $("#hgnChargesId").val(),
+                            OtherChargesDetailId: _OtherChargesDetailId,
+                            SrNo: _SrNo,
+                            Alias: _Alias,
+                            TaxChargeName: _TaxChargeName,
+                            LedgerId: _LedgerId,
+                            PerAmount: _PerAmount,
+                            BasedOn: _BasedOn,
+                            ChargesValue: _ChargesValue,
+                            Formula: _Formula,
+                            DecimalPoint: _DecimalPoint,
+                            Effect: _Effect,
+                            ChangeValue: (_ChangeValue == "true" ? true : false),
+                            AddInCost: (_AddInCost == "true" ? true : false),
+                            IsDisplayOnItemsPopup: (_IsDisplayOnItemsPopup == "true" ? true : false),
+                        });
+                    }
+                });
+
+                if (_detail != null && _detail.length > 0) {
+                    var _model = {
+                        TaxSlabId: $("#ddlTaxSlab").val(),
+                        ChargesTypeId: $("#ddlChargesType").val(),
+                        ChargesId: $("#hgnChargesId").val(),
+                        FormId: $("#ddlForms").val(),
+                        ShortName: $("#txtShortName").val(),
+                        Description: $("#txtDescription").val(),
+                        LedgerId: $("#ddlLedger").val(),
+                        Details: _detail,
+                        MultipleFormId: $("#ddlMultiForms").val().join(',')
+                    };
+
+                    $.ajax({
+                        type: "POST", url: '@Url.Action("SaveOtherCharges", "Configuration")',
+                        contentType: "application/json;",
+                        data: JSON.stringify(_model),
+                        async: false,
+                        success: function (response) {
+                            if (response.IsSuccess) {
+                                $("#hgnChargesId").val(0);
+                                ShowToastNotification("success", "Record saved successfully.")
+                                $("#btnCancel").click();
+                                $('#tblOtherCharges').DataTable().destroy();
+                                $('#tblOtherCharges tbody').empty();
+                                BindCharges();
+                            }
+                            else {
+                                ShowToastNotification("error", response.Response);
+                            }
+                        },
+                        failure: function (response) { },
+                        error: function (response) { }
+                    });
+                }
+                else {
+                    ShowToastNotification("error", "Please enter at least item.");
+                }
+            }
+            else {
+                ShowToastNotification("error", "Please select/enter required field.");
+            }
+        } catch (e) {
+            alert(e);
+        }
+    }
+</script>

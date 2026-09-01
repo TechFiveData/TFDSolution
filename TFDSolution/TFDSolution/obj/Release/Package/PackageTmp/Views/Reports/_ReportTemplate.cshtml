@@ -1,0 +1,1517 @@
+﻿@model TFDSolution.Transport.ReportTemplateModel
+<script src="~/Scripts/select2.min.js"></script>
+<div class="row form-group">
+    <input type="hidden" id="hgnTemplateId" value="@Model.ReportId" />
+    <div class="col-md-6">
+        @Html.LabelFor(m => m.ReportTitle, "Caption", new { @class = "form-control-label" })
+        <span class="text-danger p-1">(*)</span>
+
+        @Html.TextBoxFor(m => m.ReportTitle, new
+        {
+            @class = "form-control",
+            id = "txtReportCaption",
+            maxlength = "50",
+            data_content = "0"
+        })
+    </div>
+    <div class="col-md-6">
+        @Html.LabelFor(m => m.ReportName, "Report Name", new { @class = "form-control-label" })
+        <span class="text-danger p-1">(*)</span>
+        @Html.TextBoxFor(m => m.ReportName, new
+        {
+            @class = "form-control",
+            id = "txtReportName",
+            maxlength = "100",
+            data_content = "0",
+            onkeydown = "return blockSpaces(event)"
+        })
+    </div>
+</div>
+@*<div class="row form-group">
+        <div class="col-md-6">
+            @Html.LabelFor(m => m.AssignedUsers, "Assigned User", new { @class = "form-control-label" })
+            <select id="ddlUser" data-display="" data-interval="@Model.AssignedUsers" multiple class="form-select"></select>
+        </div>
+        <div class="col-md-6">
+            <div class="form-check">
+                @Html.CheckBoxFor(m => m.IsActive, new { @class = "form-check-input", id = "chkIsActive" })
+                <label class="form-check-label" for="chkIsActive">
+                    Is Active
+                </label>
+            </div>
+        </div>
+        <div class="col-md-12"></div>
+    </div>*@
+<div class="row form-group">
+    <div class="col-md-12">
+        @Html.LabelFor(m => m.AssignedUsers, "Assigned User", new { @class = "form-control-label" })
+        <select id="ddlUser" data-display="" data-interval="@Model.AssignedUsers" multiple class="form-select"></select>
+    </div>
+</div>
+<div class="row form-group">
+    <div class="col-md-12">
+        <div class="form-check">
+            @Html.CheckBoxFor(m => m.IsActive, new { @class = "form-check-input", id = "chkIsActive" })
+            <label class="form-check-label" for="chkIsActive">
+                Is Active
+            </label>
+        </div>
+    </div>
+</div>
+<div class="row form-group">
+    <div id="divSPRequestPeraFilter" class="col-md-12 form-group ">
+        <label class="form-label label-header">
+            Perameter/Filter
+            <a id="btnAddFilter" href="javascript:void(0);" class="float-right pr-2" title="Add New Filter"><i class="fa fa-plus"></i></a>
+        </label>
+        <table id="tblRequestPeraFilter" class="table table-striped table-bordered table-default">
+            <thead>
+                <tr>
+                    <th class="text-center"></th>
+                    <th class="text-center">#</th>
+                    <th>Field name</th>
+                    <th>Field Caption</th>
+                    <th>FieldType</th>
+                    <th>Default</th>
+                    <th class="RTSelectColumnHeader d-none">Select Text</th>
+                    <th class="RTSelectColumnHeader d-none">Select Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Header != null && Model.Header.Count > 0)
+                {
+                    foreach (var item in Model.Header)
+                    {
+                        string ddlId = "ddlSource" + item.SrNo;
+                        <tr>
+                            <td>
+                                <a href="javascript:void(0);" class="btnDelete" title="Delete Record">
+                                    <i class="fa fa-trash text-danger"></i>
+                                </a>
+                            </td>
+                            <td class="text-center RTSrNofield">@item.SrNo</td>
+                            <td>
+                                <input type="text" class="form-control form-control-sm RTFieldName text-left" value="@item.FieldName" />
+                            </td>
+                            <td>
+                                <input type="text" class="form-control form-control-sm RTFieldCaption text-left" value="@item.FieldCaption" />
+                            </td>
+                            <td class="RTFieldType" style="width:12%">
+                                <select onchange="onFieldTypeChange(this, true);" data-interval="@item.FieldType" class="form-select form-control form-select-sm">
+                                    <option value="Text" @(item.FieldType == "Text" ? "selected" : "")>Text</option>
+                                    <option value="Date" @(item.FieldType == "Date" ? "selected" : "")>Date</option>
+                                    <option value="Dropdown" @(item.FieldType == "Dropdown" ? "selected" : "")>Dropdown</option>
+                                </select>
+                            </td>
+                            <td class="RTFieldDefaultCell" style="width:25%">
+                                @if (item.FieldType == "Dropdown")
+                                {
+                                    <input type="text"
+                                           class="form-control form-control-sm RTFieldDefaultVal text-left textfield d-none"
+                                           value="@item.FieldDefaultValue" />
+
+                                    <div class="defaultDropdownWrapper">
+                                        <select id="@ddlId"
+                                                class="form-select dropdownsource RTFieldDefaultVal select2"
+                                                data-interval="@item.FieldDefaultValue">
+                                            <option value="0">Select Table</option>
+                                        </select>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <input type="text"
+                                           class="form-control form-control-sm RTFieldDefaultVal text-left textfield"
+                                           value="@item.FieldDefaultValue" />
+
+                                    <div class="defaultDropdownWrapper d-none">
+                                        <select id="@ddlId"
+                                                class="form-select dropdownsource RTFieldDefaultVal select2"
+                                                data-interval="@item.FieldDefaultValue">
+                                            <option value="0">Select Table</option>
+                                        </select>
+                                    </div>
+                                }
+                            </td>
+                            @*<td class="RTSelectColumn d-none">
+                                    <select class="form-select form-control form-select-sm RTSelectText">
+                                        <option data-interval="@item.DropdwonTextField">Select Text</option>
+                                    </select>
+                                </td>
+                                <td class="RTSelectColumn d-none">
+                                    <select class="form-select form-control form-select-sm RTSelectValue">
+                                        <option data-interval="@item.DropdwonValueField">Select Value</option>
+                                    </select>
+                                </td>*@
+                            <td class="RTSelectColumn d-none">
+                                <select class="form-select form-control form-select-sm RTSelectText"
+                                        data-interval="@item.DropdwonTextField">
+                                    <option value="">Select Text</option>
+                                </select>
+                            </td>
+
+                            <td class="RTSelectColumn d-none">
+                                <select class="form-select form-control form-select-sm RTSelectValue"
+                                        data-interval="@item.DropdwonValueField">
+                                    <option value="">Select Value</option>
+                                </select>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="row form-group">
+    <div class="col-md-12">
+        <label for="ddlStoreprocedure" class="form-control-label">Store Procedure</label>
+        <select id="ddlStoreprocedure" class="form-select select2" data-interval="@Model.SQLQueryName" onchange="handleCategoryChange(this.value)"> </select>
+    </div>
+</div>
+<div class="row form-group">
+    <div id="divSPRequest" class="col-md-12 form-group">
+        <label class="form-label label-header">Stored Procedure Request</label>
+        <table id="tblRequest" class="table table-striped table-bordered table-default">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Parameter</th>
+                    <th>Data Type</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.ProcedureMappings != null && Model.ProcedureMappings.Count > 0)
+                {
+                    foreach (var item in Model.ProcedureMappings)
+                    {
+                        <tr>
+                            <td class="text-center RTRSrNofield">@item.SrNo</td>
+                            <td class="text-left RTRParaNamefield">@item.ParameterName</td>
+                            <td class="text-left RTRParaDataTypefield">@item.ParamDataType</td>
+                            <td>
+                                <select class='form-control form-select RTRParaValufield' data-bind="@item.ParamValueName">
+                                    <option value='0'>Select Field</option>
+                                    @if (item.ParamValueName == "CompanyId")
+                                    {
+                                        <option value='CompanyId' selected>CompanyId</option>
+                                    }
+                                    else
+                                    {
+                                        <option value='CompanyId'>CompanyId</option>
+                                    }
+                                    @if (Model != null && Model.Header != null && Model.Header.Count > 0)
+                                    {
+                                        foreach (var Iitem in Model.Header)
+                                        {
+                                            if (item.ParamValueName == Iitem.FieldName)
+                                            {
+                                                <option value="@Iitem.FieldName" selected>@Iitem.FieldCaption</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@Iitem.FieldName">@Iitem.FieldCaption</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+    #tblRequestPeraFilter .RTSelectText,
+    #tblRequestPeraFilter .RTSelectValue {
+        min-width: 150px;
+    }
+
+    #tblRequestPeraFilter td {
+        vertical-align: top;
+    }
+
+    #tblRequestPeraFilter .RTSelectColumn {
+        min-width: 170px;
+    }
+
+    #tblRequestPeraFilter .defaultDropdownWrapper {
+        width: 100%;
+    }
+</style>
+
+<script>
+
+    function updateSelectColumnHeaders() {
+        try {
+            let hasDropdown = false;
+
+            $("#tblRequestPeraFilter tbody tr").each(function () {
+                const fieldType = $(this).find(".RTFieldType select").val();
+
+                if (fieldType === "Dropdown") {
+                    hasDropdown = true;
+                    return false;
+                }
+            });
+
+            const $headers = $("#tblRequestPeraFilter .RTSelectColumnHeader");
+
+            // IMPORTANT:
+            // Only the headers are controlled globally.
+            // Individual Select Text / Select Value cells must remain
+            // controlled by their own row's FieldType.
+            if (hasDropdown) {
+                $headers.removeClass("d-none");
+            }
+            else {
+                $headers.addClass("d-none");
+            }
+        }
+        catch (e) {
+            console.error("updateSelectColumnHeaders error:", e);
+        }
+    }
+
+    function initializeDefaultDropdown($row) {
+        try {
+            const $dropdown = $row.find(".dropdownsource");
+            const $wrapper = $row.find(".defaultDropdownWrapper");
+
+            if (!$dropdown.length || !$wrapper.length) {
+                return;
+            }
+
+            const fieldType = $row.find(".RTFieldType select").val();
+
+            if (fieldType === "Dropdown") {
+
+                $wrapper.removeClass("d-none");
+
+                if (!$dropdown.hasClass("select2-hidden-accessible")) {
+                    $dropdown.select2({
+                        dropdownParent: $wrapper,
+                        width: "100%"
+                    });
+                }
+            }
+            else {
+
+                if ($dropdown.hasClass("select2-hidden-accessible")) {
+                    $dropdown.select2("destroy");
+                }
+
+                $wrapper.addClass("d-none");
+            }
+        }
+        catch (e) {
+            console.error("initializeDefaultDropdown error:", e);
+        }
+    }
+
+    function onFieldTypeChange(ctrl, isUserChange = true) {
+        try {
+
+            const $row = $(ctrl).closest("tr");
+            const fieldType = $(ctrl).val();
+
+            const $textField = $row.find(".textfield");
+            const $defaultWrapper = $row.find(".defaultDropdownWrapper");
+            const $defaultDropdown = $row.find(".dropdownsource");
+            const $selectText = $row.find(".RTSelectText");
+            const $selectValue = $row.find(".RTSelectValue");
+            const $selectColumns = $row.find(".RTSelectColumn");
+
+            if (fieldType === "Dropdown") {
+
+                $textField.addClass("d-none");
+
+                $defaultWrapper.removeClass("d-none");
+
+                // Show Select Text / Select Value ONLY for this row.
+                $selectColumns.removeClass("d-none");
+
+                initializeDefaultDropdown($row);
+
+                const tableName = $defaultDropdown.val();
+
+                if (tableName && tableName !== "0") {
+                    loadTableColumns($row, tableName);
+                }
+            }
+            else {
+
+                $textField.removeClass("d-none");
+                // Only clear when the user actually switched the dropdown,
+                // not when we're just re-initializing row state (e.g. on page load).
+                if (isUserChange) {
+                    $textField.val("");
+                }
+
+
+                if ($defaultDropdown.hasClass("select2-hidden-accessible")) {
+                    $defaultDropdown.select2("destroy");
+                }
+
+                $defaultWrapper.addClass("d-none");
+
+                // Hide Select Text / Select Value ONLY for this row.
+                $selectColumns.addClass("d-none");
+
+                $selectText
+                    .empty()
+                    .append('<option value="">Select Text</option>');
+
+                $selectValue
+                    .empty()
+                    .append('<option value="">Select Value</option>');
+            }
+
+            updateSelectColumnHeaders();
+
+        }
+        catch (e) {
+            console.error("onFieldTypeChange error:", e);
+        }
+    }
+
+    $(document).on("change", "#tblRequestPeraFilter .dropdownsource", function () {
+
+        try {
+
+            const $row = $(this).closest("tr");
+            const fieldType = $row.find(".RTFieldType select").val();
+            const tableName = $(this).val();
+
+            if (fieldType !== "Dropdown") {
+                return;
+            }
+
+            if (!tableName || tableName === "0") {
+
+                $row.find(".RTSelectText")
+                    .empty()
+                    .append('<option value="">Select Text</option>');
+
+                $row.find(".RTSelectValue")
+                    .empty()
+                    .append('<option value="">Select Value</option>');
+
+                return;
+            }
+
+            loadTableColumns($row, tableName);
+
+        }
+        catch (e) {
+            console.error("Default dropdown change error:", e);
+        }
+    });
+
+    function loadTableColumns($row, tableName) {
+
+    try {
+
+        if (!tableName || tableName === "0") {
+            return;
+        }
+
+        const $selectText = $row.find(".RTSelectText");
+        const $selectValue = $row.find(".RTSelectValue");
+
+        // Get saved values before clearing dropdowns
+        const selectedText =
+            $selectText.attr("data-interval") || "";
+
+        const selectedValue =
+            $selectValue.attr("data-interval") || "";
+
+        var spTableName =
+            $("#hdnSelectedFormSQLTableName").val() || "";
+
+        if ($("#hdnSelectedSectionText").val() == "Detail") {
+            spTableName =
+                $("#hdnSelectedTabSQLTableName").val() || "";
+        }
+
+        // Clear dropdowns
+        $selectText
+            .empty()
+            .append('<option value="">Select Text</option>');
+
+        $selectValue
+            .empty()
+            .append('<option value="">Select Value</option>');
+
+        $.ajax({
+            url: "@Url.Action("GetSourceColumns", "FormSetting")",
+            type: "GET",
+            skipLoading: true,
+            data: {
+                sourceType: "Table",
+                tableName: tableName,
+                fieldId: $("#hdnFieldId").val() || "",
+                pageTableName: spTableName
+            },
+
+            success: function (response) {
+
+                $selectText
+                    .empty()
+                    .append('<option value="">Select Text</option>');
+
+                $selectValue
+                    .empty()
+                    .append('<option value="">Select Value</option>');
+
+                if (
+                    response &&
+                    response.Columns &&
+                    response.Columns.length > 0
+                ) {
+
+                    response.Columns.forEach(function (column) {
+
+                        $selectText.append(
+                            new Option(column, column)
+                        );
+
+                        $selectValue.append(
+                            new Option(column, column)
+                        );
+
+                    });
+
+                    // Restore saved Select Text
+                    if (
+                        selectedText &&
+                        selectedText !== ""
+                    ) {
+                        $selectText.val(selectedText);
+                    }
+
+                    // Restore saved Select Value
+                    if (
+                        selectedValue &&
+                        selectedValue !== ""
+                    ) {
+                        $selectValue.val(selectedValue);
+                    }
+
+                    // Refresh dropdown UI
+                    $selectText.trigger("change");
+                    $selectValue.trigger("change");
+                }
+            },
+
+            error: function (xhr) {
+
+                console.error(
+                    "GetSourceColumns error:",
+                    xhr.responseText
+                );
+
+                $selectText
+                    .empty()
+                    .append(
+                        '<option value="">Error loading columns</option>'
+                    );
+
+                $selectValue
+                    .empty()
+                    .append(
+                        '<option value="">Error loading columns</option>'
+                    );
+            }
+        });
+
+    }
+    catch (e) {
+
+        console.error(
+            "loadTableColumns error:",
+            e
+        );
+    }
+}
+    $(document).on("click", "#tblRequestPeraFilter .btnDelete", function () {
+
+        const $row = $(this).closest("tr");
+
+        if ($row.find(".dropdownsource").hasClass("select2-hidden-accessible")) {
+            $row.find(".dropdownsource").select2("destroy");
+        }
+
+        $row.remove();
+
+        updateSerialNumbers();
+        updateSelectColumnHeaders();
+    });
+
+    function updateSerialNumbers() {
+
+        $("#tblRequestPeraFilter tbody tr").each(function (index) {
+
+            $(this)
+                .find(".RTSrNofield")
+                .text(index + 1);
+        });
+    }
+
+    function UpdateRequestFieldValueSelection() {
+        try {
+
+            const NewFilterfields = [];
+            NewFilterfields.push({
+                Name: "CompanyId",
+                Value: "CompanyId"
+            });
+
+            $("#tblRequestPeraFilter tbody tr").each(function () {
+
+                let fieldName = $(this).find(".RTFieldCaption").text().length
+                    ? $(this).find(".RTFieldCaption").text()
+                    : $(this).find(".RTFieldCaption").val();
+
+                let fieldVal = $(this).find(".RTFieldName").text().length
+                    ? $(this).find(".RTFieldName").text()
+                    : $(this).find(".RTFieldName").val();
+
+                if (fieldName) {
+                    NewFilterfields.push({
+                        Name: fieldName,
+                        Value: fieldVal
+                    });
+                }
+            });
+
+            $("#tblRequest tbody tr").each(function () {
+
+                const $select = $(this).find(".RTRParaValufield");
+
+                if ($select.length) {
+
+                    NewFilterfields.forEach(field => {
+
+                        const exists = $select.find("option").filter(function () {
+                            return $(this).val().trim() === field.Value;
+                        }).length > 0;
+
+                        if (!exists) {
+                            $select.append(
+                                new Option(field.Name, field.Value)
+                            );
+                        }
+                    });
+                }
+            });
+
+        }
+        catch (e) {
+            console.error("UpdateRequestFieldValueSelection error:", e);
+        }
+    }
+
+    $(document).ready(function () {
+
+        bindStoredProcedure();
+
+        BindFilterRequest();
+
+        bindSQLTable();
+
+        setInterval(UpdateRequestFieldValueSelection, 3000);
+
+        BindUserDropdown();
+
+        $("#btnAddFilter").on("click", function () {
+
+            try {
+
+                const sp = $("#ddlStoreprocedure").val();
+
+                if (sp === "0") {
+                    alert("Please enter Store Procedure.");
+                    return;
+                }
+
+                const mainRows =
+                    $("#tblRequestPeraFilter tbody tr");
+
+                const totalRows = dynamicFilterRows.length;
+
+                if (totalRows > 0) {
+
+                    const lastRow =
+                        mainRows[staticFilterData.length + totalRows - 1];
+
+                    if (!lastRow) {
+                        return;
+                    }
+
+                    const fieldName =
+                        lastRow.cells[2]
+                            ?.querySelector("input")
+                            ?.value
+                            .trim();
+
+                    const fieldCaption =
+                        lastRow.cells[3]
+                            ?.querySelector("input")
+                            ?.value
+                            .trim();
+
+                    if (!fieldName || !fieldCaption) {
+
+                        alert(
+                            "Please fill in 'Field Name' and 'Field Caption' before adding a new filter."
+                        );
+
+                        return;
+                    }
+
+                    Object.assign(
+                        dynamicFilterRows[totalRows - 1],
+                        {
+                            FIELD_NAME: fieldName,
+                            FIELD_CAPTION: fieldCaption,
+                            FIELD_TYPE:
+                                lastRow.cells[4]
+                                    ?.querySelector("select")
+                                    ?.value || "Text",
+                            DEFAULT_VALUE:
+                                lastRow.cells[5]
+                                    ?.querySelector("input")
+                                    ?.value
+                                    ?.trim()
+                                ||
+                                lastRow.cells[5]
+                                    ?.querySelector("select.dropdownsource")
+                                    ?.value
+                                ||
+                                ""
+                        }
+                    );
+                }
+
+                renderDynamicRows();
+
+            }
+            catch (err) {
+                console.error("Error in Add Filter:", err);
+            }
+        });
+
+        $("#tblRequestPeraFilter tbody tr").each(function () {
+
+            const fieldType =
+                $(this).find(".RTFieldType select").val();
+
+            if (fieldType) {
+                onFieldTypeChange(
+                    $(this).find(".RTFieldType select")[0],false
+                );
+            }
+        });
+
+        updateSelectColumnHeaders();
+
+        $("#tblRequest tbody tr").each(function () {
+
+            let $select =
+                $(this).find(".RTRParaValufield");
+
+            let defaultValue =
+                $(this).find(".RTRParaValufield")
+                    .attr("data-bind");
+
+            if ($select.find("option").length == 1) {
+
+                const Filterfields = [];
+
+                $("#tblRequestPeraFilter tbody tr").each(function () {
+
+                    let fieldName =
+                        $(this).find(".RTFieldCaption").text().length
+                            ? $(this).find(".RTFieldCaption").text()
+                            : $(this).find(".RTFieldCaption").val();
+
+                    if (fieldName) {
+                        Filterfields.push({
+                            Name: fieldName
+                        });
+                    }
+                });
+
+                Filterfields.forEach(table => {
+
+                    if (
+                        defaultValue != undefined &&
+                        defaultValue != "" &&
+                        defaultValue == table.Name
+                    ) {
+                        $select.append(
+                            `<option selected value="${table.Name}">${table.Name}</option>`
+                        );
+                    }
+                    else {
+                        $select.append(
+                            `<option value="${table.Name}">${table.Name}</option>`
+                        );
+                    }
+                });
+            }
+        });
+    });
+
+    function getFieldTypeDropdown(selectedValue = "Text") {
+        try {
+
+            return `
+            <select onchange="onFieldTypeChange(this,true);"
+                    class="form-select form-control form-select-sm">
+
+                ${fieldTypeOptions.map(opt => `
+                    <option value="${opt}"
+                        ${opt === selectedValue ? "selected" : ""}>
+                        ${opt}
+                    </option>
+                `).join('')}
+
+            </select>
+        `;
+
+        }
+        catch (e) {
+            console.error(
+                "getFieldTypeDropdown error:",
+                e
+            );
+
+            return "";
+        }
+    }
+
+    function BindFilterRequest() {
+
+        try {
+
+            if (
+                $("#tblRequestPeraFilter").length > 0 &&
+                $("#tblRequestPeraFilter tbody tr").length == 0
+            ) {
+
+                const tbody =
+                    document.querySelector(
+                        "#tblRequestPeraFilter tbody"
+                    );
+
+                tbody.innerHTML = "";
+
+                staticFilterData.forEach(function (row, index) {
+
+                    const tr =
+                        document.createElement("tr");
+
+                    const ddlId =
+                        "ddlSource" + (index + 1);
+
+                    const fieldType =
+                        row.FIELD_TYPE || "Text";
+
+                    tr.innerHTML = `
+
+                        <td>
+                            <a href="javascript:void(0);"
+                               class="btnDelete"
+                               title="Delete Record">
+
+                                <i class="fa fa-trash text-danger"></i>
+
+                            </a>
+                        </td>
+
+                        <td class="text-center RTSrNofield">
+                            ${index + 1}
+                        </td>
+
+                        <td class="text-left">
+                            <input type="text"
+                                   class="form-control form-control-sm RTFieldName text-left"
+                                   value="${row.FIELD_NAME || ""}" />
+                        </td>
+
+                        <td class="text-left">
+                            <input type="text"
+                                   class="form-control form-control-sm RTFieldCaption text-left"
+                                   value="${row.FIELD_CAPTION || ""}" />
+                        </td>
+
+                        <td class="RTFieldType">
+                            ${getFieldTypeDropdown(fieldType)}
+                        </td>
+
+                        <td class="RTFieldDefaultCell">
+
+                            <input type="text"
+                                   class="form-control form-control-sm
+                                          RTFieldDefaultVal
+                                          text-left
+                                          textfield
+                                          ${fieldType === "Dropdown" ? "d-none" : ""}"
+                                   value="${row.DEFAULT_VALUE || ""}" />
+
+                            <div class="defaultDropdownWrapper
+                                        ${fieldType === "Dropdown" ? "" : "d-none"}">
+
+                                <select id="${ddlId}"
+                                        class="form-select dropdownsource RTFieldDefaultVal select2"
+                                        data-interval="${row.DEFAULT_VALUE || ""}">
+
+                                    <option value="0">Select Table</option>
+
+                                </select>
+
+                            </div>
+
+                        </td>
+
+                        <td class="RTSelectColumn ${fieldType === "Dropdown" ? "" : "d-none"}">
+
+                            <select class="form-select form-control form-select-sm RTSelectText">
+                                <option value="">Select Text</option>
+                            </select>
+
+                        </td>
+
+                        <td class="RTSelectColumn ${fieldType === "Dropdown" ? "" : "d-none"}">
+
+                            <select class="form-select form-control form-select-sm RTSelectValue">
+                                <option value="">Select Value</option>
+                            </select>
+
+                        </td>
+                    `;
+
+                    tbody.appendChild(tr);
+                });
+
+                bindSQLTable();
+
+                // Keep Select Text / Select Value visibility row-specific.
+                $("#tblRequestPeraFilter tbody tr").each(function () {
+                    const $typeSelect = $(this).find(".RTFieldType select");
+                    if ($typeSelect.length) {
+                        onFieldTypeChange($typeSelect[0],false);
+                    }
+                });
+
+                updateSelectColumnHeaders();
+            }
+
+        }
+        catch (e) {
+            console.error("BindFilterRequest error:", e);
+        }
+    }
+
+    function renderDynamicRows() {
+        try {
+
+            const tbody = document.querySelector(
+                "#tblRequestPeraFilter tbody"
+            );
+
+            if (!tbody) {
+                return;
+            }
+
+            const trIndex =
+                $("#tblRequestPeraFilter tbody tr").length + 1;
+
+            const ddlId = "ddlSource" + trIndex;
+
+            const tr = document.createElement("tr");
+
+            tr.innerHTML = `
+            <td>
+                <a href="javascript:void(0);"
+                   class="btnDelete"
+                   title="Delete Record">
+                    <i class="fa fa-trash text-danger"></i>
+                </a>
+            </td>
+
+            <td class="text-center RTSrNofield">
+                ${trIndex}
+            </td>
+
+            <td>
+                <input type="text"
+                       class="form-control form-control-sm RTFieldName text-left"
+                       value="" />
+            </td>
+
+            <td>
+                <input type="text"
+                       class="form-control form-control-sm RTFieldCaption text-left"
+                       value="" />
+            </td>
+
+            <td class="RTFieldType">
+                ${getFieldTypeDropdown("Text")}
+            </td>
+
+            <!-- DEFAULT -->
+            <td class="RTFieldDefaultCell" style="width:25%">
+
+                <!-- Text Default -->
+                <input type="text"
+                       class="form-control form-control-sm
+                              RTFieldDefaultVal
+                              text-left
+                              textfield"
+                       value="" />
+
+                <!-- Table Dropdown -->
+                <div class="defaultDropdownWrapper d-none">
+
+                    <select id="${ddlId}"
+                            class="form-select
+                                   dropdownsource
+                                   RTFieldDefaultVal
+                                   select2"
+                            data-interval="">
+
+                        <option value="0">
+                            Select Table
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </td>
+
+            <!-- SELECT TEXT -->
+            <td class="RTSelectColumn d-none">
+
+                <select class="form-select
+                               form-control
+                               form-select-sm
+                               RTSelectText"
+                        data-interval="">
+
+                    <option value="">
+                        Select Text
+                    </option>
+
+                </select>
+
+            </td>
+
+            <!-- SELECT VALUE -->
+            <td class="RTSelectColumn d-none">
+
+                <select class="form-select
+                               form-control
+                               form-select-sm
+                               RTSelectValue"
+                        data-interval="">
+
+                    <option value="">
+                        Select Value
+                    </option>
+
+                </select>
+
+            </td>
+        `;
+
+            tbody.appendChild(tr);
+
+            // Load table list
+            bindSQLTable();
+
+            // Update SP parameter dropdown
+            UpdateRequestFieldValueSelection();
+
+            // Apply Field Type logic
+            const typeSelect =
+                tr.querySelector(".RTFieldType select");
+
+            if (typeSelect) {
+                onFieldTypeChange(typeSelect, false);
+            }
+
+            updateSelectColumnHeaders();
+
+        }
+        catch (e) {
+            console.error(
+                "renderDynamicRows error:",
+                e
+            );
+        }
+    }
+    function updateDynamicRow(index) {
+
+        try {
+
+            const mainRows =
+                $("#tblRequestPeraFilter tbody tr");
+
+            const row =
+                mainRows[staticFilterData.length + index];
+
+            if (row) {
+
+                dynamicFilterRows[index].FIELD_NAME =
+                    row.cells[2]
+                        .querySelector("input")
+                        ?.value
+                        .trim() || "";
+
+                dynamicFilterRows[index].FIELD_CAPTION =
+                    row.cells[3]
+                        .querySelector("input")
+                        ?.value
+                        .trim() || "";
+
+                dynamicFilterRows[index].FIELD_TYPE =
+                    row.cells[4]
+                        .querySelector("select")
+                        ?.value || "Text";
+
+                dynamicFilterRows[index].DEFAULT_VALUE =
+                    row.cells[5]
+                        .querySelector("input")
+                        ?.value
+                        .trim()
+                    ||
+                    row.cells[5]
+                        .querySelector("select.dropdownsource")
+                        ?.value
+                    ||
+                    "";
+
+                bindTableData(
+                    document.getElementById(
+                        "ddlStoreprocedure"
+                    ).value
+                );
+
+                updateSelectColumnHeaders();
+            }
+
+        }
+        catch (e) {
+            console.error("updateDynamicRow error:", e);
+        }
+    }
+
+    function bindFilterTable() {
+        renderDynamicRows();
+    }
+
+
+    @*function bindSQLTable() {
+
+        try {
+
+            $.ajax({
+                url: "@Url.Action("GetFieldOptionSource", "FormSetting")",
+                type: "GET",
+                skipLoading: true,
+                data: {
+                    sourceType: "Table"
+                },
+
+                success: function (tables) {
+
+                    $("#tblRequestPeraFilter tbody tr").each(function () {
+
+                        const $row = $(this);
+                        const $tableDropdown =
+                            $row.find("select.dropdownsource");
+
+                        if (!$tableDropdown.length) {
+                            return;
+                        }
+
+                        $tableDropdown.empty();
+
+                        $tableDropdown.append(
+                            '<option value="0">Select Table</option>'
+                        );
+
+                        const defaultValue =
+                            $tableDropdown.attr("data-interval");
+
+                        tables.forEach(function (table) {
+
+                            if (
+                                defaultValue !== undefined &&
+                                defaultValue !== "" &&
+                                defaultValue === table
+                            ) {
+                                $tableDropdown.append(
+                                    `<option selected value="${table}">${table}</option>`
+                                );
+                            }
+                            else {
+                                $tableDropdown.append(
+                                    `<option value="${table}">${table}</option>`
+                                );
+                            }
+                        });
+
+                        const fieldType =
+                            $row.find(".RTFieldType select").val();
+
+                        initializeDefaultDropdown($row);
+
+                        const selectedTable =
+                            $tableDropdown.val();
+
+                        if (
+                            fieldType === "Dropdown" &&
+                            selectedTable &&
+                            selectedTable !== "0"
+                        ) {
+                            loadTableColumns(
+                                $row,
+                                selectedTable
+                            );
+                        }
+                    });
+
+                    updateSelectColumnHeaders();
+                }
+            });
+
+        }
+        catch (e) {
+            console.error("bindSQLTable error:", e);
+        }
+    }*@
+
+    function handleCategoryChange(value) {
+        $("#divSPRequest").removeClass("d-none");
+        if (value) {  // If a SP is selected
+            if (value == "0") {
+                $("#divSPRequest").addClass("d-none");
+            }
+            else {
+                document.getElementById("divSPRequest").classList.remove("d-none");
+                bindTableData(value);
+            }
+
+        } else {
+            document.getElementById("divSPRequest").classList.add("d-none");
+            document.querySelector("#tblRequest tbody").innerHTML = "";
+        }
+    }
+    //  4/8/25
+    function blockSpaces(event) {
+        if (event.key === ' ' || event.keyCode === 32) {
+            event.preventDefault(); // block spacebar
+            return false;
+        }
+        return true; // allow other keys
+    }
+    function bindTableData(value) {
+        try {
+            const tbody = document.querySelector("#tblRequest tbody");
+            tbody.innerHTML = ""; // Clear previous rows
+            $.ajax({
+                url: "@Url.Action("GetSourceColumns", "DynamicReport")",
+                type: "GET",
+                async: true,
+                skipLoading: true,
+                data: { tableName: value },
+                success: function (response) {
+                    if (response != null && response.Request != null && response.Request.length > 0) {
+                        var ddlField = "<select class='form-control RTRParaValufield form-select'><option value='0'>Select Field</option>";
+                        if (response.SPColumns && response.SPColumns.length > 0) {
+                            response.SPColumns.forEach(spCol => {
+                                ddlField += `<option value="${spCol}">${spCol}</option>`;
+                            });
+                        }
+                        // Add all fields from staticFilterData and dynamicFilterRows
+                        [...staticFilterData, ...dynamicFilterRows].forEach(item => {
+                            if (item.DEFAULT_VALUE) {
+                                ddlField += `<option value="${item.FIELD_NAME}">${item.FIELD_NAME} (${item.DEFAULT_VALUE})</option>`;
+                            } else {
+                                ddlField += `<option value="${item.FIELD_NAME}">${item.FIELD_NAME}</option>`;
+                            }
+                        });
+                        ddlField += `</select>`;
+
+                        response.Request.forEach(row => {
+                            const tr = document.createElement("tr");
+                            tr.innerHTML = `
+                                <td class="RTRSrNofield">${row.ORDINAL_POSITION}</td>
+                                <td class="text-left paramName RTRParaNamefield" data-bind="${row.PARAMETER_NAME}">${row.PARAMETER_NAME}</td>
+                                <td class="text-left RTRParaDataTypefield">${row.DATA_TYPE}</td>
+                                <td class="paramField" data-bind="${row.PARAMETER_Value}"> ${ddlField} </td>`;
+                            tbody.appendChild(tr);
+                        });
+                    }
+                }
+            });
+
+        } catch (e) {
+
+        }
+    }
+    function bindStoredProcedure()
+    {
+        let tableDropdown = $("#ddlStoreprocedure");
+        var defaultValue = tableDropdown.attr("data-interval");
+        try {
+            tableDropdown.empty();
+            $.ajax({
+                url: "@Url.Action("GetFieldOptionSource", "FormSetting")",
+                type: "GET",
+                skipLoading: true,
+                data: { sourceType: "StoredProcedure" },
+                success: function (tables) {
+                    tableDropdown.append('<option value="0">Select Stored Procedure</option>')
+                    tables.forEach(table => {
+                        if (defaultValue != undefined && defaultValue != "" && defaultValue == table) {
+                            tableDropdown.append(`<option selected value="${table}">${table}</option>`);
+                        }
+                        else {
+                            tableDropdown.append(`<option value="${table}">${table}</option>`);
+                        }
+                    });
+                    if ($("#tblRequest").length > 0 && $("#tblRequest tbody tr").length == 0) {
+                        tableDropdown.trigger("change");
+                    }
+                 }
+            });
+        } catch (e) {
+
+        }
+    }
+    function bindSQLTable()
+    {
+        try {
+            $.ajax({
+                url: "@Url.Action("GetFieldOptionSource", "FormSetting")",
+                type: "GET",
+                skipLoading: true,
+                data: { sourceType: "Table" },
+                success: function (tables) {
+                    $("#tblRequestPeraFilter tbody tr").not(".RTSelectRow").each(function () {
+                        let tableDropdown = $(this).find("select.dropdownsource");
+                        tableDropdown.empty();
+                        tableDropdown.append('<option value="0">Select Table</option>')
+                        var defaultValue = tableDropdown.attr("data-interval");
+                        tables.forEach(table => {
+                            if (defaultValue != undefined && defaultValue != "" && defaultValue == table) {
+                                tableDropdown.append(`<option selected value="${table}">${table}</option>`);
+                            }
+                            else {
+                                tableDropdown.append(`<option value="${table}">${table}</option>`);
+                            }
+                        });
+
+                        const $row = tableDropdown.closest("tr");
+                        const fieldType = $row.find(".RTFieldType select").val();
+                        const selectedTable = tableDropdown.val();
+
+                        if (fieldType === "Dropdown" && selectedTable && selectedTable !== "0") {
+                            loadTableColumns($row, selectedTable);
+                        }
+                    });
+
+                 }
+            });
+        } catch (e) {
+        }
+    }
+    function BindUserDropdown() {
+        try {
+            let parentWrapper = $("#ddlUser").parent();
+            let selectedValues = $("#ddlUser").attr("data-interval");
+            let selectedText = $("#ddlUser").attr("data-display");
+            let firstFive = selectedText ? selectedText.substring(0, 20) : "";
+            $("#ddlUser").select2({
+                dropdownParent: parentWrapper,
+                placeholder: 'Select User(s)',
+                allowClear: true,
+                delay: 250,
+                minimumInputLength: 0, // change to 0 if you want scrolling without typing
+                ajax: {
+                    url: '@Url.Action("FillSelctionCommon", "Common")',
+                    dataType: 'json',
+                    skipLoading: true, // <-- Custom flag
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            _type: 'User',
+                            _whareClause: params.term || params.q || '',
+                            _orderType: '',
+                            _entryType: 'User'
+                        };
+                    },
+                    processResults: function (data) {
+                        return {
+                            results: data.results,
+                            pagination: {
+                                more: data.pagination.more
+                            }
+                        };
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Select2 AJAX Error:", error);
+                        console.error("Status:", status);
+                        console.error("Response:", xhr.responseText);
+                    },
+                    cache: true
+                }
+            });
+            /// Pre-load selected values (important when editing)
+            if (selectedValues.length && selectedValues.length > 0) {
+                $.ajax({
+                    url: '@Url.Action("FillSelctionCommon", "Common")',
+                    type: 'GET',
+                    data: { _type: 'User', _whareClause: firstFive, _orderType: '', _entryType: 'User' },
+                    success: function (data) {
+                        const selectedIds = selectedValues.split(",").map(v => v.trim()).filter(Boolean);
+                        selectedIds.forEach(id => {
+                            const item = data.results.find(x => x.id == id);
+                            if (item) {
+                                $("#ddlUser").append(new Option(item.text, item.id, true, true));
+                            }
+                        });
+                    }
+                });
+            }
+            //$('#' + selectId).select2()
+        } catch (e) {
+            console.error("Select2 AJAX Error:", e);
+        }
+    }
+
+
+
+    // Separate function to render static rows
+    //function BindFilterRequest() {
+    //    if ($("#tblRequestPeraFilter").length > 0 && $("#tblRequestPeraFilter tbody tr").length == 0) {
+    //        const tbody = document.querySelector("#tblRequestPeraFilter tbody");
+    //        tbody.innerHTML = ""; // Clear entire table
+
+    //        staticFilterData.forEach((row, index) => {
+    //            const tr = document.createElement("tr");
+    //            var ddlId = "ddlSource" + (index +1);
+    //            tr.innerHTML = `
+    //        <td><a href="javascript:void(0);" class="btnDelete" title="Delete Record"><i class="fa fa-trash text-danger"></i></a></td>
+    //        <td class="text-center RTSrNofield">${index + 1}</td>
+    //        <td class="text-left RTFieldName">${row.FIELD_NAME}</td>
+    //        <td class="text-left RTFieldCaption">${row.FIELD_CAPTION}</td>
+    //        <td class="RTFieldType">${getFieldTypeDropdown(row.FIELD_TYPE)}</td>
+    //        <td class="RTFieldDefaultVal">
+    //            <input type="text" class="form-control form-control-sm RTFieldDefaultVal text-left textfield" value="${row.DEFAULT_VALUE || ''}" />
+    //            <select id="${ddlId}" class="form-select d-none dropdownsource RTFieldDefaultVal select2" data-interval="${row.DEFAULT_VALUE || ''}">
+    //                <option></option>
+    //            </select>
+    //        </td>`;
+    //            tbody.appendChild(tr);
+
+    //            const selectRow = document.createElement("tr");
+    //            selectRow.className = "RTSelectRow d-none";
+    //            selectRow.innerHTML = `
+    //        <td></td>
+    //        <td></td>
+    //        <td colspan="4">
+    //            <div class="row">
+    //                <div class="col-md-6">
+    //                    <label class="form-control-label">Select Text</label>
+    //                    <select class="form-select form-control form-select-sm RTSelectText">
+    //                        <option value="">Select Text</option>
+    //                    </select>
+    //                </div>
+    //                <div class="col-md-6">
+    //                    <label class="form-control-label">Select Value</label>
+    //                    <select class="form-select form-control form-select-sm RTSelectValue">
+    //                        <option value="">Select Value</option>
+    //                    </select>
+    //                </div>
+    //            </div>
+    //        </td>`;
+    //            tbody.appendChild(selectRow);
+    //        });
+    //        bindSQLTable();
+    //    }
+    //}
+
+
+
+    // Function to update dynamic row values in real-time
+    function updateDynamicRow(index) {
+        try {
+            const mainRows = $("#tblRequestPeraFilter tbody tr").not(".RTSelectRow");
+            const row = mainRows[staticFilterData.length + index];
+            if (row) {
+                dynamicFilterRows[index].FIELD_NAME = row.cells[1].querySelector('input')?.value.trim() || "";
+                dynamicFilterRows[index].FIELD_CAPTION = row.cells[2].querySelector('input')?.value.trim() || "";
+                dynamicFilterRows[index].FIELD_TYPE = row.cells[3].querySelector('select')?.value || "Text";
+                dynamicFilterRows[index].DEFAULT_VALUE = row.cells[4].querySelector('input')?.value.trim() || row.cells[4].querySelector('select.dropdownsource')?.value || "";
+                bindTableData(document.getElementById("ddlStoreprocedure").value); // Update dropdown instantly
+            }
+        } catch (e) {
+        }
+    }
+
+    // Combined function to render full table
+    function bindFilterTable() {
+        //renderStaticRows();
+        renderDynamicRows();
+    }
+
+    // Add new row on button click
+    //document.getElementById("btnAddFilter").addEventListener("click", function () {
+    //    try {
+    //        var Sp = $('#ddlStoreprocedure').val();
+    //        if (Sp == "0") {
+    //            alert("please enter Store Procedure.");
+    //            return false;
+    //        }
+    //        const tbody = document.querySelector("#tblRequestPeraFilter tbody");
+    //        const totalRows = dynamicFilterRows.length;
+    //        if (totalRows > 0) {
+    //            const lastRow = tbody.rows[staticFilterData.length + totalRows - 1];
+    //            const fieldName = lastRow.cells[1].querySelector('input')?.value.trim();
+    //            const fieldCaption = lastRow.cells[2].querySelector('input')?.value.trim();
+    //            if (!fieldName || !fieldCaption) {
+    //                alert("Please fill in 'Field Name' and 'Field Caption' before adding a new filter.");
+    //                return;
+    //            }
+    //            // Save last row values before pushing new row
+    //            dynamicFilterRows[totalRows - 1].FIELD_NAME = fieldName;
+    //            dynamicFilterRows[totalRows - 1].FIELD_CAPTION = fieldCaption;
+    //            dynamicFilterRows[totalRows - 1].FIELD_TYPE = lastRow.cells[3].querySelector('select')?.value || "Text";
+    //            dynamicFilterRows[totalRows - 1].DEFAULT_VALUE = lastRow.cells[4].querySelector('input')?.value.trim();
+    //        }
+    //        // Add new row with default values
+    //        dynamicFilterRows.push({
+    //            FIELD_NAME: "",
+    //            FIELD_CAPTION: "",
+    //            FIELD_TYPE: "Text",
+    //            DEFAULT_VALUE: ""
+    //        });
+    //        renderDynamicRows(); // Update dynamic rows
+    //    } catch (e) {
+
+    //    }
+    //});
+
+
+</script>

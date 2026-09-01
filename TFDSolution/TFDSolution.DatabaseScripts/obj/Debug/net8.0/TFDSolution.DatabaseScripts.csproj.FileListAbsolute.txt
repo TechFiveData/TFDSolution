@@ -1,0 +1,12 @@
+D:\Amit\TFD\Source\TFDSolution\TFDSolution\TFDSolution.DatabaseScripts\bin\Debug\net8.0\TFDSolution.DatabaseScripts.deps.json
+D:\Amit\TFD\Source\TFDSolution\TFDSolution\TFDSolution.DatabaseScripts\bin\Debug\net8.0\TFDSolution.DatabaseScripts.dll
+D:\Amit\TFD\Source\TFDSolution\TFDSolution\TFDSolution.DatabaseScripts\bin\Debug\net8.0\TFDSolution.DatabaseScripts.pdb
+D:\Amit\TFD\Source\TFDSolution\TFDSolution\TFDSolution.DatabaseScripts\obj\Debug\net8.0\TFDSolution.DatabaseScripts.GeneratedMSBuildEditorConfig.editorconfig
+D:\Amit\TFD\Source\TFDSolution\TFDSolution\TFDSolution.DatabaseScripts\obj\Debug\net8.0\TFDSolution.DatabaseScripts.AssemblyInfoInputs.cache
+D:\Amit\TFD\Source\TFDSolution\TFDSolution\TFDSolution.DatabaseScripts\obj\Debug\net8.0\TFDSolution.DatabaseScripts.AssemblyInfo.cs
+D:\Amit\TFD\Source\TFDSolution\TFDSolution\TFDSolution.DatabaseScripts\obj\Debug\net8.0\TFDSolution.DatabaseScripts.csproj.CoreCompileInputs.cache
+D:\Amit\TFD\Source\TFDSolution\TFDSolution\TFDSolution.DatabaseScripts\obj\Debug\net8.0\TFDSolution.DatabaseScripts.sourcelink.json
+D:\Amit\TFD\Source\TFDSolution\TFDSolution\TFDSolution.DatabaseScripts\obj\Debug\net8.0\TFDSolution.DatabaseScripts.dll
+D:\Amit\TFD\Source\TFDSolution\TFDSolution\TFDSolution.DatabaseScripts\obj\Debug\net8.0\refint\TFDSolution.DatabaseScripts.dll
+D:\Amit\TFD\Source\TFDSolution\TFDSolution\TFDSolution.DatabaseScripts\obj\Debug\net8.0\TFDSolution.DatabaseScripts.pdb
+D:\Amit\TFD\Source\TFDSolution\TFDSolution\TFDSolution.DatabaseScripts\obj\Debug\net8.0\ref\TFDSolution.DatabaseScripts.dll

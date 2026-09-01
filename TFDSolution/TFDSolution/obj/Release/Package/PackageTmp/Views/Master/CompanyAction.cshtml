@@ -1,0 +1,1713 @@
+﻿@model TFDSolution.Transport.Master.CompanyMast
+
+@{
+    ViewBag.Title = "Company";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<!-- /header -->
+<style>
+    /* =========================================================
+       COMPANY MASTER - PROFESSIONAL ERP UI
+       Keeps existing Razor model, controllers, AJAX and tables.
+    ========================================================= */
+    .company-master-pro,
+    .company-master-pro * {
+        box-sizing: border-box;
+    }
+
+    .company-master-pro {
+        --erp-blue: #28a9d6;
+        --erp-blue-dark: #168fbd;
+        --erp-blue-soft: #eef8fc;
+        --erp-bg: #f4f7f9;
+        --erp-border: #d9e2e7;
+        --erp-text: #30373d;
+        --erp-muted: #77838d;
+        background: var(--erp-bg);
+        min-height: calc(100vh - 90px);
+        color: var(--erp-text);
+        font-family: "Segoe UI",Arial,sans-serif;
+        font-size: 13px;
+    }
+
+        .company-master-pro .company-topline {
+            height: 6px;
+            background: var(--erp-blue);
+        }
+
+        .company-master-pro .company-header {
+            background: #fff;
+            min-height: 54px;
+            padding: 0 22px;
+            border-bottom: 1px solid var(--erp-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .company-master-pro .company-title {
+            margin: 0;
+            font-size: 15px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+            .company-master-pro .company-title i {
+                color: var(--erp-blue);
+            }
+
+        .company-master-pro .company-breadcrumb {
+            margin: 0;
+            background: transparent;
+            font-size: 12px;
+        }
+
+            .company-master-pro .company-breadcrumb a {
+                color: #424a50;
+            }
+
+            .company-master-pro .company-breadcrumb .active {
+                color: var(--erp-blue);
+            }
+
+        .company-master-pro .company-toolbar {
+            min-height: 43px;
+            background: #83cde7;
+            padding: 0 22px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 20px;
+        }
+
+            .company-master-pro .company-toolbar button,
+            .company-master-pro .company-toolbar a {
+                border: 0 !important;
+                background: transparent !important;
+                color: #16465a !important;
+                padding: 5px 7px !important;
+                font-size: 15px !important;
+                box-shadow: none !important;
+                transition: .2s ease;
+                text-decoration: none !important;
+            }
+
+                .company-master-pro .company-toolbar button:hover,
+                .company-master-pro .company-toolbar a:hover {
+                    color: #fff !important;
+                    transform: translateY(-1px);
+                }
+
+        .company-master-pro .company-content {
+            padding: 8px 14px 14px;
+        }
+
+        .company-master-pro .company-card {
+            background: #fff;
+            border: 1px solid var(--erp-border);
+            border-radius: 7px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(34,60,72,.04);
+        }
+
+        .company-master-pro .card-header {
+            background: #f8fafb !important;
+            border-bottom: 1px solid var(--erp-border) !important;
+            min-height: 43px;
+            padding: 7px 14px !important;
+        }
+
+            .company-master-pro .card-header:after {
+                content: "";
+                display: block;
+                clear: both;
+            }
+
+        .company-master-pro .card-body {
+            padding: 12px 14px !important;
+        }
+
+        .company-master-pro .section-caption {
+            font-size: 14px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+            .company-master-pro .section-caption i {
+                color: var(--erp-blue);
+                margin-right: 7px;
+            }
+
+        .company-master-pro .page-head {
+            display: grid !important;
+            grid-template-columns: minmax(0,1fr) minmax(0,1fr);
+            gap: 14px;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+
+        .company-master-pro .section-left,
+        .company-master-pro .section-right {
+            width: auto !important;
+            float: none !important;
+        }
+
+        .company-master-pro .section-left {
+            padding-right: 8px;
+        }
+
+        .company-master-pro .section-right {
+            border: 1px solid var(--erp-border);
+            border-radius: 6px;
+            padding: 13px 13px 3px;
+            background: #fff;
+        }
+
+            .company-master-pro .section-right:before {
+                content: "Addresses";
+                display: block;
+                font-size: 13px;
+                font-weight: 600;
+                color: #343b41;
+                padding: 0 0 10px;
+                border-bottom: 1px solid var(--erp-border);
+                margin-bottom: 12px;
+            }
+
+        .company-master-pro .form-group {
+            margin-bottom: 11px !important;
+        }
+
+        .company-master-pro .form-control,
+        .company-master-pro select.form-control,
+        .company-master-pro textarea.form-control {
+            height: 36px;
+            border: 1px solid #ccd9df !important;
+            border-radius: 5px !important;
+            /*background: #f4f9fc !important;*/
+            color: #465158;
+            font-size: 13px;
+            box-shadow: none !important;
+            transition: .18s ease;
+        }
+
+        .company-master-pro textarea.form-control {
+            min-height: 62px;
+            height: auto;
+            resize: vertical;
+        }
+
+            .company-master-pro .form-control:focus,
+            .company-master-pro select.form-control:focus,
+            .company-master-pro textarea.form-control:focus {
+                background: #fff !important;
+                border-color: var(--erp-blue) !important;
+                box-shadow: 0 0 0 3px rgba(40,169,214,.10) !important;
+            }
+
+        .company-master-pro .form-control[disabled],
+        .company-master-pro .form-control:disabled,
+        .company-master-pro select:disabled,
+        .company-master-pro textarea:disabled {
+            background: #edf2f5 !important;
+            color: #7c8790;
+        }
+
+        .company-master-pro .form-control-label,
+        .company-master-pro .control-label {
+            color: #4b555d;
+            font-weight: 500;
+            font-size: 12px;
+        }
+
+        .company-master-pro .text-danger {
+            font-weight: 500;
+        }
+
+
+
+        .company-master-pro #myTab {
+            border-bottom: 1px solid var(--erp-border);
+            padding: 0;
+            margin-bottom: 0;
+        }
+
+            .company-master-pro #myTab .nav-link {
+                color: var(--erp-blue);
+                font-size: 12.5px;
+                border: 1px solid transparent !important;
+                border-bottom: 0 !important;
+                border-radius: 5px 5px 0 0 !important;
+                padding: 11px 15px;
+                background: transparent;
+            }
+
+                .company-master-pro #myTab .nav-link:hover {
+                    background: var(--erp-blue-soft);
+                    color: var(--erp-blue-dark);
+                }
+
+                .company-master-pro #myTab .nav-link.active {
+                    background: #fff;
+                    color: #30373d;
+                    border-color: var(--erp-border) !important;
+                    margin-bottom: -1px;
+                    font-weight: 600;
+                }
+
+        .company-master-pro #myTabContent {
+            border: 1px solid var(--erp-border);
+            border-top: 0;
+            border-radius: 0 0 6px 6px;
+            padding: 18px !important;
+            background: #fff;
+        }
+
+        .company-master-pro .tab-pane .form-group:last-child {
+            margin-bottom: 0 !important;
+        }
+
+
+        .company-master-pro .modal-header {
+            background: #f7fafb;
+            border-bottom: 1px solid var(--erp-border);
+        }
+
+        .company-master-pro .modal-footer {
+            background: #fafcfd;
+            border-top: 1px solid var(--erp-border);
+        }
+
+        .company-master-pro .switch-3d .switch-label {
+            background: #c8d0d5 !important;
+        }
+
+        .company-master-pro .switch-3d.switch-success input:checked + .switch-label {
+            background: #31b66b !important;
+        }
+
+        .company-master-pro .input-validation-error {
+            border-color: #dc3545 !important;
+            background: #fff8f8 !important;
+        }
+
+    @@media(max-width:991px) {
+        .company-master-pro .page-head {
+            grid-template-columns: 1fr !important;
+        }
+    }
+
+    @@media(max-width:767px) {
+        .company-master-pro .company-header {
+            padding: 10px 14px;
+            align-items: flex-start;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .company-master-pro .company-content {
+            padding: 10px;
+        }
+
+        .company-master-pro .card-body {
+            padding: 12px !important;
+        }
+
+        .company-master-pro .company-toolbar {
+            padding: 0 12px;
+        }
+
+        .company-master-pro .section-right {
+            padding: 10px;
+        }
+
+        .company-master-pro #myTab {
+            overflow-x: auto;
+            flex-wrap: nowrap;
+        }
+
+            .company-master-pro #myTab .nav-link {
+                white-space: nowrap;
+            }
+    }
+    /*
+    .company-master-pro .page-header,
+    .company-master-pro .page-title,
+    .company-master-pro .breadcrumbs {
+        margin: 0 !important;
+        padding: 0 !important;
+    }*/
+</style>
+<input type="hidden" value="@Model.PageAction" id="pageAction" />
+<div class="company-master-pro page-main">
+    <div class="page-main-header">
+        <div class="page-main-title">
+            <span>
+                <i class="fa fa-building"></i> Update Company Information
+            </span>
+        </div>
+        <nav>
+            <ol class="breadcrumb page-breadcrumb">
+                <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
+                <li class="breadcrumb-item active">
+                    <a href="@Url.Action("Company", "Master")">Company List</a>
+                </li>
+                <li class="breadcrumb-item active">Update Company</li>
+            </ol>
+        </nav>
+    </div>
+    <div class="page-main-container">
+        <div class="page-main-card">
+            @using (Html.BeginForm("CompanyAction", "Master", FormMethod.Post, new { id = "companyMasterForm" }))
+            {
+                <div class="page-main-card-header">
+                    <div class="page-main-card-title">
+
+                    </div>
+                    <div class="page-main-card-actions">
+                        @if (Model.PageAction == "V")
+                        {
+                            <button class="btn btn-sm" onclick="EditPageData()" type="button"><i class="fa fa-pencil font16"></i></button>
+                        }
+                        @if (Model.PageAction == "V")
+                        {
+                            <button class="btn btn-sm" disabled type="submit"><i class="fa fa-save font16"></i></button>
+                        }
+                        else
+                        {
+                            <button class="btn btn-sm" type="submit"><i class="fa fa-save font16"></i></button>
+                        }
+                        <a class="btn btn-sm" href="@Url.Action("Company","Master")"><i class="fa fa-arrow-circle-left font16"></i></a>
+                    </div>
+                </div>
+                <div class="page-main-card-body">
+                    @if (ViewBag.ErrorMessages != null)
+                    {
+                        <div id="divError">
+                            <div class="alert alert-danger">
+                                <strong>Danger!</strong>  @ViewBag.ErrorMessages
+                            </div>
+                        </div>
+                    }
+                    @if (ViewBag.SuccessMessage != null)
+                    {
+                        <div id="divsuccess">
+                            <div class="alert alert-success">
+                                <strong>Success!</strong> @ViewBag.SuccessMessage
+                            </div>
+                        </div>
+                    }
+                    @Html.HiddenFor(m => m.CompanyId)
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="card company-card">
+                                <div class="card-body">
+                                    <div class="page-head">
+                                        <div class="section-left">
+                                            <div class="row">
+                                                <div class="col-md-6 form-group">
+                                                    <div class="col col-md-6 p-0"><label class=" form-control-label">Company Code</label></div>
+                                                    <div class="col-12 col-md-6 text-left">
+                                                        @*<p class="form-control-static">@Model.CompanyCode</p>*@
+                                                        @Html.HiddenFor(m => m.CompanyCode)
+                                                        @Html.TextBoxFor(m => m.CompanyCode, new { @placeholder = "Company Name ", @class = "form-control", @disabled = "disabled" })
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6 form-group">
+                                                    <div class="col col-md-6 p-0 text-right"><label for="select" class=" form-control-label">Status</label></div>
+                                                    <div class="col-12 col-md-6">
+                                                        <label class="switch switch-3d switch-success mr-3">
+                                                            <input type="checkbox" class="switch-input" checked="checked"> <span class="switch-label"></span> <span class="switch-handle"></span>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row form-group">
+                                                <div class="col col-md-3">
+                                                    <label for="text-input" class=" form-control-label">Name<span class="text-danger p-1">(*)</span></label>
+                                                </div>
+                                                <div class="col-12 col-md-9">
+                                                    @Html.TextBoxFor(m => m.CompanyName, new { @placeholder = "Company Name ", @class = "form-control" })
+                                                    @Html.ValidationMessageFor(m => m.CompanyName, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                            <div class="row form-group">
+                                                <div class="col col-md-3">
+                                                    <label for="text-input" class=" form-control-label">Alias</label>
+                                                </div>
+                                                <div class="col-12 col-md-9">
+                                                    @Html.TextBoxFor(m => m.CompanyName, new { @placeholder = "Alias", @class = "form-control" })
+                                                    @Html.ValidationMessageFor(m => m.CompanyName, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                            <div class="row form-group">
+                                                <div class="col col-md-3">
+                                                    <label for="text-input" class=" form-control-label">Email<span class="text-danger p-1">(*)</span></label>
+                                                </div>
+                                                <div class="col-12 col-md-9">
+                                                    <div class="input-group">
+                                                        @Html.TextBoxFor(m => m.Email, new { @placeholder = "Email", @class = "form-control", @name = "input2-group1" })
+                                                        @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row form-group">
+                                                <div class="col col-md-3">
+                                                    <label for="text-input" class=" form-control-label">Web Site</label>
+                                                </div>
+                                                <div class="col-12 col-md-9">
+                                                    @Html.TextBoxFor(m => m.WebStite, new { @placeholder = "Web Site", @class = "form-control" })
+                                                </div>
+                                            </div>
+                                            <div class="row form-group">
+                                                <div class="col col-md-3">
+                                                    <label for="Phone" class="control-label mb-1">Phone<span class="text-danger p-1">(*)</span></label>
+                                                </div>
+                                                <div class="col-12 col-md-9">
+                                                    @Html.TextBoxFor(m => m.Phone, new { @placeholder = "Phone", @class = "form-control" })
+                                                    @Html.ValidationMessageFor(model => model.Phone, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                            <div class="row form-group">
+                                                <div class="col col-md-3">
+                                                    <label for="Mobile" class="control-label mb-1">Mobile<span class="text-danger p-1">(*)</span></label>
+                                                </div>
+                                                <div class="col-12 col-md-9">
+                                                    <div class="input-group">
+                                                        @Html.TextBoxFor(m => m.Mobile, new { @placeholder = "Mobile", @class = "form-control" })
+                                                        @Html.ValidationMessageFor(model => model.Mobile, "", new { @class = "text-danger" })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row form-group">
+                                                <div class="col col-md-3">
+                                                    <label for="text-input" class=" form-control-label">Fax</label>
+                                                </div>
+                                                <div class="col-12 col-md-9">
+                                                    @Html.TextBoxFor(m => m.Fax, new { @placeholder = "Fax", @class = "form-control" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="section-right">
+
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <div class="form-group">
+                                                        <strong for="RegisterAddress1" class="control-label mb-1">Register Address</strong>
+                                                        @Html.TextAreaFor(m => m.RegisterAddress1, new { @placeholder = "Address1", @class = "form-control" })
+                                                        @Html.ValidationMessageFor(model => model.RegisterAddress1, "", new { @class = "text-danger" })
+                                                    </div>
+                                                </div>
+                                                <div class="col-6">
+                                                    <strong for="FactoryAddress1" class="control-label mb-1">Factory Address</strong>
+                                                    <div class="input-group">
+                                                        @Html.TextAreaFor(m => m.FactoryAddress1, new { @placeholder = "Address1", @class = "form-control" })
+                                                        @Html.ValidationMessageFor(model => model.FactoryAddress1, "", new { @class = "text-danger" })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <div class="form-group">
+                                                        @Html.TextAreaFor(m => m.RegisterAddress2, new { @placeholder = "Address 2", @class = "form-control" })
+                                                    </div>
+                                                </div>
+                                                <div class="col-6">
+                                                    <div class="input-group">
+                                                        @Html.TextAreaFor(m => m.FactoryAddress2, new { @placeholder = "Address 2", @class = "form-control" })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <div class="form-group">
+                                                        @Html.DropDownListFor(m => m.RegiterCityId, new SelectList(ViewBag.CityList, "Value", "Text"), "Select City", new { @class = "form-control form-select", @id = "ddlRCity" })
+                                                    </div>
+                                                </div>
+                                                <div class="col-6">
+                                                    <div class="input-group">
+                                                        @Html.DropDownListFor(m => m.FactoryCityId, new SelectList(ViewBag.CityList, "Value", "Text"), "Select City", new { @class = "form-control form-select", @id = "ddlFCity" })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <div class="form-group">
+                                                        @Html.DropDownListFor(m => m.RegiterStateId, new SelectList(ViewBag.StateList, "Value", "Text"), "Select State", new { @class = "form-control form-select", @id = "ddlRState" })
+                                                    </div>
+                                                </div>
+                                                <div class="col-6">
+                                                    <div class="input-group">
+                                                        @Html.DropDownListFor(m => m.FactoryStateId, new SelectList(ViewBag.StateList, "Value", "Text"), "Select State", new { @class = "form-control form-select", @id = "ddlFState" })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <div class="form-group">
+                                                        @Html.DropDownListFor(m => m.RegisterCountryId, new SelectList(ViewBag.CountryList, "Value", "Text"), "Select Country", new { @class = "form-control form-select", @id = "ddlRCountry" })
+                                                    </div>
+                                                </div>
+                                                <div class="col-6">
+                                                    <div class="input-group">
+                                                        @Html.DropDownListFor(m => m.FactoryCountryId, new SelectList(ViewBag.CountryList, "Value", "Text"), "Select Country", new { @class = "form-control form-select", @id = "ddlFCountry" })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <div class="form-group">
+                                                        @Html.TextBoxFor(m => m.RegisterPincode, new { @placeholder = "Pincode", @class = "form-control" })
+                                                    </div>
+                                                </div>
+                                                <div class="col-6">
+                                                    <div class="input-group">
+                                                        @Html.TextBoxFor(m => m.FactoryPincode, new { @placeholder = "Pincode", @class = "form-control" })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="page-breaker"></div>
+                                    <ul class="nav nav-tabs" id="myTab" role="tablist">
+                                        <li class="nav-item">
+                                            <a class="nav-link active" id="profile-tab" data-toggle="tab" href="#Accountdetails" role="tab" aria-controls="Accountdetails" aria-selected="false">Account Details</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" id="financialyear-tab" data-toggle="tab" href="#FinancialYear" role="tab" aria-controls="FinancialYear" aria-selected="false">Financial Year</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" id="bank-tab" data-toggle="tab" href="#Bankdetails" role="tab" aria-controls="Bankdetails" aria-selected="false">Bank Details</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" id="unit-tab" data-toggle="tab" href="#Unitdetails" role="tab" aria-controls="Unitdetails" aria-selected="false">Unit Details</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" id="emailcofig-tab" data-toggle="tab" href="#emailcofig" role="tab" aria-controls="emailcofig" aria-selected="true">Email Configuration</a>
+                                        </li>
+                                    </ul>
+                                    <div class="tab-content pl-3 p-1" id="myTabContent">
+                                        <div class="tab-pane fade show active" id="Accountdetails" role="tabpanel" aria-labelledby="profile-tab">
+                                            <div class="row form-group">
+                                                <div class="col col-md-3"><label for="GSTNo" class="form-control-label">GST No</label></div>
+                                                <div class="col-12 col-md-9">
+                                                    @Html.TextBoxFor(m => m.GSTNo, new { @placeholder = "GST No", @class = "form-control" })
+                                                </div>
+                                            </div>
+                                            <div class="row form-group">
+                                                <div class="col col-md-3">
+                                                    <label for="PANNo" class="form-control-label">PAN No</label>
+                                                </div>
+                                                <div class="col-12 col-md-9">
+                                                    @Html.TextBoxFor(m => m.PANNo, new { @placeholder = "PAN No", @class = "form-control" })
+                                                </div>
+                                            </div>
+                                            <div class="row form-group">
+                                                <div class="col col-md-3"><label for="CINNo" class=" form-control-label"> CIN No</label></div>
+                                                <div class="col-12 col-md-9">
+                                                    @Html.TextBoxFor(m => m.CINNo, new { @placeholder = "CIN No", @class = "form-control" })
+                                                </div>
+                                            </div>
+                                            <div class="row form-group">
+                                                <div class="col col-md-3"><label for="ECCNo" class=" form-control-label">ECC No</label></div>
+                                                <div class="col-12 col-md-9">
+                                                    @Html.TextBoxFor(m => m.ECCNo, new { @placeholder = "ECC No", @class = "form-control", @maxlength = "50" })
+                                                </div>
+                                            </div>
+                                            <div class="row form-group">
+                                                <div class="col col-md-3"><label for="RegistrationNo" class=" form-control-label">Registration No</label></div>
+                                                <div class="col-12 col-md-9">
+                                                    @Html.TextBoxFor(m => m.RegistrationNo, new { @placeholder = "Registration No", @class = "form-control", @maxlength = "30" })
+                                                </div>
+                                            </div>
+                                            <div class="row form-group">
+                                                <div class="col col-md-3"><label for="RegistrationDate" class=" form-control-label">Registration Date</label></div>
+                                                <div class="col-12 col-md-9">
+                                                    @Html.TextBoxFor(m => m.RegistrationDate, "{0:yyyy-MM-dd}", new { @autocomplete = "off", @placeholder = "Registration Date", @class = "form-control datepicker", @type = "date" })
+                                                </div>
+                                            </div>
+                                            <div class="row form-group">
+                                                <div class="col col-md-3"><label for="MSMENo" class=" form-control-label">MSME #</label></div>
+                                                <div class="col-12 col-md-9">
+                                                    @Html.TextBoxFor(m => m.MSMENo, new { @placeholder = "MSME Number", @class = "form-control", @maxlength = "30" })
+                                                </div>
+                                            </div>
+                                            <div class="row form-group">
+                                                <div class="col col-md-3"><label for="TANNo" class=" form-control-label">TAN Registration #</label></div>
+                                                <div class="col-12 col-md-9">
+                                                    @Html.TextBoxFor(m => m.TANNo, new { @placeholder = "TAN Number", @class = "form-control", @maxlength = "30" })
+                                                </div>
+                                            </div>
+                                            <div class="row form-group">
+                                                <div class="col col-md-3"><label for="PFNo" class=" form-control-label">PF Registration #</label></div>
+                                                <div class="col-12 col-md-9">
+                                                    @Html.TextBoxFor(m => m.PFNo, new { @placeholder = "PF Number", @class = "form-control", @maxlength = "30" })
+                                                </div>
+                                            </div>
+                                            <div class="row form-group">
+                                                <div class="col col-md-3"><label for="ESICNo" class=" form-control-label">ESIC Registration #</label></div>
+                                                <div class="col-12 col-md-9">
+                                                    @Html.TextBoxFor(m => m.ESICNo, new { @placeholder = "ESIC Registration Number", @class = "form-control", @maxlength = "30" })
+                                                </div>
+                                            </div>
+                                            <div class="row form-group">
+                                                <div class="col col-md-3"><label for="PrefessionTaxNo" class=" form-control-label">Professonal Tax #</label></div>
+                                                <div class="col-12 col-md-9">
+                                                    @Html.TextBoxFor(m => m.PrefessionTaxNo, new { @placeholder = "Professonal Tax Number", @class = "form-control", @maxlength = "30" })
+                                                </div>
+                                            </div>
+                                            <div class="row form-group">
+                                                <div class="col col-md-3"><label for="LWFPrefessionNo" class=" form-control-label">LWF Registration #</label></div>
+                                                <div class="col-12 col-md-9">
+                                                    @Html.TextBoxFor(m => m.LWFPrefessionNo, new { @placeholder = "LWF Registration Number", @class = "form-control", @maxlength = "30" })
+                                                </div>
+                                            </div>
+                                            <div class="row form-group">
+                                                <div class="col col-md-3"><label for="DefaultCurrencyId" class=" form-control-label">Default Currency</label></div>
+                                                <div class="col-12 col-md-9">
+                                                    @Html.DropDownListFor(m => m.DefaultCurrencyId, new SelectList(ViewBag.CurrencyList, "Value", "Text"), "Select Currency", new { @class = "form-control form-select", @id = "ddlCurrency" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane fade" id="FinancialYear" role="tabpanel" aria-labelledby="financialyear-tab">
+                                            <div class="row form-group">
+                                                <div class="col col-md-12 text-right">
+                                                    <a class="btn btn-primary" href="javascript:void(0);" title="Add New Fiancial" data-toggle="modal" data-target="#mediumModal"><i class="fa fa-plus"></i></a>
+                                                </div>
+                                            </div>
+                                            <div class="row form-group">
+                                                <table id="tblFinancial" class="display cell-border row-border nowrap" cellspacing="0" width="100%"></table>
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane fade" id="Bankdetails" role="tabpanel" aria-labelledby="Bankdetails-tab">
+                                            <div class="row form-group">
+                                                <div class="col col-md-12 text-right">
+                                                    <a class="btn btn-primary" href="javascript:void(0);" title="Add New Bank" data-toggle="modal" data-target="#mediumModalBank"><i class="fa fa-plus"></i></a>
+                                                </div>
+                                            </div>
+                                            <div class="row form-group">
+                                                <table id="tblBankDetails" class="display cell-border row-border nowrap" cellspacing="0" width="100%"></table>
+                                            </div>
+                                            @*<div class="row form-group">*@
+                                            @*<table id="bootstrap-data-table-export" class="table table-striped table-bordered">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Name</th>
+                                                            <th>Position</th>
+                                                            <th>Office</th>
+                                                            <th>Salary</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>Tiger Nixon</td>
+                                                            <td>System Architect</td>
+                                                            <td>Edinburgh</td>
+                                                            <td>$320,800</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>Garrett Winters</td>
+                                                            <td>Accountant</td>
+                                                            <td>Tokyo</td>
+                                                            <td>$170,750</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>*@
+                                            @*</div>*@
+                                        </div>
+                                        <div class="tab-pane fade" id="Unitdetails" role="tabpanel" aria-labelledby="contact-tab">
+                                            <div class="row form-group">
+                                                <div class="row form-group">
+                                                    <div class="col col-md-12 text-right">
+                                                        <a class="btn btn-primary" href="javascript:void(0);" title="Add New Bank" data-toggle="modal" data-target="#mediumModalUnit"><i class="fa fa-plus"></i></a>
+                                                    </div>
+                                                </div>
+                                                <div class="row form-group">
+                                                    <table id="tblUnitDetails" class="display cell-border row-border nowrap" cellspacing="0" width="100%"></table>
+                                                </div>
+                                                @*<div class="col-12 col-md-12">
+                                                        <table id="bootstrap-data-table-export" class="table table-striped table-bordered">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>Name</th>
+                                                                    <th>Position</th>
+                                                                    <th>Office</th>
+                                                                    <th>Salary</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td>Tiger Nixon</td>
+                                                                    <td>System Architect</td>
+                                                                    <td>Edinburgh</td>
+                                                                    <td>$320,800</td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>*@
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane fade" id="emailcofig" role="tabpanel" aria-labelledby="emailcofig-tab">
+                                            <div class="form-horizontal page-head">
+                                                <div class="section-left">
+                                                    <!-- Email Subject Field -->
+                                                    <div class="row form-group">
+                                                        <div class="col col-md-3">
+                                                            <label for="text-input" class="form-control-label">From Email</label>
+                                                        </div>
+                                                        <div class="col-12 col-md-9">
+                                                            @Html.TextBoxFor(m => m.FromEmail, new { @class = "form-control", @placeholder = "From Email", @maxlength = "255" })
+                                                            @Html.ValidationMessageFor(m => m.FromEmail, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                    <!-- Password -->
+                                                    <div class="row form-group">
+                                                        <div class="col col-md-3">
+                                                            <label for="text-input" class="form-control-label">Password</label>
+                                                        </div>
+                                                        <div class="col-12 col-md-9">
+                                                            @Html.TextBoxFor(m => m.FromPassword, new { @class = "form-control", @type = "password", @placeholder = "Email Password", @maxlength = "255" })
+                                                            @Html.ValidationMessageFor(m => m.FromPassword, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                    <!-- Display Name -->
+                                                    <div class="row form-group">
+                                                        <div class="col col-md-3">
+                                                            <label for="text-input" class="form-control-label">Display Name</label>
+                                                        </div>
+                                                        <div class="col-12 col-md-9">
+                                                            @Html.TextBoxFor(m => m.DisplayName, new { @placeholder = "Recipient Email", @class = "form-control", @maxlength = "100" })
+                                                            @Html.ValidationMessageFor(m => m.DisplayName, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="section-right">
+                                                    <!-- SmtpServer -->
+                                                    <div class="row form-group">
+                                                        <div class="col col-md-3">
+                                                            <label for="text-input" class="form-control-label">SMTP Server</label>
+                                                        </div>
+                                                        <div class="col-12 col-md-9">
+                                                            @Html.TextBoxFor(m => m.SmtpServer, new { @placeholder = "SMTP Server", @class = "form-control", @maxlength = "255" })
+                                                            @Html.ValidationMessageFor(m => m.SmtpServer, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                    <!-- SmtpPort Field -->
+                                                    <div class="row form-group">
+                                                        <div class="col col-md-3">
+                                                            <label for="text-input" class="form-control-label">SMTP Port</label>
+                                                        </div>
+                                                        <div class="col-12 col-md-9">
+                                                            @Html.TextBoxFor(m => m.SmtpPort, new { @placeholder = "SMTP Port", @class = "form-control", @maxlength = "100" })
+                                                            @Html.ValidationMessageFor(m => m.SmtpPort, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                    <!-- EnableSSL -->
+                                                    <div class="row form-group">
+                                                        <div class="col col-md-3">
+                                                            <label for="text-input" class="form-control-label">EnableSSL</label>
+                                                        </div>
+                                                        <div class="col-12 col-md-9">
+                                                            @Html.CheckBoxFor(m => m.EnableSSL, new { @placeholder = "Enable SSL", @class = "form-check", @maxlength = "100" })
+                                                            @Html.ValidationMessageFor(m => m.EnableSSL, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="mediumModal" tabindex="-1" role="dialog" aria-labelledby="mediumModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document" style="width:400px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="mediumModalLabel">Add New Financial Year</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row form-group">
+                    <div class="col-md-12">
+                        <label for="text-input" class=" form-control-label">Start Date<span class="text-danger p-1">(*)</span></label>
+                        @*<input type="text" id="CompanyCode" name="CompanyCode" placeholder="Company Code" required class="form-control" />*@
+                        <div class='input-group date' id='datetimepicker1'>
+                            <input id="fianancialStartDate" class="form-control" type="date" />
+                            <span class="input-group-addon">
+                                @*<span class="fa fa-calendar"></span>*@
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-md-12">
+                        <label for="text-input" class=" form-control-label">End Date<span class="text-danger p-1">(*)</span></label>
+                        <div class='input-group date' id='datetimepicker2'>
+                            <input id="fianancialEndDate" class="form-control" type="date" />
+                            <span class="input-group-addon">
+                                @*<span class="fa fa-calendar"></span>*@
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-md-12">
+                        <label for="text-input" class=" form-control-label">Alias<span class="text-danger p-1">(*)</span></label>
+                        <div class="input-group">
+                            <input type="text" id="txtFinancialAlias" name="Email" placeholder="Alias" maxlength="50" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="btncancel" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="SaveFinancial();">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="mediumModalBank" tabindex="-1" role="dialog" aria-labelledby="mediumBankModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document" style="width:400px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="mediumBankModalLabel">Add New Bank Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row form-group">
+                    <div class="col-md-12">
+                        <input type="hidden" id="hdnBankId" />
+                        <label for="text-input" class=" form-control-label">Bank Name<span class="text-danger p-1">(*)</span></label>
+                        <div class="input-group">
+                            <input type="text" id="txtBankName" name="BankName" placeholder="Bank Name" maxlength="50" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-md-12">
+                        <label for="text-input" class=" form-control-label">Branch Name<span class="text-danger p-1">(*)</span></label>
+                        <div class="input-group">
+                            <input type="text" id="txtBranchName" name="BranchName" placeholder="Branch Name" maxlength="50" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-md-12">
+                        <label for="text-input" class=" form-control-label">Branch Code<span class="text-danger p-1">(*)</span></label>
+                        <div class="input-group">
+                            <input type="text" id="txtBranchCode" name="BranchCode" placeholder="Branch code" maxlength="20" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-md-12">
+                        <label for="text-input" class=" form-control-label">Branch Address1<span class="text-danger p-1">(*)</span></label>
+                        <div class="input-group">
+                            <input type="text" id="txtBranchAddress1" name="BranchAddress1" placeholder="Branch Address 1" maxlength="50" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-md-12">
+                        <label for="text-input" class=" form-control-label">Branch Address 2</label>
+                        <div class="input-group">
+                            <input type="text" id="txtBranchAddress2" name="BranchAddress2" placeholder="Branch Address 2" maxlength="50" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-md-12">
+                        <label for="text-input" class=" form-control-label">City<span class="text-danger p-1">(*)</span></label>
+                        <div class="input-group">
+                            @*<input type="text" id="txtCity" name="City" placeholder="Branch code" maxlength="20" class="form-control" />*@
+                            @Html.DropDownList("BankCityId", new SelectList(ViewBag.CityList, "Value", "Text"), "Select City", new { @class = "form-control form-select", @id = "ddlBankCity" })
+                        </div>
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-md-12">
+                        <label for="text-input" class=" form-control-label">Account No<span class="text-danger p-1">(*)</span></label>
+                        <div class="input-group">
+                            <input type="text" id="txtAccountNo" name="AccountNo" placeholder="Account No" maxlength="20" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-md-12">
+                        <label for="text-input" class=" form-control-label">IFSC Code<span class="text-danger p-1">(*)</span></label>
+                        <div class="input-group">
+                            <input type="text" id="txtIFSCCode" name="IFSCCode" placeholder="IFSC Code" maxlength="20" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-md-12">
+                        <label for="text-input" class=" form-control-label">Swift Code</label>
+                        <div class="input-group">
+                            <input type="text" id="txtSwiftCode" name="SwiftCde" placeholder="Swift Code" maxlength="20" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="btncancelBank" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="SaveBankDetails();">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="mediumModalUnit" tabindex="-1" role="dialog" aria-labelledby="mediumUnitModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document" style="width:400px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="mediumUnitModalLabel">Add New Unit Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row form-group">
+                    <div class="col-md-12">
+                        <input type="hidden" id="hdnUnitId" />
+                        <label for="text-input" class=" form-control-label">Site Name<span class="text-danger p-1">(*)</span></label>
+                        <div class="input-group">
+                            <input type="text" id="txtSiteName" name="SiteName" placeholder="Site Name" maxlength="50" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-md-12">
+                        <label for="text-input" class=" form-control-label">Address1<span class="text-danger p-1">(*)</span></label>
+                        <div class="input-group">
+                            <input type="text" id="txtAddress1" name="Address1" placeholder="Branch Address 1" maxlength="50" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-md-12">
+                        <label for="text-input" class=" form-control-label">Address 2</label>
+                        <div class="input-group">
+                            <input type="text" id="txtAddress2" name="Address2" placeholder="Branch Address 2" maxlength="50" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-md-12">
+                        <label for="text-input" class=" form-control-label">City</label>
+                        <div class="input-group">
+                            @*<input type="text" id="txtCity" name="City" placeholder="City" maxlength="20" class="form-control" />*@
+                            @Html.DropDownList("UnitCityId", new SelectList(ViewBag.CityList, "Value", "Text"), "Select City", new { @class = "form-control form-select", @id = "ddlUnitCity" })
+                        </div>
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-md-12">
+                        <label for="text-input" class=" form-control-label">State</label>
+                        <div class="input-group">
+                            @*<input type="text" id="txtStateId" name="StateId" placeholder="StateId" maxlength="20" class="form-control" />*@
+                            @Html.DropDownList("ddlUnitStateId", new SelectList(ViewBag.StateList, "Value", "Text"), "Select State", new { @class = "form-control form-select", @id = "ddlUnitState" })
+                        </div>
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-md-12">
+                        <label for="text-input" class=" form-control-label">Country</label>
+                        <div class="input-group">
+                            @*<input type="text" id="txtCountryId" name="Country" placeholder="Country" maxlength="20" class="form-control" />*@
+                            @Html.DropDownList("ddlUnitCountryId", new SelectList(ViewBag.StateList, "Value", "Text"), "Select Country", new { @class = "form-control form-select", @id = "ddlUnitCountry" })
+                        </div>
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-md-12">
+                        <label for="text-input" class=" form-control-label">Pin code<span class="text-danger p-1">(*)</span></label>
+                        <div class="input-group">
+                            <input type="text" id="txtPincode" name="Pincode" placeholder="Pin code" maxlength="20" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-md-12">
+                        <label for="text-input" class=" form-control-label">GST No<span class="text-danger p-1">(*)</span></label>
+                        <div class="input-group">
+                            <input type="text" id="txtGSTNo" name="GSTNo" placeholder="GSTNo" maxlength="20" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-md-12">
+                        <label for="text-input" class=" form-control-label">PAN No</label>
+                        <div class="input-group">
+                            <input type="text" id="txtPANNo" name="PANNo" placeholder="PAN No" maxlength="20" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-md-12">
+                        <label for="text-input" class=" form-control-label">Phone</label>
+                        <div class="input-group">
+                            <input type="text" id="txtPhone" name="Phone" placeholder="PAN No" maxlength="20" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-md-12">
+                        <label for="text-input" class=" form-control-label">Email</label>
+                        <div class="input-group">
+                            <input type="text" id="txtEmail" name="Email" placeholder="Email" maxlength="50" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="btncancelUnit" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="SaveUnitDetails();">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $('#ddlRCity').select2();
+    $('#ddlFCity').select2();
+    $('#ddlRState').select2();
+    $('#ddlFState').select2();
+    $('#ddlRCountry').select2();
+    $('#ddlFCountry').select2();
+
+    $(document).ready(function () {
+        $('.datepicker').datepicker({
+            format: 'dd-mm-yyyy',
+            autoclose: true,
+            todayHighlight: true
+        });
+        $("#divpageDetail select").each(function () {
+            if ($(this).attr("id") != undefined && $(this).attr("id").length > 0) {
+                if ($("#pageAction").val().length > 0 && $("#pageAction").val() == "V") {
+                    $(this).attr('disabled', 'disabled');
+                }
+                else if ($("#pageAction").val().length > 0 && ($("#pageAction").val() == "E" || $("#pageAction").val() == "A")) {
+                    $(this).removeAttr('disabled');
+                }
+                else {
+                    $(this).attr('disabled', 'disabled');
+                }
+            }
+        });
+        $("#divpageDetail input").each(function () {
+            if ($(this).attr("id") != undefined && $(this).attr("id").length > 0) {
+                if ($("#pageAction").val() == "V") {
+                    $(this).attr('disabled', 'disabled');
+                }
+                else if ($("#pageAction").val().length > 0 && ($("#pageAction").val() == "E" || $("#pageAction").val() == "A")) {
+                    if ($(this).attr("id") != "CompanyCode") {
+                        $(this).removeAttr('disabled');
+                    }
+                }
+                else {
+                    $(this).attr('disabled', 'disabled');
+                }
+            }
+        });
+        $("#divpageDetail textarea").each(function () {
+            if ($(this).attr("id") != undefined && $(this).attr("id").length > 0) {
+                if ($("#pageAction").val().length > 0 && $("#pageAction").val() == "V") {
+                    $(this).attr('disabled', 'disabled');
+                }
+                else if ($("#pageAction").val().length > 0 && ($("#pageAction").val() == "E" || $("#pageAction").val() == "A")) {
+                    $(this).removeAttr('disabled');
+                }
+                else {
+                    $(this).attr('disabled', 'disabled');
+                }
+            }
+        });
+        SetDefaultSelection("ddlRCity", '@Model.RegiterCityId');
+        SetDefaultSelection("ddlFCity", '@Model.FactoryCityId');
+        SetDefaultSelection("ddlRState", '@Model.RegiterStateId');
+        SetDefaultSelection("ddlFState", '@Model.FactoryStateId');
+        SetDefaultSelection("ddlRCountry", '@Model.RegisterCountryId');
+        SetDefaultSelection("ddlFCountry", '@Model.FactoryCountryId');
+        $('#btnrefresh').click(function () {
+            location.reload();
+        });
+        GetFinancialYears();
+        GetBankDetails();
+        GetUnitDetails();
+        //let startDate = document.getElementById('fianancialStartDate')
+        //let endDate = document.getElementById('endDate')
+
+        //startDate.addEventListener('change', (e) => {
+        //    let startDateVal = e.target.value
+        //    document.getElementById('startDateSelected').innerText = startDateVal
+        //})
+
+        //endDate.addEventListener('change', (e) => {
+        //    let endDateVal = e.target.value
+        //    document.getElementById('endDateSelected').innerText = endDateVal
+        //})
+    });
+    function EditPageData() {
+        if (confirm("Are you sure you want to edit record?")) {
+            var editlink1 = '@Url.Action("CompanyAction", "Master", new { uId= "_uId", act = "E" })';
+            editlink1 = editlink1.replace("amp;", "");
+            editlink1 = editlink1.replace("amp;", "");
+            editlink1 = editlink1.replace("_uId", encodeURIComponent($("#CompanyId").val()));
+
+            location.href = editlink1;
+        }
+    }
+    function SaveFinancial() {
+        var isFormValid = true;
+        $("#mediumModal input").each(function () {
+            if ($.trim($(this).val()).length == 0) {
+                $(this).addClass("input-validation-error");
+                if (isFormValid == true) {
+                    $(this).focus();
+                }
+                isFormValid = false;
+            }
+            else {
+                $(this).removeClass("input-validation-error");
+            }
+        });
+         if (!isFormValid) {
+            alert("Please fill in all the required fields (indicated by *)");
+         }
+         else {
+             try {
+                 var company = {
+                     Alias: $("#txtFinancialAlias").val(),
+                     StartDate: $("#fianancialStartDate").val(),
+                     EndDate: $("#fianancialEndDate").val(),
+                     IsActive: 1,
+                     CompanyId: $("#CompanyId").val()
+                 };
+                 $.ajax({
+                     type: "POST", url: '@Url.Action("SaveCompanyFinancial", "Master")',
+                     contentType: "application/json;",
+                     data: JSON.stringify(company),
+                     async: false,
+                     success: function (response) {
+                         if (response.IsSuccess) {
+                             ShowToastNotification("success","Record saved successfully");
+                             $("#btncancel").click();
+                             GetFinancialYears();
+                         }
+                         else {
+                             alert(response.Response);
+                             ShowToastNotification("error", response.Response);
+                         }
+                     },
+                     failure: function (response) { },
+                     error: function (response) { }
+                 });
+             } catch (e) {
+             }
+         }
+    }
+    function GetFinancialYears() {
+        $.ajax({
+            type: "GET",
+            url: "@Url.Action("getFinancialYears", "Master")",
+            data: { uId: $("#CompanyId").val() },
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: Bindfinacinal,
+            failure: function (response) {
+                alert(response.d);
+            },
+            error: function (response) {
+                alert(response);
+            }
+        });
+    }
+    function Bindfinacinal(dataset) {
+        // Assuming data is an array of objects
+        //if (dataset.length === 0) {
+        //    return; // No data to display
+        //}
+        //if ($.fn.DataTable.isDataTable('#tblFinancial')) {
+        //    $('#tblFinancial').DataTable().destroy();
+        //}
+        // Extract column names from the first object
+        //const columns = Object.keys(dataset[0]).map(key => {
+        //    if (key == "CompanyCode") {
+        //        return { title: key, data: key };
+        //    }
+        //});
+        // Initialize DataTable
+        new DataTable('#tblFinancial', {
+            "destroy": true,
+            layout: {
+                topStart: {
+                    pageLength: {
+                        menu: [10, 25, 50, 100]
+                    },
+                    ///buttons: ['excelHtml5', 'csvHtml5', 'pdfHtml5']
+                },
+                topEnd: {
+                    search: {
+                        placeholder: 'Type search here'
+                    }
+                },
+                bottomEnd: {
+                    paging: {
+                        buttons: 5
+                    }
+                },
+            },
+            paging: true,
+            scrollCollapse: true,
+            /// scrollY: '500px',
+            data: dataset,
+            columns: [
+                {
+                    title: '',
+                    className: "grid-action-item",
+                    render: function (data, type, row, meta) {
+                        var editlink = "/Master/CompanyAction?uId=" + row.FiancialYearId;
+                        return "<a title='Edit Record' data-toggle='modal' data-target='#mediumModal' href=javascript:void(0);><i class='fa fa-pencil'></i></a> &nbsp;|&nbsp; <a title='Delete Record' href='javascript:DeleteCompany(\"" + row.FiancialYearId + "\")';><i class='fa fa-trash text-danger'></i></a>";
+                    },
+                },
+                {
+                    title: 'Alias',
+                    render: function (data, type, row, meta) {
+                        return "<a title='View Record' href=" + row.CompanyId + ">" + row.Alias +"</a>";
+                    },
+                },
+                {
+                    title: 'Status',
+                    className: 'text-center',
+                    render: function (data, type, row, meta) {
+                        return (row.IsActive === true) ? '<span class="fa fa-check text-success"></span>' : '<span class="fa fa-remove text-danger"></span>';
+                    }
+                },
+                {
+                    title: 'Start Date',
+                    render: function (data, type, row, meta) {
+                        var editlink = formatDateOnly(parseMSDate(row.StartDate));
+                        return "<span>" + editlink + "</span>";
+                    },
+                },
+                {
+                    title: 'End Date',
+                    render: function (data, type, row, meta) {
+                        var editlink = formatDateOnly(parseMSDate(row.EndDate));
+                        return "<span>" + editlink + "</span>";
+                    },
+                },
+
+            ]
+        });
+    }
+    function parseMSDate(s) {
+        // Jump forward past the /Date(, parseInt handles the rest
+        return new Date(parseInt(s.substr(6)));
+    }
+    function formatDateOnly(d) {
+        var s = (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear();
+        return s;
+    }
+    function formatDate(d) {
+        if (hasTime(d)) {
+            let n = d.toLocaleString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+            });
+            var s = (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear();
+        } else {
+            var s = (d.getDate() + '/' + d.getMonth() + 1) + '/' + d.getFullYear();
+        }
+        return s;
+    }
+    function hasTime(d) {
+        return !!(d.getUTCHours() || d.getUTCMinutes() || d.getUTCSeconds());
+    }
+
+    function zeroFill(n) {
+            if ((n + '').length == 1)
+                return '0' + n;
+
+            return n;
+        }
+
+    //Bank Save details
+
+    function SaveBankDetails() {
+        var CompanyId = $("#CompanyId").val();
+          var isFormValid = true;
+        var requiredFields = [
+            "#txtBankName",
+            "#txtBranchName",
+            "#txtBranchCode",
+            "#txtBranchAddress1",
+            "#ddlBankCity",
+            "#txtAccountNo",
+            "#txtIFSCCode"
+        ];
+        requiredFields.forEach(function (selector) {
+            var $field = $(selector);
+            if (!$field.val().trim()) {
+                $field.addClass("input-validation-error");
+                if (isFormValid == true) {
+                  $(this).focus();
+                }
+                isFormValid = false;
+            } else {
+                $field.removeClass("input-validation-error");
+            }
+        });
+
+           if (!isFormValid) {
+              alert("Please fill in all the required fields (indicated by *)");
+           }
+        else {
+
+               try {
+                   var company = {
+                       BankName: $("#txtBankName").val(),
+                       BranchName: $("#txtBranchName").val(),
+                       BranchCode: $("#txtBranchCode").val(),
+                       BranchAddress1:$("#txtBranchAddress1").val(),
+                       BranchAddress2: $("#txtBranchAddress2").val(),
+                       CityId: $("#ddlBankCity").val(),
+                       AccountNo: $("#txtAccountNo").val(),
+                       IFSCCode: $("#txtIFSCCode").val(),
+                       SwiftCde: $("#txtSwiftCode").val(),
+                       IsActive: 1,
+                       CompanyId: $("#CompanyId").val(),
+                       BankId: $("#hdnBankId").val() || 0 // Use 0 if hdnBankId is not set
+                   };
+                   $.ajax({
+                       type: "POST", url: '@Url.Action("SaveBankDetails", "Master")',
+                       contentType: "application/json;",
+                       data: JSON.stringify(company),
+                       async: false,
+                       success: function (response) {
+                           if (response.IsSuccess) {
+                               ShowToastNotification("success","Record saved successfully");
+                               $("#btncancelBank").click();
+                               GetBankDetails();
+                               ClickBankCancel();
+                           }
+                           else {
+                               alert(response.Response);
+                               ShowToastNotification("error", response.Response);
+                           }
+                       },
+                       failure: function (response) { },
+                       error: function (response) { }
+                   });
+               } catch (e) {
+               }
+        }
+    }
+    function GetBankDetails() {
+      $.ajax({
+          type: "GET",
+          url: "@Url.Action("getBankDetails", "Master")",
+          data: { uId: $("#CompanyId").val() },
+          contentType: "application/json; charset=utf-8",
+          dataType: "json",
+          success: BindBankDetails,
+          failure: function (response) {
+              alert(response.d);
+          },
+          error: function (response) {
+              alert(response);
+          }
+      });
+    }
+    function BindBankDetails(dataset) {
+        new DataTable('#tblBankDetails', {
+            "destroy": true,
+            layout: {
+                topStart: {
+                    pageLength: {
+                        menu: [10, 25, 50, 100]
+                    },
+                    ///buttons: ['excelHtml5', 'csvHtml5', 'pdfHtml5']
+                },
+                topEnd: {
+                    search: {
+                        placeholder: 'Type search here'
+                    }
+                },
+                bottomEnd: {
+                    paging: {
+                        buttons: 5
+                    }
+                },
+            },
+            paging: true,
+            scrollCollapse: true,
+            /// scrollY: '500px',
+            data: dataset,
+            columns: [
+                {
+                    title: '',
+                    className: "grid-action-item",
+                    render: function (data, type, row, meta) {
+                        return "<a title='Edit Record' data-toggle='modal' data-target='#mediumModalBank' href='javascript:void(0);' onclick='EditCompanyBankDetails(\"" + row.BankId + "\", \"" + row.CompanyId + "\")';><i class='fa fa-pencil'></i></a> &nbsp;|&nbsp; <a title='Delete Record' href='javascript:void(0)'; onclick='DeleteCompanyBankDetails(\"" + row.BankId + "\")';><i class='fa fa-trash text-danger'></i></a>";
+                    },
+                },
+                { title: 'Account No', data: "AccountNo" },
+                { title: 'Bank Name', data: "BankName" },
+                { title: 'Branch', data: "BranchName" },
+                { title: 'Branch Code', data: "BranchCode" },
+                { title: 'Address', data: "BranchAddress1" },
+                { title: 'IFSC Code', data: "IFSCCode" },
+                { title: 'Swift Code', data: "SwiftCde" },
+            ]
+        });
+    }
+    function EditCompanyBankDetails(BankId,CompanyId) {
+        $.ajax({
+            type: "GET",
+            url: "@Url.Action("getBankDetailsForEdit", "Master")",
+            data: { BankId: BankId },
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (respaonse) {
+                    $("#txtBankName").val(respaonse.BankName),
+                    $("#txtBranchName").val(respaonse.BranchName),
+                    $("#txtBranchCode").val(respaonse.BranchCode),
+                    $("#txtBranchAddress1").val(respaonse.BranchAddress1),
+                    $("#txtBranchAddress2").val(respaonse.BranchAddress2),
+                    $("#ddlBankCity").val(respaonse.CityId),
+                    $("#txtAccountNo").val(respaonse.AccountNo),
+                    $("#txtIFSCCode").val(respaonse.IFSCCode),
+                    $("#txtSwiftCode").val(respaonse.SwiftCde),
+                    $("#CompanyId").val(respaonse.CompanyId),
+                    $("#CompanyId").val(CompanyId),
+                    $("#hdnBankId").val(respaonse.BankId);
+            },
+
+        });
+
+    }
+    function DeleteCompanyBankDetails(BankId) {
+        if (confirm("Are you sure you want to delete the record?")) {
+            $.ajax({
+                type: "GET",
+                url: "@Url.Action("DeleteCompanyBankDetails", "Master")",
+                data: { BankId: BankId },
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (respaonse) {
+                    GetBankDetails();
+                    ShowToastNotification("success", "Record has been deleted successfully.");
+                },
+            });
+        }
+    }
+    function ClickBankCancel() {
+        $("#txtBankName").val(""),
+            $("#txtBranchName").val(""),
+            $("#txtBranchCode").val(""),
+            $("#txtBranchAddress1").val(""),
+            $("#txtBranchAddress2").val(""),
+            $("#ddlBankCity").val(""),
+            $("#txtAccountNo").val(""),
+            $("#txtIFSCCode").val(""),
+            $("#txtSwiftCode").val(""),
+            $("#CompanyId").val("");
+        $("#txtBankName").focus();
+    }
+
+     //Unit Save details
+
+    function SaveUnitDetails() {
+        var CompanyId = $("#CompanyId").val();
+        var isFormValid = true;
+        var requiredFields = [
+            "#txtSiteName",
+            "#txtAddress1",
+            "#txtPincode",
+            "#txtGSTNo",
+            "#txtPhone",
+            "#txtEmail"
+        ];
+        requiredFields.forEach(function (selector) {
+            var $field = $(selector);
+            if (!$field.val().trim()) {
+                $field.addClass("input-validation-error");
+                if (isFormValid == true) {
+                    $(this).focus();
+                }
+                isFormValid = false;
+            } else {
+                $field.removeClass("input-validation-error");
+            }
+        });
+            if (!isFormValid) {
+               alert("Please fill in all the required fields (indicated by *)");
+            }
+            else {
+                try {
+                    var company = {
+                        SiteName: $("#txtSiteName").val(),
+                        Address1:$("#txtAddress1").val(),
+                        Address2: $("#txtAddress2").val(),
+                        CityId: $("#ddlUnitCity").val(),
+                        StateId: $("#ddlUnitState").val(),
+                        CountryId: $("#ddlUnitCountry").val(),
+                        Pincode: $("#txtPincode").val(),
+                        GSTNo: $("#txtGSTNo").val(),
+                        PANNo: $("#txtPANNo").val(),
+                        Phone: $("#txtPhone").val(),
+                        Email: $("#txtEmail").val(),
+                        IsActive: 1,
+                        CompanyId: $("#CompanyId").val(),
+                        CompanyUnitId: $("#hdnUnitId").val(),
+                    };
+                    $.ajax({
+                        type: "POST", url: '@Url.Action("SaveUnitDetails", "Master")',
+                        contentType: "application/json;",
+                        data: JSON.stringify(company),
+                        async: false,
+                        success: function (response) {
+                            if (response.IsSuccess) {
+                                $("#CompanyId").val(CompanyId);
+                                ShowToastNotification("success","Record saved successfully");
+                                $("#btncancelUnit").click();
+                                GetUnitDetails();
+                                ClickUnitCancel();
+                            }
+                            else {
+                                alert(response.Response);
+                                ShowToastNotification("error", response.Response);
+                            }
+                        },
+                        failure: function (response) { },
+                        error: function (response) { }
+                    });
+                } catch (e) {
+                }
+            }
+     }
+    function GetUnitDetails() {
+        var companyId = $("#CompanyId").val();
+       $.ajax({
+           type: "GET",
+           url: "@Url.Action("getUnitDetails", "Master")",
+           data: { uId: companyId },
+           contentType: "application/json; charset=utf-8",
+           dataType: "json",
+           success: BindUnitDetails,
+           failure: function (response) {
+               alert(response.d);
+           },
+           error: function (response) {
+               alert(response);
+           }
+       });
+     }
+    function BindUnitDetails(dataset) {
+         new DataTable('#tblUnitDetails', {
+             "destroy": true,
+             layout: {
+                 topStart: {
+                     pageLength: {
+                         menu: [10, 25, 50, 100]
+                     },
+                     ///buttons: ['excelHtml5', 'csvHtml5', 'pdfHtml5']
+                 },
+                 topEnd: {
+                     search: {
+                         placeholder: 'Type search here'
+                     }
+                 },
+                 bottomEnd: {
+                     paging: {
+                         buttons: 5
+                     }
+                 },
+             },
+             paging: true,
+             scrollCollapse: true,
+             /// scrollY: '500px',
+             data: dataset,
+             columns: [
+                 {
+                     title: '',
+                     className: "grid-action-item",
+                     render: function (data, type, row, meta) {
+                         return "<a title='Edit Record' data-toggle='modal' data-target='#mediumModalUnit' href=javascript:void(0); onclick='EditCompanyUnitDetails(\"" + row.CompanyUnitId + "\", \"" + row.CompanyId + "\")';><i class='fa fa-pencil'></i></a> &nbsp;|&nbsp; <a title='Delete Record' href='javascript:void(0);onclick='DeleteCompanyUnitDetails(\"" + row.BankId + "\")';><i class='fa fa-trash text-danger'></i></a>";
+                     },
+                 },
+                 { title: 'Site Name', data: "SiteName" },
+                 { title: 'Email', data: "Email" }
+             ]
+         });
+    }
+    function EditCompanyUnitDetails(CompanyUnitId,CompanyId) {
+     $.ajax({
+         type: "GET",
+         url: "@Url.Action("getUnitDetailsForEdit", "Master")",
+         data: { CompanyUnitId: CompanyUnitId },
+         contentType: "application/json; charset=utf-8",
+         dataType: "json",
+         success: function (respaonse) {
+                $("#txtSiteName").val(respaonse.SiteName),
+                $("#txtAddress1").val(respaonse.Address1),
+                $("#txtAddress2").val(respaonse.Address2),
+                $("#ddlUnitCity").val(respaonse.CityId).trigger("change"),
+                $("#ddlUnitState").val(respaonse.StateId).trigger("change"),
+                $("#ddlUnitCountry").val(respaonse.CountryId).trigger("change"),
+                $("#txtPincode").val(respaonse.Pincode),
+                $("#txtGSTNo").val(respaonse.GSTNo),
+                $("#txtPANNo").val(respaonse.PANNo),
+                $("#txtPhone").val(respaonse.Phone),
+                $("#txtEmail").val(respaonse.Email),
+                $("#CompanyId").val(respaonse.CompanyId),
+                $("#hdnUnitId").val(respaonse.CompanyUnitId)
+         },
+
+     });
+
+    }
+    function DeleteCompanyUnitDetails(CompanyUnitId) {
+        if (confirm("Are you sure you want to delete the record?")) {
+            $.ajax({
+                type: "GET",
+                url: "@Url.Action("DeleteCompanyUnitDetails", "Master")",
+                data: { CompanyUnitId: CompanyUnitId },
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (respaonse) {
+                    GetUnitDetails();
+                    ShowToastNotification("success", "Record has been deleted successfully.");
+                },
+            });
+        }
+    }
+    function ClickUnitCancel() {
+        $("#txtSiteName").val(""),
+            $("#txtAddress1").val(""),
+            $("#txtAddress2").val(""),
+            $("#ddlUnitCity").val("").trigger("change"),
+            $("#ddlUnitState").val("").trigger("change"),
+            $("#ddlUnitCountry").val("").trigger("change"),
+            $("#txtPincode").val(""),
+            $("#txtGSTNo").val(""),
+            $("#txtPANNo").val(""),
+            $("#txtPhone").val(""),
+            $("#txtEmail").val("")
+    }
+</script>
+

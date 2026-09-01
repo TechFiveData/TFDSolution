@@ -1,0 +1,313 @@
+﻿@model IEnumerable<TFDSolution.Transport.Master.FormSettings>
+<script src="~/Scripts/select2.min.js"></script>
+<div class="row">
+    <div class="col-md-12 text-right">
+        <a class="btn btn-sm" id="btnSaveFormSettings" href="javascript:void(0);" title="Click here to save form settings">
+            <i class="fa fa-save"></i> Save Settings
+        </a>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12 form-group">
+        <table id="tblSettings" class="display cell-border" cellspacing="0" width="100%">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Description</th>
+                    <th>Action</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.OrderBy(x => x.KeyName).ToList())
+                {
+                    <tr data-content="@item.KeyName" data-bind="@item.FormId">
+                        <td>@item.SrNo</td>
+                        <td>@Html.DisplayFor(modelItem => item.KeyCaption)</td>
+                        <td>
+                            @{
+                                string selectedValue = "";
+                                if ((string.IsNullOrEmpty(item.KeyValue) ? "N" : item.KeyValue) == "Y")
+                                {
+                                    selectedValue = "selected";
+                                }
+                                if (item.KeyName == "EnableEWayBill" || item.KeyName == "EnableEInvoiceBill")
+                                {
+                                    if (!string.IsNullOrEmpty(item.KeyValue))
+                                    {
+                                        selectedValue = ((item.KeyValue) == "N" ? "" : "selected");
+                                    }
+                                }
+                            }
+                            @if (item.KeyName == "DetailPopupStyle")
+                            {
+                                <select class="form-select" data-content="@item.KeyName" style="min-width: 100px !important; max-width: 100px !important">
+                                    <option value="N">Default</option>
+                                    <option value="Y" @selectedValue>Center</option>
+                                </select>
+                            }
+                            else if (item.KeyName == "HeaderValidationScript")
+                            {
+                                <select id="HeaderValidationScript" class="form-control form-select select2" data-bind="@item.KeyValue" data-content="@item.KeyName">
+                                    <option value="">Select</option>
+                                </select>
+                            }
+                            else if (item.KeyName == "PageStatusScript")
+                            {
+                                <select id="PageStatusScript" class="form-control form-select select2" data-bind="@item.KeyValue" data-content="@item.KeyName">
+                                    <option value="">Select</option>
+                                </select>
+                            }
+                            else if (item.KeyName == "DetailValidationScript")
+                            {
+                                <select id="DetailValidationScript" class="form-control form-select select2" data-bind="@item.KeyValue" data-content="@item.KeyName">
+                                    <option value="">Select</option>
+                                </select>
+                            }
+                            else if (item.KeyName == "PageListScript")
+                            {
+                                <select id="PageListScript" class="form-control form-select select2" data-bind="@item.KeyValue" data-content="@item.KeyName">
+                                    <option value="">Select</option>
+                                </select>
+                            }
+                            else if (item.KeyName == "EnableEWayBill")
+                            {
+                                <select class="form-select" onchange="onEnableEWayBillChange(this)" data-content="@item.KeyName" style="min-width: 100px !important; max-width: 100px !important;display:inline-block">
+                                    <option value="N">No</option>
+                                    <option value="Y" @selectedValue>Yes</option>
+                                </select>
+                                <div id="divEnableEWayBill" style="display: inline-block; width: 50%;" class="@(item.KeyValue != "N" ? "" : "d-none")">
+                                    <select id="EnableEWayBill" name="EnableEWayBill" class="form-control form-select select2" data-bind="@item.KeyValue" data-content="@item.KeyName">
+                                        <option value="">Select</option>
+                                    </select>
+                                </div>
+                            }
+                            else if (item.KeyName == "EnableEInvoiceBill")
+                            {
+                                <select class="form-select" onchange="onEnableEInvoiceBillChange(this)" data-content="@item.KeyName" style="min-width: 100px !important; max-width: 100px !important;display:inline-block">
+                                    <option value="N">No</option>
+                                    <option value="Y" @selectedValue>Yes</option>
+                                </select>
+                                <div id="divEnableEInvoiceBill" style="display: inline-block; width: 50%;" class="@(item.KeyValue != "N" ? "" : "d-none")">
+                                    <select id="EnableEInvoiceBill" name="EnableEInvoiceBill" class="form-control form-select select2" data-bind="@item.KeyValue" data-content="@item.KeyName">
+                                        <option value="">Select</option>
+                                    </select>
+                                </div>
+                            }
+                            else if (item.KeyName == "AllowFinanceEffect")
+                            {
+                                <select id="AllowFinanceEffect" class="form-control form-select select2" data-bind="@item.KeyValue" data-content="@item.KeyName">
+                                    <option value="">Select</option>
+                                </select>
+                            }
+                            else if (item.KeyName == "AllowBackdateDays")
+                            {
+                                <input id="AllowBackdateDays" name="AllowBackdateDays" value="@item.KeyValue" type="number" class="form-control" style="width:100px;" data-bind="@item.KeyValue" data-content="@item.KeyName" />
+                            }
+                            else
+                            {
+                                if (item.KeyName == "AllowSubDetailsView")
+                                {
+                                    string isSelected = (item.KeyValue == "Detail" || item.KeyValue == "Header" || item.KeyValue == "Y") ? "selected" : "";
+                                    string isdetailchekded = (item.KeyValue == "Detail") ? "checked" : "";
+                                    string isheaderchekded = (item.KeyValue == "Header") ? "checked" : "";
+                                    <div class="radio-line">
+                                        <select class="form-select" onchange="onAllowSubDetailsViewChange(this)" data-content="@item.KeyName" style="min-width: 100px !important; max-width: 100px !important;display:inline-block">
+                                            <option value="N">No</option>
+                                            <option value="Y" @isSelected>Yes</option>
+                                        </select>
+                                        <div id="divAllowSubDetailsView" style="display:inline-block;" class="@(isSelected == "selected" ? "" : "d-none")">
+                                            <label>Enable for?</label>
+                                            <label><input type="radio" name="DetailView" @isdetailchekded class="radio mr-1" value="Detail">Detail</label>
+                                            <label><input type="radio" name="DetailView" @isheaderchekded value="Header" class="radio mr-1">Header</label>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <select class="form-select" data-content="@item.KeyName" style="min-width: 100px !important; max-width: 100px !important">
+                                        <option value="N">No</option>
+                                        <option value="Y" @selectedValue>Yes</option>
+                                    </select>
+                                }
+                            }
+                        </td>
+                        <td>
+                            @if (item.KeyName == "StockEffects")
+                            {
+                                var divKey = "div" + item.KeyName;
+                                var clssName = "";
+                                if (item.KeyValue == "Y")
+                                {
+                                    clssName = "class='d-none'";
+                                }
+                                <div id="@divKey" @clssName>
+                                    <a href="javascript:void(0);" data-toggle="modal" data-target="#stockEffectModal"><i class="fa fa-cog"></i></a>
+                                </div>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+    });
+    function onAllowSubDetailsViewChange(select) {
+        var value = $(select).val();
+        if (value === "Y") {
+            $("#divAllowSubDetailsView").show();
+        } else {
+            $("#divAllowSubDetailsView").hide();
+        }
+    }
+    function onEnableEWayBillChange(select) {
+        var value = $(select).val();
+        if (value != "N") {
+            $("#divEnableEWayBill").show();
+        } else {
+            $("#divEnableEWayBill").hide();
+        }
+    }
+    function onEnableEInvoiceBillChange(select) {
+        var value = $(select).val();
+        if (value != "N") {
+            $("#divEnableEInvoiceBill").show();
+        } else {
+            $("#divEnableEInvoiceBill").hide();
+        }
+    }
+    function BindFormSettingDropdown(_OptionSource, ctrolId)
+    {
+        try {
+            var defaultValue = $("#" + ctrolId).attr("data-bind");
+            $.ajax({
+                url: "@Url.Action("GetFieldOptionSource", "FormSetting")",
+                type: "GET",
+                data: { sourceType: _OptionSource },
+                success: function (tables) {
+                    let tableDropdown = $("#" + ctrolId);
+                    tableDropdown.empty();
+                    tableDropdown.append('<option value="">Select ' + _OptionSource +'</option>');
+                    tables.forEach(table => {
+                        if (defaultValue != undefined && defaultValue != "" && defaultValue == table) {
+                            tableDropdown.append(`<option selected value="${table}">${table}</option>`);
+                        }
+                        else {
+                            tableDropdown.append(`<option value="${table}">${table}</option>`);
+                        }
+                    });
+                    tableDropdown.val(defaultValue).trigger("change");
+                 }
+            });
+        } catch (e) {
+
+        }
+    }
+    $(document).ready(function () {
+        if ($("#HeaderValidationScript").length > 0) {
+            BindFormSettingDropdown("StoredProcedure", "HeaderValidationScript");
+        }
+        if ($("#PageStatusScript").length > 0) {
+            BindFormSettingDropdown("StoredProcedure", "PageStatusScript");
+        }
+        if ($("#DetailValidationScript").length > 0) {
+            BindFormSettingDropdown("StoredProcedure", "DetailValidationScript");
+        }
+        if ($("#PageListScript").length > 0) {
+            BindFormSettingDropdown("StoredProcedure", "PageListScript");
+        }
+        if ($("#AllowFinanceEffect").length > 0) {
+            BindFormSettingDropdown("StoredProcedure", "AllowFinanceEffect");
+        }
+        if ($("#EnableEWayBill").length > 0) {
+            BindFormSettingDropdown("StoredProcedure", "EnableEWayBill");
+        }
+        if ($("#EnableEInvoiceBill").length > 0) {
+            BindFormSettingDropdown("StoredProcedure", "EnableEInvoiceBill");
+        }
+        $('.select2').each(function () {
+            let selectId = $(this).attr('id');
+            if (selectId) {
+                let parentWrapper = $(this).parent();
+                $('#' + selectId).select2({
+                    dropdownParent: parentWrapper,
+                    dropdownParent: $('body')
+                });
+            }
+        });
+        $("#tblSettings select").change(function () {
+            var divConfig = "div" + $(this).attr("data-content");
+            if ($("#" + divConfig) != undefined && $("#" + divConfig).length > 0) {
+                if (divConfig === "divEnableEWayBill" || divConfig === "divEnableEInvoiceBill") {
+                    if ($(this).val() === "N" || $(this).val() === "" || $(this).val() === null) {
+                        $("#" + divConfig).addClass("d-none");
+                    } else {
+                        $("#" + divConfig).removeClass("d-none");
+                    }
+                } else {
+                    if ($(this).val() === "Y") {
+                        $("#" + divConfig).removeClass("d-none");
+                    } else {
+                        $("#" + divConfig).addClass("d-none");
+                    }
+                }
+            }
+        })
+        $('#btnSaveFormSettings').click(function () {
+            try {
+                var formSettings = [];
+                $('#tblSettings tbody tr').each(function () {
+                    var keyName = $(this).data('content');
+                    var formId = $(this).data('bind');
+                    var keyValue = ($.trim($(this).find("select").val() || ""))
+                    var otherValue = keyValue;
+                    if ($(this).data('content') == "AllowSubDetailsView" && keyValue == "Y") {
+                        otherValue = $('input[name="DetailView"]:checked').val();
+                    }
+                    else if ($(this).data('content') == "EnableEWayBill" && keyValue == "Y") {
+                        otherValue = $('#EnableEWayBill').val();
+                    }
+                    else if ($(this).data('content') == "EnableEInvoiceBill" && keyValue == "Y") {
+                        otherValue = $('#EnableEInvoiceBill').val();
+                    }
+                    if ($(this).data('content') == "AllowBackdateDays") {
+                        otherValue = $('input[name="AllowBackdateDays"]').val();
+                    }
+                    formSettings.push({ KeyName: keyName, FormId: formId, KeyValue: otherValue, KeyCaption: otherValue });
+                });
+                $.ajax({
+                    url: '@Url.Action("SaveFormSettings", "FormSetting")',
+                    type: 'POST',
+                    data: JSON.stringify(formSettings),
+                    contentType: 'application/json; charset=utf-8',
+                    success: function (response) {
+                        if (response.IsSuccess) {
+                            ShowToastNotification("success", 'Form settings saved successfully.');
+                        } else {
+                            ShowToastNotification("error", response.Response);
+                        }
+                    },
+                    error: function () {
+                        ShowToastNotification("error", "An error occurred while saving form settings.");
+                    }
+                });
+            } catch (e) {
+
+            }
+        });
+        new DataTable("#tblSettings", {
+            paging: false,
+            info: false,
+            searching: false,
+            ordering: true,
+            columnDefs: [
+                { "orderable": false, "targets": [0, 3] }
+            ]
+        });
+    })
+</script>   

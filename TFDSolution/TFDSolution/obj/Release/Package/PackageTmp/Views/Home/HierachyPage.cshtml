@@ -1,0 +1,1187 @@
+﻿@model TFDSolution.Models.PageModel
+
+@{
+    ViewBag.Title = Model.Design.FormTitle;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@{
+    string AllowDetailPopupStyle = TFDSolution.Business.CommonBusiness.getFormKeySetting(Convert.ToString(Model.Design.FormId), "DetailPopupStyle");
+    string popStyle = "";
+    bool IsCenterStyle = false;
+    if (!string.IsNullOrEmpty(AllowDetailPopupStyle) && AllowDetailPopupStyle == "y")
+    {
+        IsCenterStyle = true;
+        popStyle = "modal-dialog-centered float-none model-center-style";
+    }
+}
+
+<style>
+    td.actions {
+        position: relative;
+    }
+
+    .modal.modal-right .modal-dialog {
+        position: fixed;
+        margin: 0;
+        top: 0;
+        right: 0;
+        height: 100vh;
+        max-width: 400px; /* adjust width as needed */
+        transform: translateX(100%);
+        transition: transform 0.3s ease-out;
+    }
+
+    .modal.modal-right.show .modal-dialog {
+        transform: translateX(0);
+    }
+
+    .modal-content {
+        height: 100vh;
+        border-radius: 0;
+    }
+</style>
+<div id="tableLoader" style="display:none;position:absolute;top:0;left:0;
+    width:100%;height:100%;background:rgba(255,255,255,0.7);
+    z-index:9999;text-align:center;padding-top:100px;">
+    <img src="/images/loader.gif" alt="Loading..." />
+</div>
+<div class="breadcrumbs">
+    <div class="col-sm-4">
+        <div class="page-header float-left">
+            <div class="page-title">
+                <h1>@Model.Design.FormTitle</h1>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-8">
+        <div class="page-header float-right">
+            <div class="page-title">
+                <ol class="breadcrumb text-right">
+                    <li><a href="@Url.Action("Index","Home")">Home</a></li>
+                    <li>@Model.Design.ParentFormTitle</li>
+                    <li>@Model.Design.FormTitle</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+@{
+    var ImagesBase = Url.Content("~/");
+}
+<input type="hidden" value="@Model.Design.SQLTableName" id="hdnTableName" />
+<input type="hidden" value="@Model.Design.FormName" id="hdnFormName" />
+<input type="hidden" value="@Model.Design.FormId" id="hdnFormId" />
+<input type="hidden" value="0" id="hdnParentId" />
+<input type="hidden" value="0" id="hdnSelectedRecordId" />
+<input type="hidden" value="@Convert.ToString(Model.Design.CanApprove)" id="hdnCanApprove" />
+<input type="hidden" value="@Convert.ToString(Model.Design.CanDelete)" id="hdnCanDelete" />
+<input type="hidden" value="@Convert.ToString(Model.Design.CanEdit)" id="hdnCanEdit" />
+<div class="animated fadeIn">
+    <div class="row m-0">
+        <div class="col-md-12 p-0">
+            <div class="card">
+                <div class="card-header">
+                    <div class="col-lg-6">
+                        <strong class="card-title"></strong>
+                    </div>
+                    <div class="col-lg-6 text-right">
+                        @if (Model.Design.CanPrint == true && Model.Reports != null && Model.Reports.Count > 0)
+                        {
+                            <div class="dropdown" style="float:right; position:relative;">
+                                <button class="btn btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fa fa-print"></i>&nbsp;Print
+                                </button>
+                                <div class="dropdown-menu" style="margin: 2.200rem -4.285em 2rem; " aria-labelledby="dropdownMenuButton">
+                                    @foreach (var item in Model.Reports)
+                                    {
+                                        <a class="dropdown-item" onclick="openReport(@item.ReportId);" href="#">@item.ReportTitle</a>
+                                    }
+                                </div>
+                            </div>
+                        }
+                        <a class="btn btn-sm" href="@Url.Action("HierachyPage","Home", new { @pagename = Model.Design.FormName })"><i class="fa fa-refresh"></i>&nbsp; Refresh</a>
+                        <a class="btn btn-sm" id="btnExpandCollapse" href="javascript:void(0);"><i class="fa fa-plus-square-o"></i><span class="pl-1">Expand All</span></a>
+                        <div class="dropdown" style="float:right; position:relative;">
+                            <button class="btn btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fa fa-download"></i>&nbsp; Export
+                            </button>
+                            <div class="dropdown-menu" style="margin: 2.2rem -1.285em 2rem;min-width: auto !important; width: auto;" aria-labelledby="dropdownMenuButton">
+                                <a class="dropdown-item" title="Export in CSV" id="btnExportCsv" href="javascript:void(0);"><i class="fa fa-file-text-o pr-1" style="color:#555"></i>CSV</a>
+                                <a class="dropdown-item" title="Export in Excel" id="btnExportExcel" href="javascript:void(0);"><i class="fa fa-file-excel-o pr-1" style="color:green"></i>Excel</a>
+                            </div>
+                        </div>
+                        @if (Model.Design.CanAdd == true)
+                        {
+                            <a class="btn btn-sm" id="btnAddNew" onclick="ActionTabData(0, 'A', 0)" href="javascript:void(0)"
+                               data-toggle='modal' data-target='#tabModal'
+                               title="Add New @Model.Design.FormTitle"><i class="fa fa-plus"></i>&nbsp; New</a>
+                        }
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div>
+                        <div class="p-3">
+                            <div class="row form-group">
+                                <div class="col-md-12">
+                                    <table id="tblpage" class="display cell-border nowrap" cellspacing="0" width="100%"></table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Cancel Reason</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row form-group">
+                    <div class="col col-md-12">
+                        <label for="text-input" class="form-control-label">Enter Reason<span class="text-danger p-1">(*)</span></label>
+                    </div>
+                    <div class="col col-md-12">
+                        <textarea id="txtCancelReason" data-content="0" class="form-control"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="btnCancelReason" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" id="btnSubmitCancelReason" class="btn btn-primary">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="exampleModalDet" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Cancel Reason</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row form-group">
+                    <div class="col col-md-12">
+                        <label for="text-input" class="form-control-label">Enter Reason<span class="text-danger p-1">(*)</span></label>
+                    </div>
+                    <div class="col col-md-12">
+                        <textarea id="txtCancelReasonDet" data-content="0" class="form-control"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="btnCancelReasonDet" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" id="btnSubmitCancelReasonDet" class="btn btn-primary">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="actions" class="dropdown" style="display:none;">
+    <button id="btnApproved" data-bind="2" class="text-success" value="approved">Approved</button>
+    <button id="btnNotApproved" data-bind="1" class="text-primary" value="notapproved">Not Approved</button>
+    <button id="btnCancelled" data-bind="3" class="text-danger" value="cancelled">Cancelled</button>
+</div>
+<div id="PageAction" class="linkmenu" style="display:none;">
+    <a id="btnActionAddChild" data-bind="4" class="text-black" data-toggle='modal' data-target='#tabModal'>Add Child</a>
+    <a id="btnActionView" data-bind="3" class="text-black" data-toggle='modal' data-target='#tabModal'>View</a>
+    <a id="btnActionEdit" data-bind="2" class="text-black" data-toggle='modal' data-target='#tabModal'>Edit</a>
+    <a id="btnActionDelete" data-bind="1" class="text-black">Delete</a>
+</div>
+<div id="actionsDet" class="dropdown" style="display:none;">
+    <button id="btnCancelledDet" data-bind="3" class="text-danger" value="cancelled">Cancelled</button>
+</div>
+<div class="modal fade come-from-modal right" id="tabModal" tabindex="-1" role="dialog" aria-labelledby="tabModal" data-backdrop="static" aria-hidden="true">
+    <div class="modal-dialog @popStyle" id="tabModalData" style="overflow: hidden" role="document"></div>
+</div>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $("#btnSubmitCancelReason").click(function () {
+            var txtreason = $("#txtCancelReason").val();
+            $("#txtCancelReason").next(".validation").remove();
+            $("#txtCancelReason").removeClass("input-validation-error");
+            if (txtreason.length == 0) {
+                $("#txtCancelReason").addClass("input-validation-error");
+                $("#txtCancelReason").after("<div class='validation' style='color:red;margin-bottom: 2px;'>Please enter cancel reason.</div>");
+                $("#txtCancelReason").focus();
+            }
+            else {
+                UpdateRecordStatus($("#hdnFormId").val(), 0, $("#txtCancelReason").attr("data-content"), 3, $("#txtCancelReason").val());
+            }
+        })
+        $("#btnSubmitCancelReasonDet").click(function () {
+            var txtreason = $("#txtCancelReasonDet").val();
+            $("#txtCancelReasonDet").next(".validation").remove();
+            $("#txtCancelReasonDet").removeClass("input-validation-error");
+            if (txtreason.length == 0) {
+                $("#txtCancelReasonDet").addClass("input-validation-error");
+                $("#txtCancelReasonDet").after("<div class='validation' style='color:red;margin-bottom: 2px;'>Please enter cancel reason.</div>");
+                $("#txtCancelReasonDet").focus();
+            }
+            else {
+                UpdateRecordStatus($("#txtCancelReasonDet").attr("data-container"), $("#txtCancelReasonDet").attr("data-content"), $("#txtCancelReasonDet").attr("data-interval"), 3, $("#txtCancelReasonDet").val());
+            }
+        })
+        $("#btnApproved").click(function () {
+            UpdateRecordStatus($("#hdnFormId").val(), 0, $(this).attr("data-content"), 2, "");
+        })
+        $("#btnNotApproved").click(function () {
+            UpdateRecordStatus($("#hdnFormId").val(), 0, $(this).attr("data-content"), 1, "");
+        })
+        $("#btnCancelled").click(function () {
+            $("#txtCancelReason").val("");
+            $("#txtCancelReason").attr("data-content", $(this).attr("data-content"));
+            var myModal = new bootstrap.Modal(document.getElementById('exampleModal'));
+            myModal.show();
+        })
+        $("#btnCancelledDet").click(function () {
+            $("#txtCancelReasonDet").val("");
+            $("#txtCancelReasonDet").attr("data-content", $(this).attr("data-content"));
+            $("#txtCancelReasonDet").attr("data-interval", $(this).attr("data-interval"));
+            $("#txtCancelReasonDet").attr("data-container", $(this).attr("data-container"));
+
+            var myModal = new bootstrap.Modal(document.getElementById('exampleModalDet'));
+            myModal.show();
+        })
+
+        $('#btnExportCsv').on('click', function () {
+            ExportData("csv");
+        });
+        $('#btnExportExcel').on('click', function () {
+            ExportData("excel");
+        });
+        $(document).on("click", "[data-target='#mediumModal']", function () {
+            cleanData();
+        });
+        $("#btnExpandCollapse").on("click", function () {
+            var $icon = $(this).find("i");
+            var $text = $(this).find("span");
+            var isExpanded = $icon.hasClass("fa-minus-square-o");
+            $icon.toggleClass("fa-plus-square-o fa-minus-square-o");
+            $text.html(isExpanded ? "Expand All" : "Collapse All");
+            if (isExpanded == false) {
+                $('#tblpage tbody a.row-btn').each(function () {
+                    let $btn = $(this);
+                    let $icon = $btn.find('i');
+                    // Only expand if not already expanded
+                    if ($icon.hasClass('fa-plus-square')) {
+                        $btn.trigger('click');
+                    }
+                });
+            }
+            else {
+                $('#tblpage tbody a.row-btn').each(function () {
+                    let $btn = $(this);
+                    let $icon = $btn.find('i');
+                    // Only expand if not already expanded
+                    if ($icon.hasClass('fa-plus-minus')) {
+                        $btn.trigger('click');
+                    }
+                });
+            }
+        });
+        BindGridPagination();
+    });
+    function ExportData(exportType) {
+        try {
+            var filterData = [];
+            var model = {
+                FormId: '@Model.Design.FormId',
+                FormTitle: '@Model.Design.FormTitle',
+                FormName: '@Model.Design.FormName',
+                ExportType : exportType
+            }
+            $("#btnExportCsv").addClass("disabled");
+            $("#btnExportCsv").attr("title", "Report is exporting. Please wait..")
+            ShowToastNotification("info", "Report is downloading... Please wait.");
+            $.ajax({
+                url: "@Url.Action("ExportPageList", "Transaction")",
+                type: "POST",
+                contentType: "application/json;",
+                data: JSON.stringify(model),
+                async: false,
+                skipLoading: true,
+                beforeSend: function () {
+                    /*$('#btnDownloadCsv').text('Preparing...').prop('disabled', true);*/
+                    /*ShowToastNotification("info", "Report is downloading... Please wait.");*/
+                },
+                success: function (response) {
+                    if (response != null && response != null && response.IsSuccess) {
+                        //ShowToastNotification("success", response.Response);
+                        // Poll every 5 seconds to check export completion
+                        let pollInterval = setInterval(function () {
+                            $.ajax({
+                                url: '@Url.Action("CheckExportStatus", "Reports")',
+                                type: 'GET',
+                                async: true,
+                                skipLoading: true,
+                                data: { fileName: response.Action },
+                                success: function (res) {
+                                    if (res.IsReady) {
+                                        $("#lblExportNotification").hide();
+                                        $("#btnExportCsv").removeClass("disabled");
+                                        $("#btnExportCsv").attr("title", "Export");
+                                        clearInterval(pollInterval);
+                                        const downloadBaseUrl = '@Url.Content("~/TempDownload/")';
+                                        const url = downloadBaseUrl + encodeURIComponent(res.FileName);
+                                        // Construct download URL
+                                        //const downloadUrl = '@Url.Content("~/TempDownload/")' + res.FileName;
+
+                                        /*ShowToastNotification("success", "Report is ready. Downloading...");*/
+                                        window.open(url, '_blank');
+                                    }
+                                }
+                            });
+                        }, 5000);
+                    }
+                    else {
+                        $("#btnExportCsv").removeClass("disabled");
+                        $("#lblExportNotification").hide();
+                        $("#btnExportCsv").attr("title", "Export");
+                        ShowToastNotification("error", response.Response);
+                    }
+                },
+                complete: function () {
+                    /*$('#btnDownloadCsv').text('Preparing...').prop('disabled', true);*/
+                    //ShowToastNotification("success", "Report downloaded success.");
+                },
+                error: function () {
+                    $("#btnExportCsv").removeClass("disabled");
+                    $("#lblExportNotification").hide();
+                    $("#btnExportCsv").attr("title", "Export");
+                    ShowToastNotification("error", "Report downloaded failed. Please try again..");
+                }
+            });
+        } catch (e) {
+            $("#btnExportCsv").attr("title", "Export");
+            $("#lblExportNotification").hide();
+            $("#btnExportCsv").removeClass("disabled");
+            ShowToastNotification("error", "Report downloaded failed. Please try again..");
+        }
+    }
+    function UpdateRecordStatus(fromId, paramId, paraparentId, paramStatus, cancelreason)
+    {
+        var tablename = $("#hdnTableName").val();
+        try {
+             $.ajax({
+                 type: "POST",
+                 url: "@Url.Action("UpdateRecordStatus", "Home")",
+                 data: {
+                     formId: fromId,
+                     status: paramStatus,
+                     ParentId: paraparentId,
+                     Id: paramId,
+                     CancelReason: cancelreason
+                 },
+                 success: function (response) {
+                     if (response.IsSuccess) {
+                         //alert("Record Status has been successfully.");
+                         ShowToastNotification("success", "Record Status has been successfully.");
+                         $("#btnCancelReasonDet").click();
+                         $("#btnCancelReason").click();
+                         //BindGrid();
+                         BindGridPagination();
+                         //$('#tblpage').DataTable().ajax.reload();
+                         $("button.active").click();
+                     } else {
+                         ShowToastNotification("error", "Error status update record.");
+                     }
+                 },
+                 error: function () {
+                     ShowToastNotification("error", "Error status update record.");
+                 }
+            });
+        }
+        catch (e) {
+            ShowToastNotification("error", e.message);
+        }
+    }
+    function openReport(_ReportId) {
+        try {
+            var url = '@Url.Action("DisplayReport.aspx", "ReportTemplate")';
+            window.open(url + "?Id=" + _ReportId, "_blank");
+            ShowToastNotification("success", "Report has been exported successfully.");
+        } catch (e) {
+            ShowToastNotification("error", "Report not opening, Please try again.");
+        }
+    }
+    function BindGridPagination() {
+        try {
+            var tablename = $("#hdnFormName").val()
+            $.ajax({
+                url: "@Url.Action("getPageColumns", "Home")",
+                type: 'POST',
+                data: { tblName: tablename },
+                success: function (response) {
+                    var columns = [];
+                    columns.push({
+                        title: "",
+                        orderable: false,
+                        className: 'grid-action-item dt-center actions',
+                        orderable: true,
+                        render: function (data, type, row, meta) {
+                            var pageType = "PageAction"
+                            return '<button class="linkmenu" data-bind=' + row["Status"] + ' data-html=' + pageType + '  data-content=' + row["Id"] + ' ><i class="fa fa-ellipsis-v a-black"></i></button>';
+                        },
+                    });
+                    columns.push({
+                        title: "",
+                        orderable: false,
+                        className: 'grid-action-item dt-center actions expand-col',
+                        orderable: true,
+                        render: function (data, type, row, meta) {
+                            return '<a href="javacript:void(0);" class="row-btn" data-content=' + row["Id"] + ' href="javascript:void(0);" title="Expand"><i class="fa fa-plus-square" aria-hidden="true"></i></a>';
+                        },
+                    });
+                    columns.push({
+                        title: "Status",
+                        orderable: false,
+                        className: 'dt-center actions',
+                        orderable: true,
+                        render: function (data, type, row, meta) {
+                            if ($("#hdnCanApprove").val() == "True" && row["Status"] != "6") {
+                                return '<button class="dropdown" data-bind=' + row["Status"] + ' data-content=' + row["Id"] + ' >' + DisplayStatus(row["Status"]) + '</button>';
+                            }
+                            else if (row["Status"] == "3") {
+                                return '<lable class="form-control-label text-center text-danger" title="Cancelled Record">C</lable>';
+                            }
+                            else if (row["Status"] == "6") {
+                                return '<lable class="form-control-label text-center" title="Forwared Record" style="color:#ccc;"><i class="fa fa-lock" aria-hidden="true"></i></lable>';
+                            }
+                            else {
+                                return '<span>' + DisplayStatus(row["Status"]) + '</span>';
+                            }
+                        },
+                    });
+
+                    var tableColumnNew = JSON.parse(JSON.stringify(response.PageData));
+
+                    /*$("#lblRecordCount").html("(" + response.Data.length + ")")*/
+                    if (tableColumnNew.length > 0) {
+                        columnNames = tableColumnNew;
+                        for (var i in columnNames) {
+                            if (columnNames[i].ColumnName != "FiancialYearId"
+                                && columnNames[i].ColumnName != "Status" && columnNames[i].ColumnName != "Id" && columnNames[i].ColumnName != "CompanyId"
+                                && columnNames[i].ColumnName != "RevisionCount"
+                                && columnNames[i].ColumnName != "CreatedBy"
+                                && columnNames[i].ColumnName != "UpdatedBy"
+                                && columnNames[i].ColumnName != "CreatedOn"
+                                && columnNames[i].ColumnName != "UpdatedOn") {
+                                var dataVal = columnNames[i].ColumnName;
+                                if (columnNames[i].ColumnName == "URNNo") {
+                                    columns.push({
+                                        title: "URN #",
+                                        orderable: false,
+                                        render: function (data, type, row, meta) {
+                                            var pagedetial = '@Url.Action("PageDetail","Home", new { pagename = "_pagename", uId= "_uId", act = "_act" })';
+                                            pagedetial = pagedetial.replace("amp;", "");
+                                            pagedetial = pagedetial.replace("amp;", "");
+                                            pagedetial = pagedetial.replace("_pagename", tablename);
+                                            pagedetial = pagedetial.replace("_uId", row["Id"]);
+                                            var viewlink = pagedetial.replace("_act", "V");
+                                            /*var viewlink = "/Home/PageDetail?pagename=" + formname + "&uId=" + row.Id + "&act=V";*/
+                                            if (row["URNNo"] != null) {
+                                                return "<a title='View Record' href='" + viewlink + "';>" + row["URNNo"] + "</a>";
+                                            }
+                                            else {
+                                                return "<a title='View Record' href='" + viewlink + "';>NA</a>";
+                                            }
+                                        },
+                                    });
+                                }
+                                if (columnNames[i].ColumnName == "DocNo") {
+                                    columns.push({
+                                        title: "Doc No",
+                                        orderable: false,
+                                        render: function (data, type, row, meta) {
+                                            if (row["RevisionCount"] != null && row["RevisionCount"] != undefined && row["RevisionCount"] != "") {
+                                                return "<span>" + row["DocNo"] + "(R" + row["RevisionCount"] +")</span>";
+                                            }
+                                            else {
+                                                return "<span>" + row["DocNo"] + "</span>";
+                                            }
+                                        },
+                                    });
+                                }
+                                if (columnNames[i].ColumnName == "DocDate") {
+                                    columns.push({ title: "Doc Date", orderable: false, render: function (data, type, row, meta) { return "<span>" + row["DocDate"] + "</span>"; } });
+                                }
+                                if (columnNames[i].ColumnName == "CreatedOn") {
+                                    columns.push({ title: "Created Date", orderable: false, render: function (data, type, row, meta) { return "<span>" + row["CreatedOn"] + "</span>"; } });
+                                }
+                                if (columnNames[i].ColumnName == "CreatedBy") {
+                                    columns.push({ title: "Created By", orderable: false, render: function (data, type, row, meta) { return "<span>" + row["CreatedBy"] + "</span>"; } });
+                                }
+                                if (columnNames[i].ColumnName == "UpdatedBy") {
+                                    columns.push({
+                                        title: "Updated By", orderable: false, render: function (data, type, row, meta) {
+                                            if (row["UpdatedBy"] != null) {
+                                                return "<span>" + row["UpdatedBy"] + "</span>";
+                                            }
+                                            else {
+                                                return "<span></span>";
+                                            }
+                                        }
+                                    });
+                                }
+                                if (columnNames[i].ColumnName == "UpdatedOn") {
+                                    columns.push({
+                                        title: "Updated Date", orderable: false, render: function (data, type, row, meta) {
+                                            if (row["UpdatedOn"] != null) {
+                                                return "<span>" + row["UpdatedOn"] + "</span>";
+                                            }
+                                            else {
+                                                return "<span></span>";
+                                            }
+                                        }
+                                    });
+                                }
+                                if (columnNames[i].ColumnName != "DocDate" && columnNames[i].ColumnName != "DocNo" && columnNames[i].ColumnName != "URNNo" && columnNames[i].ColumnName != "FiancialYearId" && columnNames[i].ColumnName != "Status"
+                                    && columnNames[i].ColumnName != "Id" && columnNames[i].ColumnName != "CompanyId" && columnNames[i].ColumnName != "CreatedBy"
+                                    && columnNames[i].ColumnName != "UpdatedBy" && columnNames[i].ColumnName != "CreatedOn" && columnNames[i].ColumnName != "UpdatedOn") {
+                                    columns.push({
+                                        data: columnNames[i].ColumnName,
+                                        title: columnNames[i].ColumnTitle
+                                    });
+                                }
+                            }
+                        }
+                    }
+
+                    // Step 3: Initialize DataTable with server-side processing
+                    let table = new DataTable('#tblpage', {
+                        destroy: true,
+                        searching: true,
+                        ordering: false,
+                        fixedHeader: true,
+                        info: true,
+                        rowId: 'Id',
+                        scrollY: true,
+                        scrollX: true,
+                        scrollCollapse: true,
+                        paging: true,
+                        autoFill: true,
+                        language: {
+                            infoEmpty: "No records available - Got it?",
+                            processing: '<i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color: #27a9d7;"></i>'
+                        },
+                        processing: true,
+                        serverSide: true,
+                        deferLoading: 0,   // 👈 prevents initial double call
+                        filter: true,
+                        ajax: {
+                            url: "@Url.Action("getPageChildDataOnly", "Home")",
+                            type: "POST",
+                            data: function (d) {   // 👈 d already contains draw, start, length, search etc.
+                                d.tblName = tablename;  // add custom param
+                                d.ParentId = 0
+                                // remove pageNumber since DataTables already handles paging with `start` and `length`
+                            },
+                            complete: function (event) {
+                                if (event && event.responseJSON) {
+                                    $("#lblRecordCount").html("(" + event.responseJSON.recordsTotal + ")")
+                                }
+                            }
+                        },
+                        columns: columns,
+                        deferRender: true,     // speeds up rendering for large data
+                        scrollCollapse: true,  // avoid UI freeze on large scroll
+                        drawCallback: function () {
+                           let api = this.api();
+                           let colCount = api.columns().count();
+                           api.rows().every(function () {
+                               let row = $(this.node());
+                               if (!row.next().hasClass("detail-row")) {
+                                   let id = row.attr("id");   // column name
+                                   var tableId = "tblDetail_" + id;
+                                   // Build nested table header dynamically from main table columns
+                                   let headerHtml = "<tr>";
+                                   api.columns().every(function () {
+                                       let headerText = $(this.header()).text();
+                                       headerHtml += `<th>${headerText}</th>`;
+                                   });
+                                   headerHtml += "</tr>";
+
+                                   // Build nested table row using same data
+                                   let rowHtml = "<tr>";
+                                   api.columns().every((idx) => {
+                                       let val = this.data()[api.column(idx).dataSrc()] ?? "";
+                                       rowHtml += `<td></td>`;
+                                   });
+                                   rowHtml += "</tr>";
+                                   // Insert detail row
+                                   row.after(`<tr class="detail-row" style="display:none;background:#f7f7f7;">
+                                   <td colspan="${colCount}">
+                                       <table id="${tableId}" class="table table-bordered table-sm m-0 nested-table">
+                                           <thead>${headerHtml}</thead>
+                                           <tbody>${rowHtml}</tbody>
+                                       </table>
+                                   </td></tr>`);
+                               }
+                           });
+                        }
+                    });
+                    $('#tblpage tbody').off('click', 'a.row-btn').on('click', 'a.row-btn', function (e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log("Click in detail");
+                        let row = $(this).closest('tr');
+                        let next = row.next('.detail-row');
+                        if (next.length) {
+                            let id = row.attr("id");
+                            let tableId = next.find("table").attr("id");
+                            //let tbId = $("#hdnSelectedTabId").val();
+                            BindChildGrid(tableId, id);
+                            next.toggle(300);
+                            let icon = $(this).find('i');
+                            icon.toggleClass('fa-plus-square fa-minus-square');
+                        }
+                    });
+                    table.columns.adjust().draw();
+                    /*$("#lblRecordCount").html("(" + response.Data.length + ")")*/
+                    let actions = document.querySelector('#actions');
+                    let pageAction = document.querySelector('#PageAction');
+                    table.on('click', 'button.linkmenu', function (e) {
+                        e.stopPropagation();
+                        var $tr = $(this).closest('tr');
+                        // Index of this row among visible rows in tbody (i.e., on current page)
+                        var trIndex = $tr.index();
+                        //$("#tblpage tbody tr").length;
+                        // Display and position the dropdown
+                        $("#actions").hide();
+                        $("#actionsDet").hide();
+                        var actionType = $(this).attr("data-html");
+                        var currectStatus = $(this).attr("data-bind");
+                        var recordId = $(this).attr("data-content");
+                        $("#hdnSelectedRecordId").val(recordId);
+                        $("#btnActionAddChild").attr("onclick", "javascript:ActionTabData(0,'A'," + recordId + ")");
+                        $("#btnActionEdit").attr("onclick", "javascript:ActionTabData(" + recordId + ",'E',0)");
+                        $("#btnActionView").attr("onclick", "javascript:ActionTabData(" + recordId + ",'V',0)");
+                        $("#btnActionEdit").hide();
+                        $("#btnActionDelete").hide();
+                        if (currectStatus == "1") {
+                            if ($("#hdnCanEdit").val() == "True"){
+                                $("#btnActionEdit").show();
+                            }
+                            if ($("#hdnCanDelete").val() == "True"){
+                                $("#btnActionDelete").show();
+                                $("#btnActionDelete").attr("href", 'javascript:deleteRecord(' + recordId + ')');
+                            }
+                        }
+                        if (pageAction != null) {
+                            this.parentNode.append(pageAction);
+                            const currentOffsetLeft = e.pageX;
+                            const currentOffsetTop = e.pageX;
+                            if (pageAction.style != null) {
+                                const $pageAction = $(pageAction);
+                                $pageAction.css({
+                                    display: 'block',
+                                    position: 'fixed',
+                                    left: e.pageX + 'px',
+                                    top: e.clientY + 'px'
+                                });
+                            }
+                        }
+                        // Remove with the next click on the document
+                        document.addEventListener('click', function () {
+                            if (pageAction != null) {
+                                pageAction.remove();
+                            }
+                        });
+                    });
+                    table.on('click', 'button.dropdown', function (e) {
+                        e.stopPropagation();
+                        var $tr = $(this).closest('tr');
+                        // Index of this row among visible rows in tbody (i.e., on current page)
+                        var trIndex = $tr.index();
+                        //$("#tblpage tbody tr").length;
+                        // Display and position the dropdown
+                        $("#PageAction").hide();
+                        $("#actionsDet").hide();
+                        var actionType = $(this).attr("data-html");
+                        var currectStatus = $(this).attr("data-bind");
+                        var recordId = $(this).attr("data-content");
+
+                        $("#btnApproved").hide();
+                        $("#btnNotApproved").hide();
+                        $("#btnCancelled").hide();
+                        if (currectStatus == "1") {
+                            if ($("#hdnCanApprove").val() == "True") {
+                                $("#btnApproved").show();
+                            }
+                            $("#btnCancelled").show();
+                        }
+                        else if (currectStatus == "2") {
+                            $("#btnNotApproved").show();
+                            $("#btnCancelled").show();
+                        }
+                        else if (currectStatus == "3") {
+                            if ($("#hdnCanApprove").val() == "True") {
+                                $("#btnApproved").show();
+                            }
+                            $("#btnNotApproved").show();
+                        }
+                        else {
+                            $("#btnNotApproved").show();
+                        }
+                        $("#btnApproved").attr("data-bind", currectStatus);
+                        $("#btnApproved").attr("data-content", recordId);
+                        $("#btnNotApproved").attr("data-bind", currectStatus);
+                        $("#btnNotApproved").attr("data-content", recordId);
+                        $("#btnCancelled").attr("data-bind", currectStatus);
+                        $("#btnCancelled").attr("data-content", recordId);
+
+                        if (actions != null) {
+                            this.parentNode.append(actions);
+                            if (actions.style != null) {
+                                actions.style.display = 'block';
+                                //if ($('#tblpage tbody tr').length == (trIndex + 1)
+                                //    || (($('#tblpage tbody tr').length - 1) == (trIndex + 1))) {
+                                //    actions.style.top = '-72px';
+                                //    actions.style.right = this.offsetLeft + 'px';
+                                //}
+                                //else {
+                                //    actions.style.top = (this.offsetTop + this.offsetHeight + 5) + 'px';
+                                //    actions.style.right = this.offsetLeft + 'px';
+                                //}
+                            }
+                        }
+                        // Remove with the next click on the document
+                        document.addEventListener('click', function () {
+                            if (actions != null) {
+                                actions.remove();
+                            }
+                        });
+                    });
+                },
+                error: function (response) {
+                    ShowToastNotification("error", "Error fetching data!");
+                }
+            });
+        } catch (e) {
+            ShowToastNotification("error", e.message);
+        }
+    }
+
+    function BindChildGrid(tbId, parentId) {
+        try {
+            var tablename = $("#hdnFormName").val()
+            $.ajax({
+                url: "@Url.Action("getPageColumns", "Home")",
+                type: 'POST',
+                skipLoading: true,
+                data: { tblName: tablename },
+                success: function (response) {
+                    var columns = [];
+                    columns.push({
+                        title: "",
+                        orderable: false,
+                        className: 'grid-action-item dt-center actions',
+                        orderable: true,
+                        render: function (data, type, row, meta) {
+                            var pageType = "PageAction"
+                            return '<button class="linkmenu" data-bind=' + row["Status"] + ' data-html=' + pageType + '  data-content=' + row["Id"] + ' ><i class="fa fa-ellipsis-v a-black"></i></button>';
+                        },
+                    });
+                    columns.push({
+                        title: "",
+                        orderable: false,
+                        className: 'grid-action-item dt-center actions expand-col',
+                        orderable: true,
+                        render: function (data, type, row, meta) {
+                            return '<a href="javacript:void(0);" class="row-btn" data-content=' + row["Id"] + ' href="javascript:void(0);" title="Expand"><i class="fa fa-plus-square" aria-hidden="true"></i></a>';
+                        },
+                    });
+                    columns.push({
+                        title: "Status",
+                        orderable: false,
+                        className: 'dt-center actions',
+                        orderable: true,
+                        render: function (data, type, row, meta) {
+                            if ($("#hdnCanApprove").val() == "True" && row["Status"] != "6") {
+                                return '<button class="dropdown" data-bind=' + row["Status"] + ' data-content=' + row["Id"] + ' >' + DisplayStatus(row["Status"]) + '</button>';
+                            }
+                            else if (row["Status"] == "3") {
+                                return '<lable class="form-control-label text-center text-danger" title="Cancelled Record">C</lable>';
+                            }
+                            else if (row["Status"] == "6") {
+                                return '<lable class="form-control-label text-center" title="Forwared Record" style="color:#ccc;"><i class="fa fa-lock" aria-hidden="true"></i></lable>';
+                            }
+                            else {
+                                return '<span>' + DisplayStatus(row["Status"]) + '</span>';
+                            }
+                        },
+                    });
+
+                    var tableColumnNew = JSON.parse(JSON.stringify(response.PageData));
+
+                    /*$("#lblRecordCount").html("(" + response.Data.length + ")")*/
+                    if (tableColumnNew.length > 0) {
+                        columnNames = tableColumnNew;
+                        for (var i in columnNames) {
+                            if (columnNames[i].ColumnName != "FiancialYearId"
+                                && columnNames[i].ColumnName != "Status" && columnNames[i].ColumnName != "Id" && columnNames[i].ColumnName != "CompanyId"
+                                && columnNames[i].ColumnName != "RevisionCount"
+                                && columnNames[i].ColumnName != "CreatedBy"
+                                && columnNames[i].ColumnName != "UpdatedBy"
+                                && columnNames[i].ColumnName != "CreatedOn"
+                                && columnNames[i].ColumnName != "UpdatedOn") {
+                                var dataVal = columnNames[i].ColumnName;
+                                if (columnNames[i].ColumnName == "URNNo") {
+                                    columns.push({
+                                        title: "URN #",
+                                        orderable: false,
+                                        render: function (data, type, row, meta) {
+                                            var pagedetial = '@Url.Action("PageDetail","Home", new { pagename = "_pagename", uId= "_uId", act = "_act" })';
+                                            pagedetial = pagedetial.replace("amp;", "");
+                                            pagedetial = pagedetial.replace("amp;", "");
+                                            pagedetial = pagedetial.replace("_pagename", tablename);
+                                            pagedetial = pagedetial.replace("_uId", row["Id"]);
+                                            var viewlink = pagedetial.replace("_act", "V");
+                                            /*var viewlink = "/Home/PageDetail?pagename=" + formname + "&uId=" + row.Id + "&act=V";*/
+                                            if (row["URNNo"] != null) {
+                                                return "<a title='View Record' href='" + viewlink + "';>" + row["URNNo"] + "</a>";
+                                            }
+                                            else {
+                                                return "<a title='View Record' href='" + viewlink + "';>NA</a>";
+                                            }
+                                        },
+                                    });
+                                }
+                                if (columnNames[i].ColumnName == "DocNo") {
+                                    columns.push({
+                                        title: "Doc No",
+                                        orderable: false,
+                                        render: function (data, type, row, meta) {
+                                            if (row["RevisionCount"] != null && row["RevisionCount"] != undefined && row["RevisionCount"] != "") {
+                                                return "<span>" + row["DocNo"] + "(R" + row["RevisionCount"] +")</span>";
+                                            }
+                                            else {
+                                                return "<span>" + row["DocNo"] + "</span>";
+                                            }
+                                        },
+                                    });
+                                }
+                                if (columnNames[i].ColumnName == "DocDate") {
+                                    columns.push({ title: "Doc Date", orderable: false, render: function (data, type, row, meta) { return "<span>" + row["DocDate"] + "</span>"; } });
+                                }
+                                if (columnNames[i].ColumnName == "CreatedOn") {
+                                    columns.push({ title: "Created Date", orderable: false, render: function (data, type, row, meta) { return "<span>" + row["CreatedOn"] + "</span>"; } });
+                                }
+                                if (columnNames[i].ColumnName == "CreatedBy") {
+                                    columns.push({ title: "Created By", orderable: false, render: function (data, type, row, meta) { return "<span>" + row["CreatedBy"] + "</span>"; } });
+                                }
+                                if (columnNames[i].ColumnName == "UpdatedBy") {
+                                    columns.push({
+                                        title: "Updated By", orderable: false, render: function (data, type, row, meta) {
+                                            if (row["UpdatedBy"] != null) {
+                                                return "<span>" + row["UpdatedBy"] + "</span>";
+                                            }
+                                            else {
+                                                return "<span></span>";
+                                            }
+                                        }
+                                    });
+                                }
+                                if (columnNames[i].ColumnName == "UpdatedOn") {
+                                    columns.push({
+                                        title: "Updated Date", orderable: false, render: function (data, type, row, meta) {
+                                            if (row["UpdatedOn"] != null) {
+                                                return "<span>" + row["UpdatedOn"] + "</span>";
+                                            }
+                                            else {
+                                                return "<span></span>";
+                                            }
+                                        }
+                                    });
+                                }
+                                if (columnNames[i].ColumnName != "DocDate" && columnNames[i].ColumnName != "DocNo" && columnNames[i].ColumnName != "URNNo" && columnNames[i].ColumnName != "FiancialYearId" && columnNames[i].ColumnName != "Status"
+                                    && columnNames[i].ColumnName != "Id" && columnNames[i].ColumnName != "CompanyId" && columnNames[i].ColumnName != "CreatedBy"
+                                    && columnNames[i].ColumnName != "UpdatedBy" && columnNames[i].ColumnName != "CreatedOn" && columnNames[i].ColumnName != "UpdatedOn") {
+                                    columns.push({
+                                        data: columnNames[i].ColumnName,
+                                        title: columnNames[i].ColumnTitle
+                                    });
+                                }
+                            }
+                        }
+                    }
+
+                    // Step 3: Initialize DataTable with server-side processing
+                    let table = new DataTable('#' + tbId, {
+                        destroy: true,
+                        searching: false,
+                        ordering: false,
+                        fixedHeader: true,
+                        info: true,
+                        rowId: 'Id',
+                        scrollY: true,
+                        scrollX: true,
+                        scrollCollapse: true,
+                        paging: false,
+                        autoFill: true,
+                        language: {
+                            infoEmpty: "No records available - Got it?",
+                            processing: '<i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color: #27a9d7;"></i>'
+                        },
+                        processing: true,
+                        serverSide: true,
+                        deferLoading: 0,   // 👈 prevents initial double call
+                        filter: true,
+                        ajax: {
+                            url: "@Url.Action("getPageChildDataOnly", "Home")",
+                            type: "POST",
+                            skipLoading: true,
+                            data: function (d) {   // 👈 d already contains draw, start, length, search etc.
+                                d.tblName = tablename;  // add custom param
+                                d.ParentId = parentId
+                                // remove pageNumber since DataTables already handles paging with `start` and `length`
+                            },
+                        },
+                        columns: columns,
+                        deferRender: true,     // speeds up rendering for large data
+                        scrollCollapse: true,  // avoid UI freeze on large scroll
+                        drawCallback: function () {
+                           let api = this.api();
+                           let colCount = api.columns().count();
+                           api.rows().every(function () {
+                               let row = $(this.node());
+                               if (!row.next().hasClass("detail-row")) {
+                                   let id = row.attr("id");   // column name
+                                   var tableId = "tblDetail_" + id;
+                                   // Build nested table header dynamically from main table columns
+                                   let headerHtml = "<tr>";
+                                   api.columns().every(function () {
+                                       let headerText = $(this.header()).text();
+                                       headerHtml += `<th>${headerText}</th>`;
+                                   });
+                                   headerHtml += "</tr>";
+
+                                   // Build nested table row using same data
+                                   let rowHtml = "<tr>";
+                                   api.columns().every((idx) => {
+                                       let val = this.data()[api.column(idx).dataSrc()] ?? "";
+                                       rowHtml += `<td></td>`;
+                                   });
+                                   rowHtml += "</tr>";
+                                   // Insert detail row
+                                   row.after(`<tr class="detail-row" style="display:none;background:#f7f7f7;">
+                                   <td colspan="${colCount}">
+                                       <table id="${tableId}" class="table table-bordered table-sm m-0 nested-table">
+                                           <thead>${headerHtml}</thead>
+                                           <tbody>${rowHtml}</tbody>
+                                       </table>
+                                   </td></tr>`);
+                               }
+                           });
+                        }
+                    });
+                    $('#' + tbId +' tbody tr').off('click', 'a.row-btn').on('click', 'a.row-btn', function (e) {
+                        console.log("Click in detail");
+                        let next = $(this).parent().parent().next('.detail-row');
+                        if (next.length) {
+                            let id = $(this).parent().parent().attr("id");
+                            var tableId = $(next).find("table").attr("Id");
+                            //var tbId = $("#hdnSelectedTabId").val();
+
+                            BindChildGrid(tableId, id);
+                            next.toggle(600); // show/hide
+                            let icon = $(this).find('i'); // Find the <i> inside <a>
+                            // Toggle class between plus and minus
+                            icon.toggleClass('fa-plus-square fa-minus-square');
+                            // ❗ Remove event for this row (only once)
+                            $(this).off('click', e);
+                        }
+                    });
+                    table.columns.adjust().draw();
+                    /*$("#lblRecordCount").html("(" + response.Data.length + ")")*/
+                    let actions = document.querySelector('#actions');
+                    let pageAction = document.querySelector('#PageAction');
+                    table.on('click', 'button.linkmenu', function (e) {
+                        e.stopPropagation();
+                        var $tr = $(this).closest('tr');
+                        // Index of this row among visible rows in tbody (i.e., on current page)
+                        var trIndex = $tr.index();
+                        //$("#tblpage tbody tr").length;
+                        // Display and position the dropdown
+                        $("#actions").hide();
+                        $("#actionsDet").hide();
+                        var actionType = $(this).attr("data-html");
+                        var currectStatus = $(this).attr("data-bind");
+                        var recordId = $(this).attr("data-content");
+                        $("#hdnSelectedRecordId").val(recordId);
+                        $("#btnActionAddChild").attr("onclick", "javascript:ActionTabData(0,'A'," + recordId + ")");
+                        $("#btnActionEdit").attr("onclick", "javascript:ActionTabData(" + recordId + ",'E',0)");
+                        $("#btnActionView").attr("onclick", "javascript:ActionTabData(" + recordId + ",'V',0)");
+                        $("#btnActionEdit").hide();
+                        $("#btnActionDelete").hide();
+                        if (currectStatus == "1") {
+                            if ($("#hdnCanEdit").val() == "True"){
+                                $("#btnActionEdit").show();
+                            }
+                            if ($("#hdnCanDelete").val() == "True"){
+                                $("#btnActionDelete").show();
+                                $("#btnActionDelete").attr("href", 'javascript:deleteRecord(' + recordId + ')');
+                            }
+                        }
+                        if (pageAction != null) {
+                            this.parentNode.append(pageAction);
+                            const currentOffsetLeft = e.pageX;
+                            const currentOffsetTop = e.pageX;
+                            if (pageAction.style != null) {
+                                const $pageAction = $(pageAction);
+                                $pageAction.css({
+                                    display: 'block',
+                                    position: 'fixed',
+                                    left: e.pageX + 'px',
+                                    top: e.clientY + 'px'
+                                });
+                            }
+                        }
+                        // Remove with the next click on the document
+                        document.addEventListener('click', function () {
+                            if (pageAction != null) {
+                                pageAction.remove();
+                            }
+                        });
+                    });
+                    table.on('click', 'button.dropdown', function (e) {
+                        e.stopPropagation();
+                        var $tr = $(this).closest('tr');
+                        // Index of this row among visible rows in tbody (i.e., on current page)
+                        var trIndex = $tr.index();
+                        //$("#tblpage tbody tr").length;
+                        // Display and position the dropdown
+                        $("#PageAction").hide();
+                        $("#actionsDet").hide();
+                        var actionType = $(this).attr("data-html");
+                        var currectStatus = $(this).attr("data-bind");
+                        var recordId = $(this).attr("data-content");
+
+                        $("#btnApproved").hide();
+                        $("#btnNotApproved").hide();
+                        $("#btnCancelled").hide();
+                        if (currectStatus == "1") {
+                            if ($("#hdnCanApprove").val() == "True") {
+                                $("#btnApproved").show();
+                            }
+                            $("#btnCancelled").show();
+                        }
+                        else if (currectStatus == "2") {
+                            $("#btnNotApproved").show();
+                            $("#btnCancelled").show();
+                        }
+                        else if (currectStatus == "3") {
+                            if ($("#hdnCanApprove").val() == "True") {
+                                $("#btnApproved").show();
+                            }
+                            $("#btnNotApproved").show();
+                        }
+                        else {
+                            $("#btnNotApproved").show();
+                        }
+                        $("#btnApproved").attr("data-bind", currectStatus);
+                        $("#btnApproved").attr("data-content", recordId);
+                        $("#btnNotApproved").attr("data-bind", currectStatus);
+                        $("#btnNotApproved").attr("data-content", recordId);
+                        $("#btnCancelled").attr("data-bind", currectStatus);
+                        $("#btnCancelled").attr("data-content", recordId);
+
+                        if (actions != null) {
+                            this.parentNode.append(actions);
+                            if (actions.style != null) {
+                                actions.style.display = 'block';
+                            }
+                        }
+                        // Remove with the next click on the document
+                        document.addEventListener('click', function () {
+                            if (actions != null) {
+                                actions.remove();
+                            }
+                        });
+                    });
+                },
+                error: function (response) {
+                    ShowToastNotification("error", "Error fetching data!");
+                }
+            });
+        } catch (e) {
+            ShowToastNotification("error", e.message);
+        }
+    }
+    function deleteRecord(id) {
+        if (confirm("Are you sure you want to delete this record?")) {
+            var tablename = $("#hdnTableName").val();
+            try {
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("DeletePageRecord", "Home")",
+                data: { id: id, tblName: tablename },
+                success: function (response) {
+                    if (response.IsSuccess) {
+                        ShowToastNotification("success", "Record has been deleted successfully.");
+                        BindGridPagination();
+                    } else {
+                        ShowToastNotification("error", "Error Record Status record.");
+                    }
+                },
+                error: function () {
+                    ShowToastNotification("error", "Error Record Status record.");
+                }
+            });
+            }
+            catch (e) {
+                ShowToastNotification("error", e.message);
+            }
+            return true;
+        }
+    }
+    function ActionTabData(_Id, _action, _parentId)
+    {
+        try {
+            var isValid = true;
+            if (isValid) {
+                if (_action != "A") {
+                   _Id = $("#hdnSelectedRecordId").val();
+                }
+                $("#tabModalData").empty();
+                 $.ajax({
+                     type: "GET", url: '@Url.Action("ParticalMasterPopup", "Home")',
+                     contentType: "application/json;",
+                     cache: true,
+                     data: {
+                         FormId: $("#hdnFormId").val(),
+                         pagename: $("#hdnFormName").val(),
+                         act: _action,
+                         Id: _Id,
+                         ParentId: _parentId
+                     },
+                     async: false,
+                     success: function (response) {
+                         if (response != null) {
+                             $("#tabModalData").html(response);
+                             setTimeout(function () {
+                                 $('#tabModalData div.navigation-controls a.enableButton').removeClass('disabled');
+                             }, 1500); // 1000 ms = 1 second
+                         }
+                         else {
+                             ShowToastNotification("error","Please try again...");
+                         }
+                     },
+                     failure: function (response) { },
+                     error: function (response) { }
+                 });
+            }
+        } catch (e) {
+        }
+    }
+</script>

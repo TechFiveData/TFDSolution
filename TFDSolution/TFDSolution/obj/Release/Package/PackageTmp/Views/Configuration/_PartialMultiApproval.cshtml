@@ -1,0 +1,232 @@
+﻿@model TFDSolution.Transport.Master.MultipleApprovalRequest
+<div class="row">
+    <div class="col-md-12 form-group">
+        <table id="tblData" class="display cell-border nowrap" cellspacing="0" width="100%"></table>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        BindData();
+    })
+    function BindData() {
+        try {
+            var model = {
+                FormId:  '@Model.FormId',
+                UserId: '',
+                EntryType: '@Model.EntryType',
+            }
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("GetMultiApprovalData", "Configuration")",
+                contentType: "application/json;",
+                data: JSON.stringify(model),
+                success: function (response) {
+                    BindPendingGrid(response);
+                },
+                failure: function (response) {
+                    ShowToastNotification("error", response.d);
+                },
+                error: function (response) {
+                    ShowToastNotification("error", "Error fetching data!");
+                }
+            });
+        } catch (e) {
+
+        }
+    }
+    function BindPendingGrid(dataset) {
+        try {
+            var mycolumns = [];
+            mycolumns.push(
+                {
+                    /* title: 'Select',*/
+                    className: "grid-action-item select-checkbox",
+                    render: function (data, type, row, meta) {
+                        var ddlhtml = '<input type="checkbox" data-content="' + row["Id"] + '" name="chkForNext" class="select-checkbox"/>';
+                        return ddlhtml;
+                        //return '<input type="checkbox" name="id[]" value="' + $('<div/>').text(data).html() + '">';
+                    },
+                    title: '',
+                    orderable: true,
+                    targets: 0,
+                    //checkboxes: {
+                    //    'selectRow': true,
+                    //    'selectAllRender': '<div class="checkbox"><input type="checkbox" class="dt-checkboxes"><label></label></div>'
+                    //}
+                });
+            var tableData = JSON.parse(JSON.stringify(dataset.Data));    // Cannot read property '0' of undefined
+            var tableColumn = JSON.parse(JSON.stringify(dataset.Columns));
+            /*$("#" + countid).html("(" + dataset.Data.length + ")")*/
+            if (tableColumn.length > 0) {
+                columnNames = tableColumn;
+                for (var i in columnNames) {
+                    if (columnNames[i] == "ParentId"  || columnNames[i] == "PONO") { }
+                    else if (columnNames[i] == "Id") {
+                        mycolumns.push({
+                            title: "Id",
+                            render: function (data, type, row, meta) {
+                                if (row["Id"] != null) {
+                                    return "<span>" + row["Id"] + "</span>";
+                                }
+                                else {
+                                    return "<span></span>";
+                                }
+                            },
+                        });
+                    }
+                    else if (columnNames[i] == "URNNo") {
+                        mycolumns.push({
+                            title: "URN No",
+                            render: function (data, type, row, meta) {
+                                if (row["URNNo"] != null) {
+                                    return "<span>" + row["URNNo"] + "</span>";
+                                }
+                                else {
+                                    return "<span></span>";
+                                }
+                            },
+                        });
+                    }
+                    else if (columnNames[i] == "Status") {
+                        mycolumns.push({
+                            title: "Status",
+                            className: 'dt-center actions',
+                            orderable: true,
+                            render: function (data, type, row, meta) {
+                                return '<span>' + row["Status"] + '</span>';
+                            },
+                        });
+                    }
+                    else if (columnNames[i] == "DocNo") {
+                        mycolumns.push({
+                            title: "Doc #",
+                            render: function (data, type, row, meta) {
+                                if (row["DocNo"] != null) {
+                                    return "<span>" + row["DocNo"] + "</span>";
+                                }
+                                else {
+                                    return "<span></span>";
+                                }
+                            },
+                        });
+                    }
+                    else  {
+                        mycolumns.push({
+                            data: columnNames[i],
+                            title: columnNames[i]
+                        });
+                    }
+                }
+            }
+
+            if ($.fn.DataTable.isDataTable('#tblData')) {
+                $('#tblData').DataTable().clear().destroy();
+                $('#tblData tbody').empty(); // important
+            }
+            
+            $('#tblData').DataTable({
+                data: dataset.Data,
+                // auto-generate columns from keys (if dataset is array of objects)
+                columns: mycolumns,
+                pageLength: 10,
+                scrollX: true,
+                scrollY: '60vh',
+                destroy: true,
+                lengthMenu: [10, 25, 500, 100],
+                pageLength: 25,
+                scrollCollapse: true,
+                language: {
+                    infoEmpty: "No records available"
+                }
+            });
+            $('#tblData').on('init.dt', function () {
+                $('#tblData').DataTable().columns.adjust();
+            });
+            // safer adjust after init
+            setTimeout(() => {
+                $('#tblData').DataTable().columns.adjust();
+            }, 100);
+            $('#tblData').on('change', '.select-checkbox', function () {
+                if ($(this).data('content') != undefined && $(this).data('content') != null) {
+                    const id = String($(this).data('content')).trim();
+                    const isChecked = $(this).is(':checked');
+                    addselectedPending("tblData", id, isChecked);
+                }
+            });
+            $('#tblData tbody').on('change', 'input.select-checkbox', function () {
+                var all = $('#tblData tbody input.select-checkbox').length;
+                var checked = $('#tblData tbody input.select-checkbox:checked').length;
+                $('#tblData').find('tbody input.select-checkbox:checked').each(function () {
+                    const value = $(this).data('content'); // or .attr('data-content') if needed
+                    //if (value !== undefined) {
+                    //    addselectedPending(tblId, value, checked);
+                    //}
+                });
+                $('#select-all').prop('checked', all === checked);
+            });
+            $('#tblData tbody').off('click', 'tr').on('click', 'tr', function (e) {
+
+                // Prevent triggering when clicking directly on the checkbox
+                if (!$(e.target).is('input[type="checkbox"]')) {
+
+                    // Find checkbox inside the clicked row
+                    var checkbox = $(this).find('input[type="checkbox"]');
+
+                    // Toggle checkbox
+                    checkbox.prop('checked', !checkbox.prop('checked')).trigger('change');
+                }
+                // Toggle highlight class for row color
+                $(this).toggleClass('row-selected');
+            });
+        } catch (e) {
+            console.log(e);
+        }
+    }
+    function addselectedPending(tblId, id, isChecked) {
+        // Find or create table entry
+        id = id.toString();
+        let tableEntry = PendingSelected.find(entry => entry.TableName === tblId);
+        if (!tableEntry) {
+            if (isChecked) {
+                PendingSelected.push({ TableName: tblId, FieldValues: id });
+            }
+            return;
+        }
+        else {
+            const fieldValues = (tableEntry?.FieldValues || "");
+            // Normalize existing values to array
+            if (fieldValues != null && fieldValues.length > 0 && fieldValues.includes(',')) {
+                let values = (tableEntry.FieldValues || "")
+                    .split(',')
+                    .map(v => v.trim())
+                    .filter(v => v !== "");
+
+                // Update values array
+                if (isChecked) {
+                    if ($.inArray(id, values) == -1) { values.push(id) };
+                } else {
+                    values = values.filter(val => val !== id);
+                }
+                if (values != null && values.length > 0) {
+                    tableEntry.FieldValues = values.join(',');
+                }
+                else {
+                    tableEntry.FieldValues = '';
+                }
+            }
+            else {
+                if (isChecked) {
+                    if (tableEntry.FieldValues != id) {
+                        tableEntry.FieldValues = tableEntry.FieldValues + "," + id;
+                    }
+                    else {
+                        tableEntry.FieldValues = id;
+                    }
+                } else if (tableEntry.FieldValues == id) {
+                    tableEntry.FieldValues = "";
+                }
+            }
+            // Save back to FieldValues as comma-separated string
+        }
+    }
+</script>

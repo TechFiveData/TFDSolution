@@ -1,0 +1,3372 @@
+﻿@model TFDSolution.Transport.Master.ERPUpdateModel
+
+@{
+    ViewBag.Title = "ERP Update Center";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 16px;
+
+    gap: 20px;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.brand-icon {
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 11px;
+
+    background: var(--primary-soft);
+    color: var(--primary);
+
+    font-size: 19px;
+}
+
+.brand-text h1 {
+    margin: 0;
+
+    font-size: 20px;
+    font-weight: 650;
+}
+
+.brand-text p {
+    margin: 3px 0 0;
+
+    color: var(--text-light);
+
+    font-size: 12px;
+}
+
+.header-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+
+/* =========================================================
+   BUTTON
+========================================================= */
+
+.btn {
+    min-height: 38px;
+
+    padding: 0 15px;
+
+    border: 0;
+    border-radius: 7px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 7px;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    transition: .2s ease;
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: white;
+
+    box-shadow: 0 3px 10px rgba(32,168,216,.18);
+}
+
+.btn-primary:hover {
+    background: var(--primary-dark);
+    transform: translateY(-1px);
+}
+
+.btn-light {
+    background: white;
+
+    color: #5e6c75;
+
+    border: 1px solid var(--border);
+}
+
+.btn-light:hover {
+    background: #f8fafb;
+}
+
+.btn-success {
+    background: var(--success);
+    color: white;
+}
+
+.btn-danger {
+    background: var(--danger);
+    color: white;
+}
+
+.btn:disabled {
+    opacity: .45;
+    cursor: not-allowed;
+    transform: none;
+}
+
+
+/* =========================================================
+   ERP UPDATE HERO
+   SMALLER VERSION
+========================================================= */
+
+.hero {
+    position: relative;
+
+    overflow: hidden;
+
+    background: white;
+
+    border: 1px solid var(--border);
+
+    border-radius: 12px;
+
+    padding: 16px 20px;
+
+    box-shadow: var(--shadow);
+
+    margin-bottom: 18px;
+}
+
+.hero::after {
+    content: "";
+
+    position: absolute;
+
+    width: 180px;
+    height: 180px;
+
+    right: -80px;
+    top: -100px;
+
+    border-radius: 50%;
+
+    background: var(--primary-soft);
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+}
+
+.hero-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 13px;
+}
+
+.hero-title h2 {
+    margin: 0;
+
+    font-size: 16px;
+    font-weight: 650;
+}
+
+.hero-title p {
+    margin: 3px 0 0;
+
+    color: var(--text-light);
+
+    font-size: 11px;
+}
+
+.status {
+    display: inline-flex;
+    align-items: center;
+
+    gap: 6px;
+
+    padding: 5px 9px;
+
+    border-radius: 20px;
+
+    background: var(--success-soft);
+    color: var(--success);
+
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.status-dot {
+    width: 6px;
+    height: 6px;
+
+    border-radius: 50%;
+
+    background: currentColor;
+}
+
+
+/* =========================================================
+   VERSION AREA
+========================================================= */
+
+.version-grid {
+    display: grid;
+
+    grid-template-columns:
+        1fr
+        42px
+        1fr
+        190px;
+
+    gap: 12px;
+
+    align-items: center;
+}
+
+.version-card {
+    padding: 11px 14px;
+
+    border: 1px solid var(--border);
+
+    border-radius: 9px;
+
+    background: #fcfdfe;
+}
+
+.version-card.latest {
+    background: #f6fcff;
+
+    border-color: #cbeaf5;
+}
+
+.version-label {
+    color: var(--muted);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+    margin-bottom: 3px;
+}
+
+.version {
+    font-size: 20px;
+
+    line-height: 1.2;
+
+    font-weight: 700;
+}
+
+.version-date {
+    margin-top: 3px;
+
+    color: var(--text-light);
+
+    font-size: 10px;
+}
+
+.version-arrow {
+    width: 34px;
+    height: 34px;
+
+    margin: auto;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: var(--primary-soft);
+
+    color: var(--primary);
+
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   CONTENT GRID
+========================================================= */
+
+.content-grid {
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1.45fr)
+        minmax(330px, .75fr);
+
+    gap: 18px;
+}
+
+.column {
+    display: flex;
+    flex-direction: column;
+}
+
+
+/* =========================================================
+   CARD
+========================================================= */
+
+.card-header {
+    padding: 0 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+    .card-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding-top: 10px;
+        margin: 0;
+    }
+
+.card-icon {
+    width: 30px;
+    height: 30px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 7px;
+
+    background: var(--primary-soft);
+
+    color: var(--primary);
+
+    font-size: 13px;
+}
+
+.card-title h3 {
+    margin: 0;
+
+    font-size: 14px;
+
+    font-weight: 650;
+}
+
+.card-title p {
+    margin: 1px 0 0;
+    color: var(--muted);
+    font-size: 11px;
+}
+
+
+/* =========================================================
+   RELEASE NOTES
+========================================================= */
+
+.latest-release {
+    padding: 15px;
+    border-radius: 9px;
+    background: #f8fdff;
+    border: 1px solid #dceff6;
+}
+
+.release-header {
+    display: flex;
+
+    justify-content: space-between;
+
+    gap: 15px;
+}
+
+.release-version {
+    font-size: 15px;
+
+    font-weight: 700;
+}
+
+.release-date {
+    color: var(--muted);
+
+    font-size: 11px;
+
+    margin-top: 3px;
+}
+
+.latest-badge {
+    height: 22px;
+
+    padding: 0 9px;
+
+    display: flex;
+    align-items: center;
+
+    border-radius: 20px;
+
+    background: var(--primary);
+
+    color: white;
+
+    font-size: 10px;
+
+    font-weight: 650;
+}
+
+.release-description {
+    margin: 12px 0;
+
+    color: var(--text-light);
+
+    font-size: 13px;
+
+    line-height: 1.55;
+}
+
+.features {
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 7px;
+}
+
+.feature {
+    padding: 9px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 7px;
+
+    border: 1px solid #e9eef1;
+
+    border-radius: 7px;
+
+    background: white;
+
+    color: #5e6b74;
+
+    font-size: 12px;
+}
+
+.feature i {
+    color: var(--success);
+}
+
+
+/* =========================================================
+   HISTORY
+========================================================= */
+
+.history-item {
+    display: flex;
+    gap: 12px;
+    padding: 13px 13px 0 0;
+    border-bottom: 1px solid #edf1f3;
+}
+
+.history-item:last-child {
+    border-bottom: 0;
+}
+
+.history-icon {
+    width: 32px;
+    height: 32px;
+
+    flex: 0 0 32px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: var(--primary-soft);
+
+    color: var(--primary);
+
+    font-size: 11px;
+}
+
+.history-content {
+    flex: 1;
+}
+
+.history-title {
+    font-size: 14px;
+    font-weight: 650;
+}
+
+.history-meta {
+    margin-top: 4px;
+    color: var(--muted);
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+.success-badge {
+    display: inline-block;
+
+    margin-top: 5px;
+
+    padding: 4px 8px;
+
+    border-radius: 10px;
+
+    background: var(--success-soft);
+
+    color: var(--success);
+
+    font-size: 10px;
+
+    font-weight: 650;
+}
+
+
+/* =========================================================
+   SYSTEM STATUS
+========================================================= */
+
+.system-status {
+    display: flex;
+    align-items: center;
+    padding: 2px 12px;
+    margin-bottom: 15px;
+    border-radius: 9px;
+    background: #f8fbfa;
+    border: 1px solid #e1eee8;
+}
+
+.system-icon {
+    width: 34px;
+    height: 34px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 8px;
+
+    background: var(--success-soft);
+
+    color: var(--success);
+
+    margin-right: 10px;
+}
+
+.system-text {
+    flex: 1;
+}
+
+.system-text strong {
+    display: block;
+
+    font-size: 12px;
+}
+
+.system-text span {
+    display: block;
+
+    margin-top: 2px;
+
+    color: var(--muted);
+
+    font-size: 10px;
+}
+
+.online {
+    color: var(--success);
+
+    font-size: 10px;
+
+    font-weight: 650;
+}
+
+
+/* =========================================================
+   READINESS
+========================================================= */
+
+.readiness {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 9px;
+}
+
+.readiness-row {
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+}
+
+.readiness-icon {
+    width: 27px;
+    height: 27px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 7px;
+
+    background: var(--success-soft);
+
+    color: var(--success);
+
+    font-size: 10px;
+}
+
+.readiness-name {
+    flex: 1;
+    color: #5e6b74;
+    font-size: 14px;
+}
+
+.ready {
+    color: var(--success);
+    font-size: 10px;
+    font-weight: 650;
+}
+
+
+/* =========================================================
+   INFO
+========================================================= */
+
+.info-row {
+    display: flex;
+
+    justify-content: space-between;
+
+    padding: 9px 0;
+
+    border-bottom: 1px solid #edf1f3;
+}
+
+.info-row:last-child {
+    border-bottom: 0;
+}
+
+/*.info-label {
+    color: var(--muted);
+
+    font-size: 12px;
+}
+
+.info-value {
+    font-size: 12px;
+
+    font-weight: 650;
+}*/
+
+
+/* =========================================================
+   WARNING
+========================================================= */
+
+.warning {
+    display: flex;
+
+    gap: 9px;
+
+    margin-top: 13px;
+
+    padding: 12px;
+
+    border-radius: 8px;
+
+    background: var(--warning-soft);
+
+    border: 1px solid #f0dfb9;
+}
+
+.warning i {
+    color: var(--warning);
+
+    font-size: 13px;
+}
+
+.warning strong {
+    display: block;
+
+    color: #775a1d;
+
+    font-size: 11px;
+
+    margin-bottom: 3px;
+}
+
+.warning p {
+    margin: 0;
+
+    color: #927536;
+
+    font-size: 11px;
+
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   MODAL
+========================================================= */
+
+.modal-overlay {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 9999;
+
+    display: none;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 20px;
+
+    background: rgba(19,30,38,.62);
+
+    backdrop-filter: blur(4px);
+}
+
+.modal {
+    width: 100%;
+
+    max-width: 570px;
+
+    background: white;
+
+    border-radius: 16px;
+
+    overflow: hidden;
+
+    box-shadow: 0 25px 80px rgba(0,0,0,.25);
+
+    animation: modalIn .25s ease;
+}
+
+@@keyframes modalIn {
+
+    from {
+        opacity: 0;
+        transform: translateY(18px) scale(.97);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+
+}
+
+.modal-header {
+    min-height: 62px;
+
+    padding: 0 20px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    border-bottom: 1px solid var(--border);
+}
+
+.modal-title {
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+}
+
+.modal-title-icon {
+    width: 36px;
+    height: 36px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 9px;
+
+    background: var(--primary-soft);
+
+    color: var(--primary);
+
+    font-size: 14px;
+}
+
+.modal-title h3 {
+    margin: 0;
+
+    font-size: 15px;
+}
+
+.modal-title p {
+    margin: 2px 0 0;
+
+    color: var(--muted);
+
+    font-size: 11px;
+}
+
+.modal-close {
+    width: 30px;
+    height: 30px;
+
+    border: 0;
+
+    border-radius: 7px;
+
+    background: transparent;
+
+    color: #89959c;
+
+    font-size: 19px;
+}
+
+.modal-close:hover {
+    background: #f2f5f6;
+}
+
+.modal-body {
+    padding: 21px;
+}
+
+.modal-footer {
+    padding: 13px 20px;
+
+    display: flex;
+
+    justify-content: flex-end;
+
+    gap: 8px;
+
+    border-top: 1px solid var(--border);
+}
+
+
+/* =========================================================
+   UPDATE HUB
+========================================================= */
+
+.hub-visual {
+    position: relative;
+
+    width: 125px;
+    height: 125px;
+
+    margin: 2px auto 17px;
+}
+
+.hub-circle {
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    transform: translate(-50%, -50%);
+
+    width: 70px;
+    height: 70px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: linear-gradient(
+        145deg,
+        #e9f9fe,
+        #d8f3fb
+    );
+
+    color: var(--primary);
+
+    font-size: 27px;
+
+    box-shadow:
+        0 0 0 9px #f4fbfd,
+        0 0 0 18px #f9fdfe;
+}
+
+.orbit {
+    position: absolute;
+
+    inset: 5px;
+
+    border: 1px dashed #b9e5f3;
+
+    border-radius: 50%;
+
+    animation: rotate 7s linear infinite;
+}
+
+.orbit-dot {
+    position: absolute;
+
+    width: 9px;
+    height: 9px;
+
+    border-radius: 50%;
+
+    background: var(--primary);
+
+    top: -4px;
+    left: 50%;
+}
+
+.hub-title {
+    text-align: center;
+
+    font-size: 17px;
+
+    font-weight: 650;
+
+    margin-bottom: 5px;
+}
+
+.hub-description {
+    max-width: 420px;
+
+    margin: auto;
+
+    text-align: center;
+
+    color: var(--text-light);
+
+    font-size: 12px;
+
+    line-height: 1.6;
+}
+
+
+/* =========================================================
+   SYNC STATUS
+========================================================= */
+
+.sync-status {
+    margin-top: 17px;
+
+    padding: 11px 13px;
+
+    border: 1px solid var(--border);
+
+    border-radius: 9px;
+
+    background: #fbfcfd;
+}
+
+.sync-status-row {
+    display: flex;
+
+    align-items: center;
+
+    gap: 9px;
+
+    padding: 7px 0;
+
+    color: #617079;
+
+    font-size: 12px;
+}
+
+.sync-status-row i {
+    width: 17px;
+
+    text-align: center;
+
+    color: var(--muted);
+}
+
+.sync-status-row.active {
+    color: var(--primary);
+}
+
+.sync-status-row.active i {
+    color: var(--primary);
+}
+
+.sync-status-row.done {
+    color: var(--success);
+}
+
+.sync-status-row.done i {
+    color: var(--success);
+}
+
+.sync-loader {
+    margin-left: auto;
+
+    width: 12px;
+    height: 12px;
+
+    border: 2px solid #d8edf4;
+
+    border-top-color: var(--primary);
+
+    border-radius: 50%;
+
+    animation: spin .7s linear infinite;
+}
+
+@*@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}*@
+
+
+/* =========================================================
+   UPDATE FOUND
+========================================================= */
+
+.found-banner {
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 12px;
+
+    margin-bottom: 15px;
+
+    border-radius: 9px;
+
+    background: var(--success-soft);
+
+    border: 1px solid #dcefe5;
+}
+
+.found-icon {
+    width: 33px;
+    height: 33px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 8px;
+
+    background: white;
+
+    color: var(--success);
+}
+
+.found-text strong {
+    display: block;
+
+    font-size: 12px;
+}
+
+.found-text span {
+    display: block;
+
+    margin-top: 2px;
+
+    color: #659178;
+
+    font-size: 10px;
+}
+
+.hub-version {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    padding: 14px;
+
+    margin-bottom: 14px;
+
+    border-radius: 9px;
+
+    border: 1px solid #dceff6;
+
+    background: #f8fdff;
+}
+
+.hub-version-label {
+    color: var(--muted);
+
+    font-size: 10px;
+
+    text-transform: uppercase;
+}
+
+.hub-version-number {
+    margin-top: 3px;
+
+    font-size: 19px;
+
+    font-weight: 700;
+}
+
+.hub-arrow {
+    color: var(--primary);
+
+    font-size: 16px;
+}
+
+.hub-release-title {
+    font-size: 12px;
+
+    font-weight: 650;
+
+    margin-bottom: 8px;
+}
+
+.hub-release-list {
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 7px;
+}
+
+.hub-release-item {
+    padding: 8px;
+
+    border: 1px solid #edf1f3;
+
+    border-radius: 7px;
+
+    color: #617079;
+
+    font-size: 11px;
+}
+
+.hub-release-item i {
+    color: var(--success);
+
+    margin-right: 4px;
+}
+
+
+/* =========================================================
+   OTP
+========================================================= */
+
+.otp-message {
+    text-align: center;
+
+    color: var(--text-light);
+
+    font-size: 12px;
+
+    line-height: 1.6;
+
+    margin-bottom: 15px;
+}
+
+.verification-methods {
+    display: flex;
+
+    justify-content: center;
+
+    gap: 7px;
+
+    margin-bottom: 16px;
+}
+
+.verification-method {
+    padding: 6px 10px;
+
+    border-radius: 20px;
+
+    background: #f7f9fa;
+
+    border: 1px solid var(--border);
+
+    color: #66747d;
+
+    font-size: 11px;
+}
+
+.otp-boxes {
+    display: flex;
+
+    justify-content: center;
+
+    gap: 8px;
+
+    margin-bottom: 12px;
+}
+
+.otp-box {
+    width: 42px;
+    height: 47px;
+
+    border: 1px solid #dce4e8;
+
+    border-radius: 8px;
+
+    outline: none;
+
+    text-align: center;
+
+    font-size: 18px;
+
+    font-weight: 650;
+}
+
+.otp-box:focus {
+    border-color: var(--primary);
+
+    box-shadow:
+        0 0 0 3px rgba(32,168,216,.1);
+}
+
+.otp-info {
+    text-align: center;
+
+    color: var(--muted);
+
+    font-size: 10px;
+}
+
+.resend {
+    color: var(--primary);
+
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+
+/* =========================================================
+   CONFIRMATION
+========================================================= */
+
+.version-change {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    padding: 14px;
+
+    margin-bottom: 14px;
+
+    border: 1px solid var(--border);
+
+    border-radius: 9px;
+
+    background: #fbfcfd;
+}
+
+.change-label {
+    color: var(--muted);
+
+    font-size: 10px;
+
+    text-transform: uppercase;
+}
+
+.change-version {
+    margin-top: 3px;
+
+    font-size: 18px;
+
+    font-weight: 700;
+}
+
+.change-arrow {
+    width: 31px;
+    height: 31px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: var(--primary-soft);
+
+    color: var(--primary);
+}
+
+.confirm-warning {
+    padding: 12px;
+
+    margin-bottom: 13px;
+
+    border-radius: 9px;
+
+    background: var(--warning-soft);
+
+    border: 1px solid #f0dfb9;
+}
+
+.confirm-warning strong {
+    display: block;
+
+    color: #775a1d;
+
+    font-size: 11px;
+
+    margin-bottom: 4px;
+}
+
+.confirm-warning p {
+    margin: 0;
+
+    color: #927536;
+
+    font-size: 11px;
+
+    line-height: 1.5;
+}
+
+.confirm-check {
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 8px;
+
+    margin: 9px 0;
+}
+
+.confirm-check input {
+    margin-top: 2px;
+
+    accent-color: var(--primary);
+}
+
+.confirm-check label {
+    color: #596771;
+
+    font-size: 11px;
+
+    line-height: 1.45;
+
+    cursor: pointer;
+}
+
+
+/* =========================================================
+   UPDATE PROGRESS
+========================================================= */
+
+.progress-icon {
+    width: 72px;
+    height: 72px;
+
+    margin: 5px auto 16px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: var(--primary-soft);
+
+    color: var(--primary);
+
+    font-size: 26px;
+
+    animation: pulse 1.5s infinite;
+}
+
+@*@keyframes pulse {
+
+    0% {
+        box-shadow: 0 0 0 0 rgba(32,168,216,.25);
+    }
+
+    70% {
+        box-shadow: 0 0 0 15px rgba(32,168,216,0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(32,168,216,0);
+    }
+
+}*@
+
+.progress-title {
+    text-align: center;
+
+    font-size: 16px;
+
+    font-weight: 650;
+}
+
+.progress-text {
+    margin: 5px auto 18px;
+
+    text-align: center;
+
+    color: var(--text-light);
+
+    font-size: 11px;
+}
+
+.progress-track {
+    height: 7px;
+
+    overflow: hidden;
+
+    border-radius: 10px;
+
+    background: #e7eef1;
+}
+
+.progress-fill {
+    width: 0;
+
+    height: 100%;
+
+    border-radius: 10px;
+
+    background: var(--primary);
+
+    transition: width .4s ease;
+}
+
+.progress-percent {
+    margin-top: 6px;
+
+    text-align: right;
+
+    color: var(--primary);
+
+    font-size: 11px;
+
+    font-weight: 650;
+}
+
+    .version-action {
+        text-align: center;
+    }
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+    @@media(max-width:1100px) {
+
+        .version-grid {
+            grid-template-columns: 1fr 42px 1fr;
+        }
+
+        .version-action {
+            grid-column: 1 / -1;
+        }
+
+        .content-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+
+    @@media (max-width: 650px) {
+
+        .page {
+            padding: 15px;
+        }
+
+        .page-header {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .header-buttons {
+            width: 100%;
+        }
+
+            .header-buttons .btn {
+                flex: 1;
+            }
+
+        .hero {
+            padding: 14px;
+        }
+
+        .hero-top {
+            align-items: flex-start;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .version-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .version-arrow {
+            transform: rotate(90deg);
+        }
+
+        .features,
+        .hub-release-list {
+            grid-template-columns: 1fr;
+        }
+
+        .otp-box {
+            width: 37px;
+            height: 43px;
+        }
+    }
+
+</style>
+
+<!-- /header -->
+<div class="breadcrumbs">
+    <div class="col-sm-4">
+        <div class="page-header float-left">
+            <div class="page-title">
+                <h1>ERP Update Centers</h1>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-8">
+        <div class="page-header float-right">
+            <div class="page-title">
+                <ol class="breadcrumb text-right">
+                    <li><a href="@Url.Action("Index","Home")">Home</a></li>
+                    <li class="active">ERP Update Center</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="animated fadeIn">
+    <div class="row m-0">
+        <div class="col-md-12 form-group">
+            <div class="page-header">
+                <div class="brand">
+                    <div class="brand-icon">
+                        <i class="fa fa-rotate-180"></i>
+                    </div>
+                    <div class="brand-text">
+                        <h1>ERP Version Updates</h1>
+                        <p>Manage ERP releases, updates and system history</p>
+                    </div>
+                </div>
+                <div class="header-buttons">
+                    <button class="btn btn-light" id="checkUpdatesBtn"><i class="fa fa-cloud-arrow-down"></i>Check for Updates</button>
+                    <button class="btn btn-primary" id="updateHeaderBtn"><i class="fa fa-arrow-up"></i>Update ERP</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12 form-group">
+            <!-- =====================================================
+                 HERO
+            ===================================================== -->
+            <div class="card mt-3">
+                <div class="card-header">
+                    <div class="card-title">
+                        <div>
+                            <h3>ERP Update Center</h3>
+                            <p>Your ERP environment and latest available release</p>
+                        </div>
+                    </div>
+                    <div class="status">
+                        <span class="status-dot"></span>
+                        System Operational
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="hero-top"></div>
+                    <div class="version-grid">
+                        <div class="version-card">
+                            <div class="version-label">Current Version</div>
+                            <div class="version">v5.8.2</div>
+                            <div class="version-date">Installed on 28 Jul 2026</div>
+                        </div>
+                        <div class="version-arrow">
+                            <i class="fa fa-arrow-right"></i>
+                        </div>
+                        <div class="version-card latest">
+
+                            <div class="version-label">
+                                Latest Available
+                            </div>
+                            <div class="version">
+                                v5.9.0
+                            </div>
+                            <div class="version-date">
+                                Released on 12 Aug 2026
+                            </div>
+                        </div>
+                        <div class="version-action">
+                            <button class="btn btn-primary" id="updateMainBtn">
+                                <i class="fa fa-cloud-arrow-up"></i>Update to v5.9.0
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- =====================================================
+                 CONTENT
+            ===================================================== -->
+            <div class="content-grid">
+                <!-- =================================================
+                     LEFT
+                ================================================= -->
+                <div class="column">
+                    <!-- RELEASE NOTES -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <div class="card-icon"><i class="fa fa-list"></i></div>
+                                <div>
+                                    <h3>Latest Release Notes</h3>
+                                    <p>What's included in the latest release</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="latest-release">
+                                <div class="release-header">
+                                    <div>
+                                        <div class="release-version">
+                                            Version 5.9.0
+                                        </div>
+                                        <div class="release-date">
+                                            Released on 12 Aug 2026
+                                        </div>
+                                    </div>
+                                    <div class="latest-badge">LATEST</div>
+                                </div>
+                                <div class="release-description">
+                                    Latest ERP release with performance,
+                                    security, integration and usability
+                                    improvements across the system.
+                                </div>
+                                <div class="features">
+                                    <div class="feature">
+                                        <i class="fa fa-check"></i>
+                                        Faster Dashboard
+                                    </div>
+
+                                    <div class="feature">
+                                        <i class="fa fa-check"></i>
+                                        Improved Reports
+                                    </div>
+
+                                    <div class="feature">
+                                        <i class="fa fa-check"></i>
+                                        e-Invoice Improvements
+                                    </div>
+
+                                    <div class="feature">
+                                        <i class="fa fa-check"></i>
+                                        e-Way Bill Updates
+                                    </div>
+
+                                    <div class="feature">
+                                        <i class="fa fa-check"></i>
+                                        Security Improvements
+                                    </div>
+
+                                    <div class="feature">
+                                        <i class="fa fa-check"></i>
+                                        Bug Fixes
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- UPDATE HISTORY -->
+
+                    <div class="card">
+
+                        <div class="card-header">
+
+                            <div class="card-title">
+
+                                <div class="card-icon">
+
+                                    <i class="fa fa-clock-o"></i>
+
+                                </div>
+
+                                <div>
+
+                                    <h3>
+                                        Update History
+                                    </h3>
+
+                                    <p>
+                                        Previous ERP updates and activities
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="card-body">
+
+
+                            <div class="history-item">
+
+                                <div class="history-icon">
+
+                                    <i class="fa fa-arrow-up"></i>
+
+                                </div>
+
+                                <div class="history-content">
+
+                                    <div class="history-title">
+                                        ERP updated to v5.8.2
+                                    </div>
+
+                                    <div class="history-meta">
+
+                                        Updated by
+                                        <strong>Admin User</strong>
+                                        <br>
+
+                                        28 Jul 2026 · 10:42 AM
+
+                                    </div>
+
+                                    <span class="success-badge">
+                                        Successful
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="history-item">
+
+                                <div class="history-icon">
+
+                                    <i class="fa fa-arrow-up"></i>
+
+                                </div>
+
+                                <div class="history-content">
+
+                                    <div class="history-title">
+                                        ERP updated to v5.8.1
+                                    </div>
+
+                                    <div class="history-meta">
+
+                                        Updated by
+                                        <strong>System Administrator</strong>
+                                        <br>
+
+                                        15 Jul 2026 · 06:25 PM
+
+                                    </div>
+
+                                    <span class="success-badge">
+                                        Successful
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="history-item">
+
+                                <div class="history-icon">
+
+                                    <i class="fa fa-arrow-up"></i>
+
+                                </div>
+
+                                <div class="history-content">
+
+                                    <div class="history-title">
+                                        ERP updated to v5.8.0
+                                    </div>
+
+                                    <div class="history-meta">
+
+                                        Updated by
+                                        <strong>Admin User</strong>
+                                        <br>
+
+                                        01 Jul 2026 · 09:15 AM
+
+                                    </div>
+
+                                    <span class="success-badge">
+                                        Successful
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =================================================
+                     RIGHT
+                ================================================= -->
+
+                <div class="column">
+
+
+                    <!-- SYSTEM STATUS -->
+
+                    <div class="card">
+
+                        <div class="card-header">
+
+                            <div class="card-title">
+
+                                <div class="card-icon">
+
+                                    <i class="fa fa-server"></i>
+
+                                </div>
+
+                                <div>
+
+                                    <h3>
+                                        System Readiness
+                                    </h3>
+
+                                    <p>
+                                        Current environment status
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="card-body">
+
+
+                            <div class="system-status">
+
+                                <div class="system-icon">
+
+                                    <i class="fa fa-check"></i>
+
+                                </div>
+
+                                <div class="system-text">
+
+                                    <strong>
+                                        ERP System Operational
+                                    </strong>
+
+                                    <span>
+                                        All services are running normally
+                                    </span>
+
+                                </div>
+
+                                <div class="online">
+                                    ONLINE
+                                </div>
+
+                            </div>
+
+
+                            <div class="readiness">
+
+
+                                <div class="readiness-row">
+
+                                    <div class="readiness-icon">
+                                        <i class="fa fa-check"></i>
+                                    </div>
+
+                                    <div class="readiness-name">
+                                        Application Services
+                                    </div>
+
+                                    <div class="ready">
+                                        Ready
+                                    </div>
+
+                                </div>
+
+
+                                <div class="readiness-row">
+
+                                    <div class="readiness-icon">
+                                        <i class="fa fa-check"></i>
+                                    </div>
+
+                                    <div class="readiness-name">
+                                        Database Connectivity
+                                    </div>
+
+                                    <div class="ready">
+                                        Ready
+                                    </div>
+
+                                </div>
+
+
+                                <div class="readiness-row">
+
+                                    <div class="readiness-icon">
+                                        <i class="fa fa-check"></i>
+                                    </div>
+
+                                    <div class="readiness-name">
+                                        Backup Availability
+                                    </div>
+
+                                    <div class="ready">
+                                        Ready
+                                    </div>
+
+                                </div>
+
+
+                                <div class="readiness-row">
+
+                                    <div class="readiness-icon">
+                                        <i class="fa fa-check"></i>
+                                    </div>
+
+                                    <div class="readiness-name">
+                                        Update Service
+                                    </div>
+
+                                    <div class="ready">
+                                        Ready
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- UPDATE DETAILS -->
+
+                    <div class="card">
+
+                        <div class="card-header">
+
+                            <div class="card-title">
+
+                                <div class="card-icon">
+
+                                    <i class="fa fa-circle"></i>
+
+                                </div>
+
+                                <div>
+
+                                    <h3>
+                                        Update Details
+                                    </h3>
+
+                                    <p>
+                                        Information about this release
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="card-body">
+
+
+                            <div class="info-row">
+
+                                <span class="info-label">
+                                    Current Version
+                                </span>
+
+                                <span class="info-value">
+                                    v5.8.2
+                                </span>
+
+                            </div>
+
+
+                            <div class="info-row">
+
+                                <span class="info-label">
+                                    Latest Version
+                                </span>
+
+                                <span class="info-value">
+                                    v5.9.0
+                                </span>
+
+                            </div>
+
+
+                            <div class="info-row">
+
+                                <span class="info-label">
+                                    Update Type
+                                </span>
+
+                                <span class="info-value">
+                                    Feature Release
+                                </span>
+
+                            </div>
+
+
+                            <div class="info-row">
+
+                                <span class="info-label">
+                                    Estimated Time
+                                </span>
+
+                                <span class="info-value">
+                                    10–15 Minutes
+                                </span>
+
+                            </div>
+
+
+                            <div class="info-row">
+
+                                <span class="info-label">
+                                    Downtime
+                                </span>
+
+                                <span class="info-value">
+                                    Required
+                                </span>
+                            </div>
+                            <div class="warning">
+                                <i class="fa fa-exclamation-triangle"></i>
+                                <div>
+                                    <strong>Before starting an update</strong>
+                                    <p>
+                                        Make sure all ERP users have logged out
+                                        and saved their work before the update
+                                        begins.
+
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- =========================================================
+                 ERP HUB SYNC MODAL
+            ========================================================= -->
+        </div>
+        <div class="modal-overlay" id="hubModal">
+            <div class="modal">
+                <div class="modal-header">
+
+                    <div class="modal-title">
+                        <div class="modal-title-icon">
+
+                            <i class="fa fa-cloud"></i>
+
+                        </div>
+
+                        <div>
+
+                            <h3>
+                                ERP Update Hub
+                            </h3>
+
+                            <p>
+                                Synchronize with the central ERP update service
+                            </p>
+                        </div>
+                    </div>
+                    <button class="modal-close" data-close="hubModal">×</button>
+                </div>
+                <div class="modal-body">
+                    <!-- SYNC SCREEN -->
+                    <div id="syncScreen">
+                        <div class="hub-visual">
+                            <div class="orbit">
+                                <div class="orbit-dot"></div>
+                            </div>
+                            <div class="hub-circle">
+                                <i class="fa fa-cloud-arrow-down"></i>
+                            </div>
+                        </div>
+                        <div class="hub-title">
+                            Checking for Updates
+                        </div>
+                        <div class="hub-description">
+                            Connecting securely to ERP Update Hub to check
+                            your current version, available releases,
+                            release notes and compatibility information.
+                        </div>
+                        <div class="sync-status">
+                            <div class="sync-status-row active" id="syncStep1">
+                                <i class="fa fa-server"></i>
+                                Connecting to ERP Update Hub
+                                <span class="sync-loader"></span>
+                            </div>
+                            <div class="sync-status-row" id="syncStep2">
+                                <i class="fa fa-shield-halved"></i>
+                                Verifying secure connection
+                            </div>
+
+
+                            <div class="sync-status-row"
+                                 id="syncStep3">
+
+                                <i class="fa fa-code-branch"></i>
+
+                                Checking available versions
+
+                            </div>
+
+
+                            <div class="sync-status-row"
+                                 id="syncStep4">
+
+                                <i class="fa fa-file-lines"></i>
+
+                                Downloading release information
+
+                            </div>
+
+
+                            <div class="sync-status-row"
+                                 id="syncStep5">
+
+                                <i class="fa fa-circle-check"></i>
+
+                                Checking ERP compatibility
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- UPDATE FOUND -->
+
+                    <div class="update-found"
+                         id="updateFound">
+
+
+                        <div class="found-banner">
+
+                            <div class="found-icon">
+
+                                <i class="fa fa-check"></i>
+
+                            </div>
+
+                            <div class="found-text">
+
+                                <strong>
+                                    New ERP update available
+                                </strong>
+
+                                <span>
+                                    ERP Update Hub found a newer version
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="hub-version">
+
+
+                            <div>
+
+                                <div class="hub-version-label">
+                                    Current Version
+                                </div>
+
+                                <div class="hub-version-number">
+                                    v5.8.2
+                                </div>
+
+                            </div>
+
+
+                            <div class="hub-arrow">
+
+                                <i class="fa fa-arrow-right"></i>
+
+                            </div>
+
+
+                            <div>
+
+                                <div class="hub-version-label">
+                                    Latest Version
+                                </div>
+
+                                <div class="hub-version-number">
+                                    v5.9.0
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="hub-release-title">
+
+                            What's included
+
+                        </div>
+
+
+                        <div class="hub-release-list">
+
+                            <div class="hub-release-item">
+
+                                <i class="fa fa-check"></i>
+
+                                Dashboard performance
+
+                            </div>
+
+
+                            <div class="hub-release-item">
+
+                                <i class="fa fa-check"></i>
+
+                                e-Invoice improvements
+
+                            </div>
+
+
+                            <div class="hub-release-item">
+
+                                <i class="fa fa-check"></i>
+
+                                e-Way Bill updates
+
+                            </div>
+
+
+                            <div class="hub-release-item">
+
+                                <i class="fa fa-check"></i>
+
+                                Security enhancements
+
+                            </div>
+
+
+                            <div class="hub-release-item">
+
+                                <i class="fa fa-check"></i>
+
+                                Report improvements
+
+                            </div>
+
+
+                            <div class="hub-release-item">
+
+                                <i class="fa fa-check"></i>
+
+                                Bug fixes
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="modal-footer">
+
+                    <button class="btn btn-light"
+                            data-close="hubModal">
+
+                        Close
+
+                    </button>
+
+
+                    <button class="btn btn-primary"
+                            id="continueUpdateBtn"
+                            style="display:none;">
+
+                        <i class="fa fa-arrow-up"></i>
+
+                        Update to v5.9.0
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================================================
+             OTP MODAL
+        ========================================================= -->
+
+        <div class="modal-overlay" id="otpModal">
+
+            <div class="modal">
+
+
+                <div class="modal-header">
+
+                    <div class="modal-title">
+
+                        <div class="modal-title-icon">
+
+                            <i class="fa fa-shield-halved"></i>
+
+                        </div>
+
+                        <div>
+
+                            <h3>
+                                Security Verification
+                            </h3>
+
+                            <p>
+                                Authorization required before update
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <button class="modal-close"
+                            data-close="otpModal">
+
+                        ×
+
+                    </button>
+
+                </div>
+
+
+                <div class="modal-body">
+
+
+                    <div class="otp-message">
+
+                        A verification passcode has been sent to the
+                        registered <strong>email address</strong> and
+                        <strong>mobile number</strong> of the authorized
+                        ERP administrator.
+
+                    </div>
+
+
+                    <div class="verification-methods">
+
+                        <div class="verification-method">
+
+                            <i class="fa fa-envelope"></i>
+
+                            Email
+
+                        </div>
+
+
+                        <div class="verification-method">
+
+                            <i class="fa fa-mobile-screen"></i>
+
+                            Mobile
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="otp-boxes">
+
+                        <input class="otp-box"
+                               maxlength="1"
+                               inputmode="numeric">
+
+                        <input class="otp-box"
+                               maxlength="1"
+                               inputmode="numeric">
+
+                        <input class="otp-box"
+                               maxlength="1"
+                               inputmode="numeric">
+
+                        <input class="otp-box"
+                               maxlength="1"
+                               inputmode="numeric">
+
+                        <input class="otp-box"
+                               maxlength="1"
+                               inputmode="numeric">
+
+                        <input class="otp-box"
+                               maxlength="1"
+                               inputmode="numeric">
+
+                    </div>
+
+
+                    <div class="otp-info">
+
+                        Code expires in
+                        <strong id="otpTimer">
+                            05:00
+                        </strong>
+
+                        &nbsp; · &nbsp;
+
+                        <span class="resend"
+                              id="resendOtp">
+
+                            Resend Code
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="modal-footer">
+
+                    <button class="btn btn-light"
+                            data-close="otpModal">
+
+                        Cancel
+
+                    </button>
+
+
+                    <button class="btn btn-primary"
+                            id="verifyOtp">
+
+                        <i class="fa fa-check"></i>
+
+                        Verify & Continue
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================================================
+             CONFIRM MODAL
+        ========================================================= -->
+
+        <div class="modal-overlay" id="confirmModal">
+
+            <div class="modal">
+
+
+                <div class="modal-header">
+
+                    <div class="modal-title">
+
+                        <div class="modal-title-icon">
+
+                            <i class="fa fa-triangle-exclamation"></i>
+
+                        </div>
+
+                        <div>
+
+                            <h3>
+                                Confirm ERP Update
+                            </h3>
+
+                            <p>
+                                Final confirmation before starting
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <button class="modal-close"
+                            data-close="confirmModal">
+
+                        ×
+
+                    </button>
+
+                </div>
+
+
+                <div class="modal-body">
+
+
+                    <div class="version-change">
+
+
+                        <div>
+
+                            <div class="change-label">
+                                Current
+                            </div>
+
+                            <div class="change-version">
+                                v5.8.2
+                            </div>
+
+                        </div>
+
+
+                        <div class="change-arrow">
+
+                            <i class="fa fa-arrow-right"></i>
+
+                        </div>
+
+
+                        <div>
+
+                            <div class="change-label">
+                                Updating To
+                            </div>
+
+                            <div class="change-version">
+                                v5.9.0
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="confirm-warning">
+
+                        <strong>
+
+                            <i class="fa fa-triangle-exclamation"></i>
+
+                            Important before starting the update
+
+                        </strong>
+
+
+                        <p>
+
+                            Make sure all users have logged out of the ERP
+                            system and saved their work. The ERP system
+                            may be unavailable during the update.
+
+                        </p>
+
+                    </div>
+
+
+                    <div class="confirm-check">
+
+                        <input type="checkbox"
+                               id="logoutConfirm">
+
+                        <label for="logoutConfirm">
+
+                            I confirm that all ERP users have logged out
+                            and saved their work.
+
+                        </label>
+
+                    </div>
+
+
+                    <div class="confirm-check">
+
+                        <input type="checkbox"
+                               id="backupConfirm">
+
+                        <label for="backupConfirm">
+
+                            I confirm that the required database backup
+                            has been completed.
+
+                        </label>
+
+                    </div>
+
+
+                    <div class="confirm-check">
+
+                        <input type="checkbox"
+                               id="downtimeConfirm">
+
+                        <label for="downtimeConfirm">
+
+                            I understand that the ERP system will be
+                            temporarily unavailable during this update.
+
+                        </label>
+
+                    </div>
+
+                </div>
+
+
+                <div class="modal-footer">
+
+                    <button class="btn btn-light"
+                            data-close="confirmModal">
+
+                        Cancel
+
+                    </button>
+
+
+                    <button class="btn btn-success"
+                            id="startUpdate"
+                            disabled>
+
+                        <i class="fa fa-cloud-arrow-up"></i>
+
+                        Start ERP Update
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================================================
+             UPDATE PROGRESS MODAL
+        ========================================================= -->
+
+        <div class="modal-overlay" id="progressModal">
+
+            <div class="modal">
+
+
+                <div class="modal-body">
+
+
+                    <div class="progress-icon">
+
+                        <i class="fa fa-arrows-rotate"></i>
+
+                    </div>
+
+
+                    <div class="progress-title">
+
+                        ERP Update in Progress
+
+                    </div>
+
+
+                    <div class="progress-text"
+                         id="progressMessage">
+
+                        Preparing ERP update...
+
+                    </div>
+
+
+                    <div class="progress-track">
+
+                        <div class="progress-fill"
+                             id="progressFill">
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="progress-percent"
+                         id="progressPercent">
+
+                        0%
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================================================
+             JQUERY
+        ========================================================= -->
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+
+<script>
+
+    $(document).ready(function () {
+
+
+        /* ========================================================
+           OPEN UPDATE HUB
+        ======================================================== */
+
+        $("#checkUpdatesBtn").on("click", function () {
+
+            openUpdateHub();
+
+        });
+
+
+        $("#updateHeaderBtn").on("click", function () {
+
+            openUpdateHub();
+
+        });
+
+
+        $("#updateMainBtn").on("click", function () {
+
+            openUpdateHub();
+
+        });
+
+
+        function openUpdateHub() {
+
+            $("#syncScreen").show();
+
+            $("#updateFound").hide();
+
+            $("#continueUpdateBtn").hide();
+
+            $("#hubModal").css("display", "flex");
+
+            startHubSync();
+
+        }
+
+
+        /* ========================================================
+           ERP HUB SYNCHRONIZATION
+        ======================================================== */
+
+        function startHubSync() {
+
+            $(".sync-status-row")
+                .removeClass("active done");
+
+            $(".sync-loader")
+                .remove();
+
+            $("#syncStep1")
+                .addClass("active");
+
+            $("#syncStep1").append(
+                '<span class="sync-loader"></span>'
+            );
+
+
+            setTimeout(function () {
+
+                completeSyncStep(
+                    "#syncStep1",
+                    "#syncStep2"
+                );
+
+            }, 900);
+
+
+            setTimeout(function () {
+
+                completeSyncStep(
+                    "#syncStep2",
+                    "#syncStep3"
+                );
+
+            }, 1800);
+
+
+            setTimeout(function () {
+
+                completeSyncStep(
+                    "#syncStep3",
+                    "#syncStep4"
+                );
+
+            }, 2700);
+
+
+            setTimeout(function () {
+
+                completeSyncStep(
+                    "#syncStep4",
+                    "#syncStep5"
+                );
+
+            }, 3600);
+
+
+            setTimeout(function () {
+
+                $("#syncStep5")
+                    .removeClass("active")
+                    .addClass("done");
+
+                $("#syncStep5 i")
+                    .removeClass()
+                    .addClass("fa fa-circle-check");
+
+
+                setTimeout(function () {
+
+                    showUpdateFound();
+
+                }, 500);
+
+
+            }, 4500);
+
+        }
+
+
+        function completeSyncStep(
+            current,
+            next
+        ) {
+
+            $(current)
+                .removeClass("active")
+                .addClass("done");
+
+            $(current)
+                .find(".sync-loader")
+                .remove();
+
+            $(current)
+                .find("i")
+                .removeClass()
+                .addClass("fa fa-circle-check");
+
+
+            $(next)
+                .addClass("active");
+
+            $(next).append(
+                '<span class="sync-loader"></span>'
+            );
+
+        }
+
+
+        /* ========================================================
+           SHOW UPDATE FOUND
+        ======================================================== */
+
+        function showUpdateFound() {
+
+            $("#syncScreen").fadeOut(150);
+
+            setTimeout(function () {
+
+                $("#updateFound")
+                    .fadeIn(200);
+
+                $("#continueUpdateBtn")
+                    .fadeIn(200);
+
+            }, 180);
+
+        }
+
+
+        /* ========================================================
+           UPDATE NOW
+        ======================================================== */
+
+        $("#continueUpdateBtn").on("click", function () {
+
+            $("#hubModal").hide();
+
+            openOtpModal();
+
+        });
+
+
+        /* ========================================================
+           OTP
+        ======================================================== */
+
+        function openOtpModal() {
+
+            $(".otp-box").val("");
+
+            $("#otpModal")
+                .css("display", "flex");
+
+            startOtpTimer();
+
+            setTimeout(function () {
+
+                $(".otp-box")
+                    .first()
+                    .focus();
+
+            }, 200);
+
+
+            /*
+             * ACTUAL API:
+             *
+             * $.ajax({
+             *
+             *     url: '/ERPUpdate/SendUpdatePasscode',
+             *     type: 'POST'
+             *
+             * });
+             */
+
+            console.log(
+                "OTP sent to registered email and mobile."
+            );
+
+        }
+
+
+        /* ========================================================
+           OTP INPUT
+        ======================================================== */
+
+        $(".otp-box").on("input", function () {
+
+            this.value =
+                this.value.replace(/[^0-9]/g, "");
+
+
+            if (this.value.length === 1) {
+
+                $(this)
+                    .next(".otp-box")
+                    .focus();
+
+            }
+
+        });
+
+
+        $(".otp-box").on("keydown", function (e) {
+
+            if (
+                e.key === "Backspace" &&
+                this.value === ""
+            ) {
+
+                $(this)
+                    .prev(".otp-box")
+                    .focus();
+
+            }
+
+        });
+
+
+        /* ========================================================
+           OTP TIMER
+        ======================================================== */
+
+        let otpSeconds = 300;
+
+        let otpInterval;
+
+
+        function startOtpTimer() {
+
+            clearInterval(otpInterval);
+
+            otpSeconds = 300;
+
+            updateOtpTimer();
+
+
+            otpInterval = setInterval(function () {
+
+                otpSeconds--;
+
+                updateOtpTimer();
+
+
+                if (otpSeconds <= 0) {
+
+                    clearInterval(otpInterval);
+
+                    $("#otpTimer")
+                        .text("Expired");
+
+                }
+
+            }, 1000);
+
+        }
+
+
+        function updateOtpTimer() {
+
+            let minutes =
+                Math.floor(otpSeconds / 60);
+
+            let seconds =
+                otpSeconds % 60;
+
+
+            $("#otpTimer").text(
+
+                String(minutes).padStart(2, "0")
+                + ":"
+                +
+                String(seconds).padStart(2, "0")
+
+            );
+
+        }
+
+
+        /* ========================================================
+           RESEND OTP
+        ======================================================== */
+
+        $("#resendOtp").on("click", function () {
+
+            $(".otp-box").val("");
+
+            startOtpTimer();
+
+            $(".otp-box")
+                .first()
+                .focus();
+
+
+            /*
+             * Actual API call:
+             *
+             * /ERPUpdate/SendUpdatePasscode
+             */
+
+            console.log(
+                "New OTP sent."
+            );
+
+        });
+
+
+        /* ========================================================
+           VERIFY OTP
+        ======================================================== */
+
+        $("#verifyOtp").on("click", function () {
+
+            let otp = "";
+
+
+            $(".otp-box").each(function () {
+
+                otp += $(this).val();
+
+            });
+
+
+            if (otp.length !== 6) {
+
+                alert(
+                    "Please enter the complete 6-digit passcode."
+                );
+
+                return;
+
+            }
+
+
+            /*
+             * DEMO ONLY
+             *
+             * Replace with server-side validation.
+             */
+
+            if (otp === "123456") {
+
+                clearInterval(otpInterval);
+
+                $("#otpModal").hide();
+
+                $("#confirmModal")
+                    .css("display", "flex");
+
+            }
+            else {
+
+                alert(
+                    "Invalid or expired passcode."
+                );
+
+                $(".otp-box")
+                    .val("");
+
+                $(".otp-box")
+                    .first()
+                    .focus();
+
+            }
+
+        });
+
+
+        /* ========================================================
+           CONFIRMATION CHECKBOXES
+        ======================================================== */
+
+        $(
+            "#logoutConfirm, #backupConfirm, #downtimeConfirm"
+        ).on("change", function () {
+
+
+            let valid =
+
+                $("#logoutConfirm")
+                    .is(":checked")
+
+                &&
+
+                $("#backupConfirm")
+                    .is(":checked")
+
+                &&
+
+                $("#downtimeConfirm")
+                    .is(":checked");
+
+
+            $("#startUpdate")
+                .prop("disabled", !valid);
+
+        });
+
+
+        /* ========================================================
+           START UPDATE
+        ======================================================== */
+
+        $("#startUpdate").on("click", function () {
+
+            $("#confirmModal").hide();
+
+            $("#progressModal")
+                .css("display", "flex");
+
+            startERPUpdate();
+
+        });
+
+
+        /* ========================================================
+           ERP UPDATE
+        ======================================================== */
+
+        function startERPUpdate() {
+
+            let progress = 0;
+
+            let step = 0;
+
+
+            let steps = [
+
+                "Checking active ERP users...",
+
+                "Verifying update authorization...",
+
+                "Creating database backup...",
+
+                "Preparing ERP update package...",
+
+                "Updating ERP application...",
+
+                "Updating database structure...",
+
+                "Applying configuration changes...",
+
+                "Running database validation...",
+
+                "Restarting ERP services...",
+
+                "Validating ERP system..."
+
+            ];
+
+
+            let interval = setInterval(function () {
+
+
+                progress += 10;
+
+
+                if (progress > 100)
+                    progress = 100;
+
+
+                $("#progressFill")
+                    .css(
+                        "width",
+                        progress + "%"
+                    );
+
+
+                $("#progressPercent")
+                    .text(
+                        progress + "%"
+                    );
+
+
+                $("#progressMessage")
+                    .text(
+                        steps[step]
+                        ||
+                        "Finalizing update..."
+                    );
+
+
+                step++;
+
+
+                if (progress >= 100) {
+
+                    clearInterval(interval);
+
+
+                    $("#progressMessage")
+                        .text(
+                            "ERP update completed successfully."
+                        );
+
+
+                    setTimeout(function () {
+
+                        $("#progressModal").hide();
+
+                        alert(
+                            "ERP has been successfully updated to v5.9.0."
+                        );
+
+                        location.reload();
+
+                    }, 1200);
+
+                }
+
+
+            }, 900);
+
+        }
+
+
+        /* ========================================================
+           CLOSE MODALS
+        ======================================================== */
+
+        $("[data-close]").on("click", function () {
+
+            let modalId =
+                $(this).attr("data-close");
+
+            $("#" + modalId).hide();
+
+        });
+
+
+        /* ========================================================
+           CLICK OUTSIDE MODAL
+        ======================================================== */
+
+        $(".modal-overlay").on("click", function (e) {
+
+            if (e.target === this) {
+
+                $(this).hide();
+
+            }
+
+        });
+
+
+        /* ========================================================
+           ESCAPE
+        ======================================================== */
+
+        $(document).on("keydown", function (e) {
+
+            if (e.key === "Escape") {
+
+                $(".modal-overlay").hide();
+
+            }
+
+        });
+
+    });
+
+</script>

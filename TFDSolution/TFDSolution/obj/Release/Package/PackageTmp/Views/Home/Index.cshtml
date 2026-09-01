@@ -1,0 +1,332 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+<style>
+    .loader-overlay {
+        display: none !important;
+    }
+</style>
+<div class="breadcrumbs">
+    <div class="col-sm-4">
+        <div class="page-header float-left">
+            <div class="page-title">
+                <h1>Dashboard</h1>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-8">
+        <div class="page-header float-right">
+            <div class="page-title">
+                <ol class="breadcrumb text-right">
+                    <li class="active">Home</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/Content/main/chart.js/Chart.bundle.min.js"></script>
+<div class="row">
+    <div class="col-sm-6 col-lg-3">
+        <div class="card text-white bg-flat-color-1">
+            <div class="card-body pb-0">
+                <div class="dropdown float-right">
+                    <button class="btn bg-transparent dropdown-toggle theme-toggle text-light" type="button" id="dropdownMenuButton1" data-toggle="dropdown">
+                        <i class="fa fa-cog"></i>
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                        <div class="dropdown-menu-content">
+                            <a class="dropdown-item" href="#">Action</a>
+                            <a class="dropdown-item" href="#">Another action</a>
+                            <a class="dropdown-item" href="#">Something else here</a>
+                        </div>
+                    </div>
+                </div>
+                <h4 class="mb-0">
+                    <span class="count">10468</span>
+                </h4>
+                <p class="text-light">Active Customer</p>
+
+                <div class="chart-wrapper px-0" style="height:70px;" height="70">
+                    <canvas id="widgetChart1"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--/.col-->
+
+    <div class="col-sm-6 col-lg-3">
+        <div class="card text-white bg-flat-color-2">
+            <div class="card-body pb-0">
+                <div class="dropdown float-right">
+                    <button class="btn bg-transparent dropdown-toggle theme-toggle text-light" type="button" id="dropdownMenuButton2" data-toggle="dropdown">
+                        <i class="fa fa-cog"></i>
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton2">
+                        <div class="dropdown-menu-content">
+                            <a class="dropdown-item" href="#">Action</a>
+                            <a class="dropdown-item" href="#">Another action</a>
+                            <a class="dropdown-item" href="#">Something else here</a>
+                        </div>
+                    </div>
+                </div>
+                <h4 class="mb-0">
+                    <span class="count">530</span>
+                </h4>
+                <p class="text-light">Total Orders</p>
+
+                <div class="chart-wrapper px-0" style="height:70px;" height="70">
+                    <canvas id="widgetChart2"></canvas>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!--/.col-->
+
+    <div class="col-sm-6 col-lg-3">
+        <div class="card text-white bg-flat-color-3">
+            <div class="card-body pb-0">
+                <div class="dropdown float-right">
+                    <button class="btn bg-transparent dropdown-toggle theme-toggle text-light" type="button" id="dropdownMenuButton3" data-toggle="dropdown">
+                        <i class="fa fa-cog"></i>
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton3">
+                        <div class="dropdown-menu-content">
+                            <a class="dropdown-item" href="#">Action</a>
+                            <a class="dropdown-item" href="#">Another action</a>
+                            <a class="dropdown-item" href="#">Something else here</a>
+                        </div>
+                    </div>
+                </div>
+                <h4 class="mb-0">
+                    <span class="count">7510</span>
+                </h4>
+                <p class="text-light">Monthly Sale</p>
+
+            </div>
+
+            <div class="chart-wrapper px-0" style="height:70px;" height="70">
+                <canvas id="widgetChart3"></canvas>
+            </div>
+        </div>
+    </div>
+    <!--/.col-->
+
+    <div class="col-sm-6 col-lg-3">
+        <div class="card text-white bg-flat-color-4">
+            <div class="card-body pb-0">
+                <div class="dropdown float-right">
+                    <button class="btn bg-transparent dropdown-toggle theme-toggle text-light" type="button" id="dropdownMenuButton4" data-toggle="dropdown">
+                        <i class="fa fa-cog"></i>
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton4">
+                        <div class="dropdown-menu-content">
+                            <a class="dropdown-item" href="#">Action</a>
+                            <a class="dropdown-item" href="#">Another action</a>
+                            <a class="dropdown-item" href="#">Something else here</a>
+                        </div>
+                    </div>
+                </div>
+                <h4 class="mb-0">
+                    <span class="count">400</span>
+                </h4>
+                <p class="text-light">Projects</p>
+
+                <div class="chart-wrapper px-3" style="height:70px;" height="70">
+                    <canvas id="widgetChart4"></canvas>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!--/.col-->
+
+    <div class="col-xl-6">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-4">
+                        <h4 class="card-title mb-0">Sales Growth</h4>
+                        <div class="small text-muted">February 2025</div>
+                    </div>
+                    <!--/.col-->
+                    <div class="col-sm-8 hidden-sm-down">
+                        <button type="button" class="btn btn-primary float-right bg-flat-color-1"><i class="fa fa-cloud-download"></i></button>
+                        <div class="btn-toolbar float-right" role="toolbar" aria-label="Toolbar with button groups">
+                            <div class="btn-group mr-3" data-toggle="buttons" aria-label="First group">
+                                @*<label class="btn btn-outline-secondary">
+                                        <input type="radio" name="options" id="option1"> Day
+                                    </label>
+                                    <label class="btn btn-outline-secondary active">
+                                        <input type="radio" name="options" id="option2" checked=""> Month
+                                    </label>
+                                    <label class="btn btn-outline-secondary">
+                                        <input type="radio" name="options" id="option3"> Year
+                                    </label>*@
+                            </div>
+                        </div>
+                    </div>
+                    <!--/.col-->
+                </div>
+                <!--/.row-->
+                <div class="chart-wrapper mt-4">
+                    <canvas id="trafficChart" style="height:200px;" height="200"></canvas>
+                </div>
+
+            </div>
+            <div class="card-footer">
+                <ul>
+                    <li>
+                        <div class="text-muted">Visits</div>
+                        <strong>29.703 Users (40%)</strong>
+                        <div class="progress progress-xs mt-2" style="height: 5px;">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: 40%;" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </li>
+                    <li class="hidden-sm-down">
+                        <div class="text-muted">Unique</div>
+                        <strong>24.093 Users (20%)</strong>
+                        <div class="progress progress-xs mt-2" style="height: 5px;">
+                            <div class="progress-bar bg-info" role="progressbar" style="width: 20%;" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="text-muted">Pageviews</div>
+                        <strong>78.706 Views (60%)</strong>
+                        <div class="progress progress-xs mt-2" style="height: 5px;">
+                            <div class="progress-bar bg-warning" role="progressbar" style="width: 60%;" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </li>
+                    <li class="hidden-sm-down">
+                        <div class="text-muted">New Users</div>
+                        <strong>22.123 Users (80%)</strong>
+                        <div class="progress progress-xs mt-2" style="height: 5px;">
+                            <div class="progress-bar bg-danger" role="progressbar" style="width: 80%;" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </li>
+                    <li class="hidden-sm-down">
+                        <div class="text-muted">Bounce Rate</div>
+                        <strong>40.15%</strong>
+                        <div class="progress progress-xs mt-2" style="height: 5px;">
+                            <div class="progress-bar" role="progressbar" style="width: 40%;" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+    </div>
+    <div class="col-xl-3    col-xl-6">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="mb-3">Bar chart </h4>
+                <canvas id="barChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-lg-6">
+        <section class="card">
+            <div class="card-body">
+                <div class="stat-widget-one">
+                    <div class="stat-icon dib"><i class="ti-money text-danger border-danger"></i></div>
+                    <div class="stat-content dib">
+                        <div class="stat-text">Total Loss</div>
+                        <div class="stat-digit">1,012</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    <div class="col-xl-3 col-lg-6">
+        <div class="card">
+            <div class="card-body">
+                <div class="stat-widget-one">
+                    <div class="stat-icon dib"><i class="ti-money text-success border-success"></i></div>
+                    <div class="stat-content dib">
+                        <div class="stat-text">Total Profit</div>
+                        <div class="stat-digit">1,012</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-lg-6">
+        <div class="card">
+            <div class="card-body">
+                <div class="stat-widget-one">
+                    <div class="stat-icon dib"><i class="ti-user text-primary border-primary"></i></div>
+                    <div class="stat-content dib">
+                        <div class="stat-text">New Customer</div>
+                        <div class="stat-digit">961</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-lg-6">
+        <div class="card">
+            <div class="card-body">
+                <div class="stat-widget-one">
+                    <div class="stat-icon dib"><i class="ti-layout-grid2 text-warning border-warning"></i></div>
+                    <div class="stat-content dib">
+                        <div class="stat-text">Active Projects</div>
+                        <div class="stat-digit">770</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-6">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="mb-3">Yearly Sales </h4>
+                <canvas id="sales-chart"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6" style=" margin-top: -471px;">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="mb-3">Team Commits </h4>
+                <canvas id="team-chart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    @*<main>
+            <section class="row" aria-labelledby="aspnetTitle">
+                <h1 id="title">ASP.NET</h1>
+                <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
+                <p><a href="https://asp.net" class="btn btn-primary btn-md">Learn more &raquo;</a></p>
+            </section>
+
+            <div class="row">
+                <section class="col-md-4" aria-labelledby="gettingStartedTitle">
+                    <h2 id="gettingStartedTitle">Getting started</h2>
+                    <p>
+                        ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
+                        enables a clean separation of concerns and gives you full control over markup
+                        for enjoyable, agile development.
+                    </p>
+                    <p><a class="btn btn-outline-dark" href="https://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
+                </section>
+                <section class="col-md-4" aria-labelledby="librariesTitle">
+                    <h2 id="librariesTitle">Get more libraries</h2>
+                    <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
+                    <p><a class="btn btn-outline-dark" href="https://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
+                </section>
+                <section class="col-md-4" aria-labelledby="hostingTitle">
+                    <h2 id="hostingTitle">Web Hosting</h2>
+                    <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
+                    <p><a class="btn btn-outline-dark" href="https://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
+                </section>
+            </div>
+        </main>*@
+</div>
+@*<div class="row m-1">
+    @{
+        Html.RenderPartial("_Calendar");
+    }
+</div>*@
+<script src="~/Content/main/assets/js/init-scripts/chart-js/chartjs-init.js"></script>  

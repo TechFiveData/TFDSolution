@@ -1,0 +1,612 @@
+﻿@model TFDSolution.Transport.Master.DashboardSettingModel
+
+@{
+    ViewBag.Title = "DashboardSettingAction";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="breadcrumbs">
+    <div class="col-sm-4">
+        <div class="page-header float-left">
+            <div class="page-title">
+                <h1>Edit Dashboard : @Model.DashboardTitle</h1>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-8">
+        <div class="page-header float-right">
+            <div class="page-title">
+                <ol class="breadcrumb text-right">
+                    <li><a href="@Url.Action("Index","Home")">Home</a></li>
+                    <li><a href="@Url.Action("DashboardSetting","Configuration")">Dashboard Setting</a></li>
+                    <li class="active">Edit Dashboard</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+@Html.HiddenFor(m => m.AssignedUsers)
+<div class="animated fadeIn">
+    <div class="row m-0">
+        <div class="col-md-12 p-0">
+            <div class="card">
+                <div class="card-header">
+                    <div class="col-lg-6">
+                        <strong class="card-title"></strong>
+                    </div>
+                    <div class="col-lg-6 text-right">
+                        <a class="btn btn-sm" href="@Url.Action("DashboardSetting","Configuration")"><i class="fa fa-arrow-circle-left"></i>&nbsp; Back</a>
+                        <a class="btn btn-sm" onclick="SaveDashboardData()" href="javascript:void(0);"><i class="fa fa-save"></i>&nbsp; Save</a>
+                    </div>
+                </div>
+                <input type="hidden" value="@Model.DashboardId" id="hdnDashboardId" />
+                <div class="card-body">
+                    <div class="page-head">
+                        <div class="section-left">
+                            <div class="row form-group">
+                                <div class="col col-md-3">
+                                    <label for="text-input" class=" form-control-label">Dashboard Title <span class="text-danger p-1">(*)</span></label>
+                                </div>
+                                <div class="col-12 col-md-9">
+                                    @Html.TextBoxFor(m => m.DashboardTitle, new { @placeholder = "Dashboard Title", @class = "form-control" })
+                                </div>
+                            </div>
+                            <div class="row form-group">
+                                <div class="col col-md-3">
+                                    <label for="text-input" class=" form-control-label">Dashboard Name<span class="text-danger p-1">(*)</span></label>
+                                </div>
+                                <div class="col-12 col-md-9">
+                                    @Html.TextBoxFor(m => m.DashboardName, new { @placeholder = "Dashboard Name", @class = "form-control", @disabled = "disabled" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="section-right">
+                            <div class="row form-group">
+                                <div class="col col-md-3">
+                                    <label for="text-input" class="form-control-label">Assigned Users<span class="text-danger p-1">(*)</span></label>
+                                </div>
+                                <div class="col-12 col-md-9">
+                                    <div class="input-group">
+                                        <select id="ddlUser" data-interval="@Model.AssignedUsers" data-display="" class="form-select select2" multiple>
+                                            <option>Select</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row form-group">
+                                <div class="col col-md-3">
+                                    <label for="text-input" class="form-control-label">Status<span class="text-danger p-1">(*)</span></label>
+                                </div>
+                                <div class="col-12 col-md-9">
+                                    <div class="input-group">
+                                        <label class="switch switch-3d switch-success mr-3">
+                                            <input type="checkbox" id="chkIsActive" class="switch-input" checked="@Model.IsActive"> <span class="switch-label"></span> <span class="switch-handle"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="page-breaker"></div>
+                    <div id="divItemSpec" class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button show" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSpec" aria-expanded="false" aria-controls="collapseSpec">
+                                Dashboard Settings
+                            </button>
+                        </h2>
+                        <div id="collapseSpec" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
+                            <div id="divSettings" class="accordion-body m-2">
+                                <div class="row">
+                                    <div class="col-md-12 form-group text-right">
+                                        <a onclick="OpenAddModal();" class="btn btn-sm btn-primary btn-add" title="Add New Setting" style="font-size:9px;"
+                                           data-toggle='modal' data-target='#DashboardSettingModal' href="javacript:void(0);"><i class="fa fa-plus"></i></a>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12 form-group">
+                                        <table id="tblSettings" class="table display"></table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="DashboardSettingModal" tabindex="-1" role="dialog" aria-labelledby="DashboardSettingModalLabel" data-backdrop="static" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="width:500px;">
+            <div class="modal-header">
+                <h5 class="modal-title" id="DashboardSettingModalLabel">Settings</h5>
+                <button type="button" id="btnCancelSettings" class="close" data-bs-dismiss="modal" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" style="overflow:hidden;">
+                <div class="m-2">
+                    <input type="hidden" id="hdnDashboardSettingId" value="0" />
+                    <div class="row form-group">
+                        <div class="col-md-12">
+                            <label for="text-input" class="form-control-label">Title<span class="text-danger p-1">(*)</span></label>
+                            <input type="text" id="txtTitle" data-content="0" maxlength="50" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="col col-md-12">
+                            <label for="text-input" class="form-control-label">Widget Type<span class="text-danger p-1">(*)</span></label>
+                            <select id="ddlWidgetType" class="form-select select2">
+                                <option>Select</option>
+                                <option value="WidgetBox">Widget Box</option>
+                                <option value="Table">Table</option>
+                                <option value="Chart">Chart</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="col col-md-12">
+                            <label for="text-input" class="form-control-label">Chart Type<span class="text-danger p-1">(*)</span></label>
+                            <select id="ddlChartType" class="form-select select2">
+                                <option>Select</option>
+                                <option value="Pie">Pie</option>
+                                <option value="Doughnut">Doughnut</option>
+                                <option value="Bar">Bar</option>
+                                <option value="Line">Line</option>
+                                <option value="Radar">Radar</option>
+                                <option value="PolarArea">PolarArea</option>
+                                <option value="Bubble">Bubble</option>
+                                <option value="Scatter">Scatter</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="d-flex align-items-center gap-2">
+                            <label class="form-control-label mb-0">
+                                Background <span class="text-danger">*</span>
+                            </label>
+                            @*<label for="text-input" class="form-control-label">Background<span class="text-danger p-1">(*)</span></label>*@
+                            <input type="color" id="colorPicker">
+                            <label for="text-input" class="form-control-label">Font<span class="text-danger p-1">(*)</span></label>
+                            <input type="color" id="fontcolorPicker">
+                            <input type="text" id="txtBackgroundColor" data-content="0" maxlength="50" class="form-control d-none" />
+                            <input type="text" id="txtFontColor" data-content="0" maxlength="50" class="form-control d-none" />
+                        </div>
+                        <div class="col-md-12 p-1">
+                            <div id="box" style="width:100%; height:50px; border:1px solid #ccc;justify-content:center;text-align:center; align-items:center;font-size:20px;">
+                                Sample font color
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="col-md-12">
+                            <label for="text-input" class="form-control-label">Display Size<span class="text-danger p-1">(*)</span></label>
+                            <select id="ddlSize" class="form-select select2">
+                                <option selected="selected">Select</option>
+                                <option value="Medium">Medium</option>
+                                <option value="Large">Large</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="col-md-12">
+                            <label for="text-input" class="form-control-label">SQL DataScript<span class="text-danger p-1">(*)</span></label>
+                            <input type="text" id="txtSQLDataScript" data-content="0" maxlength="500" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="col-md-12">
+                            <label for="text-input" class="form-control-label">Redirect URL<span class="text-danger p-1">(*)</span></label>
+                            <input type="text" id="txtRedirectURL" data-content="0" maxlength="50" class="form-control" />
+                        </div>
+                    </div>
+
+                    <div class="row form-group">
+                        <div class="col col-md-12">
+                            <div class="form-check">
+                                <div class="checkbox">
+                                    <label for="chkChangeValue" class="form-check-label ">
+                                        <input type="checkbox" id="chkIsDetailActive" name="chkIsDetailActive" value="IsActive" class="form-check-input">Is Active
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="btnCancelSettings" class="btn btn-secondary" data-bs-dismiss="modal" data-dismiss="modal" aria-label="Close">Close</button>
+                <button type="button" id="btnSubmitSettings" class="btn btn-primary">Submit</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        BindUserDropdown();
+        BindSettingGrid();
+        document.getElementById("colorPicker").addEventListener("input", function () {
+            document.getElementById("box").style.backgroundColor = this.value;
+            $("#txtBackgroundColor").val(this.value);
+        });
+        document.getElementById("fontcolorPicker").addEventListener("input", function () {
+            document.getElementById("box").style.color = this.value;
+            $("#txtFontColor").val(this.value);
+        });
+         $('#btnSubmitSettings').on('click', function () {
+            // -------------------------------
+            // Collect values
+            // -------------------------------
+            var model = {
+                DashboardId: $('#hdnDashboardId').val(),
+                Id: $('#hdnDashboardSettingId').val(),
+                WidgetType: $('#ddlWidgetType').val(),
+                BackgroundColor: $('#txtBackgroundColor').val().trim(),
+                Title: $('#txtTitle').val().trim(),
+                FontColor: $('#txtFontColor').val().trim(),
+                SQLDataScript: $('#txtSQLDataScript').val().trim(),
+                RedirectURL: $('#txtRedirectURL').val().trim(),
+                IsActive: $('#chkIsDetailActive').is(':checked'),
+                DisplaySize: $("#ddlSize").val(),
+                ChartType: $("#ddlChartType").val()
+            };
+
+            // -------------------------------
+            // Validation
+            // -------------------------------
+             var errors = [];
+
+             if (!model.Title)
+                 errors.push('Title is required.');
+
+            if (!model.WidgetType || model.WidgetType === 'Select')
+                errors.push('Widget Type is required.');
+
+            if (!model.BackgroundColor)
+                errors.push('Background Color is required.');
+
+             if (!model.FontColor || model.WidgetType === 'Select')
+                errors.push('Font Color is required.');
+
+            if (!model.SQLDataScript)
+                errors.push('SQL DataScript is required.');
+
+            if (!model.RedirectURL)
+                errors.push('Redirect URL is required.');
+
+            if (errors.length > 0) {
+                ShowToastNotification("error", errors.join('<br/>'));
+                return;
+            }
+
+            // -------------------------------
+            // AJAX Save
+            // -------------------------------
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("SaveDashboardDetailSettings", "Configuration")",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(model),
+                success: function (response) {
+                    if (response.IsSuccess) {
+                        ShowToastNotification("success", "Settings saved successfully");
+                        BindSettingGrid();
+                        $("#btnCancelSettings").click();
+                        // optional refresh
+                    } else {
+                        ShowToastNotification("error", response.Message || "Save failed");
+                    }
+                },
+                error: function () {
+                    ShowToastNotification("error", "Server error occurred");
+                }
+            });
+        });
+    });
+    function OpenAddModal() {
+        try {
+            // Reset form fields
+            $("#hdnDashboardSettingId").val("0");
+            $("#txtRedirectURL").val("");
+            $("#txtSQLDataScript").val("");
+            $("#txtBackgroundColor").val("#87CEEB");
+            document.getElementById("box").style.backgroundColor = "#87CEEB";
+            $('#colorPicker').val('#87CEEB');
+            $("#txtFontColor").val("#000");
+            document.getElementById("box").style.color = "#000";
+            $('#fontcolorPicker').val('#000');
+            $("#txtTitle").val("");
+            $('#ddlWidgetType').prop("selectedIndex", 0);
+            $('#ddlChartType').prop("selectedIndex", 0);
+            $("#ddlSize").val("Medium");
+            $("#chkIsDetailActive").prop("checked", true); // Default to checked
+        } catch (e) {
+            console.error("Error opening add modal:", e);
+        }
+    }
+    function DeleteDashboardSetting(settingId) {
+        if (confirm("Are you sure you want to delete?")) {
+            try {
+                $.ajax({
+                    type: "GET",
+                    url: "@Url.Action("DeleteDashboardSetting", "Configuration")",
+                    data: { Id: settingId },
+                    dataType: "json",
+                    success: function (response) {
+                        if (response.IsSuccess) {
+                            BindSettingGrid();
+                            ShowToastNotification("success", "Record has been delete successfully.");
+                        } else {
+                            ShowToastNotification("error", "No data found!");
+                        }
+                    },
+                    error: function (xhr) {
+                        ShowToastNotification("error", "Error fetching data. Please try again.");
+                    }
+                });
+            } catch (e) {
+                console.log(e);
+            }
+        }
+    }
+    function EditDashboardSetting(settingId) {
+        $("#hdnDashboardSettingId").val(settingId);
+        $("#txtRedirectURL").val("");
+        $("#txtSQLDataScript").val("");
+        $("#txtBackgroundColor").val("");
+        $("#txtTitle").val("");
+        $("#ddlSize").val("Medium");
+        $("#txtBackgroundColor").val("#007bff");
+        document.getElementById("box").style.backgroundColor = "007bff";
+        $("#fontcolorPicker").val("#000");
+        $("#ddlSize").prop("selectedIndex", 1);
+        document.getElementById("box").style.color = "#000";
+        $('#ddlWidgetType').prop("selectedIndex", 0);
+        $('#ddlChartType').prop("selectedIndex", 0);
+        //$("#ddlFontColor").prop("selectedIndex", 0);
+        $("#chkIsDetailActive").prop("checked", true); // Default to checked
+        $("#DashboardSettingModal").modal("show");
+        $.get('@Url.Action("GetDashboardDetailSettings", "Configuration")', { Id: settingId }, function (data) {
+            if (data != null) {
+                $("#hdnDashboardSettingId").val(data.Id);
+                $("#ddlWidgetType").val(data.WidgetType);
+                $("#ddlChartType").val(data.ChartType);
+                $("#txtTitle").val(data.Title);
+                //$("#ddlFontColor").val(data.FontColor);
+                if (data.FontColor == "red") {
+                    $("#txtFontColor").val("#FF0000");
+                }
+                else if (data.FontColor == "green") {
+                    $("#txtFontColor").val("#00FF00");
+                }
+                else if (data.FontColor == "blue") {
+                    $("#txtFontColor").val("#0000FF");
+                }
+                else if (data.FontColor == "white") {
+                    $("#txtFontColor").val("#FFFFFF");
+                }
+                else {
+                    $("#txtFontColor").val(data.FontColor);
+                }
+                var FontColor = $("#txtFontColor").val();
+                $("#fontcolorPicker").val(FontColor);
+                document.getElementById("box").style.color = FontColor;
+                if (data.BackgroundColor == "bg-flat-color-1") {
+                    $("#txtBackgroundColor").val("#20a8d8");
+                }
+                else if (data.BackgroundColor == "bg-flat-color-2") {
+                    $("#txtBackgroundColor").val("#63c2de");
+                }
+                else if (data.BackgroundColor == "bg-flat-color-3") {
+                    $("#txtBackgroundColor").val("#ffc107");
+                }
+                else if (data.BackgroundColor == "bg-flat-color-4") {
+                    $("#txtBackgroundColor").val("#f86c6b");
+                }
+                else if (data.BackgroundColor == "bg-flat-color-5") {
+                    $("#txtBackgroundColor").val("#4dbd74");
+                }
+                else if (data.BackgroundColor == "bg-flat-color-6") {
+                    $("#txtBackgroundColor").val("#008080");
+                }
+                else if (data.BackgroundColor == "bg-flat-color-7") {
+                    $("#txtBackgroundColor").val("#5F9EA0");
+                }
+                else if (data.BackgroundColor == "bg-flat-color-8") {
+                    $("#txtBackgroundColor").val("#778899");
+                }
+                else if (data.BackgroundColor == "bg-flat-color-9") {
+                    $("#txtBackgroundColor").val("#20B2AA");
+                }
+                else if (data.BackgroundColor == "bg-flat-color-10") {
+                    $("#txtBackgroundColor").val("#1E90FF");
+                }
+                var BackgroundColor = $("#txtBackgroundColor").val();
+                document.getElementById("box").style.backgroundColor = BackgroundColor;
+                $('#colorPicker').val(BackgroundColor);
+                $("#txtSQLDataScript").val(data.SQLDataScript);
+                $("#txtRedirectURL").val(data.RedirectURL);
+                $("#chkIsDetailActive").prop("checked", data.IsActive);
+                $("#ddlSize").val(data.DisplaySize);
+            }
+        });
+    }
+    function BindSettingGrid() {
+        try {
+            $.ajax({
+                type: "GET",
+                url: "@Url.Action("getDashboardSettingList", "Configuration")",
+                data: { dashboardId: '@Model.DashboardId' },
+                dataType: "json",
+                success: function (response) {
+                    if (response) {
+                        SuccesssBindGrid(response);
+                    } else {
+                        ShowToastNotification("error", "No data found!");
+                    }
+                },
+                error: function (xhr) {
+                    ShowToastNotification("error", "Error fetching data. Please try again.");
+                }
+            });
+        } catch (e) {
+            console.log(e);
+        }
+    }
+    function SuccesssBindGrid(dataset) {
+        dataset = Array.isArray(dataset) ? dataset : [];
+        // Initialize DataTable
+        let formTable = new DataTable("#tblSettings", {
+            "destroy": true,
+            searching: false,
+            paging: false,
+            scrollCollapse: false,
+            info: true,
+            // scrollY: '500px',
+            data: dataset,
+            columns: [
+                {
+                    title: "",
+                    render: function (data, type, row, meta) {
+                        return `
+                    <a title="Edit" class="text-success me-2" href="javascript:void(0)"
+                       onclick="EditDashboardSetting(${row.Id})">
+                        <i class="fa fa-pencil"></i>
+                    </a>
+                    |
+                    <a title="Delete" class="text-danger ms-2" href="javascript:void(0)"
+                       onclick="DeleteDashboardSetting(${row.Id})">
+                        <i class="fa fa-trash"></i>
+                    </a>
+                `;
+                    }
+                },
+                { title: '#', data: 'SrNo' },
+                { title: 'Title', data: 'Title' },
+                { title: 'Widget Type', data: 'WidgetType' },
+                { title: 'Background Color', data: 'BackgroundColor' },
+                { title: 'SQL DataScript', data: 'SQLDataScript' },
+                {
+                    title: 'Active',
+                    className: 'text-center',
+                    render: function (data, type, row, meta) {
+                        return (row.IsActive === true) ? '<span class="fa fa-check text-success"></span>' : '<span class="fa fa-remove text-danger"></span>';
+                    }
+                },
+                { title: 'Sort Order', data: 'SortOrder' },
+            ],
+            language: {
+                emptyTable: "No records found", // Message when no data is available
+                zeroRecords: "No matching records found"
+            }
+        });
+    }
+    function BindUserDropdown() {
+        try {
+            let parentWrapper = $("#ddlUser").parent();
+            let selectedValues = $("#ddlUser").attr("data-interval");
+            let selectedText = $("#ddlUser").attr("data-display");
+            let firstFive = selectedText ? selectedText.substring(0, 20) : "";
+            $("#ddlUser").select2({
+                dropdownParent: parentWrapper,
+                placeholder: 'Select User(s)',
+                allowClear: true,
+                delay: 250,
+                minimumInputLength: 0, // change to 0 if you want scrolling without typing
+                ajax: {
+                    url: '@Url.Action("FillSelctionCommon", "Common")',
+                    dataType: 'json',
+                    skipLoading: true, // <-- Custom flag
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            _type: 'User',
+                            _whareClause: + params.term || '', // search term
+                            _orderType: '',
+                            _entryType: 'User'
+                        };
+                    },
+                    processResults: function (data) {
+                        return {
+                            results: data.results,
+                            pagination: {
+                                more: data.pagination.more
+                            }
+                        };
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Select2 AJAX Error:", error);
+                        console.error("Status:", status);
+                        console.error("Response:", xhr.responseText);
+                    },
+                    cache: true
+                }
+            });
+            /// Pre-load selected values (important when editing)
+            if (selectedValues.length && selectedValues.length > 0) {
+                $.ajax({
+                    url: '@Url.Action("FillSelctionCommon", "Common")',
+                    type: 'GET',
+                    data: { _type: 'User', _whareClause: firstFive, _orderType: '', _entryType: 'User' },
+                    success: function (data) {
+                        const selectedIds = selectedValues.split(",").map(v => v.trim()).filter(Boolean);
+                        selectedIds.forEach(id => {
+                            const item = data.results.find(x => x.id == id);
+                            if (item) {
+                                $("#ddlUser").append(new Option(item.text, item.id, true, true));
+                            }
+                        });
+                    }
+                });
+            }
+            //$('#' + selectId).select2()
+        } catch (e) {
+            console.error("Select2 AJAX Error:", e);
+        }
+    }
+    function SaveDashboardData() {
+       try {
+            // Validation
+            if ($("#DashboardTitle").val().trim() === "") {
+                ShowToastNotification("error", "Dashboard Title is required.");
+                return;
+            }
+            if ($("#ddlUser").val() === null || $("#ddlUser").val().length === 0) {
+                ShowToastNotification("error", "Please select Assigned Users.");
+                return;
+            }
+
+            // Prepare object to send in AJAX
+            let model = {
+                DashboardId: $("#hdnDashboardId").val(),
+                DashboardName: $("#DashboardName").val(),
+                DashboardTitle: $("#DashboardTitle").val().trim(),
+                AssignedUsers: $("#ddlUser").val().join(','),   // Multi-select support
+                IsActive: $("#chkIsActive").is(":checked") ? 1 : 0
+            };
+
+            // AJAX Call
+            $.ajax({
+                url: "@Url.Action("SaveDashboardSetting", "Configuration")",
+                method: "POST",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(model),
+                beforeSend: function () {
+                    //$("#btnSubmitDashboard").prop("disabled", true).text("Saving...");
+                },
+                success: function (response) {
+                    $("#btnSubmitDashboard").prop("disabled", false).text("Save");
+                    ShowToastNotification("success", "Dashboard saved successfully!");
+
+                    setTimeout(function () { window.location.reload(); }, 2000);
+                },
+                error: function (xhr) {
+                    alert("Error while saving data.");
+                    $("#btnSubmitDashboard").prop("disabled", false).text("Save");
+                }
+            });
+        } catch (e) {
+            ShowToastNotification("error", "Error occured.. Please try again");
+        }
+    }
+</script>

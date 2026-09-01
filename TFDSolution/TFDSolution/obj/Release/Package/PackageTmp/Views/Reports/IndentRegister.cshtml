@@ -1,0 +1,160 @@
+﻿
+
+@{
+    ViewBag.Title = "Indent Register";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="breadcrumbs">
+    <div class="col-sm-4">
+        <div class="page-header float-left">
+            <div class="page-title">
+                <h1> Indent Register </h1>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-8">
+        <div class="page-header float-right">
+            <div class="page-title">
+                <ol class="breadcrumb text-right">
+                    <li class="active">Home</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="animated fadeIn">
+    <div class="row m-0">
+        <div class="col-md-12 p-0">
+            <div class="card">
+                <div class="card-header">
+                    <div class="col-lg-6">
+                        <strong class="card-title"></strong>
+                    </div>
+                    <div class="col-lg-6 text-right">
+                        <a class="btn btn-sm" href="javascript:void(0);" title="Export"><i class="fa fa-download"></i>&nbsp; Export</a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row form-group">
+                        <div class="col-md-12">
+                            <div class="d-flex gap-2">
+                                <div>
+                                    <label class="form-control-label">From Date</label>
+                                </div>
+                                <div>
+                                    <input id="fromDate" type="date" class="form-control" />
+                                </div>
+                                <div>
+                                    <label class="form-control-label">To Date</label>
+                                </div>
+                                <div>
+                                    <input id="toDate" type="date" class="form-control" />
+                                </div>
+                                <div>
+                                    <button class="btn btn-primary m-0" id="btnSearch">Generate</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-3">
+                        <div class="row form-group">
+                            <div class="col-md-12">
+                                <table id="tblreportIndentRegiter" class="display cell-border nowrap" cellspacing="0" width="100%"></table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        DefaultFilter();
+        BindPendings();
+        $("#btnSearch").click(function () {
+            BindPendings();
+        });
+    });
+    function DefaultFilter() {
+        var today = new Date();
+        var year = today.getFullYear();
+        var month = today.getMonth() + 1; // JavaScript months are 0-based
+
+        var fyStartYear = (month >= 4) ? year : year - 1;
+        var fyEndYear = fyStartYear + 1;
+
+        var fromDate = new Date(fyStartYear, 3, 1); // 1st April
+        var toDate = new Date(fyEndYear, 2, 31);    // 31st March
+
+        // Format to YYYY-MM-DD for input[type="date"]
+        function formatDate(d) {
+            return d.toISOString().split('T')[0];
+        }
+
+        $('#fromDate').val(formatDate(fromDate));
+        $('#toDate').val(formatDate(toDate));
+    }
+    function BindPendings() {
+        var isValid = true;
+        var _fromDate = $('#fromDate').val();
+        var _toDate = $('#toDate').val();
+        if (!_fromDate || !toDate) {
+            ShowToastNotification("error", 'Please select both From Date and To Date.');
+            isValid = false;
+            return;
+        }
+        if (isValid) {
+            $.ajax({
+                type: "GET",
+                url: "@Url.Action("getIndentRegister", "Reports")",
+                contentType: "application/json; charset=utf-8",
+                data: { fromDate: _fromDate, ToDate: $("#toDate").val() },
+                dataType: "json",
+                success: SuccesssBindGrid,
+                failure: function (response) {
+                    ShowToastNotification("error", response.d);
+                },
+                error: function (response) {
+                    ShowToastNotification("error", "Error fetching data!");
+                }
+            });
+        }
+    }
+    function SuccesssBindGrid(dataset) {
+        dataset = Array.isArray(dataset) ? dataset : [];
+        // Initialize DataTable
+        let formTable = new DataTable("#tblreportIndentRegiter", {
+            "destroy": true,
+            searching: true,
+            paging: true,
+            scrollCollapse: true,
+            info: true,
+            // scrollY: '500px',
+            data: dataset,
+            select: true,
+            rowReorder: true,
+            rowReorder: {
+                dataSrc: 'SortOrder',
+                selector: 'tr'
+            },
+            columns: [
+                { title: '#', data: 'Sr_No' },
+                { title: 'Doc No', data: 'DocNo' },
+                { title: 'Doc Date', data: 'DocDate' },
+                { title: 'Department', data: 'Department' },
+                { title: 'Indent By', data: 'IndentBy' },
+                { title: 'Sr No', data: 'SrNo' },
+                { title: 'Item Name', data: 'ItemName' },
+                { title: 'Unit', data: 'Unit' },
+                { title: 'Quantity', data: 'Quantity' },
+                { title: 'Remarks', data: 'Remarks' },                
+            ],
+            language: {
+                emptyTable: "No records found", // Message when no data is available
+                zeroRecords: "No matching records found"
+            }
+        });
+    }
+</script>

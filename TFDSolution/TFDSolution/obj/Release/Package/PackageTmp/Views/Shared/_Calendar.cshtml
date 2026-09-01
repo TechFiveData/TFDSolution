@@ -1,0 +1,862 @@
+﻿<style>
+
+    #calendar {
+        /*max-width: 1100px;*/
+        width: 100%;
+        margin: 0 auto;
+    }
+
+    .modal-dialog {
+        float: none !important;
+        height: auto !important;
+    }
+</style>
+<div id="calendar"></div>
+<div class="modal fade" id="FollowUpModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><label id="PopupTitle"></label></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <input type="hidden" id="hdnCurrentFollowUpId" value="" />
+            <input type="hidden" id="hdnNextFollowUpId" value="" />
+            <input type="hidden" id="hdnFollowUpStatus" value="" />
+            <div class="modal-body">
+
+                <div class="row form-group d-none">
+                    <div class="col col-md-12">
+                        <label for="URNNumber" class="form-control-label">URN Number</label>
+                    </div>
+                    <div class="col col-md-12">
+                        <input id="URNNumber" class="form-control" placeholder="URN Number" readonly />
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col col-md-12">
+                        <label for="FollowUpDate" class="form-control-label">FollowUp Date<span class="text-danger p-1">(*)</span></label>
+                    </div>
+                    <div class="col col-md-12 p-0">
+                        <div class="col col-md-7"><input type="date" id="FollowUpDate_Date" class="form-control" /></div>
+                        <div class="col col-md-4 p-0"><input type="time" id="FollowUpDate_Time" class="form-control" /></div>
+                        @*Hidden combined datetime value*@
+                        <input type="hidden" id="FollowUpDate" name="FollowUpDate" />
+
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col col-md-12">
+                        <label for="ddlAssignedTo" class="form-control-label">Assigned To<span class="text-danger p-1">(*)</span></label>
+                    </div>
+                    <div class="col col-md-12">
+                        @Html.DropDownList("ddlAssignedTo", Enumerable.Empty<SelectListItem>(), "-- Select Assigned --", new { @class = "form-control form-select", id = "ddlAssignedTo" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <!-- Labels row -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="ContactPerson" class="form-control-label">Contact Person</label>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="ContactNumber" class="form-control-label">Contact No</label>
+                        </div>
+                    </div>
+                    <!-- Inputs row -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <input type="text" id="ContactPerson" maxlength="200" class="form-control" placeholder="Contact Person" />
+                        </div>
+                        <div class="col-md-6">
+                            <input type="text" id="ContactNumber" maxlength="12" class="form-control" placeholder="Contact Number" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col col-md-12">
+                        <label for="Interaction" class="form-control-label">Interaction</label>
+                    </div>
+                    <div class="col col-md-12">
+                        <textarea id="Interaction" class="form-control" placeholder="Interaction"></textarea>
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col col-md-12">
+                        <label for="Outcome" class="form-control-label">Outcome</label>
+                    </div>
+                    <div class="col col-md-12">
+                        <textarea id="Outcome" class="form-control" placeholder="Outcome"></textarea>
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col col-md-12">
+                        <label for="ddlCoAgent" class="form-control-label">Co Agent<span class="text-danger p-1">(*)</span></label>
+                    </div>
+                    <div class="col col-md-12">
+                        @Html.DropDownList("ddlCoAgent", Enumerable.Empty<SelectListItem>(), "-- Select CoAgent --", new { @class = "form-control form-select", id = "ddlCoAgent" })
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col col-md-12">
+                        <label for="ddlPriority" class="form-control-label">Priority<span class="text-danger p-1">(*)</span></label>
+                    </div>
+                    <div class="col col-md-12">
+                        @Html.DropDownList("ddlPriority", Enumerable.Empty<SelectListItem>(), "-- Select Priority --", new { @class = "form-control form-select", id = "ddlPriority" })
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col col-md-12">
+                        <label for="ModeOfCommunication" class="form-control-label">Mode Of Communication<span class="text-danger p-1">(*)</span></label>
+                    </div>
+                    <div class="col col-md-12">
+                        @Html.DropDownList("ddlModeOfCommunication", Enumerable.Empty<SelectListItem>(), "-- Select ModeOfCommunication --", new { @class = "form-control form-select", id = "ddlModeOfCommunication" })
+                    </div>
+                </div>
+                <div class="row form-group ">
+                    <div class="col col-md-12">
+                        <label for="text-input" class=" form-control-label">Status</label>
+                    </div>
+                    <div class="col col-md-12">
+                        @Html.DropDownList("ddlStatus", Enumerable.Empty<SelectListItem>(), "-- Select Followup Status --", new { @class = "form-control form-select", id = "ddlStatus" })
+                    </div>
+                </div>
+                <div class="row form-group" id="divNextFollowupDate">
+                    <div class="col col-md-12">
+                        <label for="text-input" class="form-control-label">Next FollowUp Date</label>
+                    </div>
+                    <div class="col col-md-12">
+                        <input id="nextFollowUpDate" class="form-control" placeholder="Next FollowUp Date" />
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    @*<button type="button" title="Delete Follow-Up" class="btn btn-danger" id="btnDeleteFolloup">Delete</button>*@
+                    <button type="button" title="Click here to Save" class="btn btn-primary" id="btnSaveFollowUp">Save</button>
+                    <button id="btnCreateNextFollowUp" title="Click here to Create Next Follo-Up" type="button" class="btn btn-primary ">Create Next FollowUp</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="nextFollowUpModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">  <label id="Next_PopupTitle"></label></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row form-group d-none">
+                    <div class="col col-md-12">
+                        <label for="Next_URNNumber" class="form-control-label">URN</label>
+                    </div>
+                    <div class="col col-md-12">
+                        <input id="Next_URNNumber" class="form-control" placeholder="URN" readonly />
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col col-md-12">
+                        <label for="Next_FollowUpDate" class="form-control-label">FollowUp Date<span class="text-danger p-1">(*)</span></label>
+                    </div>
+                    <div class="col col-md-12">
+
+                        <div class="col col-md-6"><input type="date" id="Next_FollowUpDate_Date" class="form-control" /></div>
+                        <div class="col col-md-4 p-0"><input type="time" id="Next_FollowUpDate_Time" class="form-control" /></div>
+                        <!-- Hidden combined datetime value -->
+                        <input type="hidden" id="Next_FollowUpDate" name="Next_FollowUpDate" />
+                        <!--<div class="col col-md-1">
+                        <button type="button" class="btn btn-primary" id="btnSaveNextFollowUpDate" title="Save">
+                            <i class="fa fa-save"></i>
+                        </button>-->
+                        <!-- Hidden combined datetime value -->
+                        <!--</div>-->
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col col-md-12">
+                        <label for="Next_ddlAssignedTo" class="form-control-label">Assigned </label>
+                    </div>
+                    <div class="col col-md-12">
+                        @Html.DropDownList("Next_ddlAssignedTo", Enumerable.Empty<SelectListItem>(), "-- Select Assigned --", new { @class = "form-control form-select", id = "Next_ddlAssignedTo" })
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col col-md-12">
+                        <label for="Next_ddlPriority" class="form-control-label">Priority<span class="text-danger p-1">(*)</span></label>
+                    </div>
+                    <div class="col col-md-12">
+                        @Html.DropDownList("Next_ddlPriority", Enumerable.Empty<SelectListItem>(), "-- Select Priority --", new { @class = "form-control form-select", id = "Next_ddlPriority" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <!-- Labels row -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label for="ContactPerson" class="form-control-label">Contact Person</label>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="ContactNumber" class="form-control-label">Contact No</label>
+                        </div>
+                    </div>
+                    <!-- Inputs row -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <input type="text" id="Next_ContactPerson" maxlength="200" class="form-control" placeholder="Contact Person" />
+                        </div>
+                        <div class="col-md-6">
+                            <input type="text" id="Next_ContactNumber" maxlength="12" class="form-control" placeholder="Contact Number" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col col-md-12">
+                        <label for="Next_Interaction" class="form-control-label">Interaction</label>
+                    </div>
+                    <div class="col col-md-12">
+                        <textarea id="Next_Interaction" class="form-control" placeholder="Interaction"></textarea>
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col col-md-12">
+                        <label for="Next_Outcome" class="form-control-label">Outcome</label>
+                    </div>
+                    <div class="col col-md-12">
+                        <textarea id="Next_Outcome" class="form-control" placeholder="Outcome"></textarea>
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col col-md-12">
+                        <label for="Next_ddlCoAgent" class="form-control-label">Co Agent<span class="text-danger p-1">(*)</span></label>
+                    </div>
+                    <div class="col col-md-12">
+                        @Html.DropDownList("Next_ddlCoAgent", Enumerable.Empty<SelectListItem>(), "-- Select CoAgent --", new { @class = "form-control form-select", id = "Next_ddlCoAgent" })
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col col-md-12">
+                        <label for="Next_ddlModeOfCommunication" class="form-control-label">Mode Of Communication<span class="text-danger p-1">(*)</span></label>
+                    </div>
+                    <div class="col col-md-12">
+                        @Html.DropDownList("Next_ddlModeOfCommunication", Enumerable.Empty<SelectListItem>(), "-- Select ModeOfCommunication --", new { @class = "form-control form-select", id = "Next_ddlModeOfCommunication" })
+                    </div>
+                </div>
+                <div class="row form-group ">
+                    <div class="col col-md-12">
+                        <label for="Next_ddlStatus" class=" form-control-label">Status</label>
+                    </div>
+                    <div class="col col-md-12">
+                        @Html.DropDownList("Next_ddlStatus", Enumerable.Empty<SelectListItem>(), "-- Select Followup Status --", new { @class = "form-control form-select", id = "Next_ddlStatus" })
+                    </div>
+
+                </div>
+                <div class="row form-group" id="divNext_NextFollowUpDate">
+                    <div class="col col-md-12">
+                        <label for="text-input" class="form-control-label">Next FollowUp Date</label>
+                    </div>
+                    <div class="col-12 col-md-12">
+                        <input id="Next_NextFollowUpDate" class="form-control disabled" placeholder="Next FollowUp Date" />
+                    </div>
+                </div>
+                <!-- You can optionally add a hidden input for NextFollowUpId if required -->
+                <input type="hidden" id="Next_hdnCurrentFollowUpId" />
+                @*<input type="hidden" id="Next_hdnParentFollowUpId" />*@
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="btnSaveNextFollowUp">Save</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    /******************** Events ********************/
+    ////Calender Popup Event
+    document.addEventListener('DOMContentLoaded', function () {
+        const priorityColors = {
+            'High': '#ff9999',     // Red/pink
+            'Medium': '#ffd966',   // Yellow
+            'Low': '#b6d7a8'       // Green
+        };
+        var calendarEl = document.getElementById('calendar');
+        var lastClick = 0;
+        window.calendar  = new FullCalendar.Calendar(calendarEl, {
+            headerToolbar: {
+                left: 'prevYear,prev,next,nextYear today',
+                center: 'title',
+                right: 'dayGridMonth,dayGridWeek,dayGridDay'
+            },
+            initialDate: new Date().toISOString().slice(0, 10),
+            navLinks: true,
+            // IMPORTANT
+            height: 'calc(100vh - 100px)',
+            editable: true,
+            dayMaxEvents: true,
+            selectable: true,
+            displayEventTime: false,
+            // You can fetch existing events dynamically
+            // events: '/Calendar/GetEvents'
+            events: {
+                url: "@Url.Action("GetEvents", "Calendar")",
+                failure: function () {
+                    alert('There was an error while fetching events!');
+                },
+                success: function (data) {
+                    console.log("Loaded events:", data); // Confirm in browser console
+                }
+            },
+            eventContent: function (arg) {
+                return {
+                    html: `<div style="color: ${getPriorityColor(arg.event.extendedProps.priority)};">${arg.event.title}</div>`
+                };
+            },
+            eventClick: function (info) {
+                // Reset everything first
+                $('#FollowUpModal').find('input, select, textarea').val('');
+                $('#FollowUpModal').find('input[type="checkbox"]').prop('checked', false);
+                info.jsEvent.preventDefault(); // Prevent browser redirect
+
+                $('#PopupTitle').text(info.event.extendedProps.popuptitle);
+                 // First bind dropdowns with selected values from event data
+                bindDropdown('@Url.Action("GetAssignedToUsers", "Calendar")', 'ddlAssignedTo', '-- Select AssignedTo --', info.event.extendedProps.assignedTo || '');
+                bindDropdown('@Url.Action("GetCoAgents", "Calendar")', 'ddlCoAgent', '-- Select CoAgent --', info.event.extendedProps.coAgent || '');
+                bindDropdown('@Url.Action("GetEventPriorities", "Calendar")', 'ddlPriority', '-- Select Priority --', info.event.extendedProps.priority || '');
+                bindDropdown('@Url.Action("GetFollowupStatusList", "Calendar")', 'ddlStatus', '-- Select Followup Status --', info.event.extendedProps.status || '');
+                bindDropdown('@Url.Action("GetCommunicationModeList", "Calendar")', 'ddlModeOfCommunication', '-- Select ModeOfCommunication --', info.event.extendedProps.modeOfCommunication || '');
+
+                const today = new Date().toISOString().split('T')[0];
+                $('#FollowUpDate_Date').attr('min', today);
+                // Assuming you use Bootstrap Modal or a custom popup
+                $('#FollowUpModal').modal('show'); // Show the modal
+                // Populate modal fields
+                $('#FollowUpDate').val(info.event.extendedProps.followUpDate);//Assign in hidden field
+                const existingDateTime = $('#FollowUpDate').val();
+                populateFollowUpDateTimeControls(existingDateTime, 'FollowUpDate');
+                if (existingDateTime >= new Date().toISOString()) {
+                    disableAllFollowupFields(true)
+                }
+                else {
+                    disableAllFollowupFields(false)
+                }
+                $('#hdnCurrentFollowUpId').val(info.event.extendedProps.followUpId || '');
+                $('#hdnNextFollowUpId').val(info.event.extendedProps.nextFollowUpID || '');
+                $('#hdnFollowUpStatus').val(info.event.extendedProps.status || '');
+                $('#nextFollowUpDate').val(info.event.extendedProps.nextFollowUpDate|| '');
+                $('#URNNumber').val(info.event.extendedProps.urn || '');
+                $('#Interaction').val(info.event.extendedProps.interaction || '');
+                $('#Outcome').val(info.event.extendedProps.outcome || '');
+                $('#ContactPerson').val(info.event.extendedProps.contactPerson || '');
+                $('#ContactNumber').val(info.event.extendedProps.contactNumber || '');
+                //let statusValue = info.event.extendedProps.status;
+                //$('#Status').prop('checked', statusValue == "1" || statusValue === true);
+                // Set all fields in modal to readonly/disabled
+                //$('#FollowUpModal')
+                //    .find('input, select, textarea')
+                //    .not('#FollowUpDate_Date,#FollowUpDate_Time') // Exclude the input with id followupdate
+                //    .each(function () {
+                //        const tag = $(this).prop('tagName').toLowerCase();
+                //        if (tag === 'input' || tag === 'textarea') {
+                //            $(this).prop('readonly', true);
+                //        } else if (tag === 'select') {
+                //            $(this).prop('disabled', true);
+                //        }
+                //    });
+                //// Disable checkboxes separately (readonly doesn't work on checkboxes)
+                //$('#FollowUpModal').find('input[type="checkbox"]').prop('disabled', true);
+                toggleNextFollowUpDivs();
+            },
+        });
+        calendar.render();
+    });
+
+       ///Open Next Followup popup on button click
+   $('#btnCreateNextFollowUp').on('click', function () {
+       let nextFollowUpId = $('#hdnNextFollowUpId').val();
+       if (nextFollowUpId && parseInt(nextFollowUpId) > 0) {
+           // Load from DB using AJAX
+           $.ajax({
+               url: "@Url.Action("GetFollowUpById", "Calendar")",
+               type: 'GET',
+               data: { id: nextFollowUpId },
+               success: function (data) {
+                   populateNextFollowUpModal(data);
+               },
+               error: function () {
+                   alert("Failed to load next follow-up details.");
+               }
+           });
+       }
+       else {
+           // Populate from existing followUpModal
+           const data = {
+               followUpId: 0,
+               title: $('#PopupTitle').text(),
+               assignedTo: $('#ddlAssignedTo').val(),
+               //contactPersonId: $('#ContactPerson').val(),
+               followUpDate: $('#FollowUpDate').val(),
+               priority: $('#ddlPriority').val(),
+               interaction: $('#Interaction').val(),
+               outcome: $('#Outcome').val(),
+               coAgent: $('#ddlCoAgent').val(),
+               urn: $('#URNNumber').val(),
+               status: 1, // open :Assuming new follow - up is always open
+               contactPerson: $('#ContactPerson').val(),
+               contactNumber: $('#ContactNumber').val(),
+               modeOfCommunication: $('#ddlModeOfCommunication').val(),
+              // status: $('#Status').is(':checked')
+
+           };
+           populateNextFollowUpModal(data);
+       }
+   });
+
+     ///Save Current followup details
+    $('#btnSaveFollowUp').on('click', function () {
+        try {
+              var followUpId = $('#hdnCurrentFollowUpId').val();
+              // Combine date and time into ISO string
+              const date = $('#FollowUpDate_Date').val();
+              const time = $('#FollowUpDate_Time').val();
+              var fullFollowUpDate = '';
+              if (date && time) {
+                  fullFollowUpDate = `${date}T${time}:00`;
+                  $('#FollowUpDate').val(fullFollowUpDate);
+              } else {
+                  ShowToastNotification("error", "Please select both Date and Time for FollowUp.");
+                  return;
+              }
+              const today = new Date().toISOString(); // e.g., '30/07/2025 5:30 PM'
+              if (today && fullFollowUpDate <= today) {
+                  ShowToastNotification("error", "Follow-up date cannot be less than tomorrow date.");
+                  return;
+              }
+               // Prepare payload
+              var payload = {
+                  FollowUpId: followUpId, //Always 0 for New Followup
+                  Form_URNNo: $('#URNNumber').val(),
+                  FollowUpDate: fullFollowUpDate,
+                  EventPriority: $('#ddlPriority').val(),
+                  AssignedTo: $('#ddlAssignedTo').val(),
+                  Interaction: $('#Interaction').val(),
+                  Response: $('#Outcome').val(),
+                  CoAgent: $('#ddlCoAgent').val(),
+                  // Status: $('#Next_Status').is(':checked'), // Boolean
+                  Status: $('#ddlStatus').val(), // Boolean
+                  ContactNumber: $('#ContactNumber').val(),
+                  ContactPerson: $('#ContactPerson').val(),
+                  ModeOfCommunication: $('#ddlModeOfCommunication').val()
+                };
+            // Send to server
+            $.ajax({
+                url: "@Url.Action("SaveTRNFollowUp", "Calendar")",
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(payload),
+                success: function (response) {
+                    if (response && response.IsSuccess) {
+                        ShowToastNotification("success", "Follow-Up saved successfully!");
+                        //$('#nexFollowUpModal').modal('hide');
+                        if (window.calendar) {
+                            window.calendar.refetchEvents(); // update calendar without reload
+                        }
+                    } else {
+                        ShowToastNotification("error", 'Failed to save Follow-Up. ' + (response.Response || ''));
+                    }
+                },
+                error: function () {
+                    ShowToastNotification("error", 'An error occurred while saving Follow-Up.');
+                }
+            });
+        } catch (e) {
+
+        }
+});
+
+  ///Save NExt followup details
+  $('#btnSaveNextFollowUp').on('click', function () {
+      // Combine date and time into ISO string
+      const date = $('#Next_FollowUpDate_Date').val();
+      const time = $('#Next_FollowUpDate_Time').val();
+      let fullFollowUpDate = '';
+      if (date && time) {
+          fullFollowUpDate = `${date}T${time}:00`;
+          $('#Next_FollowUpDate').val(fullFollowUpDate);
+      } else {
+          ShowToastNotification("error", "Please select both Date and Time for FollowUp.");
+          return;
+      }
+
+      const nextFollowUpDateStr = $('#Next_NextFollowUpDate').val(); // e.g., '30/07/2025 5:30 PM'
+      if (nextFollowUpDateStr) {
+
+          const nextFollowUpDateparse = parseDateTimeFromString(nextFollowUpDateStr);
+          if (nextFollowUpDateStr && fullFollowUpDate > nextFollowUpDateparse) {
+              ShowToastNotification("error", "Follow-up date cannot be greater than the next follow-up date.");
+              return;
+          }
+      }
+
+      const FollowUpDateStr = $('#FollowUpDate').val(); // e.g., '30/07/2025 5:30 PM'
+      if (FollowUpDateStr) {
+
+          const FollowUpDateparse = parseDateTimeFromString(FollowUpDateStr);
+          if (FollowUpDateStr && FollowUpDateparse > fullFollowUpDate) {
+              ShowToastNotification("error", "Follow-up date cannot be Less than the Parent follow-up date.");
+              return;
+          }
+      }
+      // Prepare payload
+      var payload = {
+          ParentFollowUpId: $('#hdnCurrentFollowUpId').val(),
+          FollowUpId: $('#Next_hdnCurrentFollowUpId').val(),
+          Form_URNNo: $('#Next_URNNumber').val(),
+          FollowUpDate: fullFollowUpDate,
+          EventPriority: $('#Next_ddlPriority').val(),
+          AssignedTo: $('#Next_ddlAssignedTo').val(),
+          ContactPerson_Id: $('#Next_ContactPerson').val(),
+          Interaction: $('#Next_Interaction').val(),
+          Response: $('#Next_Outcome').val(),
+          CoAgent: $('#Next_ddlCoAgent').val(),
+          // Status: $('#Next_Status').is(':checked'), // Boolean
+          Status: $('#Next_ddlStatus').val(), // Boolean
+          ContactNumber: $('#Next_ContactNumber').val(),
+          ContactPerson: $('#Next_ContactPerson').val(),
+          ModeOfCommunication: $('#Next_ddlModeOfCommunication').val(),
+
+         // nextFollowUpDate: $('#Next_NextFollowUpDate').val()
+      };
+      // Send to server
+      $.ajax({
+          url: "@Url.Action("SaveNextFollowUpEvent", "Calendar")",
+          method: 'POST',
+          contentType: 'application/json',
+          data: JSON.stringify(payload),
+          success: function (response) {
+              if (response && response.IsSuccess) {
+                  ShowToastNotification("success", "Next Follow-Up saved successfully!");
+                  const updatedDate = $('#Next_FollowUpDate').val(); // new value from second popup // e.g. "2025-08-01T12:15:00"
+                  const formattedDate = formatDateToDDMMYYYYHHMMTT(updatedDate); // "01/08/2025 12:15 PM"
+                  $('#FollowUpModal #nextFollowUpDate').val(formattedDate);
+
+                  $('#nextFollowUpModal').modal('hide');
+                  if (window.calendar) {
+                      window.calendar.refetchEvents(); // update calendar without reload
+                  }
+              } else {
+                  ShowToastNotification("error", 'Failed to save Next Follow-Up. ' + (response.Response || ''));
+              }
+          },
+          error: function () {
+              ShowToastNotification("error", "An error occurred while saving Next Follow-Up.");
+          }
+      });
+  });
+
+
+   //btn Soft delete followup
+   $('#btnDeleteFolloup').on('click', function () {
+       var followUpId = $('#hdnCurrentFollowUpId').val();
+       if (!followUpId || followUpId <= 0) {
+           ShowToastNotification("error", "FollowUp ID is missing.");
+           return;
+       }
+       else {
+           $.ajax({
+               url: "@Url.Action("DeleteFollowUp", "Calendar")",
+               type: 'POST',
+               data: { FollowUpId: followUpId },
+               success: function (response) {
+                   if (response.IsSuccess) {
+                       ShowToastNotification("error", "Followup deleted successfully.");
+                       if (window.calendar) {
+                           window.calendar.refetchEvents(); // update calendar without reload
+                       }
+
+                   } else {
+                       alert(`Failed to delete Followup: ${response.Response || ''}`);
+                   }
+               },
+               error: function (xhr, status, error) {
+                   ShowToastNotification("error", "An error occurred while deleting Followup.");
+               }
+           });
+       }
+   });
+
+   /******************** Functions ********************/
+    //Bind Dropdowns:
+    function bindDropdown(url, dropdownId, defaultText, selectedValue = null) {
+        $.ajax({
+            url: url,
+            type: 'GET',
+            success: function (data) {
+                var ddl = $('#' + dropdownId);
+                ddl.empty(); // Clear existing options
+                ddl.append($('<option>').val('').text(defaultText)); // Default option
+                $.each(data, function (i, item) {
+                    ddl.append($('<option>').val(item.Value).text(item.Text));
+                });
+                if (selectedValue !== null) {
+                    ddl.val(selectedValue);
+                }
+            },
+            error: function () {
+                alert("Error loading " + dropdownId + " data.");
+            }
+        });
+    }
+
+    function disableAllFollowupFields(isdisable) {
+        // Set all fields in modal to readonly/disabled
+        $('#FollowUpModal')
+            .find('input, select, textarea')
+          //  .not('#FollowUpDate_Date,#FollowUpDate_Time') // Exclude the input with id followupdate
+            .each(function () {
+                const tag = $(this).prop('tagName').toLowerCase();
+                if (tag === 'input' || tag === 'textarea') {
+                    $(this).prop('readonly', isdisable);
+                } else if (tag === 'select') {
+                    $(this).prop('disabled', isdisable);
+                }
+            });
+        if (isdisable) {
+            $('#btnSaveFollowUp').hide();
+        }
+        else { $('#btnSaveFollowUp').show(); }
+    }
+
+    function toggleNextFollowUpDivs() {
+        let nextFollowUpId = $('#hdnNextFollowUpId').val();
+        let FollowUpStatus = $('#hdnFollowUpStatus').val();
+
+        if (nextFollowUpId && parseInt(nextFollowUpId) > 0) {
+                //$('#divNextFollowup').hide();
+                $('#divNextFollowupDate').show();
+                $('#btnCreateNextFollowUp').hide();
+        } else {
+            $('#divNextFollowupDate').hide();
+            if (FollowUpStatus && (parseInt(FollowUpStatus) != 2 && parseInt(FollowUpStatus) != 3)) {
+                disableAllFollowupFields(false);
+                $('#btnCreateNextFollowUp').show();
+            }
+            else {
+                disableAllFollowupFields(true);
+                $('#btnCreateNextFollowUp').hide();
+            }
+        }
+    }
+
+    function toggleNextFollowUpDateDivs() {
+        let NextFollowUpDate = $('#Next_NextFollowUpDate').val();
+        if (NextFollowUpDate && NextFollowUpDate !='') {
+            $('#divNext_NextFollowUpDate').show();
+        } else {
+            $('#divNext_NextFollowUpDate').hide();
+        }
+    }
+
+    function getPriorityColor(priority) {
+        switch (priority) {
+            case 'High':
+            case 1:
+                return '#ff0000'; // Red
+            case 'Medium':
+            case 2:
+                return '#ff9900'; // Orange
+            case 'Low':
+            case 3:
+                return '#228B22'; // Green
+            default:
+                return '#555555'; // Default gray
+        }
+    }
+
+    //Populate Nextfollowup Model details For update/ Insert
+    function populateNextFollowUpModal(data) {
+        const today = new Date().toISOString().split('T')[0];
+        $('#Next_FollowUpDate_Date').attr('min', today);
+        // Show modal
+        $('#nextFollowUpModal').modal('show');
+        // Reset everything first
+        $('#nextFollowUpModal').find('input, select, textarea').val('');
+        $('#nextFollowUpModal').find('input[type="checkbox"]').prop('checked', false);
+        $('#Next_PopupTitle').text(data.title + ' (Follow Up)');
+        // Bind dropdowns and set selected values
+        bindDropdown('@Url.Action("GetAssignedToUsers", "Calendar")', 'Next_ddlAssignedTo', '-- Select AssignedTo --', data.assignedTo);
+        bindDropdown('@Url.Action("GetCoAgents", "Calendar")', 'Next_ddlCoAgent', '-- Select CoAgent --', data.coAgent);
+        bindDropdown('@Url.Action("GetEventPriorities", "Calendar")', 'Next_ddlPriority', '-- Select Priority --', data.priority);
+        bindDropdown('@Url.Action("GetCommunicationModeList", "Calendar")', 'Next_ddlModeOfCommunication', '-- Select ModeOfCommunication --', data.modeOfCommunication);
+        bindDropdown('@Url.Action("GetFollowupStatusList", "Calendar")', 'Next_ddlStatus', '-- Select Followup Status --', data.status);
+
+        $('#Next_hdnCurrentFollowUpId').val(data.followUpId);
+        $('#Next_Interaction').val(data.interaction || '');
+        $('#Next_Outcome').val(data.outcome || '');
+        $('#Next_ContactPerson').val(data.contactPerson || '');
+        $('#Next_ContactNumber').val(data.contactNumber || '');
+        $('#Next_URNNumber').val(data.urn || '').prop('readonly', true);
+        $('#Next_Status').prop('checked', data.status == true || data.status == "1");
+        $('#Next_NextFollowUpDate').val(data.nextFollowUpDate || '');
+        $('#Next_FollowUpDate').val(data.followUpDate || ''); //Hiddenfield
+
+        const existingNext_FollowUpDate = $('#Next_FollowUpDate').val();
+
+        populateFollowUpDateTimeControls(existingNext_FollowUpDate, 'Next_FollowUpDate');
+        toggleNextFollowUpDateDivs();
+    }
+
+    //Populate Followup date & time seperatly
+    function populateFollowUpDateTimeControls(fullDateTimeStr, controlPrefix) {
+        if (!fullDateTimeStr || !controlPrefix) return;
+        // Expected format: dd/MM/yyyy hh:mm AM/PM
+        const match = fullDateTimeStr.match(/^(\d{2})\/(\d{2})\/(\d{4}) (\d{1,2}):(\d{2}) (AM|PM)$/i);
+        if (match) {
+            let [_, dd, MM, yyyy, hh, mm, period] = match;
+            hh = parseInt(hh, 10);
+            if (period.toUpperCase() === 'PM' && hh < 12) hh += 12;
+            if (period.toUpperCase() === 'AM' && hh === 12) hh = 0;
+
+            const datePart = `${yyyy}-${MM}-${dd}`; // "yyyy-MM-dd"
+            const timePart = `${hh.toString().padStart(2, '0')}:${mm}`; // "HH:mm"
+
+            $(`#${controlPrefix}_Date`).val(datePart);
+            $(`#${controlPrefix}_Time`).val(timePart);
+        } else {
+            console.warn('Invalid date format:', fullDateTimeStr);
+        }
+    }
+
+    function isFutureDateTime(dateStr, timeStr) {
+        if (!dateStr || !timeStr) return false;
+
+        const selected = new Date(`${dateStr}T${timeStr}`);
+        const now = new Date();
+
+        return selected.getTime() >= now.getTime();
+    }
+
+    function parseDateTimeFromString(dateTimeStr) {
+        // Try format: 'dd/MM/yyyy hh:mm AM/PM'
+        const regex1 = /^(\d{2})\/(\d{2})\/(\d{4}) (\d{1,2}):(\d{2}) (AM|PM)$/i;
+        const match1 = dateTimeStr.match(regex1);
+        if (match1) {
+            let [_, dd, mm, yyyy, hh, min, meridian] = match1;
+            dd = parseInt(dd, 10);
+            mm = parseInt(mm, 10);
+            yyyy = parseInt(yyyy, 10);
+            hh = parseInt(hh, 10);
+            min = parseInt(min, 10);
+
+            if (meridian.toUpperCase() === 'PM' && hh !== 12) {
+                hh += 12;
+            } else if (meridian.toUpperCase() === 'AM' && hh === 12) {
+                hh = 0;
+            }
+
+            // Format to ISO-like string
+            return `${yyyy}-${mm.toString().padStart(2, '0')}-${dd.toString().padStart(2, '0')}T${hh.toString().padStart(2, '0')}:${min.toString().padStart(2, '0')}:00`;
+        }
+
+        // Fallback: Try native Date parsing if it fails (optional)
+        const parsedDate = new Date(dateTimeStr);
+        if (!isNaN(parsedDate.getTime())) {
+            return parsedDate.toISOString().slice(0, 19); // 'YYYY-MM-DDTHH:mm:ss'
+        }
+
+        return null; // If all parsing fails
+    }
+
+    function formatDateToDDMMYYYYHHMMTT(dateStr) {
+        const date = new Date(dateStr);
+
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+
+        let hours = date.getHours();
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+
+        hours = hours % 12;
+        hours = hours ? hours : 12; // 0 => 12
+        const strHours = String(hours).padStart(2, '0');
+
+        return `${day}/${month}/${year} ${strHours}:${minutes} ${ampm}`;
+    }
+
+    ///Common function to save followup datetime can be used by both model
+    function saveFollowUpDateTime(options) {
+        const {
+            dateSelector,
+            timeSelector,
+            hiddenFieldSelector,
+            followUpId,
+           // saveUrl,
+            label,
+            buttonSelector
+        } = options;
+        const date = $(dateSelector).val();
+        const time = $(timeSelector).val();
+        if (!date || !time) {
+            alert(`Please select both date and time for ${label}.`);
+            return;
+        }
+        if (!isFutureDateTime(date, time)) {
+            alert("Date and time must not be in the past.");
+            return;
+        }
+        if (!followUpId) {
+            alert("FollowUp ID is missing.");
+            return;
+        }
+        const combined = `${date}T${time}:00`;
+        // Validate against nextFollowUpDate if present
+        const nextFollowUpDateStr = $('#nextFollowUpDate').val(); // e.g., '30/07/2025 5:30 PM'
+        if (nextFollowUpDateStr) {
+
+            const nextFollowUpDateparse = parseDateTimeFromString(nextFollowUpDateStr);
+            if (nextFollowUpDateStr && combined > nextFollowUpDateparse) {
+                alert("Follow-up date cannot be greater than the next follow-up date.");
+                return;
+            }
+        }
+
+
+        if (hiddenFieldSelector) {
+            $(hiddenFieldSelector).val(combined);
+        }
+        if (buttonSelector) {
+            $(buttonSelector).prop('disabled', true).text('Saving...');
+        }
+        $.ajax({
+            /*url: '/Calendar/SaveFollowUpDate',*/
+            url: "@Url.Action("SaveFollowUpDate", "Calendar")",
+            type: 'POST',
+            data: {
+                followUpId: followUpId,
+                followUpDate: combined,
+                type: label // Optional if you need to differentiate on server
+            },
+            success: function (response) {
+                if (response.IsSuccess) {
+                    alert(`${label} saved successfully.`);
+                    if (window.calendar) {
+                        window.calendar.refetchEvents(); // update calendar without reload
+                    }
+
+                } else {
+                    alert(`Failed to save ${label}. ${response.Response || ''}`);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error(`Error saving ${label}:`, error);
+                alert(`An error occurred while saving ${label}.`);
+            },
+            complete: function () {
+                if (buttonSelector) {
+                    $(buttonSelector).prop('disabled', false).text('Save');
+                }
+            }
+        });
+    }
+
+</script>

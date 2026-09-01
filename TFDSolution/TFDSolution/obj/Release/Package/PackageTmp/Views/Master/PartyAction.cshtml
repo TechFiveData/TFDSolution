@@ -1,0 +1,597 @@
+﻿@model TFDSolution.Transport.Master.PartyMst
+
+@{
+    ViewBag.Title = "PartyAction";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- /header -->
+<div class="breadcrumbs">
+    <div class="col-sm-4">
+        <div class="page-header float-left">
+            <div class="page-title">
+                @if (string.IsNullOrEmpty(Model.PartyName))
+                {
+                    <h1>Add New Party </h1>
+                }
+                else
+                {
+                    <h1>Edit Party: @Model.PartyCode </h1>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-8">
+        <div class="page-header float-right">
+            <div class="page-title">
+                <ol class="breadcrumb text-right">
+                    <li><a href="@Url.Action("Index","Home")">Home</a></li>
+                    <li><a href="@Url.Action("PartyMaster","Master")">Party</a></li>
+                    @if (!string.IsNullOrEmpty(Model.PartyName))
+                    {
+                        <li class="active">Edit Party</li>
+                    }
+                    else
+                    {
+                        <li class="active">Add New Party</li>
+                    }
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="animated fadeIn">
+    @using (Html.BeginForm("PartyAction", "Master", FormMethod.Post))
+    {
+        if (ViewBag.ErrorMessages != null)
+        {
+            <div id="divError">
+                <div class="alert alert-danger">
+                    <strong>Danger!</strong>  @ViewBag.ErrorMessages
+                </div>
+            </div>
+        }
+        if (ViewBag.SuccessMessage != null)
+        {
+            <div id="divError">
+                <div class="alert alert-success">
+                    <strong>Success!</strong> @ViewBag.SuccessMessage
+                </div>
+            </div>
+            <script type="text/javascript">
+             setTimeout(function () {
+                 var backURL = "@Url.Action("PartyMaster", "Master")"
+                 location.href = backURL;
+             }, 6000);
+            </script>
+        }
+        @Html.HiddenFor(m => m.PartyId)
+        @Html.HiddenFor(m => m.PartyCode)
+        <div class="row m-0">
+
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="col-lg-6">
+                            <strong class="card-title"></strong>
+                        </div>
+                        <div class="col-lg-6 text-right">
+                            <a class="btn btn-sm" id="btnrefresh" href="javascript:void(0);"><i class="fa fa-refresh"></i>&nbsp; Refresh</a>
+                            <a class="btn btn-sm" id="btnBack" href="@Url.Action("PartyMaster", "Master")"><i class="fa fa-arrow-circle-left"></i>&nbsp; Back</a>
+                            <button class="btn btn-sm" type="submit"><i class="fa fa-save"></i>&nbsp; Save</button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="general">
+                            <div class="form-horizontal page-head">
+                                <div class="section-left">
+                                    <div class="row form-group">
+                                        <div class="col col-md-3">
+                                            <label class=" form-control-label">Party Code</label>
+                                        </div>
+                                        <div class="col-12 col-md-9 text-left">
+                                            @Html.TextBoxFor(m => m.PartyCode, new { @placeholder = "Party Code", @class = "form-control", @disabled = "disabled" })
+                                        </div>
+                                    </div>
+                                    <div class="row form-group">
+                                        <div class="col col-md-3"><label class=" form-control-label">Party Status<span class="text-danger p-1">(*)</span></label></div>
+                                        <div class="col-12 col-md-9 pt-2">
+                                            <label class="switch switch-3d switch-success mr-3">
+                                                @Html.CheckBoxFor(m => m.PartyStatus, new { @class = "switch-input" })
+                                                <span class="switch-label"></span> <span class="switch-handle"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="row form-group">
+                                        <div class="col col-md-3"><label class=" form-control-label">Party Type<span class="text-danger p-1">(*)</span></label></div>
+                                        <div class="col-12 col-md-8">
+                                            @Html.DropDownListFor(m => m.PartyType, new SelectList(ViewBag.PartyType, "Value", "Text", Model.PartyType), "Select Party Type", new { @class = "form-control form-select ", @id = "ddlPartyType" })
+                                            @Html.ValidationMessageFor(model => model.PartyType, "", new { @class = "text-danger" })
+                                        </div>
+                                        <div class="col-12 col-md-1 pl-0">
+                                            <div class="input-group">
+                                                <a class=" btn  btn-sm" href="javascript:void(0);" title="Add Contact Person" data-toggle="modal" data-target="#mediumModal"><i class="fa fa-plus-square"></i></a>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row form-group">
+                                        <div class="col col-md-3">
+                                            <label for="text-input" class=" form-control-label">Party Name<span class="text-danger p-1">(*)</span></label>
+                                        </div>
+                                        <div class="col-12 col-md-9 form-group">
+                                            @Html.TextBoxFor(m => m.PartyName, new { @placeholder = "Party Name", @class = "form-control", @required = "required", @maxlength = "50" })
+                                            @Html.ValidationMessageFor(m => m.PartyName, "", new { @class = "text-danger" })
+
+                                        </div>
+                                    </div>
+                                    <div class="row form-group">
+                                        <div class="col col-md-3">
+                                            <label for="text-input" class=" form-control-label">Alternate Name</label>
+                                        </div>
+                                        <div class="col-12 col-md-9">
+                                            @Html.TextBoxFor(m => m.AlternateName, new { @class = "form-control", @rows = "3", @placeholder = "Alternate Name", @maxlength = "50" })
+                                            @Html.ValidationMessageFor(m => m.AlternateName, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                    <div class="row form-group">
+                                        <div class="col col-md-3"><label class=" form-control-label">Group<span class="text-danger p-1">(*)</span></label></div>
+                                        <div class="col-12 col-md-8">
+                                            @Html.DropDownListFor(m => m.PartyGroup, new SelectList(ViewBag.PartyGroup, "Value", "Text", Model.PartyGroup), "Select Group", new { @class = "form-control form-select", @id = "ddlPartyGroup" })
+                                            @Html.ValidationMessageFor(model => model.PartyGroup, "", new { @class = "text-danger" })
+                                        </div>
+                                        <div class="col-12 col-md-1 pl-0">
+                                            <div class="input-group">
+                                                <a class=" btn  btn-sm" href="javascript:void(0);" title="Add Contact Person" data-toggle="modal" data-target="#mediumModal"><i class="fa fa-plus-square"></i></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row form-group">
+                                        <div class="col col-md-3"><label class=" form-control-label">Currency<span class="text-danger p-1">(*)</span></label></div>
+                                        <div class="col-12 col-md-8">
+                                            @Html.DropDownListFor(m => m.Currency, new SelectList(ViewBag.Currency, "Value", "Text", Model.Currency), "Select Currency", new { @class = "form-control form-select", @id = "ddlCurrency" })
+                                            @Html.ValidationMessageFor(model => model.Currency, "", new { @class = "text-danger" })
+                                        </div>
+                                        <div class="col-12 col-md-1 pl-0">
+                                            <div class="input-group">
+                                                <a class=" btn  btn-sm" href="javascript:void(0);" title="Add Contact Person" data-toggle="modal" data-target="#mediumModal"><i class="fa fa-plus-square"></i></a>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row form-group">
+                                        <div class="col col-md-3">
+                                            <label for="text-input" class=" form-control-label">Telephone 1</label>
+                                        </div>
+                                        <div class="col-12 col-md-9">
+                                            @Html.TextBoxFor(m => m.Telephone1, new { @class = "form-control", @rows = "3", @placeholder = "Telephone 1", @maxlength = "10" })
+                                            @Html.ValidationMessageFor(m => m.Telephone1, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                    <div class="row form-group">
+                                        <div class="col col-md-3">
+                                            <label for="text-input" class=" form-control-label">Telephone 2</label>
+                                        </div>
+                                        <div class="col-12 col-md-9">
+                                            @Html.TextBoxFor(m => m.Telephone2, new { @class = "form-control", @rows = "3", @placeholder = "Telephone 2", @maxlength = "10" })
+                                            @Html.ValidationMessageFor(m => m.Telephone2, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="section-right">
+                                    <div class="row form-group">
+                                        <div class="col col-md-3">
+                                            <label for="text-input" class=" form-control-label">Mobile<span class="text-danger p-1">(*)</span></label>
+                                        </div>
+                                        <div class="col-12 col-md-9">
+                                            @Html.TextBoxFor(m => m.Mobile, new { @class = "form-control", @rows = "3", @placeholder = "Mobile", @required = "required", @maxlength = "10" })
+                                            @Html.ValidationMessageFor(m => m.Mobile, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                    <div class="row form-group">
+                                        <div class="col col-md-3">
+                                            <label for="text-input" class=" form-control-label">Email<span class="text-danger p-1">(*)</span></label>
+                                        </div>
+                                        <div class="col-12 col-md-9">
+                                            <div class="input-group">
+                                                @Html.TextBoxFor(m => m.Email, new { @placeholder = "Email", @class = "form-control", @required = "required", @maxlength = "50" })
+                                                <div class="input-group-addon"><i class="fa fa-envelope-o"></i></div>
+                                            </div>
+                                            @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                    <div class="row form-group">
+                                        <div class="col col-md-3">
+                                            <label for="text-input" class=" form-control-label">Web Site</label>
+                                        </div>
+                                        <div class="col-12 col-md-9">
+                                            @Html.TextBoxFor(m => m.WebSite, new { @placeholder = "Web Site", @class = "form-control", @maxlength = "50" })
+                                            @Html.ValidationMessageFor(m => m.WebSite, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                    <div class="row form-group">
+                                        <div class="col col-md-3">
+                                            <label for="text-input" class=" form-control-label">Fax</label>
+                                        </div>
+                                        <div class="col-12 col-md-9">
+                                            @Html.TextBoxFor(m => m.Fax, new { @placeholder = "Fax", @class = "form-control", @maxlength = "10" })
+                                            @Html.ValidationMessageFor(m => m.Fax, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                    <div class="row form-group">
+                                        <div class="col col-md-3">
+                                            <label for="text-input" class=" form-control-label">Contact Person</label>
+                                        </div>
+                                        <div class="col-12 col-md-9">
+                                            @Html.TextBoxFor(m => m.ContactPerson, new { @placeholder = "Contact Person", @class = "form-control" })
+                                            @Html.ValidationMessageFor(m => m.ContactPerson, "", new { @class = "text-danger" })
+
+                                        </div>
+
+                                    </div>
+                                    <div class="row form-group">
+                                        <div class="col col-md-3"><label class=" form-control-label">Industry</label></div>
+                                        <div class="col-12 col-md-8">
+                                            @Html.DropDownListFor(m => m.Industry, new SelectList(ViewBag.Industry, "Value", "Text", Model.Industry), "Select Industry", new { @class = "form-control form-select", @id = "ddlIndustry" })
+                                            @Html.ValidationMessageFor(model => model.Industry, "", new { @class = "text-danger" })
+                                        </div>
+                                        <div class="col-12 col-md-1 pl-0">
+                                            <div class="input-group">
+                                                <a class=" btn  btn-sm" href="javascript:void(0);" title="Add Contact Person" data-toggle="modal" data-target="#mediumModal"><i class="fa fa-plus-square"></i></a>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row form-group">
+                                        <div class="col col-md-3"><label class=" form-control-label">Sales Person</label></div>
+                                        <div class="col-12 col-md-8">
+                                            @Html.DropDownListFor(m => m.SalesPerson, new SelectList(ViewBag.SalesPerson, "Value", "Text", Model.SalesPerson), "Select Sales Person", new { @class = "form-control form-select", @id = "ddlSalesPerson" })
+                                            @Html.ValidationMessageFor(model => model.SalesPerson, "", new { @class = "text-danger" })
+                                        </div>
+                                        <div class="col-12 col-md-1 pl-0">
+                                            <div class="input-group">
+                                                <a class=" btn  btn-sm" href="javascript:void(0);" title="Add Contact Person" data-toggle="modal" data-target="#mediumModal"><i class="fa fa-plus-square"></i></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row form-group">
+                                        <div class="col col-md-3">
+                                            <label for="text-input" class=" form-control-label">Remarks</label>
+                                        </div>
+                                        <div class="col-12 col-md-9">
+                                            @Html.TextAreaFor(m => m.Remarks, new { @class = "form-control", @rows = "3", @placeholder = "Remarks", @maxlength = "100" })
+                                            @Html.ValidationMessageFor(m => m.Remarks, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="detail">
+                            <div class="page-breaker"></div>
+                            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                                @*<li class="nav-item">
+                                        <a class="nav-link active" id="home-tab" data-toggle="tab" href="#general" role="tab" aria-controls="general" aria-selected="true">General</a>
+                                    </li>*@
+                                <li class="nav-item">
+                                    <a class="nav-link active" id="profile-tab" data-toggle="tab" href="#address" role="tab" aria-controls="address" aria-selected="true">Addresses</a>
+                                </li>
+                                @if (!string.IsNullOrEmpty(Model.PartyName))
+                                {
+                                    <li class="nav-item">
+                                        <a class="nav-link" id="contact-tab" data-toggle="tab" href="#otherdetail" role="tab" aria-controls="otherdetail" aria-selected="false">Other Details</a>
+                                    </li>
+
+                                    <li class="nav-item">
+                                        <a class="nav-link" id="contact-tab" data-toggle="tab" href="#attachment" role="tab" aria-controls="attachment" aria-selected="false">Attachment</a>
+                                    </li>
+                                }
+                            </ul>
+                            <div class="tab-content pl-3 p-1" id="myTabContent">
+                                <div class="tab-pane fade show active" id="address" role="tabpanel" aria-labelledby="profile-tab">
+                                    <div class="form-horizontal page-head">
+                                        <div class="section-left">
+                                            <div class="card">
+                                                <div class="card-header">
+                                                    <strong class="card-title">Bill To Information</strong>
+                                                </div>
+                                                <div class="card-body border-0">
+
+                                                    <div class="row form-group">
+                                                        <div class="col col-md-3">
+                                                            <label for="text-input" class=" form-control-label">Bill To Name</label>
+                                                        </div>
+                                                        <div class="col-12 col-md-9">
+                                                            @Html.TextBoxFor(m => m.BillToName, new { @class = "form-control", @rows = "3", @placeholder = "Bill To Name", @maxlength = "50" })
+                                                            @Html.ValidationMessageFor(m => m.BillToName, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                    <div class="row form-group">
+                                                        <div class="col col-md-3">
+                                                            <label for="text-input" class=" form-control-label">Bill To Address1</label>
+                                                        </div>
+                                                        <div class="col-12 col-md-9">
+                                                            @Html.TextBoxFor(m => m.BillToAddress1, new { @class = "form-control", @rows = "3", @placeholder = "Bill To Address 1", @maxlength = "250" })
+                                                            @Html.ValidationMessageFor(m => m.BillToAddress1, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                    <div class="row form-group">
+                                                        <div class="col col-md-3">
+                                                            <label for="text-input" class=" form-control-label">Bill To Address2</label>
+                                                        </div>
+                                                        <div class="col-12 col-md-9">
+                                                            @Html.TextBoxFor(m => m.BillToAddress2, new { @class = "form-control", @rows = "3", @placeholder = "Bill To Address 2", @maxlength = "250" })
+                                                            @Html.ValidationMessageFor(m => m.BillToAddress2, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                    <div class="row form-group">
+                                                        <div class="col col-md-3"><label class=" form-control-label">City</label></div>
+                                                        <div class="col-12 col-md-9">
+                                                            @Html.DropDownListFor(m => m.BillToCity, new SelectList(ViewBag.CityList, "Value", "Text", Model.BillToCity), "Select City", new { @class = "form-control form-select", @id = "ddlBillToCity" })
+                                                            @Html.ValidationMessageFor(model => model.BillToCity, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                    <div class="row form-group">
+                                                        <div class="col col-md-3"><label class=" form-control-label">State</label></div>
+                                                        <div class="col-12 col-md-9">
+                                                            @Html.DropDownListFor(m => m.BillToState, new SelectList(ViewBag.StateList, "Value", "Text", Model.BillToState), "Select State", new { @class = "form-control form-select", @id = "ddlBillToState" })
+                                                            @Html.ValidationMessageFor(model => model.BillToState, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                    <div class="row form-group">
+                                                        <div class="col col-md-3"><label class=" form-control-label">Country</label></div>
+                                                        <div class="col-12 col-md-9">
+                                                            @Html.DropDownListFor(m => m.BillToCountry, new SelectList(ViewBag.CountryList, "Value", "Text", Model.BillToCountry), "Select Country", new { @class = "form-control form-select", @id = "ddlBillToCountry" })
+                                                            @Html.ValidationMessageFor(model => model.BillToCountry, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                    <div class="row form-group">
+                                                        <div class="col col-md-3">
+                                                            <label for="text-input" class=" form-control-label">Pincode</label>
+                                                        </div>
+                                                        <div class="col-12 col-md-9">
+                                                            @Html.TextBoxFor(m => m.BillToPincode, new { @placeholder = "Pincode", @class = "form-control", @maxlength = "6" })
+                                                            @Html.ValidationMessageFor(m => m.BillToPincode, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                    <div class="row form-group">
+                                                        <div class="col col-md-3">
+                                                            <label for="text-input" class=" form-control-label">Contact Number</label>
+                                                        </div>
+                                                        <div class="col-12 col-md-9">
+                                                            @Html.TextBoxFor(m => m.BillToContactNo, new { @placeholder = "Contact Number", @class = "form-control", @maxlength = "10" })
+                                                            @Html.ValidationMessageFor(m => m.BillToContactNo, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                    <div class="row form-group">
+                                                        <div class="col col-md-3">
+                                                            <label for="text-input" class=" form-control-label">Contact Person</label>
+                                                        </div>
+                                                        <div class="col-12 col-md-9">
+                                                            @Html.TextBoxFor(m => m.BillToContactPerson, new { @placeholder = "Contact Person", @class = "form-control" })
+                                                            @Html.ValidationMessageFor(m => m.BillToContactPerson, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                    <div class="row form-group">
+                                                        <div class="col col-md-3">
+                                                            <label for="text-input" class=" form-control-label">Email Id</label>
+                                                        </div>
+                                                        <div class="col-12 col-md-9">
+                                                            <div class="input-group">
+                                                                @Html.TextBoxFor(m => m.BillToEmail, new { @placeholder = "Email", @class = "form-control", @maxlength = "50" })
+                                                                <div class="input-group-addon"><i class="fa fa-envelope-o"></i></div>
+                                                            </div>
+                                                            @Html.ValidationMessageFor(m => m.BillToEmail, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+
+
+                                        </div>
+                                        <div class="section-right">
+                                            <div class="card">
+                                                <div class="card-header">
+                                                    <strong class="card-title">Ship To Information</strong>
+                                                </div>
+                                                <div class="card-body border-0">
+
+                                                    <div class="row form-group">
+                                                        <div class="col col-md-3">
+                                                            <label for="text-input" class=" form-control-label">Ship To Name</label>
+                                                        </div>
+                                                        <div class="col-12 col-md-9">
+                                                            @Html.TextBoxFor(m => m.ShipToName, new { @class = "form-control", @rows = "3", @placeholder = "Ship To Name", @maxlength = "50" })
+                                                            @Html.ValidationMessageFor(m => m.ShipToName, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                    <div class="row form-group">
+                                                        <div class="col col-md-3">
+                                                            <label for="text-input" class=" form-control-label">Ship To Address1</label>
+                                                        </div>
+                                                        <div class="col-12 col-md-9">
+                                                            @Html.TextBoxFor(m => m.ShipToAddress1, new { @class = "form-control", @rows = "3", @placeholder = "Ship To Address 1", @maxlength = "250" })
+                                                            @Html.ValidationMessageFor(m => m.ShipToAddress1, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                    <div class="row form-group">
+                                                        <div class="col col-md-3">
+                                                            <label for="text-input" class=" form-control-label">Ship To Address2</label>
+                                                        </div>
+                                                        <div class="col-12 col-md-9">
+                                                            @Html.TextBoxFor(m => m.ShipToAddress2, new { @class = "form-control", @rows = "3", @placeholder = "Ship To Address 2", @maxlength = "250" })
+                                                            @Html.ValidationMessageFor(m => m.ShipToAddress2, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                    <div class="row form-group">
+                                                        <div class="col col-md-3"><label class=" form-control-label">City</label></div>
+                                                        <div class="col-12 col-md-9">
+                                                            @Html.DropDownListFor(m => m.ShipToCity, new SelectList(ViewBag.CityList, "Value", "Text", Model.ShipToCity), "Select City", new { @class = "form-control form-select", @id = "ddlShipToCity" })
+                                                            @Html.ValidationMessageFor(model => model.ShipToCity, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                    <div class="row form-group">
+                                                        <div class="col col-md-3"><label class=" form-control-label">State</label></div>
+                                                        <div class="col-12 col-md-9">
+                                                            @Html.DropDownListFor(m => m.ShipToState, new SelectList(ViewBag.StateList, "Value", "Text", Model.ShipToState), "Select State", new { @class = "form-control form-select", @id = "ddlShipToState" })
+                                                            @Html.ValidationMessageFor(model => model.ShipToState, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                    <div class="row form-group">
+                                                        <div class="col col-md-3"><label class=" form-control-label">Country</label></div>
+                                                        <div class="col-12 col-md-9">
+                                                            @Html.DropDownListFor(m => m.ShipToCountry, new SelectList(ViewBag.CountryList, "Value", "Text", Model.ShipToCountry), "Select Country", new { @class = "form-control form-select", @id = "ddlShipToCountry" })
+                                                            @Html.ValidationMessageFor(model => model.ShipToCountry, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                    <div class="row form-group">
+                                                        <div class="col col-md-3">
+                                                            <label for="text-input" class=" form-control-label">Pincode</label>
+                                                        </div>
+                                                        <div class="col-12 col-md-9">
+                                                            @Html.TextBoxFor(m => m.ShipToPincode, new { @placeholder = "Pincode", @class = "form-control", @maxlength = "6" })
+                                                            @Html.ValidationMessageFor(m => m.ShipToPincode, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                    <div class="row form-group">
+                                                        <div class="col col-md-3">
+                                                            <label for="text-input" class=" form-control-label">Contact Number</label>
+                                                        </div>
+                                                        <div class="col-12 col-md-9">
+                                                            @Html.TextBoxFor(m => m.ShipToContactNo, new { @placeholder = "Contact Number", @class = "form-control", @maxlength = "10" })
+                                                            @Html.ValidationMessageFor(m => m.ShipToContactNo, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                    <div class="row form-group">
+                                                        <div class="col col-md-3">
+                                                            <label for="text-input" class=" form-control-label">Contact Person</label>
+                                                        </div>
+                                                        <div class="col-12 col-md-9">
+                                                            @Html.TextBoxFor(m => m.ShipToContactPerson, new { @placeholder = "Contact Person", @class = "form-control" })
+                                                            @Html.ValidationMessageFor(m => m.ShipToContactPerson, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                    <div class="row form-group">
+                                                        <div class="col col-md-3">
+                                                            <label for="text-input" class=" form-control-label">Email Id</label>
+                                                        </div>
+                                                        <div class="col-12 col-md-9">
+                                                            <div class="input-group">
+                                                                @Html.TextBoxFor(m => m.ShipToEmail, new { @placeholder = "Email", @class = "form-control", @maxlength = "50" })
+                                                                <div class="input-group-addon"><i class="fa fa-envelope-o"></i></div>
+                                                            </div>
+                                                            @Html.ValidationMessageFor(m => m.ShipToEmail, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="otherdetail" role="tabpanel" aria-labelledby="contact-tab">
+                                    <div class="row form-group">
+                                        <div class="col col-md-3">
+                                            <label for="text-input" class=" form-control-label">GST No</label>
+                                        </div>
+                                        <div class="col-12 col-md-9">
+                                            @Html.TextBoxFor(m => m.GSTNo, new { @placeholder = "GST No", @class = "form-control", @maxlength = "20" })
+                                            @Html.ValidationMessageFor(m => m.GSTNo, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                    <div class="row form-group">
+                                        <div class="col col-md-3"><label class=" form-control-label">GST Type</label></div>
+                                        <div class="col-12 col-md-8">
+                                            @Html.DropDownListFor(m => m.GSTType, new SelectList(ViewBag.GSTType, "Value", "Text", Model.GSTType), "Select GST Type", new { @class = "form-control form-select", @id = "ddlGSTType" })
+                                            @Html.ValidationMessageFor(model => model.GSTType, "", new { @class = "text-danger" })
+                                        </div>
+                                        <div class="col-12 col-md-1 pl-0">
+                                            <div class="input-group">
+                                                <a class=" btn  btn-sm" href="javascript:void(0);" title="Add Contact Person" data-toggle="modal" data-target="#mediumModal"><i class="fa fa-plus-square"></i></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row form-group">
+                                        <div class="col col-md-3">
+                                            <label for="text-input" class=" form-control-label">PAN No</label>
+                                        </div>
+                                        <div class="col-12 col-md-9">
+                                            @Html.TextBoxFor(m => m.PANNo, new { @placeholder = "PAN No", @class = "form-control", @maxlength = "10" })
+                                            @Html.ValidationMessageFor(m => m.PANNo, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                    <div class="page-breaker"></div>
+                                    <div class="form-horizontal page-head">
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="attachment" role="tabpanel" aria-labelledby="contact-tab">
+                                    <table id="bootstrap-data-table-export" class="table table-striped table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Position</th>
+                                                <th>Office</th>
+                                                <th>Salary</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>Tiger Nixon</td>
+                                                <td>System Architect</td>
+                                                <td>Edinburgh</td>
+                                                <td>$320,800</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div><!-- .animated -->
+
+<script type="text/javascript">
+    function SetDefaultSelection(did, ddlValue) {
+        if (ddlValue != "" && ddlValue.length > 0 && ddlValue != "0") {
+            $("#" + did).val(ddlValue).attr('selected', true);
+        }
+    }
+    $(document).ready(function () {
+
+        $('#btnrefresh').click(function () {
+            location.reload();
+        });
+
+        SetDefaultSelection("ddlPartyType", '@Model.PartyType');
+        SetDefaultSelection("ddlPartyGroup", '@Model.PartyGroup');
+        SetDefaultSelection("ddlCurrency", '@Model.Currency');
+        SetDefaultSelection("ddlIndustry", '@Model.Industry');
+        SetDefaultSelection("ddlSalesPerson", '@Model.SalesPerson');
+        SetDefaultSelection("ddlBillToCity", '@Model.BillToCity');
+        SetDefaultSelection("ddlBillToState", '@Model.BillToState');
+        SetDefaultSelection("ddlBillToCountry", '@Model.BillToCountry');
+        SetDefaultSelection("ddlShipToCity", '@Model.ShipToState');
+        SetDefaultSelection("ddlShipToCountry", '@Model.ShipToCountry');
+         SetDefaultSelection("ddlGSTType", '@Model.GSTType');
+    });
+    function GetNextCode(tablename)
+    {
+    var code = "";
+    $.ajax({
+        type: "GET", url: '@Url.Action("getNextCode", "Common")',
+        contentType: "application/json; charset=utf-8",
+        data: { tblName: tablename },
+        dataType: "json",
+        async: false,
+        success: function (response) {
+            $("#PartyCode").val(response);
+        },
+        failure: function (response) {},
+        error: function (response) {}
+    });
+    return code;
+    }
+
+</script>

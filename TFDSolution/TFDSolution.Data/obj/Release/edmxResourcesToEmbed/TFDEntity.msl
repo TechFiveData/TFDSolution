@@ -1,0 +1,414 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+  <EntityContainerMapping StorageEntityContainer="TFDSolutionModelStoreContainer" CdmEntityContainer="TFDSolutionEntities">
+    <EntitySetMapping Name="m_FormFieldOption">
+      <EntityTypeMapping TypeName="TFDSolutionModel.m_FormFieldOption">
+        <MappingFragment StoreEntitySet="m_FormFieldOption">
+          <ScalarProperty Name="OptionId" ColumnName="OptionId" />
+          <ScalarProperty Name="FieldId" ColumnName="FieldId" />
+          <ScalarProperty Name="OptionName" ColumnName="OptionName" />
+          <ScalarProperty Name="OptionValue" ColumnName="OptionValue" />
+          <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
+          <ScalarProperty Name="UpdatedOn" ColumnName="UpdatedOn" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="m_FormSection">
+      <EntityTypeMapping TypeName="TFDSolutionModel.m_FormSection">
+        <MappingFragment StoreEntitySet="m_FormSection">
+          <ScalarProperty Name="FormSectionId" ColumnName="FormSectionId" />
+          <ScalarProperty Name="SectionName" ColumnName="SectionName" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="m_FormTab">
+      <EntityTypeMapping TypeName="TFDSolutionModel.m_FormTab">
+        <MappingFragment StoreEntitySet="m_FormTab">
+          <ScalarProperty Name="NextTabDataScript" ColumnName="NextTabDataScript" />
+          <ScalarProperty Name="TabSQLTableName" ColumnName="TabSQLTableName" />
+          <ScalarProperty Name="TabTitle" ColumnName="TabTitle" />
+          <ScalarProperty Name="SortOrder" ColumnName="SortOrder" />
+          <ScalarProperty Name="FormTabId" ColumnName="FormTabId" />
+          <ScalarProperty Name="FormId" ColumnName="FormId" />
+          <ScalarProperty Name="FormSectionId" ColumnName="FormSectionId" />
+          <ScalarProperty Name="TabName" ColumnName="TabName" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
+          <ScalarProperty Name="UpdatedOn" ColumnName="UpdatedOn" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <FunctionImportMapping FunctionImportName="m_setUser" FunctionName="TFDSolutionModel.Store.m_setUser">
+      <ResultMapping>
+        <ComplexTypeMapping TypeName="TFDSolutionModel.m_setUser_Result">
+          <ScalarProperty Name="IsSuccess" ColumnName="IsSuccess" />
+          <ScalarProperty Name="Response" ColumnName="Response" />
+          <ScalarProperty Name="Action" ColumnName="Action" />
+          <ScalarProperty Name="PrimaryId" ColumnName="PrimaryId" />
+        </ComplexTypeMapping>
+      </ResultMapping>
+    </FunctionImportMapping>
+    <FunctionImportMapping FunctionImportName="auth_getLogin" FunctionName="TFDSolutionModel.Store.auth_getLogin">
+      <ResultMapping>
+        <ComplexTypeMapping TypeName="TFDSolutionModel.auth_getLogin_Result">
+          <ScalarProperty Name="UserId" ColumnName="UserId" />
+          <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+          <ScalarProperty Name="LastName" ColumnName="LastName" />
+          <ScalarProperty Name="EmailId" ColumnName="EmailId" />
+          <ScalarProperty Name="UserName" ColumnName="UserName" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
+          <ScalarProperty Name="UpdatedOn" ColumnName="UpdatedOn" />
+          <ScalarProperty Name="LastLoginDate" ColumnName="LastLoginDate" />
+          <ScalarProperty Name="PasswordExpiredOn" ColumnName="PasswordExpiredOn" />
+          <ScalarProperty Name="Response" ColumnName="Response" />
+          <ScalarProperty Name="IsSucces" ColumnName="IsSucces" />
+        </ComplexTypeMapping>
+      </ResultMapping>
+    </FunctionImportMapping>
+    <EntitySetMapping Name="m_UserMast">
+      <EntityTypeMapping TypeName="TFDSolutionModel.m_UserMast">
+        <MappingFragment StoreEntitySet="m_UserMast">
+          <ScalarProperty Name="DefaultDashboardId" ColumnName="DefaultDashboardId" />
+          <ScalarProperty Name="SessionId" ColumnName="SessionId" />
+          <ScalarProperty Name="IsLoggedIn" ColumnName="IsLoggedIn" />
+          <ScalarProperty Name="RoleId" ColumnName="RoleId" />
+          <ScalarProperty Name="Status" ColumnName="Status" />
+          <ScalarProperty Name="PasswordExpiredOn" ColumnName="PasswordExpiredOn" />
+          <ScalarProperty Name="LastLoginDate" ColumnName="LastLoginDate" />
+          <ScalarProperty Name="UpdatedOn" ColumnName="UpdatedOn" />
+          <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="Password" ColumnName="Password" />
+          <ScalarProperty Name="UserName" ColumnName="UserName" />
+          <ScalarProperty Name="EmailId" ColumnName="EmailId" />
+          <ScalarProperty Name="LastName" ColumnName="LastName" />
+          <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+          <ScalarProperty Name="UserId" ColumnName="UserId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <FunctionImportMapping FunctionImportName="m_getNextCode" FunctionName="TFDSolutionModel.Store.m_getNextCode" />
+    <FunctionImportMapping FunctionImportName="proc_AddCompany" FunctionName="TFDSolutionModel.Store.proc_AddCompany">
+      <ResultMapping>
+        <ComplexTypeMapping TypeName="TFDSolutionModel.proc_AddCompany_Result">
+          <ScalarProperty Name="IsSuccess" ColumnName="IsSuccess" />
+          <ScalarProperty Name="Response" ColumnName="Response" />
+          <ScalarProperty Name="Action" ColumnName="Action" />
+          <ScalarProperty Name="PrimaryId" ColumnName="PrimaryId" />
+        </ComplexTypeMapping>
+      </ResultMapping>
+    </FunctionImportMapping>
+    <FunctionImportMapping FunctionImportName="proc_getCompanyList" FunctionName="TFDSolutionModel.Store.proc_getCompanyList">
+      <ResultMapping>
+        <ComplexTypeMapping TypeName="TFDSolutionModel.proc_getCompanyList_Result">
+          <ScalarProperty Name="CompanyId" ColumnName="CompanyId" />
+          <ScalarProperty Name="CompanyCode" ColumnName="CompanyCode" />
+          <ScalarProperty Name="CompanyName" ColumnName="CompanyName" />
+          <ScalarProperty Name="Phone" ColumnName="Phone" />
+          <ScalarProperty Name="Mobile" ColumnName="Mobile" />
+          <ScalarProperty Name="Email" ColumnName="Email" />
+          <ScalarProperty Name="WebStite" ColumnName="WebStite" />
+          <ScalarProperty Name="Fax" ColumnName="Fax" />
+          <ScalarProperty Name="RegisterAddress1" ColumnName="RegisterAddress1" />
+          <ScalarProperty Name="RegisterAddress2" ColumnName="RegisterAddress2" />
+          <ScalarProperty Name="RegiterCityId" ColumnName="RegiterCityId" />
+          <ScalarProperty Name="RegiterStateId" ColumnName="RegiterStateId" />
+          <ScalarProperty Name="RegisterCountryId" ColumnName="RegisterCountryId" />
+          <ScalarProperty Name="RegisterPincode" ColumnName="RegisterPincode" />
+          <ScalarProperty Name="FactoryAddress1" ColumnName="FactoryAddress1" />
+          <ScalarProperty Name="FactoryAddress2" ColumnName="FactoryAddress2" />
+          <ScalarProperty Name="FactoryCityId" ColumnName="FactoryCityId" />
+          <ScalarProperty Name="FactoryStateId" ColumnName="FactoryStateId" />
+          <ScalarProperty Name="FactoryCountryId" ColumnName="FactoryCountryId" />
+          <ScalarProperty Name="FactoryPincode" ColumnName="FactoryPincode" />
+          <ScalarProperty Name="GSTNo" ColumnName="GSTNo" />
+          <ScalarProperty Name="PANNo" ColumnName="PANNo" />
+          <ScalarProperty Name="CINNo" ColumnName="CINNo" />
+          <ScalarProperty Name="ECCNo" ColumnName="ECCNo" />
+          <ScalarProperty Name="IECCode" ColumnName="IECCode" />
+          <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
+          <ScalarProperty Name="UpdatedOn" ColumnName="UpdatedOn" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
+        </ComplexTypeMapping>
+      </ResultMapping>
+    </FunctionImportMapping>
+    <FunctionImportMapping FunctionImportName="proc_getItem" FunctionName="TFDSolutionModel.Store.proc_getItem">
+      <ResultMapping>
+        <ComplexTypeMapping TypeName="TFDSolutionModel.proc_getItem_Result">
+          <ScalarProperty Name="ItemId" ColumnName="ItemId" />
+          <ScalarProperty Name="ItemCode" ColumnName="ItemCode" />
+          <ScalarProperty Name="ItemDescription" ColumnName="ItemDescription" />
+          <ScalarProperty Name="AlternateDescription" ColumnName="AlternateDescription" />
+          <ScalarProperty Name="ItemGroup" ColumnName="ItemGroup" />
+          <ScalarProperty Name="ItemUOM" ColumnName="ItemUOM" />
+          <ScalarProperty Name="ItemCategory" ColumnName="ItemCategory" />
+          <ScalarProperty Name="ItemType" ColumnName="ItemType" />
+          <ScalarProperty Name="PackingType" ColumnName="PackingType" />
+          <ScalarProperty Name="ItemStatus" ColumnName="ItemStatus" />
+          <ScalarProperty Name="PurchaseUOM" ColumnName="PurchaseUOM" />
+          <ScalarProperty Name="ItemPerPurchase" ColumnName="ItemPerPurchase" />
+          <ScalarProperty Name="PurchaseTaxPercentage" ColumnName="PurchaseTaxPercentage" />
+          <ScalarProperty Name="PurchaseHSNCode" ColumnName="PurchaseHSNCode" />
+          <ScalarProperty Name="SalesUOM" ColumnName="SalesUOM" />
+          <ScalarProperty Name="ItemPerSales" ColumnName="ItemPerSales" />
+          <ScalarProperty Name="SalesTaxPercentage" ColumnName="SalesTaxPercentage" />
+          <ScalarProperty Name="SalesHSNCode" ColumnName="SalesHSNCode" />
+          <ScalarProperty Name="ItemWeight" ColumnName="ItemWeight" />
+          <ScalarProperty Name="MinimumQty" ColumnName="MinimumQty" />
+          <ScalarProperty Name="MaximumQty" ColumnName="MaximumQty" />
+          <ScalarProperty Name="ReorderQty" ColumnName="ReorderQty" />
+          <ScalarProperty Name="ValuationMethod" ColumnName="ValuationMethod" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
+          <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
+          <ScalarProperty Name="UpdatedOn" ColumnName="UpdatedOn" />
+        </ComplexTypeMapping>
+      </ResultMapping>
+    </FunctionImportMapping>
+    <FunctionImportMapping FunctionImportName="m_getSelection" FunctionName="TFDSolutionModel.Store.m_getSelection">
+      <ResultMapping>
+        <ComplexTypeMapping TypeName="TFDSolutionModel.m_getSelection_Result">
+          <ScalarProperty Name="OptionText" ColumnName="OptionText" />
+          <ScalarProperty Name="OptionValue" ColumnName="OptionValue" />
+        </ComplexTypeMapping>
+      </ResultMapping>
+    </FunctionImportMapping>
+    <EntitySetMapping Name="m_CompanyBank">
+      <EntityTypeMapping TypeName="TFDSolutionModel.m_CompanyBank">
+        <MappingFragment StoreEntitySet="m_CompanyBank">
+          <ScalarProperty Name="UpdatedOn" ColumnName="UpdatedOn" />
+          <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
+          <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="SwiftCde" ColumnName="SwiftCde" />
+          <ScalarProperty Name="IFSCCode" ColumnName="IFSCCode" />
+          <ScalarProperty Name="AccountNo" ColumnName="AccountNo" />
+          <ScalarProperty Name="CityId" ColumnName="CityId" />
+          <ScalarProperty Name="BranchAddress2" ColumnName="BranchAddress2" />
+          <ScalarProperty Name="BranchAddress1" ColumnName="BranchAddress1" />
+          <ScalarProperty Name="BranchCode" ColumnName="BranchCode" />
+          <ScalarProperty Name="BranchName" ColumnName="BranchName" />
+          <ScalarProperty Name="BankName" ColumnName="BankName" />
+          <ScalarProperty Name="CompanyId" ColumnName="CompanyId" />
+          <ScalarProperty Name="BankId" ColumnName="BankId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="m_CompanyFinancials">
+      <EntityTypeMapping TypeName="TFDSolutionModel.m_CompanyFinancials">
+        <MappingFragment StoreEntitySet="m_CompanyFinancials">
+          <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
+          <ScalarProperty Name="UpdatedOn" ColumnName="UpdatedOn" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="Alias" ColumnName="Alias" />
+          <ScalarProperty Name="EndDate" ColumnName="EndDate" />
+          <ScalarProperty Name="StartDate" ColumnName="StartDate" />
+          <ScalarProperty Name="CompanyId" ColumnName="CompanyId" />
+          <ScalarProperty Name="FiancialYearId" ColumnName="FiancialYearId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="m_UserSettings">
+      <EntityTypeMapping TypeName="TFDSolutionModel.m_UserSettings">
+        <MappingFragment StoreEntitySet="m_UserSettings">
+          <ScalarProperty Name="DefaultFiancialYearId" ColumnName="DefaultFiancialYearId" />
+          <ScalarProperty Name="CompanyId" ColumnName="CompanyId" />
+          <ScalarProperty Name="UserId" ColumnName="UserId" />
+          <ScalarProperty Name="UserSettingId" ColumnName="UserSettingId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <FunctionImportMapping FunctionImportName="m_getFormData" FunctionName="TFDSolutionModel.Store.m_getFormData">
+      <ResultMapping>
+        <ComplexTypeMapping TypeName="TFDSolutionModel.m_getFormData_Result">
+          <ScalarProperty Name="FormId" ColumnName="FormId" />
+          <ScalarProperty Name="FormName" ColumnName="FormName" />
+          <ScalarProperty Name="FormTitle" ColumnName="FormTitle" />
+          <ScalarProperty Name="FormDescription" ColumnName="FormDescription" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="ParentFormId" ColumnName="ParentFormId" />
+          <ScalarProperty Name="SQLTableName" ColumnName="SQLTableName" />
+          <ScalarProperty Name="Prefix" ColumnName="Prefix" />
+          <ScalarProperty Name="CompanyId" ColumnName="CompanyId" />
+        </ComplexTypeMapping>
+      </ResultMapping>
+    </FunctionImportMapping>
+    <EntitySetMapping Name="m_FormFieldTypes">
+      <EntityTypeMapping TypeName="TFDSolutionModel.m_FormFieldTypes">
+        <MappingFragment StoreEntitySet="m_FormFieldTypes">
+          <ScalarProperty Name="IsFieldTypeElement" ColumnName="IsFieldTypeElement" />
+          <ScalarProperty Name="SortOrder" ColumnName="SortOrder" />
+          <ScalarProperty Name="FieldTypeClass" ColumnName="FieldTypeClass" />
+          <ScalarProperty Name="FieldType" ColumnName="FieldType" />
+          <ScalarProperty Name="FieldTypeId" ColumnName="FieldTypeId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <FunctionImportMapping FunctionImportName="m_getFormFields" FunctionName="TFDSolutionModel.Store.m_getFormFields">
+      <ResultMapping>
+        <ComplexTypeMapping TypeName="TFDSolutionModel.m_getFormFields_Result">
+          <ScalarProperty Name="FieldId" ColumnName="FieldId" />
+          <ScalarProperty Name="FormId" ColumnName="FormId" />
+          <ScalarProperty Name="FormTabId" ColumnName="FormTabId" />
+          <ScalarProperty Name="FieldTypeId" ColumnName="FieldTypeId" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="FieldName" ColumnName="FieldName" />
+          <ScalarProperty Name="FieldCaption" ColumnName="FieldCaption" />
+          <ScalarProperty Name="FieldLength" ColumnName="FieldLength" />
+          <ScalarProperty Name="FormSectionId" ColumnName="FormSectionId" />
+          <ScalarProperty Name="IsRequired" ColumnName="IsRequired" />
+          <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
+          <ScalarProperty Name="UpdatedOn" ColumnName="UpdatedOn" />
+          <ScalarProperty Name="ParameterId" ColumnName="ParameterId" />
+          <ScalarProperty Name="FieldType" ColumnName="FieldType" />
+          <ScalarProperty Name="TabName" ColumnName="TabName" />
+          <ScalarProperty Name="SectionName" ColumnName="SectionName" />
+        </ComplexTypeMapping>
+      </ResultMapping>
+    </FunctionImportMapping>
+    <FunctionImportMapping FunctionImportName="m_getForms" FunctionName="TFDSolutionModel.Store.m_getForms">
+      <ResultMapping>
+        <ComplexTypeMapping TypeName="TFDSolutionModel.m_getForms_Result">
+          <ScalarProperty Name="FormId" ColumnName="FormId" />
+          <ScalarProperty Name="FormName" ColumnName="FormName" />
+          <ScalarProperty Name="FormTitle" ColumnName="FormTitle" />
+          <ScalarProperty Name="FormDescription" ColumnName="FormDescription" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="ParentFormId" ColumnName="ParentFormId" />
+          <ScalarProperty Name="SQLTableName" ColumnName="SQLTableName" />
+          <ScalarProperty Name="Prefix" ColumnName="Prefix" />
+          <ScalarProperty Name="CompanyId" ColumnName="CompanyId" />
+        </ComplexTypeMapping>
+      </ResultMapping>
+    </FunctionImportMapping>
+    <EntitySetMapping Name="m_FormMast">
+      <EntityTypeMapping TypeName="TFDSolutionModel.m_FormMast">
+        <MappingFragment StoreEntitySet="m_FormMast">
+          <ScalarProperty Name="SortOrder" ColumnName="SortOrder" />
+          <ScalarProperty Name="Alias" ColumnName="Alias" />
+          <ScalarProperty Name="SqlTemplateId" ColumnName="SqlTemplateId" />
+          <ScalarProperty Name="CompanyId" ColumnName="CompanyId" />
+          <ScalarProperty Name="Prefix" ColumnName="Prefix" />
+          <ScalarProperty Name="SQLTableName" ColumnName="SQLTableName" />
+          <ScalarProperty Name="ParentFormId" ColumnName="ParentFormId" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="FormDescription" ColumnName="FormDescription" />
+          <ScalarProperty Name="FormTitle" ColumnName="FormTitle" />
+          <ScalarProperty Name="FormName" ColumnName="FormName" />
+          <ScalarProperty Name="FormId" ColumnName="FormId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="m_CompanyUnit">
+      <EntityTypeMapping TypeName="TFDSolutionModel.m_CompanyUnit">
+        <MappingFragment StoreEntitySet="m_CompanyUnit">
+          <ScalarProperty Name="CompanyId" ColumnName="CompanyId" />
+          <ScalarProperty Name="UpdatedOn" ColumnName="UpdatedOn" />
+          <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
+          <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="Email" ColumnName="Email" />
+          <ScalarProperty Name="Phone" ColumnName="Phone" />
+          <ScalarProperty Name="PANNo" ColumnName="PANNo" />
+          <ScalarProperty Name="GSTNo" ColumnName="GSTNo" />
+          <ScalarProperty Name="Pincode" ColumnName="Pincode" />
+          <ScalarProperty Name="CountryId" ColumnName="CountryId" />
+          <ScalarProperty Name="StateId" ColumnName="StateId" />
+          <ScalarProperty Name="CityId" ColumnName="CityId" />
+          <ScalarProperty Name="Address2" ColumnName="Address2" />
+          <ScalarProperty Name="Address1" ColumnName="Address1" />
+          <ScalarProperty Name="SiteName" ColumnName="SiteName" />
+          <ScalarProperty Name="CompanyUnitId" ColumnName="CompanyUnitId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="m_FormField">
+      <EntityTypeMapping TypeName="TFDSolutionModel.m_FormField">
+        <MappingFragment StoreEntitySet="m_FormField">
+          <ScalarProperty Name="IsTimeField" ColumnName="IsTimeField" />
+          <ScalarProperty Name="FieldFormat" ColumnName="FieldFormat" />
+          <ScalarProperty Name="TemplateId" ColumnName="TemplateId" />
+          <ScalarProperty Name="IsSummary" ColumnName="IsSummary" />
+          <ScalarProperty Name="AllowMultiDocument" ColumnName="AllowMultiDocument" />
+          <ScalarProperty Name="FieldDecimal" ColumnName="FieldDecimal" />
+          <ScalarProperty Name="IsUnique" ColumnName="IsUnique" />
+          <ScalarProperty Name="IsMultiSelection" ColumnName="IsMultiSelection" />
+          <ScalarProperty Name="IsDependencyField" ColumnName="IsDependencyField" />
+          <ScalarProperty Name="FieldFormula" ColumnName="FieldFormula" />
+          <ScalarProperty Name="IsDisable" ColumnName="IsDisable" />
+          <ScalarProperty Name="SortOrder" ColumnName="SortOrder" />
+          <ScalarProperty Name="FieldHelpText" ColumnName="FieldHelpText" />
+          <ScalarProperty Name="FieldPlaceHolder" ColumnName="FieldPlaceHolder" />
+          <ScalarProperty Name="FieldSize" ColumnName="FieldSize" />
+          <ScalarProperty Name="IsVisibleInList" ColumnName="IsVisibleInList" />
+          <ScalarProperty Name="IsVisible" ColumnName="IsVisible" />
+          <ScalarProperty Name="IsReadOnly" ColumnName="IsReadOnly" />
+          <ScalarProperty Name="DDLValueField" ColumnName="DDLValueField" />
+          <ScalarProperty Name="DDLTextField" ColumnName="DDLTextField" />
+          <ScalarProperty Name="DDLSourceName" ColumnName="DDLSourceName" />
+          <ScalarProperty Name="DDLSourceType" ColumnName="DDLSourceType" />
+          <ScalarProperty Name="ParameterId" ColumnName="ParameterId" />
+          <ScalarProperty Name="UpdatedOn" ColumnName="UpdatedOn" />
+          <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
+          <ScalarProperty Name="IsRequired" ColumnName="IsRequired" />
+          <ScalarProperty Name="FormSectionId" ColumnName="FormSectionId" />
+          <ScalarProperty Name="FieldLength" ColumnName="FieldLength" />
+          <ScalarProperty Name="FieldCaption" ColumnName="FieldCaption" />
+          <ScalarProperty Name="FieldName" ColumnName="FieldName" />
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="FieldTypeId" ColumnName="FieldTypeId" />
+          <ScalarProperty Name="FormTabId" ColumnName="FormTabId" />
+          <ScalarProperty Name="FormId" ColumnName="FormId" />
+          <ScalarProperty Name="FieldId" ColumnName="FieldId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="m_CompanyMast">
+      <EntityTypeMapping TypeName="TFDSolutionModel.m_CompanyMast">
+        <MappingFragment StoreEntitySet="m_CompanyMast">
+          <ScalarProperty Name="FactoryCountryId" ColumnName="FactoryCountryId" />
+          <ScalarProperty Name="FactoryStateId" ColumnName="FactoryStateId" />
+          <ScalarProperty Name="FactoryCityId" ColumnName="FactoryCityId" />
+          <ScalarProperty Name="RegisterCountryId" ColumnName="RegisterCountryId" />
+          <ScalarProperty Name="RegiterStateId" ColumnName="RegiterStateId" />
+          <ScalarProperty Name="RegiterCityId" ColumnName="RegiterCityId" />
+          <ScalarProperty Name="SmtpPassword" ColumnName="SmtpPassword" />
+          <ScalarProperty Name="SmtpUsername" ColumnName="SmtpUsername" />
+          <ScalarProperty Name="EnableSSL" ColumnName="EnableSSL" />
+          <ScalarProperty Name="SmtpPort" ColumnName="SmtpPort" />
+          <ScalarProperty Name="SmtpServer" ColumnName="SmtpServer" />
+          <ScalarProperty Name="DisplayName" ColumnName="DisplayName" />
+          <ScalarProperty Name="FromEmail" ColumnName="FromEmail" />
+          <ScalarProperty Name="DefaultCurrencyId" ColumnName="DefaultCurrencyId" />
+          <ScalarProperty Name="UpdatedOn" ColumnName="UpdatedOn" />
+          <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
+          <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
+          <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+          <ScalarProperty Name="IECCode" ColumnName="IECCode" />
+          <ScalarProperty Name="ECCNo" ColumnName="ECCNo" />
+          <ScalarProperty Name="CINNo" ColumnName="CINNo" />
+          <ScalarProperty Name="PANNo" ColumnName="PANNo" />
+          <ScalarProperty Name="GSTNo" ColumnName="GSTNo" />
+          <ScalarProperty Name="FactoryPincode" ColumnName="FactoryPincode" />
+          <ScalarProperty Name="FactoryAddress2" ColumnName="FactoryAddress2" />
+          <ScalarProperty Name="FactoryAddress1" ColumnName="FactoryAddress1" />
+          <ScalarProperty Name="RegisterPincode" ColumnName="RegisterPincode" />
+          <ScalarProperty Name="RegisterAddress2" ColumnName="RegisterAddress2" />
+          <ScalarProperty Name="RegisterAddress1" ColumnName="RegisterAddress1" />
+          <ScalarProperty Name="Fax" ColumnName="Fax" />
+          <ScalarProperty Name="WebStite" ColumnName="WebStite" />
+          <ScalarProperty Name="Email" ColumnName="Email" />
+          <ScalarProperty Name="Mobile" ColumnName="Mobile" />
+          <ScalarProperty Name="Phone" ColumnName="Phone" />
+          <ScalarProperty Name="CompanyName" ColumnName="CompanyName" />
+          <ScalarProperty Name="CompanyCode" ColumnName="CompanyCode" />
+          <ScalarProperty Name="CompanyId" ColumnName="CompanyId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+  </EntityContainerMapping>
+</Mapping>

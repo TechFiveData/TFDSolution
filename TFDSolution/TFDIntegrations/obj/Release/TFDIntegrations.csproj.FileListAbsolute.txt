@@ -1,0 +1,12 @@
+D:\Amit\TFD\Source\TFDSolution\TFDSolution\TFDIntegrations\bin\Release\TFDIntegrations.dll
+D:\Amit\TFD\Source\TFDSolution\TFDSolution\TFDIntegrations\bin\Release\TFDIntegrations.pdb
+D:\Amit\TFD\Source\TFDSolution\TFDSolution\TFDIntegrations\bin\Release\Newtonsoft.Json.dll
+D:\Amit\TFD\Source\TFDSolution\TFDSolution\TFDIntegrations\bin\Release\TFDSolution.Transport.dll
+D:\Amit\TFD\Source\TFDSolution\TFDSolution\TFDIntegrations\bin\Release\TFDSolution.Transport.pdb
+D:\Amit\TFD\Source\TFDSolution\TFDSolution\TFDIntegrations\bin\Release\TFDSolution.Transport.dll.config
+D:\Amit\TFD\Source\TFDSolution\TFDSolution\TFDIntegrations\bin\Release\Newtonsoft.Json.xml
+D:\Amit\TFD\Source\TFDSolution\TFDSolution\TFDIntegrations\obj\Release\TFDIntegrations.csproj.AssemblyReference.cache
+D:\Amit\TFD\Source\TFDSolution\TFDSolution\TFDIntegrations\obj\Release\TFDIntegrations.csproj.CoreCompileInputs.cache
+D:\Amit\TFD\Source\TFDSolution\TFDSolution\TFDIntegrations\obj\Release\TFDInteg.BD076F6B.Up2Date
+D:\Amit\TFD\Source\TFDSolution\TFDSolution\TFDIntegrations\obj\Release\TFDIntegrations.dll
+D:\Amit\TFD\Source\TFDSolution\TFDSolution\TFDIntegrations\obj\Release\TFDIntegrations.pdb

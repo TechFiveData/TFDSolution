@@ -1,0 +1,259 @@
+﻿@model TFDSolution.Transport.EmailTemplateModel
+
+@{
+    ViewBag.Title = "Email Template Action";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
+<div class="breadcrumbs">
+    <div class="col-sm-4">
+        <div class="page-header float-left">
+            <div class="page-title">
+                @if (Model.TemplateId > 0)
+                {
+                    <h1>Edit Email Templates</h1>
+                }
+                else
+                {
+                    <h1>Add Email Templates</h1>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-8">
+        <div class="page-header float-right">
+            <div class="page-title">
+                <ol class="breadcrumb text-right">
+                    <li><a href="@Url.Action("Index","Home")">Home</a></li>
+                    <li><a href="@Url.Action("EmailTemplate","Configuration")">Email Templates</a></li>
+                    @if (Model.TemplateId > 0)
+                    {
+                        <li class="active">Edit Email Template</li>
+                    }
+                    else
+                    {
+                        <li class="active">Add Email Template</li>
+                    }
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+<input type="hidden" id="hgnTemplateId" value="@Model.TemplateId" />
+<input type="hidden" id="hgnForms" value="@Model.FormIds" />
+<div class="animated fadeIn">
+    <div class="row m-0">
+        <div class="col-md-12 p-0">
+            <div class="card">
+                <div class="card-header">
+                    <div class="col-lg-6">
+                        <strong class="card-title"></strong>
+                    </div>
+                    <div class="col-lg-6 text-right">
+                        <a class="btn btn-sm" href="@Url.Action("EmailTemplate","Configuration")"><i class="fa fa-arrow-circle-left"></i>&nbsp; Back</a>
+                        <a class="btn btn-sm" href="javascript:void(0);" onclick="SaveEmailTemplate();"><i class="fa fa-save"></i>&nbsp; Save</a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row form-group">
+                        <div class="mb-3">
+                            <label for="TemplateName" class="form-label">Template Name<span class="text-danger p-1">(*)</span></label>
+                            @Html.TextBoxFor(m => m.TemplateName, new { @class = "form-control", id = "txtTemplateName", maxlength = "50" })
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="col col-md-12">
+                            <label for="text-input" class="form-control-label">Form(s)<span class="text-danger p-1">(*)</span></label>
+                        </div>
+                        <div class="col col-md-12">
+                            <select id="ddlMultiForms" multiple class="form-control form-select select2" data-interval="@Model.FormIds"></select>
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="mb-3">
+                            <label for="CC" class="form-label">CC</label>
+                            @Html.TextBoxFor(m => m.CC, new { @class = "form-control", id = "txtCC", maxlength = "2000", @placeholder = "Comma separated emails" })
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="mb-3">
+                            <label for="BCC" class="form-label">BCC</label>
+                            @Html.TextBoxFor(m => m.BCC, new { @class = "form-control", id = "txtBCC", maxlength = "2000", @placeholder = "Comma separated emails" })
+                        </div>
+                        <div class="mb-3">
+                            <label for="Subject" class="form-label">Subject<span class="text-danger p-1">(*)</span></label>
+                            @Html.TextBoxFor(m => m.Subject, new { @class = "form-control", id = "txtSubject", maxlength = "1000" })
+                        </div>
+                        <div class="mb-3">
+                            <label for="Body" class="form-label">Email Body<span class="text-danger p-1">(*)</span></label>
+                            @Html.TextAreaFor(m => m.Body, new { @class = "form-control", id = "txtBody" })
+                        </div>
+                        <div class="mb-3">
+                            <label for="Signature" class="form-label">Signature<span class="text-danger p-1">(*)</span></label>
+                            @Html.TextAreaFor(m => m.Signature, new { @class = "form-control", id = "txtSignature" })
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="mb-1">
+                            <div class="form-check form-check-inline">
+                                @Html.CheckBoxFor(m => m.IsHtml, new { @class = "form-check-input", @id = "chkIsHtml" })
+                                <label class="form-check-label" for="chkIsHtml">Is HTML</label>
+                            </div>
+
+                            <div class="form-check form-check-inline">
+                                @Html.CheckBoxFor(m => m.IsActive, new { @class = "form-check-input", @id = "chkIsActive" })
+                                <label class="form-check-label" for="chkIsActive">Is Active</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $('.select2').select2({
+        placeholder: "Select",
+        allowClear: true
+    });
+    CKEDITOR.replace('txtBody');
+    CKEDITOR.replace('txtSignature');
+    $(document).ready(function () {
+        loadDropdown("ddlMultiForms", "Forms");;
+    })
+    function loadDropdown(dropdownId, entryType, selectedType) {
+     $.ajax({
+         url: '@Url.Action("getSelection", "Master")',
+         type: 'GET',
+         data: {
+             _type: entryType,
+             _whareClause: "",
+             _orderType: "",
+             _entryType: ""
+         },
+         success: function (data) {
+             var dropdown = $('#' + dropdownId);
+             if (entryType != "Forms") {
+                 dropdown.empty().append('<option value="">Select ' + entryType + '</option>');
+             }
+             $.each(data, function (i, item) {
+                 if (selectedType != null && selectedType != undefined && selectedType.length && selectedType == item.Value) {
+                     dropdown.append($('<option selected></option>').val(item.Value).text(item.Text));
+                 }
+                 else {
+                     dropdown.append($('<option></option>').val(item.Value).text(item.Text));
+                 }
+             });
+             var MultipleFormId = $("#hgnForms").val();
+             if (MultipleFormId != null && MultipleFormId != "") {
+                 var items = $('#ddlMultiForms option').map(function () {
+                     return { value: this.value, text: $(this).text() };
+                 }).get();
+                 var arr = MultipleFormId.split(',').map(v => v.trim());
+                 arr.forEach(function (val) {
+                     let item = items.find(x => x.value == val);
+                     if (item) {
+                         let option = new Option(item.text, item.value, true, true);
+                         $('#ddlMultiForms').append(option).trigger('change');
+                     }
+                 });
+                 $('#ddlMultiForms').trigger('change');
+             }
+             else {
+                 $('#ddlMultiForms').append(null).trigger('change');
+             }
+             $("#pageLoader").hide();
+         },
+         error: function () {
+             $("#pageLoader").hide();
+             console.log("Error loading dropdown: " + entryType);
+         }
+     });
+}
+    function SaveEmailTemplate() {
+        try {
+            var IsValidated = true;
+            if ($.trim($("#txtTemplateName").val()).length == 0) {
+                IsValidated = false;
+                $("#txtTemplateName").addClass("input-validation-error");
+                $("#txtTemplateName").focus();
+            }
+            else {
+                $("#txtTemplateName").removeClass("input-validation-error");
+            }
+            if ($.trim($("#txtSubject").val()).length == 0) {
+                IsValidated = false;
+                $("#txtSubject").addClass("input-validation-error");
+                $("#txtSubject").focus();
+            }
+            else {
+                $("#txtSubject").removeClass("input-validation-error");
+            }
+            var bodyContent = CKEDITOR.instances['txtBody'].getData().trim();
+            if ($.trim(bodyContent).length == 0) {
+                IsValidated = false;
+                $("#txtBody").addClass("input-validation-error");
+                $("#txtBody").focus();
+            }
+            else {
+                $("#txtBody").removeClass("input-validation-error");
+            }
+            if ($.trim($("#ddlMultiForms").val()).length == 0) {
+                $("#ddlMultiForms").addClass("input-validation-error");
+                IsValidated = false;
+            }
+            var signContent = CKEDITOR.instances['txtSignature'].getData().trim();
+            if ($.trim(signContent).length == 0) {
+                IsValidated = false;
+                $("#txtSignature").addClass("input-validation-error");
+                $("#txtSignature").focus();
+            }
+            else {
+                $("#txtSignature").removeClass("input-validation-error");
+            }
+
+            if (IsValidated) {
+                var modal = {
+                    TemplateId: $("#hgnTemplateId").val(),
+                    TemplateName: $("#txtTemplateName").val(),
+                    Subject: $("#txtSubject").val(),
+                    Body: bodyContent,
+                    CC: $("#txtCC").val(),
+                    BCC: $("#txtBCC").val(),
+                    //FromEmail: $("#chkStatus").prop("checked"),
+                    //ReplyTo: $("#hdnSelectedFormId").val(),
+                    IsHtml: $("#chkIsHtml").prop("checked"),
+                    IsActive: $("#chkIsActive").prop("checked"),
+                    FormIds: $("#ddlMultiForms").val().join(','),
+                    Signature: signContent
+                };
+
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("SaveEmailTemplate", "Configuration")',
+                    contentType: "application/json;",
+                    data: JSON.stringify(modal),
+                    async: false,
+                    success: function (response) {
+                        if (response.IsSuccess) {
+                            ShowToastNotification("success", "Record saved successfully.");
+                            setTimeout(function () {
+                                location.href = '@Url.Action("EmailTemplate","Configuration")';
+                            }, 2000);
+                        }
+                        else {
+                            ShowToastNotification("error", response.Response);
+                        }
+                    },
+                    failure: function (response) { },
+                    error: function (response) { }
+                });
+            }
+            else {
+                ShowToastNotification("error", "Please fill in all the required fields (indicated by *)");
+            }
+        } catch (e) {
+
+        }
+    }
+</script>

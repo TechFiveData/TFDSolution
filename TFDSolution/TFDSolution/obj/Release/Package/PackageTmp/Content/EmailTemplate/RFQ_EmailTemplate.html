@@ -1,0 +1,110 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Request for Quotation</title>
+</head>
+
+<body style="margin:0; padding:0; background-color:#f5f5f5; font-family:Arial, Helvetica, sans-serif; color:#333333;">
+
+    <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f5f5f5; padding:20px 0;">
+        <tr>
+            <td align="center">
+
+                <!-- Main Container -->
+                <table width="700" cellpadding="0" cellspacing="0"
+                       style="background:#ffffff; border-radius:8px; overflow:hidden; border:1px solid #dddddd;">
+
+                    <!-- Header -->
+                    <tr>
+                        <td style="background-color: #27a9d7; color: #ffffff; padding: 15px 20px;">
+                            <span style="margin:0;">Request for Quotation</span>
+                        </td>
+                    </tr>
+
+                    <!-- Body -->
+                    <tr>
+                        <td style="padding:30px;">
+
+                            <p style="margin-top:0;">
+                                Dear <strong>{acCode}</strong>,
+                            </p>
+
+                            <p>
+                                Greetings from <strong>{companyName}</strong>.
+                            </p>
+
+                            <p>
+                                We are pleased to invite you to submit your quotation for the items listed below.
+                            </p>
+
+                            <!-- Inquiry Information -->
+                            <table cellpadding="6" cellspacing="0"
+                                   style="margin-top:15px; margin-bottom:20px; font-size:14px;">
+                                <tr>
+                                    <td><strong>Inquiry No</strong></td>
+                                    <td>: {URNNo}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Inquiry Date</strong></td>
+                                    <td>: {docDate}</td>
+                                </tr>
+                            </table>
+                            <!-- Item Table -->
+                            <table width="100%" border="1" cellpadding="8" cellspacing="0"
+                                   style="border-collapse:collapse; border-color:#dcdcdc; margin-bottom:25px;">
+                                <thead>
+                                    <tr style="background-color:#e9f2ff;">
+                                        <th align="center" style="font-weight:400">Sr. No.</th>
+                                        <th align="left" style="font-weight:400">Product Name</th>
+                                        <th align="center" style="font-weight:400">Quantity</th>
+                                        <th align="left" style="font-weight:400">Required Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {rows}
+                                </tbody>
+                            </table>
+                            <p>
+                                Kindly submit your quotation by clicking the button below:
+                            </p>
+                            <!-- Button -->
+                            <p style="margin:25px 0;">
+                                <a href="{quotationLink}"
+                                   style=" background-color: #27a9d7; color: #ffffff; text-decoration: none; padding: 10px 20px; border-radius: 5px; display: inline-block;">
+                                    Submit Quotation
+                                </a>
+                            </p>
+                            <p>Please note that the quotation submission link will remain active for the next <strong>20 days</strong> from the date of this email.</p>
+                            <p style="display:none">
+                                If the button above does not work, you can use the following link:
+                            </p>
+
+                            <p style="word-break: break-all; display: none">
+                                <a href="{quotationLink}" style="color:#0d6efd;">
+                                    {quotationLink}
+                                </a>
+                            </p>
+
+                            <p>
+                                Should you require any additional information or clarification, please feel free to contact us.
+                            </p>
+
+                            <!-- Footer -->
+                            <p style="margin-bottom:0;">
+                                Thanks & Regards,<br /><br />
+                                <strong>{companyName}</strong><br />
+                                Mobile: {companyMobile}<br />
+                                Email: {companyEmail}<br />
+                                Website: {companyWebStite}<br />
+                                Address: {registerAddress1} - {registerPincode}
+                            </p>
+                            <p><img style="max-width:200px" src="{baseURL}/Images/logo4.png" alt="Logo"></p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

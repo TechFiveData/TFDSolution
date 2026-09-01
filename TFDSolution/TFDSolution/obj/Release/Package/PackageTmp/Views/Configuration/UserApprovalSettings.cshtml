@@ -1,0 +1,378 @@
+﻿
+@{
+    ViewBag.Title = "UserApprovalSettings";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    #tblUsers td {
+        padding: 0px 10px !important;
+    }
+   /* .dataTables_scrollHeadInner table,
+    .dataTables_scrollBody table {
+        width: 100% !important;
+    }*/
+    #tblForms {
+        width: 100% !important;
+    }
+
+        #tblForms td,
+        #tblForms th {
+            white-space: nowrap;
+        }
+    /*.dataTables_scrollBody {
+        overflow-x: hidden !important;
+    }*/
+    /*.dataTables_scrollHeadInner {
+        width: auto !important;
+    }*/
+    #tblForms {
+        width: 100% !important;
+    }
+
+</style>
+<div class="breadcrumbs">
+    <div class="col-sm-4">
+        <div class="page-header float-left">
+            <div class="page-title">
+                <h1>User Approval Settings</h1>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-8">
+        <div class="page-header float-right">
+            <div class="page-title">
+                <ol class="breadcrumb text-right">
+                    <li><a href="@Url.Action("Index","Home")">Home</a></li>
+                    <li class="active">User Approval Settings</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="animated fadeIn">
+    <div class="row m-0">
+        <div class="col-md-12 p-0">
+            <div class="card">
+                <div class="card-header">
+                    <div class="col-lg-9">
+
+                    </div>
+                    <div class="col-lg-3 text-right">
+                        <a class="btn btn-sm" href="javascript:void(0);"><i class="fa fa-refresh"></i>&nbsp; Refresh</a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row form-group">
+                        <div class="d-flex align-items-center">
+                            <label for="ddlParentForm" class="me-2">Parent</label>
+                            @*<select id="ddlParentForm" class="form-control form-select me-4" style="width:180px;"></select>*@
+                            @Html.DropDownList("ddlParentForm", new SelectList(ViewBag.ParentForms, "FormId", "FormTitle"), "Select Form", new { @class = "form-control form-select me-4", @style = "width:180px;" })
+                            <label for="ddlSubForm" class="me-2">Form</label>
+                            <select id="ddlSubForm" class="form-control form-select" style="width:180px;"></select>
+                        </div>
+                    </div>
+                    <div class="page-breaker mt-2"></div>
+                    <div class="row">
+                        <div class="col-md-12 form-group">
+                            <table id="tblForms" class="display cell-border nowrap" cellspacing="0" width="100%"></table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="PrioritiesModel" tabindex="-1" role="dialog" aria-labelledby="SettingModalLabel" data-backdrop="static" aria-hidden="true" style="padding-left:0 !important">
+    <div class="modal-dialog modal-dialog-centered float-none model-center-style" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="SettingModalLabel">Set Priorities</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" style="overflow:hidden;">
+                <div class="d-flex align-items-center">
+                    <label class="mb-0 mr-2" style="margin-top: 6px; padding-right: 6px;"><b>Approval Type: </b></label>
+                    <div class="form-check form-check-inline me-2 mb-0">
+                        <input class="form-check-input" type="radio" name="myOptions" id="optionPriorities" value="Priorities" checked>
+                        <label class="form-check-label" for="optionPriorities">Priorities</label>
+                    </div>
+                    <div class="form-check form-check-inline me-2 mb-0">
+                        <input class="form-check-input" type="radio" name="myOptions" id="optionAmount" value="Amount" >
+                        <label class="form-check-label" for="optionAmount">Amount</label>
+                    </div>
+                </div>
+                <div class="m-2">
+                    <input type="hidden" id="hdnFormId" value="0" />
+                    <div class="row form-group">
+                        <div class="col-md-12">
+                            <table id="tblUsers" class="table table-bordered table-striped w-100" cellspacing="0" width="100%"></table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="btnCancelSettings" class="btn btn-secondary" data-dismiss="modal" aria-label="Close">Close</button>
+                <button type="button" id="btnSubmitSettings" class="btn btn-primary">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var prorityTitle = "";
+    $(document).ready(function () {
+        BindGrid();
+        $('#myModal').on('shown.bs.modal', function () {
+            formTable.columns.adjust().draw();
+        });
+        $("#btnSubmitSettings").click(function () {
+            SubmitSettings();
+        });
+        $("#ddlParentForm").change(function () {
+            var formId = $(this).val();
+            BindGrid();
+            GetFormList(formId);
+        });
+        $("#ddlSubForm").change(function () {
+            BindGrid();
+        });
+        $("input[name='myOptions']").change(function () {
+            var approvalType = $("input[name='myOptions']:checked").val();
+            prorityTitle = approvalType === "Amount" ? "Amount" : "Priority";
+            ViewPriorities($("#hdnFormId").val());
+            
+        });
+    });
+    function GetFormList(formId)
+    {
+        $.ajax({
+            type: "GET",
+            url: "@Url.Action("getForms", "FormSetting")",
+            contentType: "application/json; charset=utf-8",
+            data: { FormId: formId },
+            skipLoading: true,
+            dataType: "json",
+            success: SuccesssBindForm,
+            failure: function (response) {;
+
+            },
+            error: function (response) {
+                ShowToastNotification("error", "Error fetching data!");
+            }
+        });
+    }
+    function SuccesssBindForm(dataset) {
+        var dropdown = $('#ddlSubForm');
+        dropdown.empty();
+        if (dataset != null && dataset.length > 0) {
+            dropdown.empty().append('<option value="">Select Form</option>');
+            $.each(dataset, function (i, item) {
+                dropdown.append($('<option data-content=' + item.SqlTemplateId + ' data-bind=' + item.SQLTableName +'></option>').val(item.FormId).text(item.FormTitle));
+            });
+            $("#ddlSubForm").trigger("change");
+
+        }
+        else {
+            dropdown.empty().append('<option value="">No Form Created</option>');
+        }
+    }
+    function SubmitSettings() {
+        try {
+            var PageFieldData = [];
+            var approvalType = $("input[name='myOptions']:checked").val();
+
+            $("#tblUsers tbody tr").each(function () {
+                var $input = $(this).find('td input[type="number"]');
+                var nmVal = parseInt($input.val(), 10);
+                if (!isNaN(nmVal) && nmVal > 0) {
+                    PageFieldData.push({
+                        UserId: $input.attr('data-bind'),
+                        Priority: nmVal
+                    });
+                }
+            });
+
+            var model = {
+                FormId: $("#hdnFormId").val(),
+                approvalType: approvalType,
+                UserPriorities: PageFieldData
+            }
+            $.ajax({
+                type: "POST", url: '@Url.Action("SaveUserApprovalSettings", "Configuration")',
+                contentType: "application/json;",
+                data: JSON.stringify(model),
+                async: false,
+                success: function (response) {
+                    if (response.IsSuccess) {
+                        ShowToastNotification("success", response.Response);
+                        $("#btnCancelSettings").click();
+                    }
+                    else {
+                        ShowToastNotification("error", response.Response);
+                    }
+                },
+                failure: function (response) { },
+                error: function (response) { }
+            });
+        } catch (e) {
+
+        }
+    }
+    function format(d) {
+        // d = row data object
+        return `
+        <table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">
+            <tr><td><b>Description:</b></td><td>${d.Description}</td></tr>
+            <tr><td><b>Category:</b></td><td>${d.Category}</td></tr>
+            <tr><td><b>Created On:</b></td><td>${d.CreatedOn}</td></tr>
+        </table>`;
+    }
+    function BindGrid() {
+        try {
+             var request = {
+                FormId: $("#ddlSubForm").val(),
+                ParentFormId: $("#ddlParentForm").val()
+            };
+
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("getFormUserApproval", "Configuration")",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(request),
+                success: SuccesssBindGrid,
+                error: function () {
+                    ShowToastNotification("error", "Error fetching data!");
+                }
+            });
+        }
+        catch (e) { }
+    }
+    function SuccesssBindGrid(dataset) {
+        let formTable = new DataTable("#tblForms", {
+            destroy: true,
+            searching: true,
+            paging: true,
+            info: true,
+
+            scrollY: "400px",
+            scrollX: true,
+            scrollCollapse: true,
+
+            autoWidth: false,
+
+            data: dataset,
+            columns: [
+                { title: '#', data: 'SrNo', width: '5%' },
+                { title: 'Parent Form', data: 'ParentFormName' },
+                { title: 'Form Title', data: 'FormTitle' },
+                {
+                    title: 'Set Priorities',
+                    className: 'text-center',
+                    width: '150px',
+                    render: function (data, type, row) {
+                        return '<a class="btn btn-primary" href="javascript:void(0);" onclick="ViewPriorities(\'' + row.FormId + '\');">Set Priorities</a>';
+                    }
+                },
+                { title: 'Total Approvers', data: 'UserApprovals', width: '100px' },
+                {
+                    title: 'Active',
+                    className: 'text-center',
+                    width: '80px',
+                    render: function (data, type, row) {
+                        return row.IsActive
+                            ? '<span class="fa fa-check text-success"></span>'
+                            : '<span class="fa fa-remove text-danger"></span>';
+                    }
+                }
+            ]
+        });
+
+        setTimeout(function () {
+            formTable.columns.adjust().draw();
+        }, 100);
+    }
+
+    function ViewPriorities(formId) {
+        try {
+            $("#hdnFormId").val(formId);
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("getFormUserApprovalSettings", "Configuration")",
+                skipLoading: false, // <-- Custom flag
+                data: { FormId: formId },
+                success: SuccesssBindUsers,
+                skipLoading: true,
+            });
+        } catch (e) {
+
+        }
+    }
+    function SuccesssBindUsers(dataset) {
+        var columnTitle
+        dataset = Array.isArray(dataset) ? dataset : [];
+        if (prorityTitle == "") {
+            var approvalType = dataset[0]?.ApprovalType || "Priorities";
+
+            if (approvalType === "Amount") {
+                $("#optionAmount").prop("checked", true);
+            } else {
+                $("#optionPriorities").prop("checked", true);
+            }
+
+            columnTitle = approvalType === "Amount" ? "Amount" : "Priorities";
+        }
+      
+        // Initialize DataTable
+        let formTable = new DataTable("#tblUsers", {
+            destroy: true,
+            searching: true,
+            ordering: false,
+            paging: false,
+            info: false,
+
+            // ✅ Vertical scroll
+            scrollY: '60vh',
+            scrollX: false,
+            scrollCollapse: true,
+
+            // 🔑 IMPORTANT FIXES
+            autoWidth: false,      // ❌ disable autoWidth
+            fixedHeader: false,    // ❌ don't use fixedHeader with scrollY
+
+            data: dataset,
+
+            columns: [
+                { title: '#', data: 'SrNo', width: '60px' },
+                { title: 'User Name', data: 'UserName' },
+                {
+                    title: prorityTitle != "" ? prorityTitle : columnTitle,
+                    className: 'text-center',
+                    orderable: false,
+                    width: '120px',
+                    render: function (data, type, row) {
+                        return `
+                    <input type="number"
+                           class="form-control w-80"
+                           data-bind="${row.UserId}"
+                           value="${row.Priority}" />
+                `;
+                    }
+                }
+            ],
+
+            language: {
+                emptyTable: "No records found",
+                zeroRecords: "No matching records found"
+            },
+
+            // 🔁 Force recalculation after draw
+            initComplete: function () {
+                this.api().columns.adjust();
+            }
+        });
+        prorityTitle = "";
+        var myModal = new bootstrap.Modal(document.getElementById('PrioritiesModel'));
+        myModal.show();
+    }
+</script>

@@ -1,0 +1,217 @@
+﻿@model TFDSolution.Transport.Master.RFQDataModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quotation Already Submitted</title>
+    <style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        min-height: 100vh;
+        font-family: Arial, Helvetica, sans-serif;
+        background: #f4f7fb;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    }
+
+    .container {
+        width: 100%;
+        max-width: 850px;
+        background: #fff;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+    }
+
+    .header {
+        background: #27a9d7;
+        color: #fff;
+        text-align: center;
+        padding: 8px;
+    }
+
+    .header h2 {
+        margin: 0;
+		font-size: 16px;
+    }
+
+    .content {
+        padding: 20px 30px 10px 30px;
+        text-align: center;
+    }
+
+    .info-icon {
+        width: 40px;
+        height: 40px;
+        margin: 0 auto 10px;
+        border-radius: 50%;
+        background: #f39c12;
+        color: #fff;
+        font-size: 28px;
+        font-weight: bold;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .title {
+        color: #f39c12;
+        font-size: 16px;
+        margin-bottom: 10px;
+    }
+
+    .message {
+        color: #555;
+        font-size: 16px;
+        line-height: 1.8;
+        margin-bottom: 10px;
+    }
+
+    .details {
+        background: #E9F8FD;
+		border: 1px solid #e5e5e5;
+        border-radius: 8px;
+        padding: 10px 25px 10px 25px;
+        text-align: left;
+        margin: 10px 0;
+    }
+
+    .row {
+        display: flex;
+        padding: 5px 0;
+        border-bottom: 1px solid #f1e1b8;
+    }
+
+    .row:last-child {
+        border-bottom: none;
+    }
+
+    .label {
+        width: 180px;
+        font-weight: bold;
+        color: #333;
+		font-size: 14px;
+    }
+
+    .value {
+        color: #555;
+		font-size: 14px;
+    }
+
+    .btn-home {
+        display: inline-block;
+        background: #0056b3;
+        color: #fff;
+        text-decoration: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        margin-top: 8px;
+        font-weight: 600;
+    }
+
+    .btn-home:hover {
+        background: #004494;
+    }
+
+    .footer {
+        background: #f8f9fa;
+        border-top: 1px solid #e5e5e5;
+        text-align: center;
+        padding: 25px;
+    }
+
+    .footer h4 {
+        color: #333;
+        margin-bottom: 10px;
+    }
+
+    .footer p {
+        color: #666;
+        margin: 4px 0;
+        font-size: 14px;
+    }
+
+    .copyright {
+        margin-top: 15px;
+        color: #999;
+        font-size: 12px;
+    }
+
+    @*@media(max-width:768px) {
+        .row {
+            flex-direction: column;
+        }
+
+        .label {
+            width: 100%;
+            margin-bottom: 5px;
+        }
+
+        .title {
+            font-size: 26px;
+        }
+    }*@
+    </style>
+    ```
+
+</head>
+<body>
+
+    <div class="container">
+
+        <div class="header">
+            <h2>Vendor Quotation Portal</h2>
+        </div>
+
+        <div class="content">
+            <div class="info-icon">!</div>
+            <h1 class="title">Quotation Already Submitted</h1>
+            <p class="message">
+                Our records indicate that a quotation has already been submitted for this RFQ.
+                Duplicate submissions are not permitted to ensure a fair and transparent procurement process.
+            </p>
+            <div class="details">
+                <div class="row">
+                    <div class="label">Quote Number:</div>
+                    <div class="value">@Model.URNno</div>
+                </div>
+                <div class="row">
+                    <div class="label">Submitted On:</div>
+                    <div class="value">@Model.DocDate</div>
+                </div>
+                <div class="row">
+                    <div class="label">Current Status:</div>
+                    <div class="value">Under Review</div>
+                </div>
+            </div>
+            <p class="message">
+                If you believe this message is incorrect or need to make changes to your submitted quotation,
+                please contact the Procurement Team for assistance.
+            </p>
+        </div>
+
+        <div class="footer">
+            <h4>@Model.CompanyMast.CompanyName</h4>
+            <p>@Model.CompanyMast.RegisterAddress1, @Model.CompanyMast.RegisterAddress1</p>
+            <p>@Model.CompanyMast.Email | @Model.CompanyMast.Phone</p>
+            <p>@Model.CompanyMast.WebStite</p>
+            <div class="copyright">
+                @DateTime.Now.Year.ToString(), All Rights Reserved.
+            </div>
+        </div>
+    </div>
+</body>
+</html>

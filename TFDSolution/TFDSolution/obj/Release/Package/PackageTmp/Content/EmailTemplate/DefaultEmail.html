@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* Mobile responsiveness */
+        @media only screen and (max-width: 600px) {
+            .container {
+                width: 100% !important;
+                padding: 10px !important;
+            }
+
+            .header, .footer {
+                text-align: center !important;
+            }
+        }
+    </style>
+</head>
+<body style="margin:0; padding:0; font-family: Arial, sans-serif; background-color: #f4f4f4;">
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f4f4f4;">
+        <tr>
+            <td align="center">
+                <table class="container" width="600" cellpadding="0" cellspacing="0" border="0" style="background-color: #ffffff; margin: 20px auto; border-radius: 8px; overflow: hidden;">
+                    <!-- Header -->
+                    <tr>
+                        <td class="content" style="padding: 25px 10px 0px 10px; color: #333333; font-size: 16px;">
+                            <p style="background-color:yellow; text-align:center;padding:5px;margin:0;">This is a system-generated email. Please do not reply to this message.</p>
+                        </td>
+                    </tr>
+                    <!--<tr>
+                        <td class="header" style="background-color: skyblue; color: #ffffff; padding: 20px; text-align: center; font-size: 24px; font-weight: bold;">
+                            {CompanyName}
+                        </td>
+                    </tr>-->
+                    <!-- Body Content -->
+                    <tr>
+                        <td class="content" style="padding: 15px; color: #333333; font-size: 16px;">
+                            <p>Respected Sir/Madam,</p>
+                            <p>Document No: {URNNo}</p>
+                            <p>{Message}</p>
+                            {ReportTemplateLine}
+                            <p>Regards,<br>Your Team</p>
+                        </td>
+                    </tr>
+                    <!-- Footer -->
+                    <tr>
+                        <td class="footer" style="background-color: #eeeeee; padding: 15px; text-align: center; font-size: 12px; color: #666666;">
+                            &copy; {Year} {CompanyName}. All rights reserved.
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

@@ -1,0 +1,569 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="TFDSolutionModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityType Name="m_FormFieldOption">
+    <Key>
+      <PropertyRef Name="OptionId" />
+    </Key>
+    <Property Name="OptionId" Type="Guid" Nullable="false" />
+    <Property Name="FieldId" Type="Guid" Nullable="false" />
+    <Property Name="OptionName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="OptionValue" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="CreatedOn" Type="DateTime" Nullable="false" Precision="3" />
+    <Property Name="UpdatedOn" Type="DateTime" Precision="3" />
+  </EntityType>
+  <EntityType Name="m_FormSection">
+    <Key>
+      <PropertyRef Name="FormSectionId" />
+    </Key>
+    <Property Name="FormSectionId" Type="Guid" Nullable="false" />
+    <Property Name="SectionName" Type="String" MaxLength="30" FixedLength="false" Unicode="false" Nullable="false" />
+  </EntityType>
+  <EntityType Name="m_FormTab">
+    <Key>
+      <PropertyRef Name="FormTabId" />
+    </Key>
+    <Property Name="FormTabId" Type="Guid" Nullable="false" />
+    <Property Name="FormId" Type="Guid" Nullable="false" />
+    <Property Name="FormSectionId" Type="Guid" Nullable="false" />
+    <Property Name="TabName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="IsActive" Type="Boolean" Nullable="false" />
+    <Property Name="CreatedOn" Type="DateTime" Nullable="false" Precision="3" />
+    <Property Name="UpdatedOn" Type="DateTime" Precision="3" />
+    <Property Name="SortOrder" Type="Int32" />
+    <Property Name="TabTitle" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="TabSQLTableName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="NextTabDataScript" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
+  </EntityType>
+  <EntityContainer Name="TFDSolutionEntities" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="m_FormFieldOption" EntityType="Self.m_FormFieldOption" />
+    <EntitySet Name="m_FormSection" EntityType="Self.m_FormSection" />
+    <EntitySet Name="m_FormTab" EntityType="Self.m_FormTab" />
+    <FunctionImport Name="m_setUser" ReturnType="Collection(TFDSolutionModel.m_setUser_Result)">
+      <Parameter Name="p_action" Mode="In" Type="String" />
+      <Parameter Name="UserId" Mode="In" Type="Guid" />
+      <Parameter Name="FirstName" Mode="In" Type="String" />
+      <Parameter Name="LastName" Mode="In" Type="String" />
+      <Parameter Name="EmailId" Mode="In" Type="String" />
+      <Parameter Name="UserName" Mode="In" Type="String" />
+      <Parameter Name="Password" Mode="In" Type="String" />
+      <Parameter Name="IsActive" Mode="In" Type="Boolean" />
+    </FunctionImport>
+    <FunctionImport Name="auth_getLogin" ReturnType="Collection(TFDSolutionModel.auth_getLogin_Result)">
+      <Parameter Name="UserName" Mode="In" Type="String" />
+      <Parameter Name="Password" Mode="In" Type="String" />
+    </FunctionImport>
+    <EntitySet Name="m_UserMast" EntityType="TFDSolutionModel.m_UserMast" />
+    <FunctionImport Name="m_getNextCode">
+      <Parameter Name="p_tableName" Mode="In" Type="String" />
+    </FunctionImport>
+    <FunctionImport Name="proc_AddCompany" ReturnType="Collection(TFDSolutionModel.proc_AddCompany_Result)">
+      <Parameter Name="CompanyCode" Mode="In" Type="String" />
+      <Parameter Name="CompanyName" Mode="In" Type="String" />
+      <Parameter Name="CreatedBy" Mode="In" Type="String" />
+      <Parameter Name="Email" Mode="In" Type="String" />
+      <Parameter Name="Phone" Mode="In" Type="String" />
+      <Parameter Name="Mobile" Mode="In" Type="String" />
+    </FunctionImport>
+    <FunctionImport Name="proc_getCompanyList" ReturnType="Collection(TFDSolutionModel.proc_getCompanyList_Result)" />
+    <FunctionImport Name="proc_getItem" ReturnType="Collection(TFDSolutionModel.proc_getItem_Result)">
+      <Parameter Name="UId" Mode="In" Type="String" />
+    </FunctionImport>
+    <FunctionImport Name="m_getSelection" ReturnType="Collection(TFDSolutionModel.m_getSelection_Result)">
+      <Parameter Name="SelectionType" Mode="In" Type="String" />
+      <Parameter Name="WhereClause" Mode="In" Type="String" />
+      <Parameter Name="OrderBy" Mode="In" Type="String" />
+      <Parameter Name="EntryType" Mode="In" Type="String" />
+    </FunctionImport>
+    <EntitySet Name="m_CompanyBank" EntityType="TFDSolutionModel.m_CompanyBank" />
+    <FunctionImport Name="proc_AddItem" ReturnType="Collection(TFDSolutionModel.proc_AddItem_Result)">
+      <Parameter Name="ItemCode" Mode="In" Type="String" />
+      <Parameter Name="ItemDescription" Mode="In" Type="String" />
+      <Parameter Name="AlternateDescription" Mode="In" Type="String" />
+      <Parameter Name="ItemGroup" Mode="In" Type="Int32" />
+      <Parameter Name="ItemUOM" Mode="In" Type="Int32" />
+      <Parameter Name="ItemCategory" Mode="In" Type="Int32" />
+      <Parameter Name="ItemType" Mode="In" Type="Int32" />
+      <Parameter Name="PackingType" Mode="In" Type="Int32" />
+      <Parameter Name="ItemStatus" Mode="In" Type="Boolean" />
+      <Parameter Name="UserId" Mode="In" Type="Guid" />
+    </FunctionImport>
+    <FunctionImport Name="proc_getItemList" ReturnType="Collection(TFDSolutionModel.proc_getItemList_Result)" />
+    <FunctionImport Name="proc_getParty" ReturnType="Collection(TFDSolutionModel.proc_getParty_Result)">
+      <Parameter Name="UId" Mode="In" Type="String" />
+    </FunctionImport>
+    <FunctionImport Name="proc_getPartyList" ReturnType="Collection(TFDSolutionModel.proc_getPartyList_Result)" />
+    <EntitySet Name="m_CompanyFinancials" EntityType="TFDSolutionModel.m_CompanyFinancials" />
+    <EntitySet Name="m_UserSettings" EntityType="TFDSolutionModel.m_UserSettings" />
+    <FunctionImport Name="m_getFormData" ReturnType="Collection(TFDSolutionModel.m_getFormData_Result)">
+      <Parameter Name="FormId" Mode="In" Type="String" />
+    </FunctionImport>
+    <EntitySet Name="m_FormFieldTypes" EntityType="TFDSolutionModel.m_FormFieldTypes" />
+    <FunctionImport Name="m_getFormFields" ReturnType="Collection(TFDSolutionModel.m_getFormFields_Result)">
+      <Parameter Name="FormId" Mode="In" Type="String" />
+      <Parameter Name="SectionId" Mode="In" Type="String" />
+      <Parameter Name="TabId" Mode="In" Type="String" />
+    </FunctionImport>
+    <FunctionImport Name="m_getForms" ReturnType="Collection(TFDSolutionModel.m_getForms_Result)">
+      <Parameter Name="FormId" Mode="In" Type="String" />
+    </FunctionImport>
+    <EntitySet Name="m_FormMast" EntityType="TFDSolutionModel.m_FormMast" />
+    <EntitySet Name="m_CompanyUnit" EntityType="TFDSolutionModel.m_CompanyUnit" />
+    <EntitySet Name="m_FormField" EntityType="TFDSolutionModel.m_FormField" />
+    <EntitySet Name="m_CompanyMast" EntityType="TFDSolutionModel.m_CompanyMast" />
+  </EntityContainer>
+  <ComplexType Name="m_setUser_Result">
+    <Property Type="Boolean" Name="IsSuccess" Nullable="true" />
+    <Property Type="String" Name="Response" Nullable="true" MaxLength="500" />
+    <Property Type="String" Name="Action" Nullable="true" MaxLength="10" />
+    <Property Type="Guid" Name="PrimaryId" Nullable="true" />
+  </ComplexType>
+  <ComplexType Name="auth_getLogin_Result">
+    <Property Type="Guid" Name="UserId" Nullable="false" />
+    <Property Type="String" Name="FirstName" Nullable="false" MaxLength="50" />
+    <Property Type="String" Name="LastName" Nullable="true" MaxLength="50" />
+    <Property Type="String" Name="EmailId" Nullable="false" MaxLength="50" />
+    <Property Type="String" Name="UserName" Nullable="false" MaxLength="25" />
+    <Property Type="Boolean" Name="IsActive" Nullable="false" />
+    <Property Type="DateTime" Name="CreatedOn" Nullable="false" Precision="23" />
+    <Property Type="DateTime" Name="UpdatedOn" Nullable="true" Precision="23" />
+    <Property Type="DateTime" Name="LastLoginDate" Nullable="true" Precision="23" />
+    <Property Type="DateTime" Name="PasswordExpiredOn" Nullable="true" Precision="23" />
+    <Property Type="String" Name="Response" Nullable="false" MaxLength="26" />
+    <Property Type="Boolean" Name="IsSucces" Nullable="true" />
+  </ComplexType>
+  <EntityType Name="m_UserMast">
+    <Key>
+      <PropertyRef Name="UserId" />
+    </Key>
+    <Property Name="UserId" Type="Guid" Nullable="false" />
+    <Property Name="FirstName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="LastName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="EmailId" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="UserName" Type="String" Nullable="false" MaxLength="25" FixedLength="false" Unicode="true" />
+    <Property Name="Password" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="IsActive" Type="Boolean" Nullable="false" />
+    <Property Name="CreatedOn" Type="DateTime" Nullable="false" Precision="3" />
+    <Property Name="UpdatedOn" Type="DateTime" Precision="3" />
+    <Property Name="LastLoginDate" Type="DateTime" Precision="3" />
+    <Property Name="PasswordExpiredOn" Type="DateTime" Precision="3" />
+    <Property Name="Status" Type="Int32" />
+    <Property Name="RoleId" Type="Int32" />
+    <Property Name="IsLoggedIn" Type="Boolean" />
+    <Property Name="SessionId" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="DefaultDashboardId" Type="Int32" />
+  </EntityType>
+  <ComplexType Name="proc_AddCompany_Result">
+    <Property Type="Boolean" Name="IsSuccess" Nullable="true" />
+    <Property Type="String" Name="Response" Nullable="true" MaxLength="500" />
+    <Property Type="String" Name="Action" Nullable="false" MaxLength="3" />
+    <Property Type="Guid" Name="PrimaryId" Nullable="true" />
+  </ComplexType>
+  <ComplexType Name="proc_getCompanyList_Result">
+    <Property Type="Guid" Name="CompanyId" Nullable="false" />
+    <Property Type="String" Name="CompanyCode" Nullable="false" MaxLength="30" />
+    <Property Type="String" Name="CompanyName" Nullable="false" MaxLength="50" />
+    <Property Type="String" Name="Phone" Nullable="true" MaxLength="15" />
+    <Property Type="String" Name="Mobile" Nullable="true" MaxLength="15" />
+    <Property Type="String" Name="Email" Nullable="true" MaxLength="100" />
+    <Property Type="String" Name="WebStite" Nullable="true" MaxLength="100" />
+    <Property Type="String" Name="Fax" Nullable="true" MaxLength="20" />
+    <Property Type="String" Name="RegisterAddress1" Nullable="true" MaxLength="200" />
+    <Property Type="String" Name="RegisterAddress2" Nullable="true" MaxLength="200" />
+    <Property Type="Guid" Name="RegiterCityId" Nullable="true" />
+    <Property Type="Guid" Name="RegiterStateId" Nullable="true" />
+    <Property Type="Guid" Name="RegisterCountryId" Nullable="true" />
+    <Property Type="String" Name="RegisterPincode" Nullable="true" MaxLength="10" />
+    <Property Type="String" Name="FactoryAddress1" Nullable="true" MaxLength="200" />
+    <Property Type="String" Name="FactoryAddress2" Nullable="true" MaxLength="200" />
+    <Property Type="Guid" Name="FactoryCityId" Nullable="true" />
+    <Property Type="Guid" Name="FactoryStateId" Nullable="true" />
+    <Property Type="Guid" Name="FactoryCountryId" Nullable="true" />
+    <Property Type="String" Name="FactoryPincode" Nullable="true" MaxLength="10" />
+    <Property Type="String" Name="GSTNo" Nullable="true" MaxLength="50" />
+    <Property Type="String" Name="PANNo" Nullable="true" MaxLength="20" />
+    <Property Type="String" Name="CINNo" Nullable="true" MaxLength="50" />
+    <Property Type="String" Name="ECCNo" Nullable="true" MaxLength="50" />
+    <Property Type="String" Name="IECCode" Nullable="true" MaxLength="50" />
+    <Property Type="DateTime" Name="CreatedOn" Nullable="false" Precision="23" />
+    <Property Type="DateTime" Name="UpdatedOn" Nullable="true" Precision="23" />
+    <Property Type="String" Name="CreatedBy" Nullable="true" MaxLength="101" />
+    <Property Type="String" Name="UpdatedBy" Nullable="false" MaxLength="101" />
+  </ComplexType>
+  <ComplexType Name="proc_getItem_Result">
+    <Property Type="Guid" Name="ItemId" Nullable="false" />
+    <Property Type="String" Name="ItemCode" Nullable="false" MaxLength="20" />
+    <Property Type="String" Name="ItemDescription" Nullable="false" MaxLength="255" />
+    <Property Type="String" Name="AlternateDescription" Nullable="true" MaxLength="255" />
+    <Property Type="Int32" Name="ItemGroup" Nullable="false" />
+    <Property Type="Int32" Name="ItemUOM" Nullable="false" />
+    <Property Type="Int32" Name="ItemCategory" Nullable="false" />
+    <Property Type="Int32" Name="ItemType" Nullable="false" />
+    <Property Type="Int32" Name="PackingType" Nullable="false" />
+    <Property Type="Boolean" Name="ItemStatus" Nullable="false" />
+    <Property Type="Int32" Name="PurchaseUOM" Nullable="true" />
+    <Property Type="Int32" Name="ItemPerPurchase" Nullable="true" />
+    <Property Type="Decimal" Name="PurchaseTaxPercentage" Nullable="true" Precision="5" Scale="2" />
+    <Property Type="Int32" Name="PurchaseHSNCode" Nullable="true" />
+    <Property Type="Int32" Name="SalesUOM" Nullable="true" />
+    <Property Type="Int32" Name="ItemPerSales" Nullable="true" />
+    <Property Type="Decimal" Name="SalesTaxPercentage" Nullable="true" Precision="5" Scale="2" />
+    <Property Type="Int32" Name="SalesHSNCode" Nullable="true" />
+    <Property Type="Decimal" Name="ItemWeight" Nullable="true" Precision="18" Scale="2" />
+    <Property Type="Decimal" Name="MinimumQty" Nullable="true" Precision="18" Scale="2" />
+    <Property Type="Decimal" Name="MaximumQty" Nullable="true" Precision="18" Scale="2" />
+    <Property Type="Decimal" Name="ReorderQty" Nullable="true" Precision="18" Scale="2" />
+    <Property Type="Int32" Name="ValuationMethod" Nullable="true" />
+    <Property Type="String" Name="CreatedBy" Nullable="true" MaxLength="101" />
+    <Property Type="DateTime" Name="CreatedOn" Nullable="false" Precision="23" />
+    <Property Type="String" Name="UpdatedBy" Nullable="false" MaxLength="101" />
+    <Property Type="DateTime" Name="UpdatedOn" Nullable="true" Precision="23" />
+  </ComplexType>
+  <ComplexType Name="m_getSelection_Result">
+    <Property Type="String" Name="OptionText" Nullable="false" MaxLength="30" />
+    <Property Type="String" Name="OptionValue" Nullable="true" MaxLength="50" />
+  </ComplexType>
+  <EntityType Name="m_CompanyBank">
+    <Key>
+      <PropertyRef Name="BankId" />
+    </Key>
+    <Property Name="BankId" Type="Guid" Nullable="false" />
+    <Property Name="CompanyId" Type="Guid" Nullable="false" />
+    <Property Name="BankName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="BranchName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="BranchCode" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+    <Property Name="BranchAddress1" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="BranchAddress2" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="CityId" Type="Guid" />
+    <Property Name="AccountNo" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="IFSCCode" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="SwiftCde" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="CreatedBy" Type="Guid" Nullable="false" />
+    <Property Name="CreatedOn" Type="DateTime" Nullable="false" Precision="3" />
+    <Property Name="UpdatedBy" Type="Guid" />
+    <Property Name="UpdatedOn" Type="DateTime" Precision="3" />
+  </EntityType>
+  <ComplexType Name="proc_AddItem_Result">
+    <Property Type="Boolean" Name="IsSuccess" Nullable="true" />
+    <Property Type="String" Name="Response" Nullable="true" MaxLength="500" />
+    <Property Type="String" Name="Action" Nullable="true" MaxLength="10" />
+    <Property Type="Guid" Name="PrimaryId" Nullable="true" />
+  </ComplexType>
+  <ComplexType Name="proc_getItemList_Result">
+    <Property Type="Guid" Name="ItemId" Nullable="false" />
+    <Property Type="String" Name="ItemCode" Nullable="false" MaxLength="20" />
+    <Property Type="String" Name="ItemDescription" Nullable="false" MaxLength="255" />
+    <Property Type="String" Name="AlternateDescription" Nullable="true" MaxLength="255" />
+    <Property Type="Int32" Name="ItemGroup" Nullable="false" />
+    <Property Type="Int32" Name="ItemUOM" Nullable="false" />
+    <Property Type="Int32" Name="ItemCategory" Nullable="false" />
+    <Property Type="Int32" Name="ItemType" Nullable="false" />
+    <Property Type="Int32" Name="PackingType" Nullable="false" />
+    <Property Type="Boolean" Name="ItemStatus" Nullable="false" />
+    <Property Type="Int32" Name="PurchaseUOM" Nullable="true" />
+    <Property Type="Int32" Name="ItemPerPurchase" Nullable="true" />
+    <Property Type="Decimal" Name="PurchaseTaxPercentage" Nullable="true" Precision="5" Scale="2" />
+    <Property Type="Int32" Name="PurchaseHSNCode" Nullable="true" />
+    <Property Type="Int32" Name="SalesUOM" Nullable="true" />
+    <Property Type="Int32" Name="ItemPerSales" Nullable="true" />
+    <Property Type="Decimal" Name="SalesTaxPercentage" Nullable="true" Precision="5" Scale="2" />
+    <Property Type="Int32" Name="SalesHSNCode" Nullable="true" />
+    <Property Type="Decimal" Name="ItemWeight" Nullable="true" Precision="18" Scale="2" />
+    <Property Type="Decimal" Name="MinimumQty" Nullable="true" Precision="18" Scale="2" />
+    <Property Type="Decimal" Name="MaximumQty" Nullable="true" Precision="18" Scale="2" />
+    <Property Type="Decimal" Name="ReorderQty" Nullable="true" Precision="18" Scale="2" />
+    <Property Type="Int32" Name="ValuationMethod" Nullable="true" />
+    <Property Type="String" Name="CreatedBy" Nullable="true" MaxLength="101" />
+    <Property Type="DateTime" Name="CreatedOn" Nullable="false" Precision="23" />
+    <Property Type="String" Name="UpdatedBy" Nullable="false" MaxLength="101" />
+    <Property Type="DateTime" Name="UpdatedOn" Nullable="true" Precision="23" />
+  </ComplexType>
+  <ComplexType Name="proc_getParty_Result">
+    <Property Type="Guid" Name="PartyId" Nullable="false" />
+    <Property Type="String" Name="PartyCode" Nullable="false" MaxLength="20" />
+    <Property Type="Int32" Name="PartyType" Nullable="false" />
+    <Property Type="String" Name="PartyName" Nullable="false" MaxLength="50" />
+    <Property Type="String" Name="AlternateName" Nullable="true" MaxLength="50" />
+    <Property Type="Int32" Name="PartyGroup" Nullable="false" />
+    <Property Type="Int32" Name="Currency" Nullable="false" />
+    <Property Type="String" Name="Telephone1" Nullable="true" MaxLength="20" />
+    <Property Type="String" Name="Telephone2" Nullable="true" MaxLength="20" />
+    <Property Type="String" Name="Mobile" Nullable="false" MaxLength="20" />
+    <Property Type="String" Name="Email" Nullable="false" MaxLength="50" />
+    <Property Type="String" Name="WebSite" Nullable="true" MaxLength="255" />
+    <Property Type="String" Name="Fax" Nullable="true" MaxLength="20" />
+    <Property Type="String" Name="ContactPerson" Nullable="true" MaxLength="50" />
+    <Property Type="Int32" Name="Industry" Nullable="true" />
+    <Property Type="Int32" Name="PartyStatus" Nullable="false" />
+    <Property Type="Int32" Name="SalesPerson" Nullable="true" />
+    <Property Type="String" Name="Remarks" Nullable="true" MaxLength="500" />
+    <Property Type="String" Name="BillToName" Nullable="true" MaxLength="50" />
+    <Property Type="String" Name="BillToAddress1" Nullable="true" MaxLength="255" />
+    <Property Type="String" Name="BillToAddress2" Nullable="true" MaxLength="255" />
+    <Property Type="Int32" Name="BillToCity" Nullable="true" />
+    <Property Type="Int32" Name="BillToState" Nullable="true" />
+    <Property Type="Int32" Name="BillToCountry" Nullable="true" />
+    <Property Type="String" Name="BillToPincode" Nullable="true" MaxLength="10" />
+    <Property Type="String" Name="BillToContactNo" Nullable="true" MaxLength="20" />
+    <Property Type="String" Name="BillToContactPerson" Nullable="true" MaxLength="50" />
+    <Property Type="String" Name="BillToEmail" Nullable="true" MaxLength="50" />
+    <Property Type="String" Name="ShipToName" Nullable="true" MaxLength="50" />
+    <Property Type="String" Name="ShipToAddress1" Nullable="true" MaxLength="255" />
+    <Property Type="String" Name="ShipToAddress2" Nullable="true" MaxLength="255" />
+    <Property Type="Int32" Name="ShipToCity" Nullable="true" />
+    <Property Type="Int32" Name="ShipToState" Nullable="true" />
+    <Property Type="Int32" Name="ShipToCountry" Nullable="true" />
+    <Property Type="String" Name="ShipToPincode" Nullable="true" MaxLength="10" />
+    <Property Type="String" Name="ShipToContactNo" Nullable="true" MaxLength="20" />
+    <Property Type="String" Name="ShipToContactPerson" Nullable="true" MaxLength="50" />
+    <Property Type="String" Name="ShipToEmail" Nullable="true" MaxLength="50" />
+    <Property Type="String" Name="GSTNo" Nullable="true" MaxLength="20" />
+    <Property Type="Int32" Name="GSTType" Nullable="true" />
+    <Property Type="String" Name="PANNo" Nullable="true" MaxLength="10" />
+    <Property Type="DateTime" Name="CreatedOn" Nullable="false" Precision="23" />
+    <Property Type="DateTime" Name="UpdatedOn" Nullable="true" Precision="23" />
+    <Property Type="String" Name="CreatedBy" Nullable="true" MaxLength="101" />
+    <Property Type="String" Name="UpdatedBy" Nullable="false" MaxLength="101" />
+  </ComplexType>
+  <ComplexType Name="proc_getPartyList_Result">
+    <Property Type="Guid" Name="PartyId" Nullable="false" />
+    <Property Type="String" Name="PartyCode" Nullable="false" MaxLength="20" />
+    <Property Type="Int32" Name="PartyType" Nullable="false" />
+    <Property Type="String" Name="PartyName" Nullable="false" MaxLength="50" />
+    <Property Type="String" Name="AlternateName" Nullable="true" MaxLength="50" />
+    <Property Type="Int32" Name="PartyGroup" Nullable="false" />
+    <Property Type="Int32" Name="Currency" Nullable="false" />
+    <Property Type="String" Name="Telephone1" Nullable="true" MaxLength="20" />
+    <Property Type="String" Name="Telephone2" Nullable="true" MaxLength="20" />
+    <Property Type="String" Name="Mobile" Nullable="false" MaxLength="20" />
+    <Property Type="String" Name="Email" Nullable="false" MaxLength="50" />
+    <Property Type="String" Name="WebSite" Nullable="true" MaxLength="255" />
+    <Property Type="String" Name="Fax" Nullable="true" MaxLength="20" />
+    <Property Type="String" Name="ContactPerson" Nullable="true" MaxLength="50" />
+    <Property Type="Int32" Name="Industry" Nullable="true" />
+    <Property Type="Int32" Name="PartyStatus" Nullable="false" />
+    <Property Type="Int32" Name="SalesPerson" Nullable="true" />
+    <Property Type="String" Name="Remarks" Nullable="true" MaxLength="500" />
+    <Property Type="String" Name="BillToName" Nullable="true" MaxLength="50" />
+    <Property Type="String" Name="BillToAddress1" Nullable="true" MaxLength="255" />
+    <Property Type="String" Name="BillToAddress2" Nullable="true" MaxLength="255" />
+    <Property Type="Int32" Name="BillToCity" Nullable="true" />
+    <Property Type="Int32" Name="BillToState" Nullable="true" />
+    <Property Type="Int32" Name="BillToCountry" Nullable="true" />
+    <Property Type="String" Name="BillToPincode" Nullable="true" MaxLength="10" />
+    <Property Type="String" Name="BillToContactNo" Nullable="true" MaxLength="20" />
+    <Property Type="String" Name="BillToContactPerson" Nullable="true" MaxLength="50" />
+    <Property Type="String" Name="BillToEmail" Nullable="true" MaxLength="50" />
+    <Property Type="String" Name="ShipToName" Nullable="true" MaxLength="50" />
+    <Property Type="String" Name="ShipToAddress1" Nullable="true" MaxLength="255" />
+    <Property Type="String" Name="ShipToAddress2" Nullable="true" MaxLength="255" />
+    <Property Type="Int32" Name="ShipToCity" Nullable="true" />
+    <Property Type="Int32" Name="ShipToState" Nullable="true" />
+    <Property Type="Int32" Name="ShipToCountry" Nullable="true" />
+    <Property Type="String" Name="ShipToPincode" Nullable="true" MaxLength="10" />
+    <Property Type="String" Name="ShipToContactNo" Nullable="true" MaxLength="20" />
+    <Property Type="String" Name="ShipToContactPerson" Nullable="true" MaxLength="50" />
+    <Property Type="String" Name="ShipToEmail" Nullable="true" MaxLength="50" />
+    <Property Type="String" Name="GSTNo" Nullable="true" MaxLength="20" />
+    <Property Type="Int32" Name="GSTType" Nullable="true" />
+    <Property Type="String" Name="PANNo" Nullable="true" MaxLength="10" />
+    <Property Type="DateTime" Name="CreatedOn" Nullable="false" Precision="23" />
+    <Property Type="DateTime" Name="UpdatedOn" Nullable="true" Precision="23" />
+    <Property Type="String" Name="CreatedBy" Nullable="true" MaxLength="101" />
+    <Property Type="String" Name="UpdatedBy" Nullable="false" MaxLength="101" />
+  </ComplexType>
+  <EntityType Name="m_CompanyFinancials">
+    <Key>
+      <PropertyRef Name="FiancialYearId" />
+    </Key>
+    <Property Name="FiancialYearId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="CompanyId" Type="Guid" Nullable="false" />
+    <Property Name="StartDate" Type="DateTime" Nullable="false" Precision="3" />
+    <Property Name="EndDate" Type="DateTime" Nullable="false" Precision="3" />
+    <Property Name="Alias" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="IsActive" Type="Boolean" Nullable="false" />
+    <Property Name="CreatedOn" Type="DateTime" Nullable="false" Precision="3" />
+    <Property Name="CreatedBy" Type="Guid" Nullable="false" />
+    <Property Name="UpdatedOn" Type="DateTime" Precision="3" />
+    <Property Name="UpdatedBy" Type="Guid" />
+  </EntityType>
+  <EntityType Name="m_UserSettings">
+    <Key>
+      <PropertyRef Name="UserSettingId" />
+    </Key>
+    <Property Name="UserSettingId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="UserId" Type="Guid" Nullable="false" />
+    <Property Name="CompanyId" Type="Guid" Nullable="false" />
+    <Property Name="DefaultFiancialYearId" Type="Int32" Nullable="false" />
+  </EntityType>
+  <ComplexType Name="m_getFormData_Result">
+    <Property Type="Guid" Name="FormId" Nullable="false" />
+    <Property Type="String" Name="FormName" Nullable="false" MaxLength="50" />
+    <Property Type="String" Name="FormTitle" Nullable="false" MaxLength="50" />
+    <Property Type="String" Name="FormDescription" Nullable="true" MaxLength="500" />
+    <Property Type="Boolean" Name="IsActive" Nullable="false" />
+    <Property Type="Guid" Name="ParentFormId" Nullable="true" />
+    <Property Type="String" Name="SQLTableName" Nullable="true" MaxLength="30" />
+    <Property Type="String" Name="Prefix" Nullable="true" MaxLength="50" />
+    <Property Type="Guid" Name="CompanyId" Nullable="true" />
+  </ComplexType>
+  <EntityType Name="m_FormFieldTypes">
+    <Key>
+      <PropertyRef Name="FieldTypeId" />
+    </Key>
+    <Property Name="FieldTypeId" Type="Guid" Nullable="false" />
+    <Property Name="FieldType" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="FieldTypeClass" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+    <Property Name="SortOrder" Type="Int32" />
+    <Property Name="IsFieldTypeElement" Type="Boolean" />
+  </EntityType>
+  <ComplexType Name="m_getFormFields_Result">
+    <Property Type="Guid" Name="FieldId" Nullable="false" />
+    <Property Type="Guid" Name="FormId" Nullable="false" />
+    <Property Type="Guid" Name="FormTabId" Nullable="true" />
+    <Property Type="Guid" Name="FieldTypeId" Nullable="false" />
+    <Property Type="Boolean" Name="IsActive" Nullable="false" />
+    <Property Type="String" Name="FieldName" Nullable="false" MaxLength="50" />
+    <Property Type="String" Name="FieldCaption" Nullable="false" MaxLength="50" />
+    <Property Type="Int32" Name="FieldLength" Nullable="false" />
+    <Property Type="Guid" Name="FormSectionId" Nullable="true" />
+    <Property Type="Boolean" Name="IsRequired" Nullable="false" />
+    <Property Type="DateTime" Name="CreatedOn" Nullable="false" Precision="23" />
+    <Property Type="DateTime" Name="UpdatedOn" Nullable="true" Precision="23" />
+    <Property Type="Guid" Name="ParameterId" Nullable="true" />
+    <Property Type="String" Name="FieldType" Nullable="false" MaxLength="50" />
+    <Property Type="String" Name="TabName" Nullable="false" MaxLength="50" />
+    <Property Type="String" Name="SectionName" Nullable="false" MaxLength="30" />
+  </ComplexType>
+  <ComplexType Name="m_getForms_Result">
+    <Property Type="Guid" Name="FormId" Nullable="false" />
+    <Property Type="String" Name="FormName" Nullable="false" MaxLength="50" />
+    <Property Type="String" Name="FormTitle" Nullable="false" MaxLength="50" />
+    <Property Type="String" Name="FormDescription" Nullable="true" MaxLength="500" />
+    <Property Type="Boolean" Name="IsActive" Nullable="false" />
+    <Property Type="Guid" Name="ParentFormId" Nullable="true" />
+    <Property Type="String" Name="SQLTableName" Nullable="true" MaxLength="30" />
+    <Property Type="String" Name="Prefix" Nullable="true" MaxLength="50" />
+    <Property Type="Guid" Name="CompanyId" Nullable="true" />
+  </ComplexType>
+  <EntityType Name="m_FormMast">
+    <Key>
+      <PropertyRef Name="FormId" />
+    </Key>
+    <Property Name="FormId" Type="Guid" Nullable="false" />
+    <Property Name="FormName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="FormTitle" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="FormDescription" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+    <Property Name="IsActive" Type="Boolean" Nullable="false" />
+    <Property Name="ParentFormId" Type="Guid" />
+    <Property Name="SQLTableName" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
+    <Property Name="Prefix" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="CompanyId" Type="Guid" />
+    <Property Name="SqlTemplateId" Type="Int32" />
+    <Property Name="Alias" Type="String" MaxLength="5" FixedLength="false" Unicode="true" />
+    <Property Name="SortOrder" Type="Int32" />
+  </EntityType>
+  <EntityType Name="m_CompanyUnit">
+    <Key>
+      <PropertyRef Name="CompanyUnitId" />
+    </Key>
+    <Property Name="CompanyUnitId" Type="Guid" Nullable="false" />
+    <Property Name="SiteName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="Address1" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="true" />
+    <Property Name="Address2" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+    <Property Name="CityId" Type="Guid" Nullable="false" />
+    <Property Name="StateId" Type="Guid" />
+    <Property Name="CountryId" Type="Guid" />
+    <Property Name="Pincode" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+    <Property Name="GSTNo" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="PANNo" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+    <Property Name="Phone" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+    <Property Name="Email" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="CreatedBy" Type="Guid" Nullable="false" />
+    <Property Name="CreatedOn" Type="DateTime" Nullable="false" Precision="3" />
+    <Property Name="UpdatedBy" Type="Guid" />
+    <Property Name="UpdatedOn" Type="DateTime" Precision="3" />
+    <Property Name="CompanyId" Type="Guid" />
+  </EntityType>
+  <EntityType Name="m_FormField">
+    <Key>
+      <PropertyRef Name="FieldId" />
+    </Key>
+    <Property Name="FieldId" Type="Guid" Nullable="false" />
+    <Property Name="FormId" Type="Guid" Nullable="false" />
+    <Property Name="FormTabId" Type="Guid" />
+    <Property Name="FieldTypeId" Type="Guid" Nullable="false" />
+    <Property Name="IsActive" Type="Boolean" Nullable="false" />
+    <Property Name="FieldName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="FieldCaption" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="FieldLength" Type="Int32" Nullable="false" />
+    <Property Name="FormSectionId" Type="Guid" />
+    <Property Name="IsRequired" Type="Boolean" Nullable="false" />
+    <Property Name="CreatedOn" Type="DateTime" Nullable="false" Precision="3" />
+    <Property Name="UpdatedOn" Type="DateTime" Precision="3" />
+    <Property Name="ParameterId" Type="Guid" />
+    <Property Name="DDLSourceType" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="DDLSourceName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="DDLTextField" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="DDLValueField" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="IsReadOnly" Type="Boolean" />
+    <Property Name="IsVisible" Type="Boolean" />
+    <Property Name="IsVisibleInList" Type="Boolean" />
+    <Property Name="FieldSize" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="FieldPlaceHolder" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="FieldHelpText" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+    <Property Name="SortOrder" Type="Int32" />
+    <Property Name="IsDisable" Type="Boolean" />
+    <Property Name="FieldFormula" Type="String" MaxLength="3000" FixedLength="false" Unicode="true" />
+    <Property Name="IsDependencyField" Type="Boolean" />
+    <Property Name="IsMultiSelection" Type="Boolean" />
+    <Property Name="IsUnique" Type="Boolean" />
+    <Property Name="FieldDecimal" Type="Int32" />
+    <Property Name="AllowMultiDocument" Type="Boolean" />
+    <Property Name="IsSummary" Type="Boolean" />
+    <Property Name="TemplateId" Type="Int32" />
+    <Property Name="FieldFormat" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="IsTimeField" Type="Boolean" />
+  </EntityType>
+  <EntityType Name="m_CompanyMast">
+    <Key>
+      <PropertyRef Name="CompanyId" />
+    </Key>
+    <Property Name="CompanyId" Type="Guid" Nullable="false" />
+    <Property Name="CompanyCode" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
+    <Property Name="CompanyName" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
+    <Property Name="Phone" Type="String" MaxLength="15" FixedLength="false" Unicode="false" />
+    <Property Name="Mobile" Type="String" MaxLength="15" FixedLength="false" Unicode="false" />
+    <Property Name="Email" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+    <Property Name="WebStite" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+    <Property Name="Fax" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+    <Property Name="RegisterAddress1" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+    <Property Name="RegisterAddress2" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+    <Property Name="RegisterPincode" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+    <Property Name="FactoryAddress1" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+    <Property Name="FactoryAddress2" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+    <Property Name="FactoryPincode" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+    <Property Name="GSTNo" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="PANNo" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+    <Property Name="CINNo" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="ECCNo" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="IECCode" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="CreatedBy" Type="Guid" Nullable="false" />
+    <Property Name="CreatedOn" Type="DateTime" Nullable="false" Precision="3" />
+    <Property Name="UpdatedBy" Type="Guid" />
+    <Property Name="UpdatedOn" Type="DateTime" Precision="3" />
+    <Property Name="DefaultCurrencyId" Type="Int32" />
+    <Property Name="FromEmail" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="DisplayName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="SmtpServer" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="SmtpPort" Type="Int32" />
+    <Property Name="EnableSSL" Type="Boolean" />
+    <Property Name="SmtpUsername" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="SmtpPassword" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="RegiterCityId" Type="Int32" />
+    <Property Name="RegiterStateId" Type="Int32" />
+    <Property Name="RegisterCountryId" Type="Int32" />
+    <Property Name="FactoryCityId" Type="Int32" />
+    <Property Name="FactoryStateId" Type="Int32" />
+    <Property Name="FactoryCountryId" Type="Int32" />
+  </EntityType>
+</Schema>

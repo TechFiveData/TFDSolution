@@ -1,0 +1,262 @@
+﻿@model TFDSolution.Transport.Master.FormReportModel
+
+<div class="row">
+    <div class="col-md-12 form-group">
+        <a class="btn btn-sm" id="btnAddReport" href="javascript:void(0);" title="Add New Report" data-toggle="modal" data-target="#reportModal">
+            <i class="fa fa-plus"></i>&nbsp;Add New Report
+        </a>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12 form-group">
+        <table id="tblReport" class="display cell-border" cellspacing="0" width="100%"></table>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        BindFormReport();
+        $("#btnAddReport").click(function () {
+            cleanReport();
+        })
+    })
+    function DownloadReport(reportId) {
+        cleanReport();
+        $.get('@Url.Action("DownloadReport","FormSetting")', { ReportId: reportId }, function (data) {
+            if (data != null) {
+
+            }
+        }).fail(function () {
+            // Error callback if the request fails
+        });
+    }
+    function EditReport(reportId) {
+        cleanReport();
+        $.get('@Url.Action("GetFormReport","FormSetting")', { ReportId: reportId }, function (data) {
+            if (data != null) {
+                $("#txtReportName").val(data.ReportName);
+                $("#txtReportTitle").val(data.ReportTitle);
+                $("#ddlReportType").val(data.ReportType);
+                $("#txtReportSource").val(data.ReportSource);
+                $("#hdnReportId").val(data.ReportId);
+                $("#txtReportTitle").focus();
+            }
+        }).fail(function () {
+            // Error callback if the request fails
+        });
+    }
+    function DeleteFormReport(reportId) {
+        if (confirm("Are you sure you want to delete thi record?")) {
+            $.get('@Url.Action("DeleteFormReport","FormSetting")', { ReportId: reportId }, function (data) {
+                if (data != null && data.IsSuccess) {
+                    ShowToastNotification("success","Record has been deleted successfully!");
+                    BindFormReport();
+                }
+            }).fail(function () {
+                // Error callback if the request fails
+            });
+        }
+    }
+    function cleanReport() {
+        $("#txtReportName").val("");
+        $("#txtReportTitle").val("");
+        $("#ddlReportType").val("Transaction");
+        $("#txtReportSource").val("");
+        $("#txtReportTitle").focus();
+        $("#labelFile").html("");
+        $("#hdnReportId").val(0);
+        $("#Reportfile").val(null);
+    }
+    function BindFormReport()
+    {
+        var _formId = $("#hdnSelectedFormId").val();
+        $.ajax({
+            type: "GET",
+            url: "@Url.Action("GetReports", "FormSetting")",
+            contentType: "application/json; charset=utf-8",
+            data: { formId: _formId },
+            dataType: "json",
+            success: SuccessBindFormReport,
+             failure: function (response) {
+                 alert(response.d);
+             },
+             error: function (response) {
+                 ShowToastNotification("error", "Error fetching data!");
+             }
+         });
+    }
+    function SuccessBindFormReport(dataset) {
+        dataset = Array.isArray(dataset) ? dataset : [];
+        // Initialize DataTable
+        let formTable = new DataTable("#tblReport", {
+            "destroy": true,
+            searching: false,
+            paging: false,
+            scrollCollapse: true,
+            info: true,
+            // scrollY: '500px',
+            data: dataset,
+            select: true,
+            columns: [
+                {
+                    title: '',
+                    /*className: "grid-action-item",*/
+                    render: function (data, type, row, meta) {
+                        var filePath = row.ReportName;
+                        @*var reportsBasePath = '@Url.Content("~/Reports/")'; // => "/Reports/"
+                        if (row.ReportPath) {
+                            filePath = reportsBasePath + row.ReportPath.replace(/^~\/Reports\//, "");
+                        }*@
+                        @*return "<a title='Edit Record' data-toggle='modal' data-target='#reportModal' onclick='EditReport(\"" + row.ReportId + "\")' href='javascript:void(0)'><i class='fa fa-pencil'></i></a> &nbsp;|&nbsp; <a title='Delete Record' onclick='DeleteFormReport(\"" + row.ReportId + "\")' href='javascript:void(0)';><i class='fa fa-trash text-danger'></i></a> &nbsp;|&nbsp; <a title='Download Report' onclick='DownloadReport(\"" + row.ReportId + "\")' href="@Url.Action("DownloadFile", "Home", new { fileName = @row.ReportTitle })";><i class='fa fa-download text-black'></i></a>";*@
+                        return `<a title="Edit Record" data-toggle="modal" data-target="#reportModal"
+                           href="javascript:void(0)" onclick="EditReport('${row.ReportId}')">
+                            <i class="fa fa-pencil"></i>
+                        </a>
+                        &nbsp;|&nbsp;
+                        <a title="Delete Record" href="javascript:void(0)"
+                           onclick="DeleteFormReport('${row.ReportId}')">
+                            <i class="fa fa-trash text-danger"></i>
+                        </a>
+                        &nbsp;|&nbsp;
+                        <a title="Download Report"
+                           href="javascript:void(0)" onclick="DownloadReport('${filePath}');">
+                            <i class="fa fa-download text-black"></i>
+                        </a>`;
+                    },
+                },
+                { title: "Form", data: "FormTitle" },
+                { title: "Report Type", data: "ReportType" },
+                { title: "Report Name", data: "ReportTitle" },
+                { title: "Report Source", data: "ReportSource" },
+            ],
+            language: {
+                emptyTable: "No records found", // Message when no data is available
+                zeroRecords: "No matching records found"
+            }
+        });
+    }
+    function DownloadReport(fileName) {
+        $.ajax({
+            url: '@Url.Action("DownloadRepor", "FormSetting")',
+            type: "GET",
+            data: { fileName: fileName },
+            xhrFields: {
+                responseType: 'blob' // to handle file bytes
+            },
+            success: function (data, status, xhr) {
+                var disposition = xhr.getResponseHeader('Content-Disposition');
+                if (disposition && disposition.indexOf('attachment') !== -1) {
+                    var matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(disposition);
+                    var filename = (matches != null && matches[1]) ? matches[1].replace(/['"]/g, '') : fileName;
+
+                    var blob = new Blob([data]);
+                    var link = document.createElement('a');
+                    link.href = window.URL.createObjectURL(blob);
+                    link.download = filename;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
+            },
+            error: function (xhr) {
+                ShowToastNotification("error", "File does not exists");
+            }
+        });
+    }
+    function checkFileExists(filePath) {
+        $.ajax({
+            url: filePath,
+            type: 'HEAD',   // only request headers, not full file
+            success: function () {
+                location.href = filePath;
+            },
+            error: function () {
+                ShowToastNotification("error", "File does not exists");
+            }
+        });
+    }
+    function SaveReport()
+    {
+        var isFormValid = true;
+        $("#reportModal input").each(function () {
+            if ($.trim($(this).val()).length == 0
+                && $(this).attr("id") != "hdnReportId"
+                && $(this).attr("id") != "txtReportName"
+                && $(this).attr("id") != "txtReportSource") {
+                if (parseInt($("#hdnReportId")) > 0 && $(this).attr("id") == "Reportfile") {
+                }
+                else {
+                    $(this).addClass("input-validation-error");
+                    if (isFormValid == true) {
+                        $(this).focus();
+                    }
+                    isFormValid = false;
+                }
+            }
+            else {
+                $(this).removeClass("input-validation-error");
+            }
+        });
+
+        if (!isFormValid) {
+            ShowToastNotification("error","Please fill in all the required fields (indicated by *)");
+        }
+        else {
+            try {
+                var formId = $("#hdnSelectedFormId").val();
+                var logoImg = $('input[name="Reportfile"]').get(0).files[0];
+                var formData = new FormData();
+                formData.append('ReportName', $("#txtReportName").val());
+                formData.append('ReportId', $("#hdnReportId").val());
+                formData.append('ReportTitle', $("#txtReportTitle").val());
+                formData.append('ReportType', $("#ddlReportType").val());
+                formData.append('ReportSource', $("#txtReportSource").val());
+                formData.append('FormId', formId);
+                formData.append("file", logoImg);
+
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("SaveReport", "FormSetting")',
+                    /*contentType: "application/json;",*/
+                    data: formData,
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    success: function (response) {
+                        if (response.IsSuccess) {
+                            ShowToastNotification("success","Record saved successfully.");
+                            cleanReport();
+                            $('#btnCancelReport').click();
+                            BindFormReport()
+                        }
+                        else {
+                            alert(response.Response);
+                        }
+                    },
+                    xhr: function () {
+                        var fileXhr = $.ajaxSettings.xhr();
+                        if (fileXhr.upload) {
+                            $("progress").show();
+                            fileXhr.upload.addEventListener("progress", function (e) {
+                                if (e.lengthComputable) {
+                                    $("#fileProgress").attr({
+                                        value: e.loaded,
+                                        max: e.total
+                                    });
+                                }
+                            }, false);
+                        }
+                        return fileXhr;
+                    },
+                    failure: function (response) {
+
+                    },
+                    error: function (response) {
+
+                    }
+                });
+            } catch (e) {
+            }
+        }
+    }
+</script>

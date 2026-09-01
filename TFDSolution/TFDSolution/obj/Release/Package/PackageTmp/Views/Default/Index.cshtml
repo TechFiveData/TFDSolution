@@ -1,0 +1,792 @@
+﻿@model TFDSolution.Models.LicenseModel
+
+@{
+    ViewBag.Title = "Product Activation";
+    Layout = "";
+
+    var ImagesBase = Url.Content("~/Images");
+    var ContentBase = Url.Content("~/Content");
+}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8" />
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0" />
+
+    <title>Product Activation | LotusNext ERP</title>
+
+    <link rel="stylesheet"
+    <a href="~/Views/Default/Index.cshtml">~/Views/Default/Index.cshtml</a>
+    href="@ContentBase/theme/theme1/login.css" />
+
+    <link href="@ContentBase/main/assets/css/style.css"
+          rel="stylesheet" />
+
+    <link href="@ContentBase/bootstrap.min.css"
+          rel="stylesheet" />
+
+    <link href="@ContentBase/main/bootstrap/dist/css/bootstrap.min.css"
+          rel="stylesheet" />
+
+    <link href="@ContentBase/main/font-awesome/css/font-awesome.min.css"
+          rel="stylesheet" />
+
+    <script src="~/Scripts/jquery-3.7.1.js"></script>
+
+    <style>
+
+        /* =========================================================
+           LICENSE PAGE
+        ========================================================= */
+
+        .license-page {
+            min-height: 100vh;
+            position: relative;
+            overflow: hidden;
+
+            background-image:
+                linear-gradient(
+                    90deg,
+                    rgba(247, 250, 252, 0.02),
+                    rgba(247, 250, 252, 0.96)
+                ),
+                url('@ImagesBase/theme1.jpg');
+
+            background-size: cover;
+            background-position: left center;
+            background-repeat: no-repeat;
+        }
+
+
+        /* =========================================================
+           TOP BAR
+        ========================================================= */
+
+        .license-topbar {
+            height: 65px;
+
+            background: rgba(242, 251, 253, 0.96);
+
+            border-bottom: 1px solid rgba(0, 0, 0, .06);
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 35px;
+
+            position: relative;
+            z-index: 10;
+
+            box-shadow:
+                0 3px 15px rgba(20, 60, 80, .04);
+        }
+
+
+        .license-brand {
+            display: flex;
+            align-items: center;
+
+            text-decoration: none !important;
+        }
+
+
+        .license-brand-logo {
+            width: 38px;
+            height: 38px;
+
+            border-radius: 10px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #27a9d7,
+                    #168ab6
+                );
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            color: white;
+
+            margin-right: 10px;
+
+            box-shadow:
+                0 5px 12px rgba(39, 169, 215, .25);
+        }
+
+
+        .license-brand-logo i {
+            font-size: 17px;
+        }
+
+
+        .license-brand-name {
+            font-size: 19px;
+            font-weight: 600;
+
+            color: #263746;
+        }
+
+
+        .license-brand-name span {
+            color: #27a9d7;
+        }
+
+
+        .license-help {
+            color: #64748b;
+
+            font-size: 13px;
+
+            text-decoration: none !important;
+        }
+
+
+        .license-help i {
+            color: #27a9d7;
+            margin-right: 5px;
+        }
+
+
+        /* =========================================================
+           MAIN
+        ========================================================= */
+
+        .license-main {
+            min-height: calc(100vh - 105px);
+
+            display: flex;
+            align-items: center;
+
+            padding: 45px 35px;
+
+            position: relative;
+            z-index: 2;
+        }
+
+
+        .license-container {
+            width: 100%;
+            max-width: 1120px;
+
+            margin: auto;
+        }
+
+
+
+        /* =========================================================
+           FEATURES
+        ========================================================= */
+
+        .license-features {
+            display: flex;
+            flex-wrap: wrap;
+
+            gap: 10px;
+
+            margin-top: 25px;
+        }
+
+
+        .license-feature {
+            display: flex;
+            align-items: center;
+
+            padding: 9px 13px;
+
+            border-radius: 9px;
+
+            background: rgba(255, 255, 255, .13);
+
+            border: 1px solid rgba(255, 255, 255, .18);
+
+            backdrop-filter: blur(7px);
+
+            color: white;
+
+            font-size: 12px;
+        }
+
+
+        .license-feature i {
+            color: #8de1fa;
+            margin-right: 6px;
+        }
+
+
+        /* =========================================================
+           ACTIVATION CARD
+        ========================================================= */
+
+        .license-card {
+            width: 100%;
+            max-width: 455px;
+
+            margin-left: auto;
+
+            padding: 38px 38px 30px;
+
+            background: rgba(255, 255, 255, .98);
+
+            border-radius: 18px;
+
+            border: 1px solid rgba(0, 0, 0, .05);
+
+            box-shadow:
+                0 22px 60px rgba(30, 60, 80, .17),
+                0 4px 12px rgba(30, 60, 80, .05);
+
+            animation: licenseCardEntry .55s ease-out;
+        }
+
+
+        @@keyframes licenseCardEntry {
+
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+        }
+
+
+        /* =========================================================
+           HEADING
+        ========================================================= */
+
+        .license-heading {
+            text-align: center;
+
+            margin-bottom: 28px;
+        }
+
+
+        .license-icon {
+            width: 54px;
+            height: 54px;
+
+            border-radius: 15px;
+
+            background: rgba(39, 169, 215, .10);
+
+            color: #27a9d7;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            margin: 0 auto 13px;
+        }
+
+
+        .license-icon i {
+            font-size: 20px;
+        }
+
+
+        .license-heading h2 {
+            margin: 0 0 6px;
+
+            font-size: 25px;
+
+            font-weight: 650;
+
+            color: #273746;
+        }
+
+
+        .license-heading p {
+            margin: 0;
+
+            color: #8a97a4;
+
+            font-size: 13px;
+
+            line-height: 1.55;
+        }
+
+
+        /* =========================================================
+           LICENSE INPUT
+        ========================================================= */
+
+        .license-form-group {
+            margin-bottom: 19px;
+        }
+
+
+        .license-label {
+            display: block;
+
+            font-size: 12px;
+
+            font-weight: 600;
+
+            color: #526170;
+
+            margin-bottom: 7px;
+        }
+
+
+        .license-required {
+            color: #e05252;
+        }
+
+
+        .license-input-wrapper {
+            position: relative;
+        }
+
+
+        .license-input-icon {
+            position: absolute;
+
+            left: 14px;
+            top: 50%;
+
+            transform: translateY(-50%);
+
+            color: #a0acb7;
+
+            font-size: 14px;
+
+            z-index: 2;
+        }
+
+
+        .license-input {
+            width: 100%;
+
+            height: 48px;
+
+            border: 1px solid #dfe6eb;
+
+            border-radius: 9px;
+
+            padding: 0 14px 0 42px;
+
+            font-size: 13px;
+
+            color: #334155;
+
+            background: #fbfcfd;
+
+            outline: none;
+
+            transition: all .2s ease;
+        }
+
+
+        .license-input:focus {
+            background: white;
+
+            border-color: #27a9d7;
+
+            box-shadow:
+                0 0 0 3px rgba(39, 169, 215, .10);
+        }
+
+
+        .license-input:focus ~ .license-input-icon {
+            color: #27a9d7;
+        }
+
+
+        .license-input::placeholder {
+            color: #b0bac4;
+        }
+
+
+        /* =========================================================
+           ACTIVATE BUTTON
+        ========================================================= */
+
+        .btn-activate {
+            width: 100%;
+
+            height: 48px;
+
+            border: 0;
+
+            border-radius: 9px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #27a9d7,
+                    #168fb9
+                );
+
+            color: white;
+
+            font-size: 14px;
+
+            font-weight: 600;
+
+            cursor: pointer;
+
+            box-shadow:
+                0 8px 18px rgba(39, 169, 215, .22);
+
+            transition: all .25s ease;
+        }
+
+
+        .btn-activate:hover {
+            transform: translateY(-1px);
+
+            box-shadow:
+                0 11px 24px rgba(39, 169, 215, .30);
+        }
+
+
+        .btn-activate i {
+            margin-left: 7px;
+        }
+
+
+        /* =========================================================
+           MESSAGES
+        ========================================================= */
+
+        .license-alert {
+            padding: 10px 14px;
+
+            margin: 14px 0 0;
+
+            border-radius: 7px;
+
+            font-size: 13px;
+
+            line-height: 1.5;
+
+            display: flex;
+
+            align-items: flex-start;
+
+            gap: 8px;
+        }
+
+
+        .license-alert-info {
+            color: #16627c;
+
+            background: #effaff;
+
+            border: 1px solid #c9edf8;
+        }
+
+
+        .license-alert-error {
+            color: #b42318;
+
+            background: #fef3f2;
+
+            border: 1px solid #fecdca;
+        }
+
+
+        /* =========================================================
+           SUPPORT
+        ========================================================= */
+
+        .license-support {
+            text-align: center;
+
+            margin-top: 21px;
+
+            padding-top: 16px;
+
+            border-top: 1px solid #edf1f4;
+
+            color: #8a96a1;
+
+            font-size: 11px;
+
+            line-height: 1.7;
+        }
+
+
+        .license-support i {
+            color: #27a9d7;
+
+            margin-right: 4px;
+        }
+
+
+        .license-support a {
+            color: #168fb9;
+
+            font-weight: 600;
+
+            text-decoration: none;
+        }
+
+
+        .license-support a:hover {
+            text-decoration: underline;
+        }
+
+
+        /* =========================================================
+           FOOTER
+        ========================================================= */
+
+        .license-footer {
+            height: 40px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            color: #8995a0;
+
+            font-size: 11px;
+
+            position: relative;
+
+            z-index: 5;
+        }
+
+
+        /* =========================================================
+           DECORATION
+        ========================================================= */
+
+        .license-circle-one {
+            position: absolute;
+
+            width: 320px;
+            height: 320px;
+
+            border-radius: 50%;
+
+            border: 50px solid rgba(39, 169, 215, .035);
+
+            left: -180px;
+            bottom: -150px;
+        }
+
+
+        .license-circle-two {
+            position: absolute;
+
+            width: 250px;
+            height: 250px;
+
+            border-radius: 50%;
+
+            background: rgba(39, 169, 215, .025);
+
+            right: -80px;
+            top: 100px;
+        }
+
+
+        /* =========================================================
+           RESPONSIVE
+        ========================================================= */
+
+        @@media(max-width: 991px) {
+
+            .license-left {
+                min-height: auto;
+
+                padding: 30px 20px;
+
+                justify-content: center;
+
+                text-align: center;
+            }
+
+
+            .license-left-content {
+                max-width: 650px;
+            }
+
+
+            .license-description {
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+
+            .license-features {
+                justify-content: center;
+            }
+
+
+            .license-card {
+                margin: 20px auto 0;
+            }
+
+        }
+
+
+        @@media(max-width: 767px) {
+
+            .license-topbar {
+                padding: 0 18px;
+            }
+
+
+            .license-help {
+                display: none;
+            }
+
+
+            .license-main {
+                padding: 25px 15px;
+            }
+
+
+            .license-left {
+                padding: 15px 10px 30px;
+            }
+
+
+            .license-title {
+                font-size: 32px;
+            }
+
+
+            .license-description {
+                font-size: 14px;
+            }
+
+
+            .license-card {
+                padding: 30px 22px 25px;
+
+                border-radius: 15px;
+            }
+        }
+        @@media(max-width: 480px) {
+            .license-brand-name {
+                font-size: 16px;
+            }
+            .license-heading h2 {
+                font-size: 23px;
+            }
+            .license-features {
+                gap: 7px;
+            }
+            .license-feature {
+                font-size: 11px;
+            }
+        }
+        /* ==================== RIGHT SIDE CARD POSITION ======== */
+        .license-card-column { margin-left: auto; display: flex; justify-content: flex-end; }
+        /* Keep card on right side */
+        .license-card { width: 100%; max-width: 455px; margin-left: auto; }
+                                                                                                                                                                                                                                                                               /* ========================================================= RESPONSIVE ========================================================= */
+        @@media(max-width: 991px)
+        { .license-card-column { margin-left: 0; justify-content: center; }
+          .license-card { margin: 20px auto 0; } }
+
+    </style>
+
+</head>
+<body>
+    <div class="license-page">
+        <!-- Decorative Background -->
+        <div class="license-circle-one"></div>
+        <div class="license-circle-two"></div>
+        <!-- HEADER -->
+        <header class="license-topbar">
+            <a href="#" class="license-brand">
+                <div class="license-brand-logo">
+                    <i class="fa fa-line-chart"></i>
+                </div>
+                <div class="license-brand-name">
+                    LotusNext <span>ERP</span>
+                </div>
+            </a>
+            <a href="mailto:support@techfivedata.com"
+               class="license-help">
+                <i class="fa fa-question-circle"></i>
+                Need Help?
+            </a>
+        </header>
+        <!-- ====MAIN==== -->
+        <main class="license-main"> 
+            <div class="license-container"> 
+                <div class="row align-items-center"> 
+                    <!--= RIGHT SIDE - ACTIVATION CARD = --> 
+                    <div class="col-lg-6 license-card-column"> 
+                        <div class="license-card"> 
+                            <!-- Heading --> 
+                                <div class="license-heading"> 
+                                       <div class="license-icon"> 
+                                            <i class="fa fa-key"></i> 
+                                       </div> 
+                                        <h2> Activate Your Product </h2> 
+                                        <p> Enter your license key to activate LotusNext ERP </p> 
+                                </div> 
+                                 @using (Html.BeginForm("Index", "Default", FormMethod.Post, new { autocomplete = "off" }))
+                            {
+                                        <!-- License Key --> 
+                                    <div class="license-form-group"> 
+                                            <label class="license-label"> License Key <span class="license-required"> * </span> </label> 
+                                        <div class="license-input-wrapper"> 
+                                            <i class="fa fa-key license-input-icon"></i> 
+                                                @Html.TextBoxFor(a => a.LicenseKey, new 
+                                                    { @class = "license-input", @required = "required", @placeholder = "Enter your product license key", @autocomplete = "off" }) 
+                                        </div> 
+                                        @Html.ValidationMessageFor(a => a.LicenseKey, "", new { @class = "text-danger" }) </div> 
+                                        <!-- Activate --> 
+                                        <button type="submit" class="btn-activate"> Activate Product <i class="fa fa-arrow-right"></i> </button> 
+                                        if (Model.Status == 1)
+                                            {
+                                                <div id="divError" class="license-alert license-alert-info"> <i class="fa fa-info-circle"></i> 
+                                                        <span> 
+                                                            @Model.Message 
+                                                        </span> 
+                                                </div> 
+                                            }
+                                        else if (!string.IsNullOrEmpty(Model.ErrorMessage))
+                                        {           <div id="divError" class="license-alert license-alert-error"> 
+                                                            <i class="fa fa-exclamation-circle"></i> 
+                                                                <span> @Model.ErrorMessage </span> 
+                                                        </div>
+                                                     }
+
+                                        else if (!string.IsNullOrEmpty(Model.Message))
+                                        { 
+                                                <div id="divError" class="license-alert license-alert-error"> 
+                                                    <i class="fa fa-exclamation-circle"></i> 
+                                                        <span> @Model.Message </span> 
+                                                </div> 
+                                            } <!-- Support --> 
+                                        <div class="license-support"> 
+                                            <i class="fa fa-life-ring"></i> 
+                                                    Can't find your license key? Check your email receipt or contact 
+                                                    <a href="mailto:support@techfivedata.com"> LotusNext ERP Support </a> 
+                                        </div>
+                                } 
+                            </div> 
+                        </div> 
+                    </div> 
+                </div> 
+        </main>
+
+        <!--FOOTER -->
+        <footer class="license-footer">
+            &copy; @DateTime.Now.Year Lotus Next ERP.
+            All rights reserved.
+        </footer>
+    </div>
+</body>
+</html>

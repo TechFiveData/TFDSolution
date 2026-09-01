@@ -1,0 +1,256 @@
+﻿
+@{
+    ViewBag.Title = "UserMaster";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@{
+
+}
+<div class="breadcrumbs">
+    <div class="col-sm-4">
+        <div class="page-header float-left">
+            <div class="page-title">
+                <h1>User Master</h1>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-8">
+        <div class="page-header float-right">
+            <div class="page-title">
+                <ol class="breadcrumb text-right">
+                    <li><a href="@Url.Action("Index","Home")">Home</a></li>
+                    <li class="active">User Master</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+@if (@ViewBag.UserLimitsMessage != null)
+{
+    <div class="alert alert-warning">
+        <strong>Info!</strong> @ViewBag.UserLimitsMessage
+    </div>
+}
+<div class="animated fadeIn">
+    <div class="row m-0">
+        <div class="col-md-12 p-0">
+            <div class="card">
+                <div class="card-header">
+                    <div class="col-lg-6">
+                        <strong class="card-title"></strong>
+                    </div>
+                    <div class="col-lg-6 text-right">
+                        <a class="btn btn-sm" href="javascript:void(0);"><i class="fa fa-refresh"></i>&nbsp; Refresh</a>
+                        <a class="btn btn-sm" href="javascript:void(0);"><i class="fa fa-download"></i>&nbsp; Export</a>
+                        @*@if (@ViewBag.UserLimitsMessage == null)
+                            {
+                                <a class="btn btn-sm" href="@Url.Action("UserAction","Master")" title="Add New User"><i class="fa fa-plus"></i>&nbsp; New</a>
+                            }*@
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row form-group">
+                        <table id="tblUser" class="display cell-border" cellspacing="0" width="100%"></table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div><!-- .animated -->
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        GetUserList();
+    });
+
+    function GetUserList() {
+        $.ajax({
+            type: "GET",
+            url: "@Url.Action("getUserList", "Master")",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: OnSuccess,
+            failure: function (response) {
+                alert(response.d);
+            },
+            error: function (response) {
+                alert("Error fetching data!");
+            }
+        });
+    }
+
+    function OnSuccess(response) {
+        bindDataTable(response);
+    }
+
+    function bindDataTable(dataset) {
+        dataset = Array.isArray(dataset) ? dataset : [];
+
+        // Initialize DataTable
+        new DataTable('#tblUser', {
+            layout: {
+                topStart: {
+                    pageLength: {
+                        menu: [10, 25, 50, 100]
+                    }
+                },
+                topEnd: {
+                    search: {
+                        placeholder: 'Type search here'
+                    }
+                },
+                bottomEnd: {
+                    paging: {
+                        buttons: 5
+                    }
+                }
+            },
+            paging: true,
+            scrollCollapse: true,
+           /// scrollY: '500px',
+            data: dataset,
+            columns: [
+                {
+                    title: 'Action',
+                    className: "grid-action-item",
+                    render: function (data, type, row, meta) {
+                        var editlink = '@Url.Action("UserAction", "Master", new { uId = "_uId" })';
+                        editlink = editlink.replace("amp;", "");
+                        editlink = editlink.replace("amp;", "");
+                        editlink = editlink.replace("_uId", row.UserId);
+                        return "<a title='Edit Record' href=" + editlink + "><i class='fa fa-pencil'></i></a> &nbsp;|&nbsp; <a title='Delete Record' href='javascript:DeleteUser(\"" + row.UserId + "\")';><i class='fa fa-trash text-danger'></i></a>";
+                    },
+                },
+                {
+                    title: '#', data: 'SrNo'
+                },
+                {
+                    title: 'First Name', data: 'FirstName'
+                },
+                {
+                    title: 'Last Name', data: 'LastName'
+                },
+                {
+                    title: 'Assigned Role', data: 'RoleName'
+                },
+                {
+                    title: 'Email Id', data: 'EmailId'
+                },
+                {
+                    title: 'Status',
+                    className: 'text-center',
+                    render: function (data, type, row, meta) {
+                        return (row.IsActive === true) ? '<span class="fa fa-check text-success"></span>' : '<span class="fa fa-remove text-danger"></span>';
+                    },
+                },
+                {
+                    title: 'Is Logined?',
+                    className: 'text-center',
+                    render: function (data, type, row, meta) {
+                        return (row.IsLoggedIn === true) ? '<span class="fa fa-thumbs-up text-success display-block"></span><a href="javascript:void(0);" onclick="ReleaseUserLogin(\'' + row.UserId + '\');" title="Click here to release login">Release Login<a>' : '<span class="fa fa-thumbs-down text-danger"></span>';
+                    },
+                },
+                {
+                    title: 'Last Login Date',
+                    render: function (data, type, row, meta) {
+                        if (!row.LastLoginDate) {
+                            return "<span>N/A</span>"; // Default value for null or undefined
+                        }
+                        var editlink = formatDate(parseMSDate(row.LastLoginDate));
+                        return "<span>" + editlink + "</span>";
+                    },
+                },
+
+                {
+                    title: 'Created On',
+                    render: function (data, type, row, meta) {
+                        var editlink = formatDate(parseMSDate(row.CreatedOn));
+                        return "<span>" + editlink + "</span>";
+                    },
+                },
+            ],
+            language: {
+                emptyTable: "No records found", // Message when no data is available
+                zeroRecords: "No matching records found"
+            }
+        });
+    }
+    function formatDate(d) {
+        if (hasTime(d)) {
+            let n = d.toLocaleString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+            });
+            var s = (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear();
+            s += ' ' + n;
+        } else {
+            var s = (d.getDate() + '/' + d.getMonth() + 1) + '/' + d.getFullYear();
+        }
+        return s;
+    }
+    function hasTime(d) {
+        return !!(d.getUTCHours() || d.getUTCMinutes() || d.getUTCSeconds());
+    }
+
+    function zeroFill(n) {
+        if ((n + '').length == 1)
+            return '0' + n;
+
+        return n;
+    }
+    function parseMSDate(s) {
+        // Jump forward past the /Date(, parseInt handles the rest
+        return new Date(parseInt(s.substr(6)));
+    }
+    function DeleteUser(uId) {
+        if (confirm("Are you sure you want to delete record?")) {
+            try
+            {
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("DeleteUser", "Master")',
+                    data: { uId: uId },
+                    async: false,
+                    success: function (response) {
+                        alert(response.Response);
+                        location.reload(); // Refresh the table
+                    },
+                    error: function (response) {
+                        alert(response.Response);
+                    }
+
+                });
+            }
+            catch (e) {
+            }
+        }
+    }
+    function ReleaseUserLogin(uId) {
+    if (confirm("Are you sure you want to release user login?")) {
+        try
+        {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("ReleaseUserLogin", "Master")',
+                data: { uId: uId },
+                async: false,
+                success: function (response) {
+                    if (response != null && response.IsSuccess) {
+                        ShowToastNotification("success", response.Response);
+                        location.reload(); // Refresh the table
+                    }
+                    else {
+                        ShowToastNotification("error", response && response.Response ? resp.Response : 'User login has not been released. Please try again.');
+                    }
+                },
+                error: function (response) {
+                    ShowToastNotification("error", response.Response);
+                }
+
+            });
+        }
+        catch (e) {
+        }
+    }
+}
+</script>

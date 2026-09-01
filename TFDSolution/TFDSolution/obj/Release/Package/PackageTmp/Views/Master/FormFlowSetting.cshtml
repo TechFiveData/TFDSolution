@@ -1,0 +1,357 @@
+﻿@model TFDSolution.Transport.Master.FormMast
+
+@{
+    ViewBag.Title = "Flow Settings";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+}
+<style>
+    #ulMasterForm {
+        display: flex;
+        flex-direction: column; /* Vertical layout */
+        width: 250px; /* Optional fixed width */
+        padding-left: 0;
+        list-style: none;
+    }
+
+        #ulMasterForm .nav-item {
+            margin-bottom: 5px;
+        }
+
+            #ulMasterForm .nav-item a {
+                display: flex;
+                align-items: center;
+                padding: 5px 10px;
+                background-color: transparent;
+                /*border: 1px solid #ddd;*/
+                border-radius: 4px;
+                text-decoration: none;
+                color: #000;
+                cursor: move;
+            }
+
+                #ulMasterForm .nav-item a:hover {
+                    background-color: #27a9d7;
+                    color: #fff !important;
+                }
+
+                #ulMasterForm .nav-item a:active {
+                    background-color: #27a9d7 !important;
+                    color: #fff !important;
+                }
+
+        #ulMasterForm img,
+        #ulMasterForm i {
+            margin-right: 8px;
+        }
+</style>
+<div class="breadcrumbs">
+    <div class="col-sm-4">
+        <div class="page-header float-left">
+            <div class="page-title">
+                <h1>Forms Flow </h1>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-8">
+        <div class="page-header float-right">
+            <div class="page-title">
+                <ol class="breadcrumb text-right">
+                    <li><a href="@Url.Action("Index","Home")">Home</a></li>
+                    <li class="active">Forms Folw</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="animated fadeIn">
+    @using (Html.BeginForm("FormFlowSetting", "Master", FormMethod.Post))
+    {
+        if (ViewBag.ErrorMessages != null)
+        {
+            @*<div id="divError">
+                    <div class="alert alert-danger">
+                        <strong>Danger!</strong>  @ViewBag.ErrorMessages
+                    </div>
+                </div>*@
+            <script>
+                ShowToastNotification("error", '@ViewBag.ErrorMessages');
+            </script>
+        }
+        if (ViewBag.SuccessMessage != null)
+        {
+            <script type="text/javascript">
+             ShowToastNotification("success", '@ViewBag.SuccessMessage');
+            </script>
+        }
+        @Html.HiddenFor(m => m.FormId)
+        <div class="row m-0">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="col-lg-6">
+                            <strong class="card-title"></strong>
+                        </div>
+                        <div class="col-lg-6 text-right">
+                            <a class="btn btn-sm" id="btnrefresh" href="javascript:void(0);"><i class="fa fa-refresh"></i>&nbsp; Refresh</a>
+                            <a class="btn btn-sm" id="btnBack" href="@Url.Action("Index", "Home")"><i class="fa fa-arrow-circle-left"></i>&nbsp; Back</a>
+                        </div>
+
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex align-items-start">
+                            <div class="d-flex align-items-start">
+                                <ul class="nav nav-tabs me-3 flow-setting" id='ulMasterForm' style="width:250px;border: 1px solid #ccc;border-radius: 5px;" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                                    @{
+                                        // Map FormTitle and FormName to icon filenames
+                                        var iconMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)                                                                                                                                                               {
+                                            { "CRM", "CRM.png" },
+                                            { "Master", "Master.png" },
+                                            { "Parameter", "Parameter.png" },
+                                            { "Purchase", "Purchase.png" },
+                                            { "Sales", "Sales.png" },
+                                            { "Service", "Service.png" },
+                                            { "Production", "Service.png" },
+                                            { "Store", "Store.png" }
+                                        };
+                                        int irow = 0;
+                                        foreach (var parentItem in Model.ChildForm.ToList().OrderBy(x => x.SortOrder).ToList())
+                                        {
+                                            string iconFile = null;
+                                            if (iconMap.TryGetValue(parentItem.FormName, out var titleIcon))
+                                            {
+                                                iconFile = titleIcon;
+                                            }
+                                            var tabId = parentItem.FormName.Replace(" ", "") + "_tab";
+                                            var Id = parentItem.FormName.Replace(" ", "") + "_frm";
+                                            if (irow == 0)
+                                            {
+                                                <li class='nav-item'>
+                                                    <a style='cursor:move' id="@tabId" data-bs-toggle="pill" data-bs-target="#@Id"
+                                                       data-content="@parentItem.FormName" data-bind="@parentItem.FormId" role="tab"
+                                                       aria-controls="@Id" aria-selected="true" class="active">
+                                                        @if (!string.IsNullOrEmpty(iconFile))
+                                                        {
+                                                            <img class="mr-2" src="~/Images/Icons/@iconFile" />
+                                                        }
+                                                        else
+                                                        {
+                                                            <i class="menu-icon fa fa-laptop"></i>
+                                                        }
+                                                        @parentItem.FormTitle
+                                                    </a>
+                                                </li>
+                                            }
+                                            else
+                                            {
+                                                <li class='nav-item'>
+                                                    <a style='cursor:move' id="@tabId" data-bs-toggle="pill" data-bs-target="#@Id"
+                                                       data-content="@parentItem.FormName" data-bind="@parentItem.FormId"
+                                                       role="tab" aria-controls="@Id" aria-selected="true">
+                                                        @if (!string.IsNullOrEmpty(iconFile))
+                                                        {
+                                                            <img class="mr-2" src="~/Images/Icons/@iconFile" />
+                                                        }
+                                                        else
+                                                        {
+                                                            <i class="menu-icon fa fa-laptop"></i>
+                                                        }
+                                                        @parentItem.FormTitle
+                                                    </a>
+                                                </li>
+                                            }
+                                            irow = irow + 1;
+                                        }
+                                    }
+                                </ul>
+                            </div>
+                            <div class="tab-content" id="v-pills-tabContent" style="width:100%;">
+                                @{
+                                    int icol = 0;
+                                    foreach (var parentItem in Model.ChildForm.ToList())
+                                    {
+                                        var tabId = parentItem.FormName.Replace(" ", "") + "_tab";
+                                        var Id = parentItem.FormName.Replace(" ", "") + "_frm";
+                                        var tabcls = "";
+                                        if (icol == 0)
+                                        {
+                                            tabcls = "active";
+                                        }
+                                        icol = icol + 1;
+                                        <div class="tab-pane fade show @tabcls" id="@Id" role="tabpanel" aria-labelledby="@tabId">
+                                            <table id="permissionTable_@parentItem.FormId" data-parent-id="@parentItem.FormId" style="width:100%;"
+                                                   class="permission-table row-reorder display dataTable cell-border">
+                                                <thead>
+                                                    @*<tr>
+                                                            <th colspan="4" class="grid-action-item-bg left"><strong>@parentItem.FormTitle</strong></th>
+                                                        </tr>*@
+                                                    <tr>
+                                                        <th class="grid-action-item-bg center">#</th>
+                                                        <th class="grid-action-item-bg left">Module</th>
+                                                        <th class="left">Form Title</th>
+                                                        <th class="left">Edit Form Caption</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @{
+                                                        int sno = 1;
+                                                        foreach (var child in parentItem.ChildForm.OrderBy(x => x.SortOrder).ToList().ToList())
+                                                        {
+                                                            <tr data-formid="@child.FormId" title="Click here to Drag & Drop">
+                                                                <td class="rowReorder grid-action-item-bg center">@sno</td>
+                                                                <td class="rowReorder grid-action-item-bg text-left">@parentItem.FormTitle</td>
+                                                                <td class="rowReorder left"><i class="fa fa-bars"></i> &nbsp;@child.FormTitle</td>
+                                                                <td>
+                                                                    <div style="display: flex; align-items: center;">
+                                                                        <input data-content="@child.FormId" class="form-control w-50" placeholder="Enter form name" type="text" value="@child.FormTitle" />
+                                                                        <a class="btn btn-sm ms-2 btnSaveForm" title="Click Here to Update Form Name">
+                                                                            <i class="fa fa-save"></i>
+                                                                        </a>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                            sno++;
+                                                        }
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div><!-- .animated -->
+
+@section scripts {
+    <script>
+        $(function () {
+            $("#ulMasterForm").sortable({
+                items: "> .nav-item",
+                axis: "y",
+                placeholder: "sortable-placeholder",
+                helper: "clone",
+                tolerance: "pointer",
+                update: function (event, ui) {
+                    let sortedTabs = [];
+                    var _ParentformId = '';
+                    $("#ulMasterForm").children("li.nav-item").each(function (index) {
+                        const _formId = $(this).find("a").attr("data-bind");
+                        _ParentformId = $(this).find("a").attr("data-bind");
+                        const _formName = $(this).find("a").attr("data-content");
+                        sortedTabs.push({ FormId: _formId, FormName: _formName, SortOrder: index + 1 });
+                    });
+
+                    // Save new sort order via AJAX
+                     $.ajax({
+                        type: "POST",
+                        url: '@Url.Action("UpdateSortOrder", "Master")',
+                        contentType: "application/json; charset=utf-8",
+                         data: JSON.stringify({ ParentFormId: _ParentformId, Rows: sortedTabs }),
+                        success: function () {
+                            //ShowToastNotification("success", "Tab order updated.");
+                        },
+                        error: function () {
+                            ShowToastNotification("error", "Failed to update tab order.");
+                        }
+                     });
+                }
+            }).disableSelection();
+        });
+        $(document).ready(function () {
+            $("#ulMasterForm li a").click(function () {
+                $("#v-pills-tabContent .tab-pane").removeClass("active");
+                $($(this).attr("data-bs-target")).addClass("active");
+            })
+            $(".btnSaveForm").click(function () {
+                try {
+                    var newFormName = $(this).parent().find("input").val();
+                    if (newFormName != undefined) {
+                        if (newFormName != null && newFormName != "" && newFormName.length > 0) {
+                            $(this).parent().find("input").removeClass("input-validation-error");
+                            var _formId = $(this).parent().find("input").attr("data-content");
+                            var formData = { FormId: _formId, FormTitle: newFormName };
+                            $.get('@Url.Action("UpdateFormCaption", "Master")', formData,  function (data) {
+                                if (data != null && data.IsSuccess) {
+                                    ShowToastNotification("success", data.Response);
+                                }
+                                else {
+                                    ShowToastNotification("error", "Caption updated failed.");
+                                }
+                            }).fail(function () {
+                                // Error callback if the request fails
+                            });
+                        }
+                        else {
+                            $(this).parent().find("input").addClass("input-validation-error");
+                            $(this).parent().find("input").focus();
+                        }
+                    }
+                } catch (e) {
+                    console.log(e.message);
+                }
+            });
+            // Loop through each table with id starting with 'permissionTable_'
+            $("table[id^='permissionTable_']").each(function () {
+                var $table = $(this);
+                var tableId = $table.attr('id');
+                var parentId = $table.data('parent-id');
+                // Initialize DataTable for this table
+                var table = $table.DataTable({
+                    autoWidth: false,
+                    paging: false,
+                    info: false,
+                    searching: false,
+                    orderable:false,
+                    rowReorder: {
+                        selector: '.rowReorder'
+                    },
+                    columnDefs: [
+                        { targets: 0, orderable: false }
+                    ]
+                });
+
+                table.on('row-reorder', function (e, diff, edit) {
+                    var updatedRows = [];
+                    // Loop through the TRs in the current DOM order
+                    $table.find('tbody tr').each(function (idx) {
+                        var $tr = $(this);
+                        var formId = $tr.attr('data-formid');
+                        var formName = $tr.find('td').eq(2).text().trim(); // 2nd column is Form Name
+                        updatedRows.push({
+                            FormId: formId,
+                            FormName: formName,
+                            SortOrder: idx + 1 // 1-based index
+                        });
+                        // Optionally update the first cell in the row with the new sort order
+                        $tr.find('td').eq(0).text(idx + 1);
+                    });
+                // Get the parent id for this table
+                var parentId = $table.data('parent-id');
+                //AJAX to send new order to your backend
+                $.ajax({
+                    url: '@Url.Action("UpdateSortOrder", "Master")',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        ParentFormId: parentId,
+                        Rows: updatedRows
+                    }),
+                    success: function (response) {
+                        //location.reload(); // Reloads the entire page to reflect changes
+                        // Optionally show a success message
+                    },
+                    error: function () {
+                        alert('Failed to save new sort order.');
+                    }
+                });
+                });
+            });
+        });
+    </script>
+}

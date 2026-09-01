@@ -1,0 +1,1113 @@
+﻿@model TFDSolution.Transport.ReportTemplateModel
+
+@{
+    ViewBag.Title = @Model.ReportTitle;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- Buttons extension CSS & JS -->
+<!-- DataTables core CSS -->
+@*<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">*@
+<!-- jQuery (required) -->
+<!--<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>-->
+<!-- Select2 CSS -->
+<!--<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />-->
+<!-- Select2 JS -->
+<!--<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>-->
+<script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
+<style>
+    .select2 {
+        min-width: 600px !important;
+    }
+
+    .reportfilter label {
+        min-width: 100px;
+        text-align: right;
+    }
+
+    #tblMISReportView_wrapper .dataTables_scrollBody {
+        min-height: 250px;
+        border: 1px solid #ccc;
+    }
+
+    #tblMISReportView tbody tr:last-child td {
+        border-bottom: 1px solid #ccc;
+    }
+
+    #tblMISReportView_filter {
+        display: none;
+    }
+
+    .filters th {
+        background: transparent;
+        border: none !important;
+    }
+
+    .filters input {
+        border: 1px solid #ccc;
+        border-radius: 0;
+        height: 30px;
+    }
+
+        .filters input:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(38, 143, 255, 0.25);
+            border-color: skyblue;
+        }
+
+    .dataTables_scrollBody {
+        scroll-behavior: smooth;
+    }
+</style>
+<div class="breadcrumbs">
+    <div class="col-sm-4">
+        <div class="page-header float-left">
+            <div class="page-title">
+                <h1>MIS Reports - @Model.ReportTitle</h1>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-8">
+        <div class="page-header float-right">
+            <div class="page-title">
+                <ol class="breadcrumb text-right">
+                    <li><a href="@Url.Action("Index","Home")">Home</a></li>
+                    <li><a href="@Url.Action("MISReport","Reports")">MIS Report</a></li>
+                    <li class="active">@Model.ReportTitle</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+@{
+    var ImagesBase = Url.Content("~/TempDownload");
+}
+<input type="hidden" id="hdnReportId" />
+<div class="animated fadeIn">
+    <div class="row m-0">
+        <div class="col-md-12 p-0">
+            <div class="card">
+                <div class="card-header">
+                    <div class="col-lg-12 text-right">
+                        <label id="lblExportNotification" style="padding-top: 6px;color: crimson;display:none;float:left;">Report export in progress. Please wait...</label>
+                        <a class="btn btn-sm" onclick="ReportLoadPagination();" href="javascript:void(0);"><i class="fa fa-refresh"></i>&nbsp; Refresh</a>
+                        <a class="btn btn-sm" id="btnExportCsv" href="javascript:void(0);"><i class="fa fa-file-excel-o"></i>&nbsp; Excel</a>
+                        <a class="btn btn-sm" id="btnExportPDF" href="javascript:void(0);"><i class="fa fa-file-pdf-o"></i>&nbsp; PDF</a>
+                        <a class="btn btn-sm" data-bs-toggle="modal" data-bs-target="#emailModal" href="javascript:void(0);"><i class="fa fa-envelope"></i>&nbsp; e-Mail</a>
+                        <a class="btn btn-sm" href="@Url.Action("MISReport","Reports")"><i class="fa fa-arrow-circle-left"></i>&nbsp; Back</a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row form-group">
+                        <div class="col-md-12 form-group reportfilter">
+                            @if (Model.Header != null & Model.Header.Count > 0)
+                            {
+                                foreach (var item in Model.Header)
+                                {
+                                    if (item.FieldType == "Dropdown")
+                                    {
+                                        var ctrId = "ctrl_" + item.Id;
+                                        <div class="d-inline-block pr-3 pb-2">
+                                            <label class="form-control-label">@item.FieldCaption</label>
+                                            <div class="d-inline-block">
+                                                <select id="@ctrId" style="width:250px !important;" multiple class="form-select d-inline-block w-auto select2" data-content="@item.FieldCaption" data-parent="@item.Id" data-bind="@item.FieldName">
+                                                    <option>Select @item.FieldCaption</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                            }
+                        </div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="col-md-12 form-group reportfilter">
+                            @if (Model.Header != null & Model.Header.Count > 0)
+                            {
+                                foreach (var item in Model.Header)
+                                {
+                                    var ctrId = "ctrl_" + item.Id;
+                                    if (item.FieldType == "Text")
+                                    {
+                                        <div class="d-inline-block pr-3 pb-2">
+                                            <label class="form-control-label">@item.FieldCaption</label>
+                                            <input id="@ctrId" type="text" class="form-control d-inline-block w-auto myDate" data-bind="@item.FieldName" />
+                                        </div>
+                                    }
+                                    else if (item.FieldType == "Date")
+                                    {
+                                        <div class="d-inline-block pr-3 pb-2">
+                                            <label class="form-control-label">@item.FieldCaption</label>
+                                            <input id="@ctrId" type="date" class="form-control d-inline-block w-auto myDate" data-bind="@item.FieldName" />
+                                        </div>
+                                    }
+                                }
+                                <button onclick="ReportLoadPagination();" class="btn btn-primary btn-Generate">Generate</button>
+                            }
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-12 form-group">
+                            <table id="tblMISReportView" class="display cell-border nowrap" cellspacing="0" width="100%"></table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Email Modal -->
+<div class="modal fade" id="emailModal" tabindex="-1" aria-labelledby="emailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered float-none model-center-style" style="height:auto;">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h5 class="modal-title" id="emailModalLabel">Send Email</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="modal-body">
+                <form id="emailForm">
+                    <div class="mb-3 row">
+                        <label for="emailTo" class="col-sm-2 col-form-label">To:</label>
+                        <div class="col-sm-10">
+                            <input type="email" class="form-control" id="emailTo" placeholder="Enter recipient email" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3 row">
+                        <label for="emailCc" class="col-sm-2 col-form-label">CC:</label>
+                        <div class="col-sm-10">
+                            <input type="email" class="form-control" id="emailCc" placeholder="Enter CC email">
+                        </div>
+                    </div>
+
+                    <div class="mb-3 row">
+                        <label for="emailSubject" class="col-sm-2 col-form-label">Subject:</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="emailSubject" placeholder="Enter subject" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="emailMessage" class="form-label">Message:</label>
+                        <textarea class="form-control" id="emailMessage" rows="4" placeholder="Enter your message" required></textarea>
+                    </div>
+
+                    <div class="d-flex align-items-center">
+                        <label class="mb-0 mr-2" style="margin-top: 6px; padding-right: 6px;"><b>Report Type: </b></label>
+                        <div class="form-check form-check-inline me-2 mb-0">
+                            <input class="form-check-input" type="radio" name="myOptions" id="optionCSV" value="csv" checked>
+                            <label class="form-check-label" for="optionCSV">CSV</label>
+                        </div>
+                        <div class="form-check form-check-inline me-2 mb-0">
+                            <input class="form-check-input" type="radio" name="myOptions" id="optionPDF" value="pdf">
+                            <label class="form-check-label" for="optionPDF">PDF</label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="modal-footer">
+                <button type="button" id="btnEmailCancel" class="btn btn-secondary" data-bs-dismiss="modal" aria-label="Close">Close</button>
+                @*<button type="submit" form="emailForm" class="btn btn-primary" >Send Email</button>*@
+                <button type="button" id="btnEmailSend" class="btn btn-primary" onclick="SendEmail()">Send Email</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    function formatDateToDDMMYYYY(dateStr) {
+        if (!dateStr) return "";
+        var parts = dateStr.split("-");
+        if (parts.length !== 3) return dateStr;
+        return parts[2] + "/" + parts[1] + "/" + parts[0];
+    }
+    $(document).ready(function () {
+        let today = new Date();
+
+        // First day of current month
+        let firstDayOfMonth = new Date(
+            today.getFullYear(),
+            today.getMonth(),
+            1
+        );
+
+        // Format Date as yyyy-MM-dd
+        function formatDate(date) {
+            let year = date.getFullYear();
+            let month = String(date.getMonth() + 1).padStart(2, '0');
+            let day = String(date.getDate()).padStart(2, '0');
+
+            return `${year}-${month}-${day}`;
+        }
+
+        if ($('[data-bind="FromDate"]').length) {
+            $('[data-bind="FromDate"]').val(formatDate(firstDayOfMonth));
+        }
+
+        if ($('[data-bind="ToDate"]').length) {
+            $('[data-bind="ToDate"]').val(formatDate(today));
+        }
+        $("#btnExportCsv").addClass("disabled");
+        $(".myDate").val(new Date().toISOString().split("T")[0]);
+        //LoadColumns();
+        $('.tblMISReportView').html(
+            '<i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:#27a9d7;"></i> Loading...'
+        ).show();
+        ReportLoadPagination();
+        $('#tblMISReportView tfoot th').each(function () {
+            const title = $(this).text();
+            $(this).html('<input type="text" placeholder="Search ' + title + '" />');
+        });
+        if (!CKEDITOR.instances['emailMessage']) {
+            CKEDITOR.replace('emailMessage');
+            /*CKEDITOR.instances['emailMessage'].setData(emailmsg);*/
+        }
+        LoadSelections();
+    });
+    $('#btnExportCsv').on('click', function () {
+        try {
+            var filterData = [];
+            $(".reportfilter").find("input, select").each(function () {
+                var $el = $(this);
+                var fieldId = $el.attr("data-bind");
+                var type = $el.attr("type");
+                if (fieldId && fieldId.length > 0) {
+                    if ($el.is("select")) {
+                        if ($el.prop("multiple") == false) {
+                            const selectedVal = $(this).val();
+                            const selectedTexts = $(this).text();
+                            filterData.push({
+                                FieldName: fieldId,
+                                FieldValue: selectedVal.join(','),
+                                FieldText: selectedTexts.join(', ')
+                            });
+                        }
+                        else {
+                            const selectedVal = $el.find("option:selected").map(function () {
+                                return $(this).val();
+                            }).get();
+
+                            const selectedTexts = $el.find("option:selected").map(function () {
+                                return $(this).text();
+                            }).get();
+
+                            filterData.push({
+                                FieldName: fieldId,
+                                FieldValue: selectedVal.join(','),
+                                FieldText: selectedTexts.join(', ')
+                            });
+                        }
+
+                    } else {
+                        // input type (text, date, hidden, etc.)
+                        if (type == "date") {
+                            filterData.push({
+                                FieldName: fieldId,
+                                FieldValue: $el.val(),
+                                FieldText: formatDateToDDMMYYYY($el.val())
+                            });
+                        }
+                        else {
+                            filterData.push({
+                                FieldName: fieldId,
+                                FieldValue: $el.val(),
+                                FieldText: $el.val()
+                            });
+                        }
+                    }
+                }
+            });
+            var model = {
+                FieldData: filterData,
+                ReportId: '@Model.ReportId',
+                ReportTitle : '@Model.ReportName'
+            }
+            $("#btnExportCsv").addClass("disabled");
+            $("#lblExportNotification").show();
+            $("#btnExportCsv").attr("title", "Report is exporting. Please wait..")
+            ShowToastNotification("info", "Report is downloading... Please wait.");
+            $.ajax({
+                url: "@Url.Action("ExportReport", "Reports", new { type = "csv" })",
+                type: "POST",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(model),
+                skipLoading: true,
+                beforeSend: function () {
+                    $('#btnDownloadCsv').text('Preparing...').prop('disabled', true);
+                },
+                success: function (response) {
+                    if (response != null && response != null && response.IsSuccess) {
+                        //ShowToastNotification("success", response.Response);
+                        // Poll every 5 seconds to check export completion
+                        let pollInterval = setInterval(function () {
+                            $.ajax({
+                                url: '@Url.Action("CheckExportStatus", "Reports")',
+                                type: 'GET',
+                                async: true,
+                                skipLoading: true,
+                                data: { fileName: response.Action },
+                                success: function (res) {
+                                    if (res.IsReady) {
+                                        $("#lblExportNotification").hide();
+                                        $("#btnExportCsv").removeClass("disabled");
+                                        $("#btnExportCsv").attr("title", "Export");
+                                        clearInterval(pollInterval);
+                                        const downloadBaseUrl = '@Url.Content("~/TempDownload/")';
+                                        const url = downloadBaseUrl + encodeURIComponent(res.FileName);
+                                        // Construct download URL
+                                        //const downloadUrl = '@Url.Content("~/TempDownload/")' + res.FileName;
+
+                                        ShowToastNotification("success", "Report is ready. Downloading...");
+                                        window.open(url, '_blank');
+                                    }
+                                }
+                            });
+                        }, 5000);
+
+                        //const url = downloadBaseUrl + encodeURIComponent(response.Response);
+                        // Open download link in a new tab
+                        //window.open(url, '_blank');
+                        //ShowToastNotification("success", "Report downloaded successfully.");
+                    }
+                    else {
+                        $("#btnExportCsv").removeClass("disabled");
+                        $("#lblExportNotification").hide();
+                        $("#btnExportCsv").attr("title", "Export");
+                        ShowToastNotification("error", response.Response);
+                    }
+                },
+                complete: function () {
+                    /*$('#btnDownloadCsv').text('Preparing...').prop('disabled', true);*/
+                    //ShowToastNotification("success", "Report downloaded success.");
+                },
+                error: function () {
+                    $("#btnExportCsv").removeClass("disabled");
+                    $("#lblExportNotification").hide();
+                    $("#btnExportCsv").attr("title", "Export");
+                    ShowToastNotification("error", "Report downloaded failed. Please try again..");
+                }
+            });
+        } catch (e) {
+            $("#btnExportCsv").attr("title", "Export");
+            $("#lblExportNotification").hide();
+            $("#btnExportCsv").removeClass("disabled");
+            ShowToastNotification("error", "Report downloaded failed. Please try again..");
+        }
+    });
+    $('#btnExportPDF').on('click', function () {
+        try {
+            var filterData = [];
+            $(".reportfilter").find("input, select").each(function () {
+                var $el = $(this);
+                var fieldId = $el.attr("data-bind");
+                var type = $el.attr("type");
+                if (fieldId && fieldId.length > 0) {
+                    if ($el.is("select")) {
+                        if ($el.prop("multiple") == false) {
+                            const selectedVal = $(this).val();
+                            const selectedTexts = $(this).text();
+                            filterData.push({
+                                FieldName: fieldId,
+                                FieldValue: selectedVal.join(','),
+                                FieldText: selectedTexts.join(', ')
+                            });
+                        }
+                        else {
+                            const selectedVal = $el.find("option:selected").map(function () {
+                                return $(this).val();
+                            }).get();
+
+                            const selectedTexts = $el.find("option:selected").map(function () {
+                                return $(this).text();
+                            }).get();
+
+                            filterData.push({
+                                FieldName: fieldId,
+                                FieldValue: selectedVal.join(','),
+                                FieldText: selectedTexts.join(', ')
+                            });
+                        }
+
+                    } else {
+                        // input type (text, date, hidden, etc.)
+                        if (type == "date") {
+                            filterData.push({
+                                FieldName: fieldId,
+                                FieldValue: $el.val(),
+                                FieldText: formatDateToDDMMYYYY($el.val())
+                            });
+                        }
+                        else {
+                            filterData.push({
+                                FieldName: fieldId,
+                                FieldValue: $el.val(),
+                                FieldText: $el.val()
+                            });
+                        }
+                    }
+                }
+            });
+            var model = {
+                FieldData: filterData,
+                ReportId: '@Model.ReportId',
+                ReportTitle : '@Model.ReportName'
+            }
+            $("#btnExportPDF").addClass("disabled");
+            $("#lblExportNotification").show();
+            $("#btnExportPDF").attr("title", "Report is exporting. Please wait..")
+            ShowToastNotification("info", "Report is downloading... Please wait.");
+            $.ajax({
+                url: "@Url.Action("ExportReport", "Reports", new { type = "pdf" })",
+                type: "POST",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(model),
+                skipLoading: true,
+                beforeSend: function () {
+                    $('#btnDownloadCsv').text('Preparing...').prop('disabled', true);
+                },
+                success: function (response) {
+                    if (response != null && response != null && response.IsSuccess) {
+                        //ShowToastNotification("success", response.Response);
+                        // Poll every 5 seconds to check export completion
+                        let pollInterval = setInterval(function () {
+                            $.ajax({
+                                url: '@Url.Action("CheckExportStatus", "Reports")',
+                                type: 'GET',
+                                async: true,
+                                skipLoading: true,
+                                data: { fileName: response.Action },
+                                success: function (res) {
+                                    if (res.IsReady) {
+                                        $("#lblExportNotification").hide();
+                                        $("#btnExportPDF").removeClass("disabled");
+                                        $("#btnExportPDF").attr("title", "Export");
+                                        clearInterval(pollInterval);
+                                        const downloadBaseUrl = '@Url.Content("~/TempDownload/")';
+                                        const url = downloadBaseUrl + encodeURIComponent(res.FileName);
+                                        // Construct download URL
+                                        //const downloadUrl = '@Url.Content("~/TempDownload/")' + res.FileName;
+
+                                        ShowToastNotification("success", "Report is ready. Downloading...");
+
+                                        var link = document.createElement('a');
+                                        link.href = url;
+                                        link.download = res.FileName;
+                                        document.body.appendChild(link);
+                                        link.click();
+                                        document.body.removeChild(link);
+                                    }
+                                }
+                            });
+                        }, 5000);
+
+                        //const url = downloadBaseUrl + encodeURIComponent(response.Response);
+                        // Open download link in a new tab
+                        //window.open(url, '_blank');
+                        //ShowToastNotification("success", "Report downloaded successfully.");
+                    }
+                    else {
+                        $("#btnExportPDF").removeClass("disabled");
+                        $("#lblExportNotification").hide();
+                        $("#btnExportPDF").attr("title", "Export");
+                        ShowToastNotification("error", response.Response);
+                    }
+                },
+                complete: function () {
+                    /*$('#btnDownloadCsv').text('Preparing...').prop('disabled', true);*/
+                    //ShowToastNotification("success", "Report downloaded success.");
+                },
+                error: function () {
+                    $("#btnExportPDF").removeClass("disabled");
+                    $("#lblExportNotification").hide();
+                    $("#btnExportPDF").attr("title", "Export");
+                    ShowToastNotification("error", "Report downloaded failed. Please try again..");
+                }
+            });
+        } catch (e) {
+            $("#btnExportPDF").attr("title", "Export");
+            $("#lblExportNotification").hide();
+            $("#btnExportPDF").removeClass("disabled");
+            ShowToastNotification("error", "Report downloaded failed. Please try again..");
+        }
+    });
+    
+    function LoadSelections() {
+        $('.select2').each(function () {
+            const $select = $(this);
+            const selectId = $select.attr('id');
+            if (!selectId) return;
+            try {
+                const $parentWrapper = $select.parent();
+                const controlId = $select.data('parent');
+                const selectOption = $select.data('content');
+                $("#" + selectId).select2({
+                    dropdownParent: $parentWrapper,
+                    placeholder: 'Select ' + selectOption,
+                    allowClear: true,
+                    skipLoading: true, // Custom flag
+                    delay: 250,
+                    minimumInputLength: 0, // Set to 0 to allow dropdown without typing
+                    ajax: {
+                        url: '@Url.Action("FillReportSelction", "Common")',
+                        dataType: 'json',
+                        skipLoading: true, // <-- Custom flag
+                        delay: 250,
+                        cache: true,
+                        data: function (params) {
+                            return {
+                                _Id: controlId,
+                                searchTerm: params.term || '',
+                                page: params.page || 1,
+                            };
+                        },
+                        processResults: function (data) {
+                            return {
+                                results: data.results,
+                                pagination: {
+                                    more: data.pagination.more
+                                }
+                            };
+                        },
+                        error: function (xhr, status, error) {
+                            console.error("Select2 AJAX Error:", error);
+                            console.error("Status:", status);
+                            console.error("Response:", xhr.responseText);
+                        },
+                        cache: true
+                    }
+                });
+
+            } catch (e) {
+                console.error("Select2 Initialization Error:", e);
+            }
+        });
+    }
+    
+    function rebuildThead(keys) {
+        const headerHtml = keys.map(k => `<th>${k}</th>`).join("");
+        $("#tblMISReportView thead").html(`<tr>${headerHtml}</tr>`);
+    }
+
+    function ReportLoadPagination() {
+        try {
+            let focusedColumnIndex = null;
+            let caretPos = 0;
+            $("#btnExportCsv").addClass("disabled");
+            // collect filter data
+            const filterData = $(".reportfilter")
+                .find("input, select")
+                .map(function () {
+                    const $el = $(this);
+                    const fieldId = $el.attr("data-bind");
+
+                    if (!fieldId) return null;
+
+                    if ($el.is("select")) {
+                        const selectedTexts = $el.find("option:selected")
+                            .map(function () { return $(this).val(); })
+                            .get()
+                            .join(",");
+
+                        return { FieldName: fieldId, FieldValue: selectedTexts };
+                    }
+
+                    return { FieldName: fieldId, FieldValue: $el.val() };
+                }).get();
+            // destroy old instance if any
+            if ($.fn.DataTable.isDataTable('#tblMISReportView')) {
+                $('#tblMISReportView').DataTable().destroy();
+                $('#tblMISReportView thead').empty(); // IMPORTANT
+            }
+            $.ajax({
+                url: "@Url.Action("getReportDataLargeColumns", "Reports")",
+                type: "POST",
+                skipLoading: true,
+                data: { draw: 0, start: 1, length: 1, search: "",  FieldData: filterData, ReportId: "@Model.ReportId" },
+                success: function (json) {
+                    if (!json.columns || json.columns.length === 0) {
+                        ShowToastNotification("info", "No data found");
+                        return;
+                    }
+                    const dynamicColumns = json.columns;
+                    // Get secondColumns safely
+                    let summaryColumns = json.secondColumns;
+                    // re-init
+                    if ($('#tblMISReportView tfoot').length === 0) {
+                        let footer = '<tfoot><tr>';
+                        dynamicColumns.forEach(() => footer += '<th></th>');
+                        footer += '</tr></tfoot>';
+                        $('#tblMISReportView').append(footer);
+                    }
+                    let table = $("#tblMISReportView").DataTable({
+                        destroy: true,
+                        deferLoading: 0,
+                        columns: dynamicColumns,
+                        scrollY: "60vh",
+                        scrollX: true,
+                        scrollCollapse: true,
+                        searching: true,
+                        ordering: false,
+                        serverSide: true,
+                        paging: true,
+                        processing: true,
+                        fixedHeader: false,
+                        orderCellsTop: true,
+                        lengthMenu: [10, 25, 100, 200, 500],
+                        pageLength: 100,
+                        language: {
+                            emptyTable: "Data not available",
+                            infoEmpty: "No records available - Got it?",
+                            processing: ""
+                        },
+                        columnDefs: [{
+                            targets: "_all",
+                            render: function (data) {
+                                if (data === null || data === undefined || data === "NULL" || data === "01/01/1900") {
+                                    return "";
+                                }
+                                return data;
+                            }
+                        }],
+                        ajax: {
+                            url: "@Url.Action("getReportDataLarge2","Reports")",
+                            type: "POST",
+                            skipLoading: true,
+                            data: function (d) {
+                                d.search = d.search.value;
+                                d.FieldData = filterData;
+                                d.ReportId = "@Model.ReportId";
+                            },
+                            dataSrc: function (json) {
+                                if (!json || !json.data || json.data.length === 0) {
+                                    $("#btnExportCsv").addClass("disabled");
+                                    return [];
+                                }
+                                return json.data;
+                            }
+                        },
+                        initComplete: function () {
+                            addTopFilterRow(this.api());
+                        },
+                        footerCallback: function (row, data, start, end, display) {
+                            let api = this.api();
+                            // 🔄 Clear footer first
+                            $(api.table().footer()).find('th').html('');
+
+                            // 🔢 Safe numeric conversion
+                            let num = function (val) {
+
+                                if (val === null || val === undefined || val === '') {
+                                    return null;
+                                }
+
+                                if (typeof val === 'string') {
+                                    val = val.replace(/,/g, '').replace(/[^0-9.-]+/g, '');
+                                }
+
+                                let parsed = parseFloat(val);
+
+                                return isNaN(parsed) ? null : parsed;
+                            };
+
+                            $(api.column(0).footer()).html('<b>Summary</b>');
+
+                            // Check if secondColumns actually exists and has values
+                            let hasSecondColumns =
+                                Array.isArray(summaryColumns) &&
+                                summaryColumns.length > 0;
+                            
+                            console.log("secondColumns:", summaryColumns);
+                            console.log("hasSecondColumns:", hasSecondColumns);
+                            if (hasSecondColumns == false)
+                                return;
+                            api.columns().every(function () {
+                                let column = this;
+                                let colName = column.dataSrc();
+                                if (!colName) return;
+                                try {
+                                    // Get column data
+                                    let colData = column
+                                        .data({ search: 'applied' })
+                                        .toArray();
+
+                                    if (!colData.length) {
+                                        $(column.footer()).html('');
+                                        return;
+                                    }
+                                    // --------------------------------------------------
+                                    // Check if current column exists in secondColumns
+                                    // --------------------------------------------------
+                                    let isSummaryColumn = false;
+                                    if (hasSecondColumns) {
+                                        isSummaryColumn = summaryColumns.some(function (x) {
+                                            return x != null &&
+                                                x.toString().trim().toLowerCase() ===
+                                                colName.toString().trim().toLowerCase();
+                                        });
+                                    }
+                                    // --------------------------------------------------
+                                    // Get numeric values
+                                    // --------------------------------------------------
+                                    let numericValues = colData
+                                        .map(num)
+                                        .filter(function (v) {
+                                            return v !== null;
+                                        });
+                                    // --------------------------------------------------
+                                    // Decide whether to calculate summary
+                                    // --------------------------------------------------
+                                    let shouldCalculate = false;
+                                    if (hasSecondColumns) {
+                                        // secondColumns exists
+                                        // Only calculate specified columns
+                                        shouldCalculate = isSummaryColumn;
+                                    } else {
+                                        // secondColumns doesn't exist
+                                        // Automatically calculate numeric columns
+                                        shouldCalculate = numericValues.length > 0;
+                                    }
+                                    // --------------------------------------------------
+                                    // Calculate total
+                                    // --------------------------------------------------
+                                    if (shouldCalculate) {
+
+                                        let total = numericValues.reduce(function (sum, value) {
+                                            return sum + value;
+                                        }, 0);
+
+                                        $(column.footer()).html(
+                                            total.toLocaleString('en-IN', {
+                                                minimumFractionDigits: 2,
+                                                maximumFractionDigits: 2
+                                            })
+                                        );
+
+                                    } else {
+
+                                        // Text / Date / non-summary column
+                                        $(column.footer()).html('');
+                                    }
+                                    $(api.column(0).footer()).html('<b>Summary</b>');
+
+                                } catch (e) {
+
+                                    console.error(
+                                        'Footer calculation error:',
+                                        colName,
+                                        e
+                                    );
+                                    $(api.column(0).footer()).html('<b>Summary</b>');
+                                    //$(column.footer()).html('');
+                                }
+                            });
+                        }
+                        //drawCallback: function () {
+                        //    let api = this.api();
+
+                        //    if ($('#tblMISReportView thead tr.filters').length) return;
+
+                        //    let filterRow = $('<tr class="filters"></tr>');
+                        //    let debounceTimer;
+
+                        //    $('#tblMISReportView thead tr:first th').each(function (i) {
+
+                        //        let th = $('<th></th>');
+
+                        //        $('<input>', {
+                        //            type: 'text',
+                        //            class: 'form-control column-filter',
+                        //            style: 'width:100%; box-sizing:border-box;',
+                        //            'data-index': i,
+                        //            value: api.column(i).search()
+                        //        })
+                        //            .appendTo(th)
+                        //            .on('focus', function () {
+                        //                focusedColumnIndex = i;
+                        //            })
+                        //            .on('keyup change clear', function () {
+
+                        //                caretPos = this.selectionStart;
+                        //                focusedColumnIndex = i;
+
+                        //                let value = this.value;
+                        //                clearTimeout(debounceTimer);
+
+                        //                debounceTimer = setTimeout(() => {
+                        //                    if (api.column(i).search() !== value) {
+                        //                        api.column(i).search(value).draw(false); // ✅ prevent full redraw
+                        //                    }
+                        //                }, 400);
+                        //            });
+
+                        //        filterRow.append(th);
+                        //    });
+
+                        //    $('#tblMISReportView thead').append(filterRow);
+
+                        //    // 🔹 Restore focus after draw
+                        //    if (focusedColumnIndex !== null) {
+                        //        let input = $('#tblMISReportView thead tr.filters input')
+                        //            .eq(focusedColumnIndex);
+
+                        //        if (input.length) {
+                        //            input.focus();
+                        //            input[0].setSelectionRange(caretPos, caretPos);
+                        //        }
+                        //    }
+                        //}
+                    });
+                    setTimeout(() => {
+                        table.ajax.reload();
+                    }, 0);
+                    table.on('processing.dt', function (e, settings, processing) {
+                        if (processing) {
+                            // show spinner
+                            $('.dataTables_processing').html(
+                                '<i class="fa fa-spinner fa-spin fa-3x fa-fw" style="color:#27a9d7;"></i> Loading...'
+                            ).show();
+                        } else {
+                            // hide spinner
+                            $('.dataTables_processing').hide();
+                            $("#btnExportCsv").removeClass("disabled");
+                        }
+                    });
+                }
+            });
+        } catch (e) {
+            ShowToastNotification("error", e.message);
+            $("#btnExportCsv").addClass("disabled");
+        }
+    }
+    function addTopFilterRow(api) {
+        let thead = $('.dataTables_scrollHead thead');
+
+        // Prevent duplicate filter rows
+        if (thead.find('tr.filters').length) return;
+
+        let filterRow = $('<tr class="filters"></tr>');
+
+        thead.find('tr:eq(0) th').each(function (i) {
+
+            let headerText = $(this).text().trim();  // ✅ Get header name
+
+            let th = $('<th></th>');
+
+            $('<input>', {
+                type: 'text',
+                class: 'form-control',
+                placeholder: 'Search ' + headerText,   // ✅ placeholder
+                style: 'width:100%'
+            })
+                .appendTo(th)// Ignore Tab key
+                .on('keydown', function (e) {
+                    if (e.key === 'Tab') return;
+                })
+                .on('keyup change', function (e) {
+                    if (e.key === 'Tab') return;
+                    api.column(i).search(this.value).draw();
+                });
+
+            filterRow.append(th);
+        });
+
+        // 🔥 INSERT BEFORE HEADER ROW
+        thead.prepend(filterRow);
+    }
+
+    async function SendEmail() {
+         try
+         {
+            $("#btnEmailSend").attr("disabled", true);
+            $("#pageLoader").fadeIn();
+            ShowToastNotification("info", "Email is sending..Please wait.");
+             if (!validateEmailForm()) {
+                 $("#btnEmailSend").attr("disabled", false);
+                 return;
+             }
+            const bodyContent = CKEDITOR.instances["emailMessage"].getData().trim();
+            const reportModel = {
+                FieldData: getReportFilters(),
+                ReportId: '@Model.ReportId',
+                ReportTitle: '@Model.ReportName'
+            };
+            const reportType = $("input[name='myOptions']:checked").val();
+            $("#btnDownloadCsv")
+                .text("Preparing...")
+                .prop("disabled", true);
+
+            const downloadUrl = await generateReport(reportModel, reportType);
+            await sendReportEmail(downloadUrl, bodyContent);
+        }
+        catch (ex) {
+             console.error(ex);
+             $("#btnEmailSend").attr("disabled", false);
+            ShowToastNotification("error", ex.message || "Something went wrong.");
+        }
+        finally {
+            $("#btnDownloadCsv")
+                .text("Download")
+                .prop("disabled", false);
+        }
+    }
+    function validateEmailForm() {
+        $(".validation").remove();
+        $(".input-validation-error").removeClass("input-validation-error");
+        let isValid = true;
+        function validate(selector, message) {
+            const control = $(selector);
+            if (!control.val().trim()) {
+                control
+                    .addClass("input-validation-error")
+                    .after(`<div class="validation text-danger">${message}</div>`);
+                isValid = false;
+            }
+        }
+
+        validate("#emailTo", "Enter email");
+        validate("#emailSubject", "Enter subject");
+        const body = CKEDITOR.instances["emailMessage"].getData().trim();
+        if (!body) {
+            $("#emailMessage")
+                .addClass("input-validation-error")
+                .after("<div class='validation text-danger'>Enter message</div>");
+
+            isValid = false;
+        }
+        return isValid;
+     }
+    function getReportFilters() {
+         const filters = [];
+         $(".reportfilter")
+             .find("input,select")
+             .each(function () {
+                 const el = $(this);
+                 const fieldName = el.data("bind");
+                 if (!fieldName)
+                     return;
+                 let value = "";
+                 let text = "";
+
+                 if (el.is("select")) {
+
+                     if (el.prop("multiple")) {
+
+                         value = el.val() ? el.val().join(",") : "";
+
+                         text = el.find("option:selected")
+                             .map(function () {
+                                 return $(this).text();
+                             }).get().join(", ");
+
+                     } else {
+
+                         value = el.val() || "";
+                         text = el.find("option:selected").text();
+                     }
+
+                 } else {
+
+                     value = el.val();
+
+                     text = el.attr("type") === "date"
+                         ? formatDateToDDMMYYYY(value)
+                         : value;
+                 }
+
+                 filters.push({
+                     FieldName: fieldName,
+                     FieldValue: value,
+                     FieldText: text
+                 });
+
+             });
+
+         return filters;
+     }
+    function generateReport(reportModel, reportType) {
+        return new Promise(function (resolve, reject) {
+            $.ajax({
+                url: '@Url.Action("ExportReport","Reports")?type=' + encodeURIComponent(reportType),
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(reportModel),
+                success: function (response) {
+                    if (!response.IsSuccess) {
+                        reject(new Error(response.Response));
+                        return;
+                    }
+                    waitForReport(response.Action)
+                        .then(resolve)
+                        .catch(reject);
+                },
+                error: function () {
+                    $("#btnEmailSend").attr("disabled", false);
+                    reject(new Error("Report generation failed."));
+                }
+            });
+        });
+    }
+    function waitForReport(fileName) {
+        return new Promise(function (resolve) {
+            const timer = setInterval(function () {
+                $.get('@Url.Action("CheckExportStatus","Reports")',
+                    { fileName: fileName },
+                    function (res) {
+                        if (res.IsReady) {
+                            clearInterval(timer);
+                            resolve(
+                                '@Url.Content("~/TempDownload/")' +
+                                encodeURIComponent(res.FileName)
+                            );
+                        }
+                    });
+            }, 5000);
+        });
+    }
+    function sendReportEmail(downloadUrl, bodyContent) {
+        const emailModel = {
+            CCEmail: $("#emailCc").val(),
+            BCCEmail: $("#emailBcc").val(),
+            ToEmail: $("#emailTo").val(),
+            Subject: $("#emailSubject").val(),
+            MessageBody: bodyContent,
+            ReportId: '@Model.ReportId',
+            ReportFileName: '@Model.ReportName',
+            FullFilePath: downloadUrl
+        };
+        return new Promise(function (resolve, reject) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("SendTransactionEmail","Reports")',
+                contentType: "application/json",
+                data: JSON.stringify(emailModel),
+                beforeSend: function () {
+                    $("#pageLoader").fadeIn();
+                },
+                success: function (res) {
+                    $("#btnEmailSend").attr("disabled", false);
+                    if (res.IsSuccess) {
+                        ShowToastNotification("success", res.Response);
+                        $("#btnEmailCancel").click();
+                        resolve();
+                    } else {
+                        reject(new Error(res.Response));
+                    }
+                },
+                error: function () {
+                    $("#btnEmailSend").attr("disabled", false);
+                    reject(new Error("Email sending failed"));
+                },
+                complete: function () {
+                    $("#btnEmailSend").attr("disabled", false);
+                    $("#btnEmailCancel").click();
+                    $("#pageLoader").fadeOut();
+                }
+            });
+        });
+    }
+</script>

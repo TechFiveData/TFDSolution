@@ -1,0 +1,12 @@
+D:\Amit\TFD\Source\TFDSolution\TFDSolution\TFDSolution.Data\bin\Release\TFDSolution.Data.dll.config
+D:\Amit\TFD\Source\TFDSolution\TFDSolution\TFDSolution.Data\bin\Release\TFDSolution.Data.dll
+D:\Amit\TFD\Source\TFDSolution\TFDSolution\TFDSolution.Data\bin\Release\TFDSolution.Data.pdb
+D:\Amit\TFD\Source\TFDSolution\TFDSolution\TFDSolution.Data\bin\Release\EntityFramework.dll
+D:\Amit\TFD\Source\TFDSolution\TFDSolution\TFDSolution.Data\bin\Release\EntityFramework.SqlServer.dll
+D:\Amit\TFD\Source\TFDSolution\TFDSolution\TFDSolution.Data\bin\Release\EntityFramework.xml
+D:\Amit\TFD\Source\TFDSolution\TFDSolution\TFDSolution.Data\bin\Release\EntityFramework.SqlServer.xml
+D:\Amit\TFD\Source\TFDSolution\TFDSolution\TFDSolution.Data\obj\Release\TFDSolution.Data.csproj.AssemblyReference.cache
+D:\Amit\TFD\Source\TFDSolution\TFDSolution\TFDSolution.Data\obj\Release\TFDSolution.Data.csproj.CoreCompileInputs.cache
+D:\Amit\TFD\Source\TFDSolution\TFDSolution\TFDSolution.Data\obj\Release\TFDSolut.2B660242.Up2Date
+D:\Amit\TFD\Source\TFDSolution\TFDSolution\TFDSolution.Data\obj\Release\TFDSolution.Data.dll
+D:\Amit\TFD\Source\TFDSolution\TFDSolution\TFDSolution.Data\obj\Release\TFDSolution.Data.pdb
