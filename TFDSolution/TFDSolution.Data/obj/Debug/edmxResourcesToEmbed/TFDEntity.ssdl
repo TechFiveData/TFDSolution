@@ -136,6 +136,8 @@
     <Property Name="AllowMultiDocument" Type="bit" />
     <Property Name="IsSummary" Type="bit" />
     <Property Name="TemplateId" Type="int" />
+    <Property Name="FieldFormat" Type="nvarchar" MaxLength="50" />
+    <Property Name="IsTimeField" Type="bit" />
   </EntityType>
   <EntityType Name="m_FormFieldOption">
     <Key>

@@ -23,7 +23,7 @@
     </div>
 </div>
 <div class="animated fadeIn">
-    <div class="row">
+    <div class="row m-0">
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header">
@@ -31,12 +31,12 @@
                         <div>
                             <select id="ddlSelect" class="form-control form-select" style="width:200px;float:left;">
                                 @*@if (Model != null && Model.ChildForm != null)
+                                {
+                                    foreach (var item in Model.ChildForm)
                                     {
-                                        foreach (var item in Model.ChildForm)
-                                        {
-                                            <option data-bind="@item.Prefix" value="@item.FormId">@item.FormTitle</option>
-                                        }
-                                    }*@
+                                        <option data-bind="@item.Prefix" value="@item.FormId">@item.FormTitle</option>
+                                    }
+                                }*@
                             </select>
                         </div>
                         <div>

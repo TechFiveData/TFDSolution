@@ -329,6 +329,8 @@
     <EntitySetMapping Name="m_FormField">
       <EntityTypeMapping TypeName="TFDSolutionModel.m_FormField">
         <MappingFragment StoreEntitySet="m_FormField">
+          <ScalarProperty Name="IsTimeField" ColumnName="IsTimeField" />
+          <ScalarProperty Name="FieldFormat" ColumnName="FieldFormat" />
           <ScalarProperty Name="TemplateId" ColumnName="TemplateId" />
           <ScalarProperty Name="IsSummary" ColumnName="IsSummary" />
           <ScalarProperty Name="AllowMultiDocument" ColumnName="AllowMultiDocument" />

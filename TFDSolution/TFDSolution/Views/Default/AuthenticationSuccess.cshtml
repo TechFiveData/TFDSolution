@@ -1,89 +1,798 @@
 ﻿@model TFDSolution.Models.LicenseModel
 @{
-    Layout = null;
+    ViewBag.Title = "Product Activation";
+    Layout = "";
+
+    var ImagesBase = Url.Content("~/Images");
+    var ContentBase = Url.Content("~/Content");
 }
 <!DOCTYPE html>
 <html>
 <head>
-    <title>TFD | Welcome</title>
-    @{
-        var ImagesBase = Url.Content("~/Images");
-        var ContentBase = Url.Content("~/Content");
-    }
-    <link rel="stylesheet" href="@ContentBase/Site.css">
+    <title>Acticated | Lotus Next ERP</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="@ContentBase/theme//theme1/login.css">
+    <link href="@ContentBase/main/assets/css/style.css" rel="stylesheet" />
     <link href="@ContentBase/bootstrap.min.css" rel="stylesheet" />
     <link href="@ContentBase/main/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="@ContentBase/bootstrap.min.css" rel="stylesheet" />
+    <link href="@ContentBase/main/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
     <script src="~/Scripts/jquery-3.7.1.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#UserName").focus();
+            $.getJSON("https://api.ipify.org?format=json", function (data) {
+                console.log("User IP:", data.ip);
+                $("#IPAddress").val(data.ip);
+            });
+        });
+    </script>
     <style>
-        .tableLic tbody td {
-            padding: 0 10px;
-            text-align: left;
+        .login-page {
+            background-image: url('@Url.Content(ImagesBase + "/theme1.jpg")');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
         }
+        /* =========================================================
+       LOGIN CARD
+    ========================================================= */
+
+        .login-card {
+            width: 100%;
+            max-width: 620px;
+            margin: auto;
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 35px 38px 30px;
+            border: 1px solid #e3edf2;
+            box-shadow: 0 15px 45px rgba(31, 78, 95, 0.10);
+            position: relative;
+        }
+
+        /* =========================================================
+       LOGIN HEADING
+    ========================================================= */
+
+        .login-heading {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .login-icon {
+            width: 55px;
+            height: 55px;
+            margin: 0 auto 14px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(39, 169, 215, 0.10);
+            color: #27a9d7;
+            font-size: 24px;
+        }
+
+        .login-heading h2 {
+            margin: 0;
+            color: #263238;
+            font-size: 27px;
+            font-weight: 700;
+        }
+
+        .login-heading p {
+            margin: 7px 0 0;
+            color: #78909c;
+            font-size: 14px;
+        }
+
+        /* =========================================================
+       LICENSE TABLE
+    ========================================================= */
+
+        .tableLic {
+            width: 100%;
+            margin-bottom: 2px;
+            border-collapse: separate;
+            border-spacing: 0;
+            overflow: hidden;
+            border: 1px solid #dfecef;
+            border-radius: 10px;
+            background: #ffffff;
+        }
+
+            .tableLic tbody tr {
+                transition: background 0.2s ease;
+            }
+
+                .tableLic tbody tr:hover {
+                    background: #f8fcfe;
+                }
+
+            .tableLic td {
+                padding: 10px 5px;
+                vertical-align: middle;
+                border: 0;
+                border-bottom: 1px solid #edf3f5;
+                font-size: 13px;
+                color: #455a64;
+            }
+
+            .tableLic tr:last-child td {
+                border-bottom: 0;
+            }
+
+            .tableLic td:first-child {
+                width: 44%;
+                background: #f8fbfc;
+                color: #546e7a;
+                font-weight: 600;
+            }
+
+            .tableLic td:last-child {
+                width: 56%;
+                color: #263238;
+                font-weight: 500;
+            }
+
+            .tableLic label {
+                margin: 0;
+                font-size: 13px;
+                line-height: 1.5;
+            }
+
+            .tableLic .form-label {
+                color: #546e7a;
+                font-weight: 600;
+            }
+
+            .tableLic a {
+                color: #27a9d7;
+                font-weight: 600;
+            }
+
+                .tableLic a:hover {
+                    color: #168db8;
+                }
+
+        /* =========================================================
+       EXPIRATION VALUE
+    ========================================================= */
+
+        .text-danger {
+            color: #e05252 !important;
+        }
+
+        /* =========================================================
+       SUCCESS MESSAGE
+    ========================================================= */
+
+        .alert-success {
+            margin: 20px 0 22px;
+            padding: 13px 16px;
+            border-radius: 9px;
+            border: 1px solid #ccefe0;
+            background: #f0fbf6;
+            color: #287a59;
+            font-size: 13px;
+        }
+
+            .alert-success strong {
+                font-weight: 700;
+            }
+
+        /* =========================================================
+       ACCOUNT LINKS
+    ========================================================= */
+
+        .account-links {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            color: #90a4ae;
+            font-size: 13px;
+            text-align: center;
+        }
+
+            .account-links a {
+                color: #27a9d7;
+                font-weight: 600;
+                transition: all 0.2s ease;
+            }
+
+                .account-links a:hover {
+                    color: #168db8;
+                }
+
+            .account-links .separator {
+                color: #c5d1d6;
+                margin: 0 4px;
+            }
+
+            .account-links i {
+                margin-left: 4px;
+                font-size: 11px;
+            }
+
+        /* =========================================================
+       FOOTER
+    ========================================================= */
+
+        .footer {
+            width: 100%;
+            padding: 17px 20px;
+            text-align: center;
+            position: relative;
+            z-index: 5;
+            color: #90a4ae;
+            font-size: 12px;
+            background: rgba(255, 255, 255, 0.55);
+            border-top: 1px solid rgba(39, 169, 215, 0.08);
+        }
+
+        /* =========================================================
+       OPTIONAL LEFT INTRO PANEL
+    ========================================================= */
+
+        .intro-panel {
+            padding: 35px;
+        }
+
+        .intro-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 13px;
+            border-radius: 30px;
+            background: rgba(39, 169, 215, 0.10);
+            color: #27a9d7;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.7px;
+        }
+
+            .intro-badge i {
+                margin-right: 7px;
+            }
+
+        .intro-title {
+            margin: 22px 0 15px;
+            color: #263238;
+            font-size: 42px;
+            line-height: 1.15;
+            font-weight: 700;
+        }
+
+            .intro-title span {
+                color: #27a9d7;
+            }
+
+        .intro-description {
+            max-width: 480px;
+            color: #607d8b;
+            font-size: 15px;
+            line-height: 1.7;
+        }
+
+        /* FEATURES */
+
+        .features {
+            display: flex;
+            flex-wrap: wrap;
+            margin-top: 28px;
+            gap: 12px;
+        }
+
+        .feature {
+            display: flex;
+            align-items: center;
+            padding: 9px 13px;
+            background: #ffffff;
+            border-radius: 8px;
+            border: 1px solid #e5eef2;
+            color: #607d8b;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+            .feature i {
+                margin-right: 7px;
+                color: #27a9d7;
+            }
+
+        /* ERP VISUAL */
+
+        .erp-visual {
+            margin-top: 30px;
+            position: relative;
+            min-height: 190px;
+        }
+
+        .visual-card {
+            background: #ffffff;
+            border: 1px solid #e1edf1;
+            border-radius: 13px;
+            box-shadow: 0 12px 30px rgba(50, 90, 105, 0.08);
+        }
+
+        .visual-main {
+            width: 80%;
+            padding: 18px;
+        }
+
+        .visual-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .visual-header-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: #546e7a;
+        }
+
+        .visual-dots {
+            display: flex;
+            gap: 4px;
+        }
+
+            .visual-dots span {
+                width: 5px;
+                height: 5px;
+                border-radius: 50%;
+                background: #b0bec5;
+            }
+
+        .chart {
+            height: 105px;
+            display: flex;
+            align-items: flex-end;
+            gap: 12px;
+            margin-top: 15px;
+            padding: 0 10px;
+        }
+
+        .bar {
+            flex: 1;
+            min-height: 20px;
+            border-radius: 5px 5px 0 0;
+            background: #27a9d7;
+            opacity: 0.75;
+        }
+
+            .bar:nth-child(1) {
+                height: 35%;
+            }
+
+            .bar:nth-child(2) {
+                height: 55%;
+            }
+
+            .bar:nth-child(3) {
+                height: 45%;
+            }
+
+            .bar:nth-child(4) {
+                height: 75%;
+            }
+
+            .bar:nth-child(5) {
+                height: 60%;
+            }
+
+            .bar:nth-child(6) {
+                height: 90%;
+            }
+
+        .visual-small {
+            position: absolute;
+            right: 0;
+            bottom: -10px;
+            width: 190px;
+            padding: 17px;
+        }
+
+        .small-title {
+            font-size: 11px;
+            color: #90a4ae;
+        }
+
+        .small-value {
+            margin: 5px 0;
+            font-size: 22px;
+            font-weight: 700;
+            color: #263238;
+        }
+
+        .small-growth {
+            font-size: 11px;
+            color: #2e9d72;
+        }
+
+            .small-growth i {
+                margin-right: 4px;
+            }
+
     </style>
 </head>
-<body class="loginbody" style="background-image: Url('@ImagesBase/theme1.jpg')">
-    <div class="header-block">
-        <span>www.techfivedata.com</span>
-    </div>
-    
-    <div class="section1"></div>
-    <!--SECTION 2-->
-    <div class="section2">
-        <div class="main" style="width:850px;margin-left:5%;">
-            <h4 style="border-bottom: 1px double #f39b3b; padding-bottom: 15px;">Lincese Key Information</h4>
-            <div class="row">
-                <div class="col-12 form-group">
-                    <table class="tableLic display disabled table table-bordered">
-                        <tbody>
-                            <tr>
-                                <td><label class="form-label">License scheme version</label></td>
-                                <td><label>@Model.LicenseVersion</label></td>
-                            </tr>
-                            <tr>
-                                <td><label class="form-label">You license key expires on </label></td>
-                                <td><label>@Model.ExpirationDate</label></td>
-                            </tr>
-                            <tr>
-                                <td><label class="form-label">You license key expires withing two weeks </label></td>
-                                <td>
-                                    @if (Model.RemainingDays <= 14)
-                                    {
-                                        <label><span class="text-danger">Yes</span>, Please Contact <a href="mailto:support@techfivedata.com">TechFiveData</a>. to renew the license.</label>
-                                    }
-                                    else
-                                    {
-                                        <label>No</label>
-                                    }
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><label class="form-label">Day remaining till license expiration</label></td>
-                                <td><label class="text-danger">@Model.RemainingDays</label></td>
-                            </tr>
-                            <tr>
-                                <td><label class="form-label">License key type</label></td>
-                                <td><label>@Model.LicenseKeyType</label></td>
-                            </tr>
-                            <tr>
-                                <td><label class="form-label">Allowed Maximum Users</label></td>
-                                <td><label>@Model.MaximumUser</label></td>
-                            </tr>
-                            <tr>
-                                <td><label class="form-label">Information</label></td>
-                                <td><label>@Model.Message</label></td>
-                            </tr>
-                        </tbody>
-                    </table>
+
+<body>
+    <div class="login-page">
+        <!-- Decorative Background -->
+        <div class="circle-one"></div>
+        <div class="circle-two"></div>
+        <!-- =========================================
+             HEADER
+        ========================================== -->
+        <header class="topbar">
+            <a href="#" class="brand">
+                <div class="brand-logo">
+                    <i class="fa fa-line-chart"></i>
+                </div>
+                <div class="brand-name">
+                    LotusNext <span>ERP</span>
+                </div>
+            </a>
+            <a href="#" class="help-link">
+                <i class="fa fa-question-circle"></i>Need Help?
+            </a>
+        </header>
+        <!-- =========================================
+             MAIN
+        ========================================== -->
+        <main class="main-container">
+            <div class="login-container">
+                <div class="row align-items-center">
+                    <!-- =================================
+                         LEFT BRANDING
+                    ================================== -->
+                    <div class="col-lg-6">
+                        <div class="intro-panel d-none">
+                            <div class="intro-badge">
+                                <i class="fa fa-spotify"></i>
+                                SMART BUSINESS MANAGEMENT
+                            </div>
+                            <h1 class="intro-title">
+                                Run your business
+                                <br>
+                                <span>smarter with ERP.</span>
+                            </h1>
+                            <p class="intro-description">
+                                Bring your finance, inventory, sales,
+                                purchasing and operations together with
+                                one powerful ERP platform designed for
+                                modern businesses.
+                            </p>
+
+
+                            <!-- Features -->
+
+                            <div class="features">
+
+                                <div class="feature">
+
+                                    <i class="fa fa-shield-alt"></i>
+
+                                    Secure
+
+                                </div>
+
+
+                                <div class="feature">
+
+                                    <i class="fa fa-bolt"></i>
+
+                                    Powerful
+
+                                </div>
+
+
+                                <div class="feature">
+
+                                    <i class="fa fa-cloud"></i>
+
+                                    Cloud Ready
+
+                                </div>
+
+
+                                <div class="feature">
+
+                                    <i class="fa fa-chart-line"></i>
+
+                                    Business Insights
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- ERP Dashboard -->
+
+                            <div class="erp-visual">
+
+
+                                <div class="visual-card visual-main">
+
+
+                                    <div class="visual-header">
+
+                                        <div class="visual-header-title">
+                                            Business Overview
+                                        </div>
+
+
+                                        <div class="visual-dots">
+
+                                            <span></span>
+                                            <span></span>
+                                            <span></span>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <div class="chart">
+
+                                        <div class="bar"></div>
+                                        <div class="bar"></div>
+                                        <div class="bar"></div>
+                                        <div class="bar"></div>
+                                        <div class="bar"></div>
+                                        <div class="bar"></div>
+
+                                    </div>
+
+                                </div>
+
+
+                                <div class="visual-card visual-small">
+
+                                    <div class="small-title">
+                                        Revenue
+                                    </div>
+
+                                    <div class="small-value">
+                                        ₹ 24.8L
+                                    </div>
+                                    <div class="small-growth">
+                                        <i class="fa fa-arrow-up"></i>
+                                        18.6% Growth
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- =================================
+                         LOGIN
+                    ================================== -->
+                    <div class="col-lg-6">
+                        <div class="login-card">
+
+                            <!-- Heading -->
+
+                            <div class="login-heading">
+
+                                <div class="login-icon">
+                                    <i class="fa fa-key"></i>
+                                </div>
+
+                                <h2>
+                                    Welcome back
+                                </h2>
+
+                                <p>
+                                    License Key Information
+                                </p>
+
+                            </div>
+
+
+                            <!-- License Table -->
+
+                            <div class="row">
+
+                                <div class="col-12 form-group">
+
+                                    <table class="tableLic table">
+
+                                        <tbody>
+
+                                            <tr>
+                                                <td>
+                                                    <label class="form-label">
+                                                        License scheme version
+                                                    </label>
+                                                </td>
+
+                                                <td>
+                                                    <label>
+                                                        @Model.LicenseVersion
+                                                    </label>
+                                                </td>
+                                            </tr>
+
+
+                                            <tr>
+                                                <td>
+                                                    <label class="form-label">
+                                                        Your license key expires on
+                                                    </label>
+                                                </td>
+
+                                                <td>
+                                                    <label>
+                                                        @Model.ExpirationDate
+                                                    </label>
+                                                </td>
+                                            </tr>
+
+
+                                            <tr>
+                                                <td>
+                                                    <label class="form-label">
+                                                        License key expires within two weeks
+                                                    </label>
+                                                </td>
+
+                                                <td>
+
+                                                    @if (Model.RemainingDays <= 14)
+                                                    {
+                                                        <label>
+                                                            <span class="text-danger">
+                                                                Yes
+                                                            </span>,
+                                                            Please Contact
+                                                            <a href="mailto:support@techfivedata.com">
+                                                                TechFiveData
+                                                            </a>
+                                                            to renew the license.
+                                                        </label>
+                                                    }
+                                                    else
+                                                    {
+                                                        <label>
+                                                            No
+                                                        </label>
+                                                    }
+
+                                                </td>
+
+                                            </tr>
+
+
+                                            <tr>
+
+                                                <td>
+                                                    <label class="form-label">
+                                                        Days remaining till license expiration
+                                                    </label>
+                                                </td>
+
+                                                <td>
+                                                    <label class="text-danger">
+                                                        @Model.RemainingDays
+                                                    </label>
+                                                </td>
+
+                                            </tr>
+
+
+                                            <tr>
+
+                                                <td>
+                                                    <label class="form-label">
+                                                        License key type
+                                                    </label>
+                                                </td>
+
+                                                <td>
+                                                    <label>
+                                                        @Model.LicenseKeyType
+                                                    </label>
+                                                </td>
+
+                                            </tr>
+
+
+                                            <tr>
+
+                                                <td>
+                                                    <label class="form-label">
+                                                        Allowed Maximum Users
+                                                    </label>
+                                                </td>
+
+                                                <td>
+                                                    <label>
+                                                        @Model.MaximumUser
+                                                    </label>
+                                                </td>
+
+                                            </tr>
+
+
+                                            <tr>
+
+                                                <td>
+                                                    <label class="form-label">
+                                                        Information
+                                                    </label>
+                                                </td>
+
+                                                <td>
+                                                    <label>
+                                                        @Model.Message
+                                                    </label>
+                                                </td>
+
+                                            </tr>
+
+                                        </tbody>
+
+                                    </table>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- Success Message -->
+
+                            <div class="alert alert-success">
+
+                                <strong>
+                                    <i class="fa fa-check-circle"></i>
+                                    Congratulations!
+                                </strong>
+
+                                Product has been activated successfully.
+
+                            </div>
+
+
+                            <!-- Navigation -->
+
+                            <div class="account-links">
+
+                                <span>
+                                    Not registered?
+                                </span>
+
+                                <a href="@Url.Action("Index", "Register")">
+                                    Registration
+                                </a>
+
+                                <span class="separator">
+                                    |
+                                </span>
+
+                                <a href="@Url.Action("Index", "Login")">
+
+                                    Back to login
+
+                                    <i class="fa fa-arrow-right"></i>
+
+                                </a>
+
+                            </div>
+
+                        </div>
+
+                    </div>
                 </div>
             </div>
-            <div class="alert alert-success">
-                <strong>Congratulations!</strong> Product has been activated successfully
-            </div>
-            <p>
-                <a class="btn btn-primary" href="@Url.Action("Index","Home")" style="text-decoration: none;">Login Into The System</a>
-            </p>
-        </div>
+        </main>
+        <!-- =========================================
+             FOOTER
+        ========================================== -->
+        <footer class="footer">
+            &copy; @DateTime.Now.Year Lotus Next ERP. All rights reserved.
+        </footer>
     </div>
 </body>
 </html>

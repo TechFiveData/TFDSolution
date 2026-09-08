@@ -141,6 +141,8 @@
           <Property Name="AllowMultiDocument" Type="bit" />
           <Property Name="IsSummary" Type="bit" />
           <Property Name="TemplateId" Type="int" />
+		  <Property Name="FieldFormat" Type="nvarchar" MaxLength="50" />
+		  <Property Name="IsTimeField" Type="bit" />
         </EntityType>
         <EntityType Name="m_FormFieldOption">
           <Key>
@@ -818,6 +820,8 @@
           <Property Name="AllowMultiDocument" Type="Boolean" />
           <Property Name="IsSummary" Type="Boolean" />
           <Property Name="TemplateId" Type="Int32" />
+		  <Property Name="FieldFormat" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+		  <Property Name="IsTimeField" Type="Boolean" />
         </EntityType>
         <EntityType Name="m_CompanyMast">
           <Key>
@@ -1196,6 +1200,8 @@
           <EntitySetMapping Name="m_FormField">
             <EntityTypeMapping TypeName="TFDSolutionModel.m_FormField">
               <MappingFragment StoreEntitySet="m_FormField">
+				<ScalarProperty Name="IsTimeField" ColumnName="IsTimeField" />
+				<ScalarProperty Name="FieldFormat" ColumnName="FieldFormat" />
                 <ScalarProperty Name="TemplateId" ColumnName="TemplateId" />
                 <ScalarProperty Name="IsSummary" ColumnName="IsSummary" />
                 <ScalarProperty Name="AllowMultiDocument" ColumnName="AllowMultiDocument" />

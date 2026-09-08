@@ -250,7 +250,7 @@
                             <div class="form-check">
                                 <div class="checkbox">
                                     <label for="chkAddInCost" class="form-check-label ">
-                                        <input type="checkbox" id="chkAddInCost" name="chkChangeValue" value="AddInCost" class="form-check-input">Add In Cost
+                                        <input type="checkbox" id="chkAddInCost" name="chkAddInCost" value="AddInCost" class="form-check-input">Add In Cost
                                     </label>
                                 </div>
                             </div>
@@ -386,7 +386,7 @@
                         '<td data-bind="ddlEffect" data-content=' + $("#ddlEffect").val() + '>' + $("#ddlEffect option:selected").text() + '</td>' +
                         '<td data-bind="chkChangeValue" data-content=' + $("#chkChangeValue").is(":checked") + '>' + ($("#chkChangeValue").is(":checked") == true ? '<span class="fa fa-check text-success"></span>' : '<span class="fa fa-remove text-danger"></span>') + '</td>' +
                         '<td data-bind="chkAddInCost" data-content=' + $("#chkAddInCost").is(":checked") + '>' + ($("#chkAddInCost").is(":checked") == true ? '<span class="fa fa-check text-success"></span>' : '<span class="fa fa-remove text-danger"></span>') + '</td>' +
-                        // '<td data-bind="chkAddInCost" data-content=' + $("#chkAddInCost").is(":checked") + '>' + ($("#chkAddInCost").is(":checked") == true ? '<span class="fa fa-check text-success"></span>' : '<span class="fa fa-remove text-danger"></span>') + '</td>' +
+                        '<td data-bind="chkIsDisplayOnItemsPopup" data-content=' + $("#chkIsDisplayOnItemsPopup").is(":checked") + '>' + ($("#chkIsDisplayOnItemsPopup").is(":checked") == true ? '<span class="fa fa-check text-success"></span>' : '<span class="fa fa-remove text-danger"></span>') + '</td>' +
                         '</tr>'
                     $("#tblDetails").append(tblRow);
                     $("#btnCancelDetail").click();
@@ -504,7 +504,7 @@
         $("#ddlLedgerDet").val('');
         $("#chkChangeValue").prop("checked", false);
         $("#chkAddInCost").prop("checked", false);
-        $("#chkIsDisplayOnItemsPopup").prop("checked", false)        
+        $("#chkIsDisplayOnItemsPopup").prop("checked", false);
         $("#hdnDetailRowNm").val(0);
         loadDropdown("ddlLedgerDet", "Ledger");
         $("#ddlPerAmount").removeClass("input-validation-error");
@@ -714,7 +714,8 @@
                             '<td data-bind="txtDecimalPoint" data-content=' + item.DecimalPoint + '>' + item.DecimalPoint + '</td>' +//DecimalPoint
                             '<td data-bind="ddlEffect" data-content=' + item.Effect + '>' + item.Effect + '</td>' +
                             '<td data-bind="chkChangeValue" data-content=' + item.ChangeValue + '>' + (item.ChangeValue == true ? '<span class="fa fa-check text-success"></span>' : '<span class="fa fa-remove text-danger"></span>') + '</td>' +
-                            '<td data-bind="chkAddInCost" data-content=' + item.AddInCost + '>' + (item.AddInCost == true ? '<span class="fa fa-check text-success"></span>' : '<span class="fa fa-remove text-danger"></span>') + '</td>' +                            
+                            '<td data-bind="chkAddInCost" data-content=' + item.AddInCost + '>' + (item.AddInCost == true ? '<span class="fa fa-check text-success"></span>' : '<span class="fa fa-remove text-danger"></span>') + '</td>' +
+                            '<td data-bind="chkIsDisplayOnItemsPopup" data-content=' + item.IsDisplayOnItemsPopup + '>' + (item.IsDisplayOnItemsPopup == true ? '<span class="fa fa-check text-success"></span>' : '<span class="fa fa-remove text-danger"></span>') + '</td>' +
                             '</tr>'
                         $("#tblDetails").append(tblRow);
                     });

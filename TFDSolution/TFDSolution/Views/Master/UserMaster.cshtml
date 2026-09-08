@@ -32,7 +32,7 @@
     </div>
 }
 <div class="animated fadeIn">
-    <div class="row">
+    <div class="row m-0">
         <div class="col-md-12 p-0">
             <div class="card">
                 <div class="card-header">
@@ -43,9 +43,9 @@
                         <a class="btn btn-sm" href="javascript:void(0);"><i class="fa fa-refresh"></i>&nbsp; Refresh</a>
                         <a class="btn btn-sm" href="javascript:void(0);"><i class="fa fa-download"></i>&nbsp; Export</a>
                         @*@if (@ViewBag.UserLimitsMessage == null)
-                        {
-                            <a class="btn btn-sm" href="@Url.Action("UserAction","Master")" title="Add New User"><i class="fa fa-plus"></i>&nbsp; New</a>
-                        }*@
+                            {
+                                <a class="btn btn-sm" href="@Url.Action("UserAction","Master")" title="Add New User"><i class="fa fa-plus"></i>&nbsp; New</a>
+                            }*@
                     </div>
                 </div>
                 <div class="card-body">
@@ -240,7 +240,7 @@
                         location.reload(); // Refresh the table
                     }
                     else {
-                        ShowToastNotification("error", response && response.Response ? resp.Response : 'User login has not been released. Please try again.');                    
+                        ShowToastNotification("error", response && response.Response ? resp.Response : 'User login has not been released. Please try again.');
                     }
                 },
                 error: function (response) {

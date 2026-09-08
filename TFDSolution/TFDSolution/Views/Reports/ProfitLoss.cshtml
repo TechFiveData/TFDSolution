@@ -40,7 +40,7 @@
     </div>
 </div>
 <div class="animated fadeIn">
-    <div class="row">
+    <div class="row m-0">
         <div class="col-md-12 p-0">
             <div class="card">
                 <div class="card-header">
@@ -78,6 +78,15 @@
                             <div class="d-inline-block pr-3 pb-2">
                                 <label class="form-control-label mr-2">To Date</label>
                                 <input id="dtToDate" type="date" class="form-control d-inline-block w-auto myDate" />
+                            </div>
+                            <!-- Dropdown -->
+                            <div class="d-inline-block pr-3 pb-2">
+                                <label class="form-control-label mr-2">Report Type</label>
+                                <select id="ddlReportType" class="form-select d-inline-block w-auto" style="min-width:120px;">
+                                    <option value="ALL">ALL</option>
+                                    <option value="GROUP">Group</option>
+                                    <option value="LEDGER">Ledger</option>
+                                </select>
                             </div>
                             <button id="btnGenerate" class="btn btn-primary btn-Generate">Generate</button>
                         </div>
@@ -256,7 +265,12 @@
         });
     });
     function OpenLedger(ledgerId, ledgerName) {
-        var model = { AccountId: ledgerId, AccountLedger : ledgerName, FromDate: $("#dtFromDate").val(),ToDate: $("#dtToDate").val()};
+        var model = {
+            AccountId: ledgerId,
+            AccountLedger: ledgerName,
+            FromDate: $("#dtFromDate").val(),
+            ToDate: $("#dtToDate").val()
+        };
         $.ajax({
             url: "@Url.Action("RedirectToLedger", "Reports")",
             type: 'POST',
@@ -293,12 +307,13 @@
                     : "";
 
                 // 🔹 Build content
+                let particular = row["Particular"]?.trim() || "";
                 let content = spaces + arrow + row["Particular"];
 
                 // 🔹 Apply color only for LEDGER
                 let style = row["RowType"] === "LEDGER" ? "color:blue;" : "";
                 if (row["Account_Id"] != null && row["Account_Id"] > 0) {
-                    return `<a href="javascript:void(0);" onclick="OpenLedger(${row["Account_Id"]}, '${row["Particular"]}')">${content}</a>`;
+                    return `<a href="javascript:void(0);" onclick="OpenLedger(${row["Account_Id"]}, '${particular}')">${content}</a>`;
                 }
                 else {
                     return `<span style="${style}">${content}</span>`;
@@ -306,7 +321,7 @@
                 //return "<span style='" + style + "'>" + content + "</span>";
             }
         });
-        dynamicColumns.push({ title: "Account Name", data: "AccountName" });
+        /*dynamicColumns.push({ title: "Account Name", data: "AccountName" });*/
         dynamicColumns.push({
             title: "Debit",
             data: "Debit",
@@ -388,7 +403,8 @@
             FromDate: $("#dtFromDate").val(),
             ToDate: $("#dtToDate").val(),
             AccountId: $("#ddlLedger").val(),
-            AccountName: $("#ddlLedger option:selected").text()
+            AccountName: $("#ddlLedger option:selected").text(),
+            ReportType: $("#ddlReportType").val()
         };
         // destroy old instance if any
         if ($.fn.DataTable.isDataTable('#tblLedgerReportView')) {

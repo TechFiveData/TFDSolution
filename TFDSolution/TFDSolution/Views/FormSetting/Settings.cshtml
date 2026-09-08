@@ -200,7 +200,7 @@
 <input type="hidden" id="hdnSelectedTabSQLTableName" value="" />
 <input type="hidden" id="hdnSelectedFormSQLTemplateId" value="" />
 <div class="animated fadeIn">
-    <div class="row">
+    <div class="row m-0">
         <div class="col-md-12 p-0">
             <div class="card">
                 <div class="card-header">
@@ -210,15 +210,15 @@
                             <div style="display:flex; align-items:center; gap:10px;">
                                 <div>
                                     <select id="ddlSelect" class="form-control" style="width:200px;">
-                                        @if (Model!= null && Model.ChildForm!= null)
-                                                                                {
-                                                                                    foreach (var item in Model.ChildForm)
-                                                                                    {
-                                        <option data-bind="@item.Prefix" value="@item.FormId">
-                                            @item.FormTitle
-                                        </option>
-                                                                                    }
-                                                                                }
+                                        @if (Model != null && Model.ChildForm != null)
+                                        {
+                                            foreach (var item in Model.ChildForm)
+                                            {
+                                                <option data-bind="@item.Prefix" value="@item.FormId">
+                                                    @item.FormTitle
+                                                </option>
+                                            }
+                                        }
                                     </select>
                                 </div>
                                 <div style="display:flex; align-items:center;">
@@ -266,8 +266,8 @@
                 </div>
                 <div class="card-body">
                     @*<div class="panel-left">
-                            <table id="tblForms" class="display" cellspacing="0" width="100%"></table>
-                        </div>*@
+                        <table id="tblForms" class="display" cellspacing="0" width="100%"></table>
+                    </div>*@
                     <div>
                         <div class="card" id="btnFormData">
                             <div class="card-header">
@@ -283,24 +283,24 @@
                             <div class="card-body">
                                 <nav>
                                     <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                                        @if (Model.FormSection!= null && Model.FormSection.Count > 0)
-                                                                                {
-                                                                                    foreach (var item in Model.FormSection)
-                                                                                    {
-                                                                                        if (item.SectionName == "Header")
-                                                                                        {
-                                        <button onclick="btnSection('@item.FormSectionId','@item.SectionName')" class="nav-link active" id="nav-Header-tab" data-bs-toggle="tab" data-bs-target="#nav-Header" type="button" role="tab" aria-controls="nav-Header" aria-selected="true">
-                                            <i class="fa fa-h-square"></i>&nbsp;@item.SectionName
-                                        </button>
-                                                                                        }
-                                                                                        else if (item.SectionName == "Detail")
-                                                                                        {
-                                        <button onclick="btnSection('@item.FormSectionId','@item.SectionName')" class="nav-link" id="nav-Detail-tab" data-bs-toggle="tab" data-bs-target="#nav-Detail" type="button" role="tab" aria-controls="nav-Detail" aria-selected="true">
-                                            <i class="fa fa-list"></i>&nbsp;@item.SectionName
-                                        </button>
-                                                                                        }
-                                                                                    }
-                                                                                }
+                                        @if (Model.FormSection != null && Model.FormSection.Count > 0)
+                                        {
+                                            foreach (var item in Model.FormSection)
+                                            {
+                                                if (item.SectionName == "Header")
+                                                {
+                                                    <button onclick="btnSection('@item.FormSectionId','@item.SectionName')" class="nav-link active" id="nav-Header-tab" data-bs-toggle="tab" data-bs-target="#nav-Header" type="button" role="tab" aria-controls="nav-Header" aria-selected="true">
+                                                        <i class="fa fa-h-square"></i>&nbsp;@item.SectionName
+                                                    </button>
+                                                }
+                                                else if (item.SectionName == "Detail")
+                                                {
+                                                    <button onclick="btnSection('@item.FormSectionId','@item.SectionName')" class="nav-link" id="nav-Detail-tab" data-bs-toggle="tab" data-bs-target="#nav-Detail" type="button" role="tab" aria-controls="nav-Detail" aria-selected="true">
+                                                        <i class="fa fa-list"></i>&nbsp;@item.SectionName
+                                                    </button>
+                                                }
+                                            }
+                                        }
                                         <button class="nav-link" id="nav-report-tab" data-bs-toggle="tab" data-bs-target="#nav-report" type="button" role="tab" aria-controls="nav-report" aria-selected="true">
                                             <i class="fa fa-table"></i>&nbsp;Report
                                         </button>
@@ -887,7 +887,7 @@
                         <div id="divDateTimeFormat" class="row">
                             <div class="col-md-12 form-group">
                                 <label for="text-input" class="form-control-label">Format<span class="text-danger p-1">(*)</span></label>
-                                <select id="ddlFieldFormat" class="form-select select2">
+                                <select id="ddlFieldFormat" class="form-control form-select" >
                                     <option>Select</option>
                                 </select>
                             </div>
@@ -1345,11 +1345,16 @@
 
         }
     }
+    var _dateTimeFormatXhr = null; // module-level tracker
     function bindDateTimeFormats(FieldType, defaultValue)
     {
         let tableDropdown = $("#ddlFieldFormat");
         tableDropdown.empty();
-        $.ajax({
+        // Cancel any in-flight request so its response can't append late
+        if (_dateTimeFormatXhr != null) {
+            _dateTimeFormatXhr.abort();
+        }
+        _dateTimeFormatXhr = $.ajax({
             url: "@Url.Action("getFieldFormatSelection", "Common")",
             type: "GET",
             skipLoading: true,
@@ -2264,7 +2269,7 @@
         });
     }
 
-    function showFieldControl(fieldTypeId, fieldType, skipTableLoad)
+    function showFieldControl(fieldTypeId, fieldType, skipTableLoad, skipDateFormatLoad)
     {
         var fieldHeader = $("#ddlSelect").find(":selected").text();
         $("#fieldModalLabel").html("Add New Field : " + fieldType);
@@ -2297,7 +2302,10 @@
         $("#chkIsDependencyField").parent().parent().css("display", "");
         $("#chkIsUnique").parent().parent().css("display", "");
         $(".buttonreffield").hide();
-        bindDateTimeFormats(fieldType, "");
+        if (!skipDateFormatLoad) {
+            bindDateTimeFormats(fieldType, "");
+        }
+        
         if (fieldType === "TextBox" || fieldType === "MultiText") {
             $(".row_Text").show();
             $("#row_LengthText").show();
@@ -2549,6 +2557,7 @@
         $('#tblRequest tbody tr').remove();
         $("#txtFieldname").focus();
         $("#rdbTable").click();
+
     }
 
     function SaveField()
@@ -2692,7 +2701,6 @@
                         IsVisible: $("#chkIsVisible").prop("checked"),
                         IsDisable: $("#chkIsDisabled").prop("checked"),
                         IsUnique: $("#chkIsUnique").prop("checked"),
-                        IsWithTime: $("#chkIsWithTime").prop("checked"),
                         IsMultiSelection: $("#chkIsMultiSelection").prop("checked"),
                         AllowMultiDocument: $("#chkMultipleDocument").prop("checked"),
                         IsVisibleInList: $("#chkIsVisibleInList").prop("checked"),
@@ -2703,6 +2711,9 @@
                         SectionName: $("#hdnSelectedSectionText").val(),
                         Parameters: SPParams,
                         TemplateId: $("#ddlButtonTemplate").val(),
+                        FieldFormat: $("#ddlFieldFormat").val(),
+                        IsTimeField: $("#chkIsWithTime").prop("checked")
+                        
                     };
 
                     $.ajax({
@@ -3095,7 +3106,7 @@
                 if (response != null) {
                     var FormField = response;
                     $("#v-pills-fieldstypetab #btn_" + FormField.FieldType).click();
-                    showFieldControl(FormField.FieldTypeId, FormField.FieldType, true);
+                    showFieldControl(FormField.FieldTypeId, FormField.FieldType, true,true);
                     $("#v-pills-fieldstypecontent input").attr("disabled", true);
                     $("#v-pills-fieldstypecontent textarea").attr("disabled", true);
                     $("#txtFieldname").val(FormField.FieldName);
@@ -3134,7 +3145,7 @@
                     $("#chkIsVisible").prop("checked", (FormField.IsVisible == null ? false : FormField.IsVisible));
                     $("#chkIsDisabled").prop("checked", (FormField.IsDisable == null ? false : FormField.IsDisable));
                     $("#chkIsUnique").prop("checked", (FormField.IsUnique == null ? false : FormField.IsUnique));
-                    $("#chkIsWithTime").prop("checked", (FormField.IsWithTime == null ? false : FormField.IsWithTime));
+                    $("#chkIsWithTime").prop("checked", (FormField.IsTimeField == null ? false : FormField.IsTimeField));
                     $("#chkIsMultiSelection").prop("checked", (FormField.IsMultiSelection == null ? false : FormField.IsMultiSelection));
                     if ((FormField.IsMultiSelection == null ? false : FormField.IsMultiSelection)) {
                         if ($("#txtFieldname").attr("data-section") == "Header") {
@@ -3156,11 +3167,12 @@
                     $("#hdnSelectedTabName").val(FormField.TabName);
                     $("#hdnSelectedFormSQLTableName").val(FormField.SQLTableName);
                     $("#hdnSelectedSectionText").val(FormField.SectionName);
-                    // $("#v-pills-fieldstypetab #btn_" + FormField.FieldType).click();    
+                    // $("#v-pills-fieldstypetab #btn_" + FormField.FieldType).click();
                     $("#ddlButtonTemplate").val(FormField.TemplateId);
                     $("#v-pills-fieldstypetab button").addClass("disabled");
                     $("#txtFieldname").addClass("disabled");
-                    bindDateTimeFormats(FormField.FieldType, FormField.FieldFormat);                    
+                    bindDateTimeFormats(FormField.FieldType, FormField.FieldFormat);
+                    //$("#ddlFieldFormat").val(FormField.FieldFormat);
                     if (_type == "Edit") {
                         $("#fieldModalLabel").html("Edit Field : " + FormField.FieldType);
                         $("#txtFieldcaption").attr("disabled", false);
@@ -3192,6 +3204,7 @@
                         $("#ddlSelectValue").attr("disabled", false);
                         $("#chkIsLanguageConv").attr("disabled", false);
                         $("#ddlFieldLanguage").attr("disabled", false);
+                        $("#ddlFieldFormat").attr("disabled", false);
                     }
                     else {
                         $("#fieldModalLabel").html("View Field : " + FormField.FieldType);
@@ -3558,7 +3571,7 @@
             dataType: "json",
             success: function (response) {
                 if (response != null) {
-                    /*$("#ddlfrmPending").val(response.ParentFormId);*/
+                    /$("#ddlfrmPending").val(response.ParentFormId);/
                     $('#ddlfrmPending').val(response.ParentFormId).trigger('change');
                     $("#txtFormPendingId").val(response.FormPendingId);
                    // $("#ddlfrmSubPending").val(response.FromFormId);
@@ -3567,17 +3580,46 @@
                    // $("#ddlfrmTabPending").val(response.FromFormTabId);
                     setTimeout(function () {
                         $("#ddlfrmSubPending").val(response.FromFormId).trigger('change');
+
                         setTimeout(function () {
-                            $("#ddlfrmTabPending").val(response.FromFormTabId).trigger('change');
-                            console.log("response.FromFormTabId:", response.FromFormTabId);
-                            var selectedText = $("#ddlfrmTabPending option:selected").text();
-                            console.log("Selected Text:", selectedText);
-                            $("#ddlfrmPendingSource").val(response.SourceName).trigger('change');
-                            $("#select2-ddlfrmPendingSource-container").text(response.SourceName);
-                            $("#txtFormTabName").val(response.FormTabName);
-                            $("#ddlfrmTab").val(response.FormTabId);
-                        }, 500); // Adjust this delay if needed
-                    }, 100);
+
+                            console.log("FromFormTabId from SQL:", response.FromFormTabId);
+
+                            console.log("Available Tab Values:",
+                                $("#ddlfrmTabPending option").map(function () {
+                                    return $(this).val();
+                                }).get()
+                            );
+
+                            $("#ddlfrmTabPending")
+                                .val(String(response.FromFormTabId))
+                                .trigger('change');
+
+                            console.log(
+                                "Actual Selected Value:",
+                                $("#ddlfrmTabPending").val()
+                            );
+
+                            console.log(
+                                "Actual Selected Text:",
+                                $("#ddlfrmTabPending option:selected").text()
+                            );
+
+                            $("#ddlfrmPendingSource")
+                                .val(response.SourceName)
+                                .trigger('change');
+
+                            $("#select2-ddlfrmPendingSource-container")
+                                .text(response.SourceName);
+
+                            $("#txtFormTabName")
+                                .val(response.FormTabName);
+
+                            $("#ddlfrmTab")
+                                .val(response.FormTabId);
+
+                        }, 1000);
+                    }, 500);
                 }
             },
             error: function (response) {
@@ -3585,7 +3627,7 @@
             }
         });
         $("#ddlfrmPending").focus();
-        /*$("#hdnSelectedFormId").val(repaoneformformId);*/
+        /$("#hdnSelectedFormId").val(repaoneformformId);/
     }
     function DeleteFormPending(primaryId) {
         if (confirm("Are you sure you want to delete thi record?")) {

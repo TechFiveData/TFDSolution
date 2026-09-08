@@ -7,18 +7,6 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <style>
-        footer {
-            background-color: #f8f9fa;
-            padding: 6px 0;
-            text-align: center;
-            font-size: 14px;
-            border-top: 1px solid #ddd;
-            width: 100%;
-            bottom: 0;
-            position: absolute;
-        }
-    </style>
     <title>Login | Lotus Next ERP</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -26,12 +14,12 @@
         var ImagesBase = Url.Content("~/Images");
         var ContentBase = Url.Content("~/Content");
     }
-    <link rel="stylesheet" href="@ContentBase/Site.css">
     <link rel="stylesheet" href="@ContentBase/theme//theme1/login.css">
+    <link href="@ContentBase/main/assets/css/style.css" rel="stylesheet" />
     <link href="@ContentBase/bootstrap.min.css" rel="stylesheet" />
     <link href="@ContentBase/main/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="@ContentBase/bootstrap.min.css" rel="stylesheet" />
-    <link href="@ContentBase/font-awesome.min.css" rel="stylesheet" />
+    <link href="@ContentBase/main/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
     <script src="~/Scripts/jquery-3.7.1.js"></script>
     <script type="text/javascript">
         $(document).ready(function () {
@@ -43,461 +31,283 @@
         });
     </script>
     <style>
-        * {
-            box-sizing: border-box;
-        }
-
-        html,
-        body {
-            width: 100%;
-            min-height: 100%;
-            margin: 0;
-            padding: 0;
-            font-family: "Segoe UI", Arial, sans-serif;
-        }
-
-        .loginbody {
-            min-height: 100vh;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            overflow-x: hidden;
-            background-size: cover;
-            background-position: center center;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-        }
-        /* Website button */
-
-        .website-link {
-            display: inline-flex;
-            align-items: center;
-            height: 30px;
-            padding: 0 15px;
-            color: #ffffff !important;
-            font-size: 12px;
-            font-weight: 600;
-            text-decoration: none !important;
-            border: 1px solid rgba(255, 255, 255, 0.40);
-            border-radius: 18px;
-            background-color: rgba(0, 0, 0, 0.08);
-            transition: 0.25s ease;
-        }
-
-            .website-link:hover {
-                color: #ffffff !important;
-                background-color: #1f92bd;
-                border-color: rgba(255, 255, 255, 0.65);
-            }
-
-        /* Top website link */
-        .header-block {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 40px;
-            min-height: 40px;
-            display: flex;
-            align-items: center;
-            padding: 0 15px;
-            background-color: #27a9d7;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.25);
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.10);
-            z-index: 9999;
-        }
-
-           /* .header-block a {
-                display: inline-flex;
-                align-items: center;
-                height: 30px;
-                padding: 0 15px;
-                color: #ffffff !important;
-                text-decoration: none;
-                font-size: 13px;
-                font-weight: 500;
-                border: 1px solid rgba(255, 255, 255, 0.45);
-                border-radius: 20px;
-                background: rgba(0, 0, 0, 0.12);
-                transition: background-color 0.2s ease;
-            }
-
-                .header-block a:hover {
-                    color: #ffffff !important;
-                    text-decoration: none;
-                    background-color: #1f92bd;
-                }*/
-
-        /* Main page area */
         .login-page {
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 52%;
-            height: calc(100vh - 65px);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 30px;
-        }
-
-        /* Login card */
-        .login-card {
-            width: 100%;
-            max-width: 530px;
-            padding: 38px 40px 30px;
-            background: rgba(255,255,255,.97);
-            border: 1px solid rgba(255,255,255,.7);
-            border-radius: 14px;
-            box-shadow: 0 18px 50px rgba(0,0,0,.22);
-        }
-
-        .login-logo {
-            text-align: center;
-            margin-bottom: 18px;
-        }
-
-            .login-logo img {
-                max-width: 190px;
-                max-height: 65px;
-                object-fit: contain;
-            }
-
-        .login-title {
-            margin: 0;
-            color: #263238;
-            font-size: 25px;
-            font-weight: 650;
-            text-align: center;
-        }
-
-        .login-subtitle {
-            margin: 7px 0 27px;
-            color: #7a858b;
-            font-size: 13px;
-            text-align: center;
-        }
-
-        .title-line {
-            width: 48px;
-            height: 3px;
-            margin: 13px auto 24px;
-            border-radius: 5px;
-            background: #f39b3b;
-        }
-
-        /* Form */
-        .form-group {
-            margin-bottom: 19px;
-        }
-
-            .form-group label {
-                display: block;
-                margin-bottom: 7px;
-                color: #3f4b52;
-                font-size: 13px;
-                font-weight: 600;
-            }
-
-        .input-wrapper {
-            position: relative;
-        }
-
-            .input-wrapper i {
-                position: absolute;
-                top: 50%;
-                left: 14px;
-                z-index: 2;
-                color: #89949a;
-                transform: translateY(-50%);
-            }
-
-        .form-control-login {
-            width: 100%;
-            height: 45px;
-            /*padding: 10px 14px 10px 42px;*/
-            color: #303a40;
-            font-size: 14px;
-            border: 1px solid #d7dde0;
-            border-radius: 7px;
-            outline: none;
-            background: #ffffff;
-            transition: border-color .2s ease, box-shadow .2s ease;
-        }
-
-            .form-control-login:focus {
-                border-color: #27a9d7;
-                /*box-shadow: 0 0 0 3px rgba(243,155,59,.13);*/
-            }
-
-            .form-control-login::placeholder {
-                color: #a5adb1;
-            }
-
-        /* Validation */
-        .field-validation-error {
-            display: block;
-            margin-top: 5px;
-            color: #d9534f;
-            font-size: 12px;
-        }
-
-        /* Login button */
-        .btn-login {
-            width: 100%;
-            height: 46px;
-            margin-top: 5px;
-            color: #ffffff;
-            font-size: 15px;
-            font-weight: 600;
-            border: 0;
-            border-radius: 7px;
-            cursor: pointer;
-            transition: background .2s ease, transform .15s ease;
-        }
-
-            .btn-login:hover {
-                background-color: #1f92bd;
-            }
-
-            .btn-login:active {
-                transform: scale(.99);
-            }
-
-            .btn-login i {
-                margin-right: 7px;
-            }
-
-        /* Alerts */
-        .login-alert {
-            margin: 0 0 18px;
-            padding: 11px 14px;
-            font-size: 13px;
-            border-radius: 7px;
-        }
-
-        .login-alert-success {
-            color: #25643a;
-            border: 1px solid #b9dfc5;
-            background: #edf9f0;
-        }
-
-        .login-alert-error {
-            color: #9d3535;
-            border: 1px solid #f0c2c2;
-            background: #fff2f2;
-        }
-
-        /* Login links */
-        .login-links {
-            margin: 23px 0 0;
-            color: #6f797e;
-            font-size: 13px;
-            text-align: center;
-        }
-
-            .login-links a {
-                /*color: #d77e21;*/
-                font-weight: 600;
-                text-decoration: none;
-            }
-
-                .login-links a:hover {
-                    /*color: #b96613;*/
-                    text-decoration: underline;
-                }
-
-            .login-links .separator {
-                padding: 0 7px;
-                color: #c2c7ca;
-            }
-
-        /* Footer */
-        .login-footer {
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 15px;
-            color: rgba(255,255,255,.9);
-            font-size: 12px;
-            background: rgba(22,31,36,.90);
-        }
-
-            .login-footer p {
-                margin: 0;
-                text-align: center;
-            }
-
-            .login-footer strong {
-                color: #ffffff;
-            }
-
-        /* Tablet */
-        @@media (max-width: 991px) {
-
-            .login-page {
-                justify-content: center;
-                padding: 95px 25px 55px;
-            }
-
-            .login-card {
-                max-width: 410px;
-            }
-
-            .header-block {
-                right: 20px;
-            }
-        }
-
-        /* Mobile */
-        @@media (max-width: 575px) {
-
-            .loginbody {
-                background-position: left center;
-            }
-
-            .login-page {
-                min-height: calc(100vh - 60px);
-                padding: 75px 15px 35px;
-            }
-
-            .header-block {
-                top: 12px;
-                right: 12px;
-            }
-
-                .header-block a {
-                    padding: 6px 11px;
-                    font-size: 11px;
-                }
-
-            .login-card {
-                padding: 28px 22px 25px;
-                border-radius: 11px;
-            }
-
-            .login-title {
-                font-size: 22px;
-            }
-
-            .login-links {
-                line-height: 1.9;
-            }
-
-            .login-footer {
-                min-height: 60px;
-                font-size: 11px;
-            }
+            background-image: url('@Url.Content(ImagesBase + "/theme1.jpg")');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
         }
     </style>
-    ```
-
 </head>
 
-<body class="loginbody"
-      style="background-image: url('@Url.Content(ImagesBase + "/theme1.png")');">
-    <!-- Website Link -->
-    <div class="header-block">
-        @*<a href="https://www.lotusnexterp.in" target="_blank" class="website-link">www.lotusnexterp.in</a>*@
-    </div>
-    <!-- Login Area -->
-    <main class="login-page">
-        <div class="login-card">
-            <!-- Optional Logo -->
-            @*
-                <div class="login-logo">
-                    <img src="@Url.Content("~/Images/logo.png")"
-                         alt="Lotus Next ERP" />
+<body>
+    <div class="login-page">
+        <!-- Decorative Background -->
+        <div class="circle-one"></div>
+        <div class="circle-two"></div>
+        <!-- =========================================
+             HEADER
+        ========================================== -->
+        <header class="topbar">
+            <a href="#" class="brand">
+                <div class="brand-logo d-none">
+                    <i class="fa fa-line-chart"></i>
                 </div>
-            *@
-            <h1 class="login-title">Welcome Back</h1>
-            <p class="login-subtitle">
-                Sign in to access your ERP account
-            </p>
-            <div class="title-line"></div>
-            <!-- Registration Success -->
-            @if (ViewBag.RegistrationMsg != null)
-            {
-                <div class="login-alert login-alert-success">
-                    <i class="fa fa-check-circle"></i>
-                    <strong>Success!</strong>
-                    @ViewBag.RegistrationMsg
+                <div class="brand-name">
+                    LotusNext <span>ERP</span>
                 </div>
-            }
-            @using (Html.BeginForm("Index","Login",FormMethod.Post,new { autocomplete = "off" }))
-            {
-                @Html.TextBoxFor(a => a.IPAddress, new{@style = "display:none;"})
-                <!-- User Name -->
-                <div class="form-group">
-                    <label for="UserName">
-                        User Name
-                    </label>
-                    <div class="input-wrapper">
-                        <i class="fa fa-user"></i>
-                        @Html.TextBoxFor(
-                            a => a.UserName,
-                            new
+            </a>
+            <a href="#" class="help-link">
+                <i class="fa fa-question-circle"></i>Need Help?
+            </a>
+        </header>
+        <!-- =========================================
+             MAIN
+        ========================================== -->
+        <main class="main-container">
+            <div class="login-container">
+                <div class="row align-items-center">
+                    <!-- =================================
+                         LEFT BRANDING
+                    ================================== -->
+                    <div class="col-lg-6">
+                        <div class="intro-panel d-none">
+                            <div class="intro-badge">
+                                <i class="fa fa-spotify"></i>
+                                SMART BUSINESS MANAGEMENT
+                            </div>
+                            <h1 class="intro-title">
+                                Run your business
+                                <br>
+                                <span>smarter with ERP.</span>
+                            </h1>
+                            <p class="intro-description">
+                                Bring your finance, inventory, sales,
+                                purchasing and operations together with
+                                one powerful ERP platform designed for
+                                modern businesses.
+                            </p>
+
+
+                            <!-- Features -->
+
+                            <div class="features">
+
+                                <div class="feature">
+
+                                    <i class="fa fa-shield-alt"></i>
+
+                                    Secure
+
+                                </div>
+
+
+                                <div class="feature">
+
+                                    <i class="fa fa-bolt"></i>
+
+                                    Powerful
+
+                                </div>
+
+
+                                <div class="feature">
+
+                                    <i class="fa fa-cloud"></i>
+
+                                    Cloud Ready
+
+                                </div>
+
+
+                                <div class="feature">
+
+                                    <i class="fa fa-chart-line"></i>
+
+                                    Business Insights
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- ERP Dashboard -->
+
+                            <div class="erp-visual">
+
+
+                                <div class="visual-card visual-main">
+
+
+                                    <div class="visual-header">
+
+                                        <div class="visual-header-title">
+                                            Business Overview
+                                        </div>
+
+
+                                        <div class="visual-dots">
+
+                                            <span></span>
+                                            <span></span>
+                                            <span></span>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <div class="chart">
+
+                                        <div class="bar"></div>
+                                        <div class="bar"></div>
+                                        <div class="bar"></div>
+                                        <div class="bar"></div>
+                                        <div class="bar"></div>
+                                        <div class="bar"></div>
+
+                                    </div>
+
+                                </div>
+
+
+                                <div class="visual-card visual-small">
+
+                                    <div class="small-title">
+                                        Revenue
+                                    </div>
+
+                                    <div class="small-value">
+                                        ₹ 24.8L
+                                    </div>
+                                    <div class="small-growth">
+                                        <i class="fa fa-arrow-up"></i>
+                                        18.6% Growth
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- =================================
+                         LOGIN
+                    ================================== -->
+                    <div class="col-lg-6">
+                        <div class="login-card">
+                            <!-- Heading -->
+                            <div class="login-heading">
+                                <div class="login-icon d-none">
+                                    <i class="fa fa-sign-in"></i>
+                                </div>
+                                <h2>
+                                    Welcome back
+                                </h2>
+                                <p>
+                                    Sign in to continue to LotusNext ERP
+                                </p>
+                                <div class="title-line"></div>
+                            </div>
+                            @using (Html.BeginForm("Index", "Login", FormMethod.Post, new { autocomplete = "off" }))
                             {
-                                @class = "form-control-login",
-                                @required = "required",
-                                @placeholder = "Enter your username",
-                                @autocomplete = "username"
-                            })
+                                @Html.TextBoxFor(a => a.IPAddress, new { @style = "display:none;" })
+                                <!-- Username -->
+                                <div class="form-group">
+                                    <label class="form-label">
+                                        Username
+                                        <span class="required">*</span>
+                                    </label>
+                                    <div class="input-wrapper">
+                                        <i class="fa fa-user input-icon"></i>
+                                        @Html.TextBoxFor(a => a.UserName, new {@class = "form-control form-control-icon", @required = "required", @placeholder = "Enter your username", @autocomplete = "username"})
+                                    </div>
+                                </div>
+                                <!-- Password -->
+                                <div class="form-group">
+                                    <label class="form-label">
+                                        Password
+                                        <span class="required">*</span>
+                                    </label>
+                                    <div class="input-wrapper">
+                                        <i class="fa fa-lock input-icon"></i>
+                                        @Html.PasswordFor(a => a.Password, new {@class = "form-control form-control-icon",@required = "required",@placeholder = "Enter your password",@autocomplete = "current-password"})
+                                        <span class="password-toggle"
+                                              onclick="togglePassword('Password', this)">
+                                            <i class="fa fa-eye"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                                <!-- Remember / Forgot -->
+                                <div class="login-options">
+                                    <label class="remember-me">
+                                        <input type="checkbox"
+                                               id="rememberMe"
+                                               name="rememberMe" />
+                                        Remember me
+                                    </label>
+                                    <a  href="@Url.Action("ForgotPassword","Login")" class="forgot-password">
+                                       Forgot password?
+                                    </a>
+                                </div>
+                                <!-- Login Button -->
+                                <button type="submit"
+                                        class="btn-login">
+
+                                    Sign In
+
+                                    <i class="fa fa-arrow-right"></i>
+
+                                </button>
+
+                                <!-- Error Message -->
+                                if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+                                {
+                                    <div id="divError"
+                                         class="login-alert login-alert-error">
+                                        <i class="fa fa-exclamation-circle"></i>
+                                        @Model.ErrorMessage
+                                    </div>
+                                }
+                                <!-- Registration -->
+                                <div class="register-text">
+                                    Don't have an account?
+                                    <a href="@Url.Action("Index","Register")">
+                                       Create an account
+                                    </a>
+                                </div>
+                                <!-- Security -->
+                                <div class="security-note">
+                                    <i class="fa fa-shield-alt"></i>
+                                    Your connection is secure and encrypted
+                                </div>
+                            }
+                        </div>
                     </div>
-                    @Html.ValidationMessageFor(
-                        a => a.UserName)
                 </div>
-                <!-- Password -->
-                <div class="form-group">
-                    <label for="Password">Password</label>
-                    <div class="input-wrapper"><i class="fa fa-lock"></i>
-                    @Html.PasswordFor(
-                            a => a.Password,
-                            new
-                            {
-                                @class = "form-control-login",
-                                @required = "required",
-                                @placeholder = "Enter your password",
-                                @autocomplete = "current-password"
-                            })
-                    </div>
-                    @Html.ValidationMessageFor(
-                        a => a.Password)
-                </div>
-                <!-- Error Message -->
-                if (!string.IsNullOrWhiteSpace(
-                    Model.ErrorMessage))
-                {
-                    <div id="divError"
-                         class="login-alert login-alert-error">
-                        <i class="fa fa-exclamation-circle"></i>
-                        @Model.ErrorMessage
-                    </div>
-                }
-                <!-- Submit -->
-                <button type="submit" class="btn-login"><i class="fa fa-sign-in"></i>Sign In</button>
-            }
-            <!-- Links -->
-            <div class="login-links">
-                <span>Not registered?</span>
-                <a href="@Url.Action("Index","Register")">Registration</a>
-                <span class="separator">|</span>
-                <a href="@Url.Action(
-                "ForgotPassword",
-                "Login")">
-                    Forgot Password?
-                </a>
             </div>
-        </div>
-    </main>
-    <!-- Footer -->
-    <footer class="login-footer">
-        <p>
-            &copy; @DateTime.Now.Year
-            <strong>Lotus Next ERP</strong>.
-            All rights reserved.
-        </p>
-    </footer>
+        </main>
+        <!-- =========================================
+             FOOTER
+        ========================================== -->
+        <footer class="footer">
+            &copy; @DateTime.Now.Year Lotus Next ERP. All rights reserved.
+        </footer>
+    </div>
+    <script>
+        function togglePassword(inputId, element) {
+            const input =
+                document.getElementById(inputId);
+            const icon =
+                element.querySelector("i");
+            if (input.type === "password") {
+                input.type = "text";
+                icon.classList.remove("fa-eye");
+                icon.classList.add("fa-eye-slash");
+            }
+            else {
+                input.type = "password";
+                icon.classList.remove("fa-eye-slash");
+                icon.classList.add("fa-eye");
+            }
+        }
+    </script>
 </body>
 </html>

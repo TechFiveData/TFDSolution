@@ -521,6 +521,8 @@
     <Property Name="AllowMultiDocument" Type="Boolean" />
     <Property Name="IsSummary" Type="Boolean" />
     <Property Name="TemplateId" Type="Int32" />
+    <Property Name="FieldFormat" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="IsTimeField" Type="Boolean" />
   </EntityType>
   <EntityType Name="m_CompanyMast">
     <Key>

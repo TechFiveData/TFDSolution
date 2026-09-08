@@ -34,6 +34,7 @@
                     background-color: #27a9d7;
                     color: #fff !important;
                 }
+
                 #ulMasterForm .nav-item a:active {
                     background-color: #27a9d7 !important;
                     color: #fff !important;
@@ -84,7 +85,7 @@
             </script>
         }
         @Html.HiddenFor(m => m.FormId)
-        <div class="row">
+        <div class="row m-0">
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">
@@ -98,7 +99,7 @@
 
                     </div>
                     <div class="card-body">
-                        <div class="d-flex align-items-start">                            
+                        <div class="d-flex align-items-start">
                             <div class="d-flex align-items-start">
                                 <ul class="nav nav-tabs me-3 flow-setting" id='ulMasterForm' style="width:250px;border: 1px solid #ccc;border-radius: 5px;" id="v-pills-tab" role="tablist" aria-orientation="vertical">
                                     @{
@@ -122,12 +123,12 @@
                                                 iconFile = titleIcon;
                                             }
                                             var tabId = parentItem.FormName.Replace(" ", "") + "_tab";
-                                            var Id = parentItem.FormName.Replace(" ","") + "_frm";
+                                            var Id = parentItem.FormName.Replace(" ", "") + "_frm";
                                             if (irow == 0)
                                             {
                                                 <li class='nav-item'>
                                                     <a style='cursor:move' id="@tabId" data-bs-toggle="pill" data-bs-target="#@Id"
-                                                       data-content="@parentItem.FormName"  data-bind="@parentItem.FormId" role="tab" 
+                                                       data-content="@parentItem.FormName" data-bind="@parentItem.FormId" role="tab"
                                                        aria-controls="@Id" aria-selected="true" class="active">
                                                         @if (!string.IsNullOrEmpty(iconFile))
                                                         {
@@ -145,7 +146,7 @@
                                             {
                                                 <li class='nav-item'>
                                                     <a style='cursor:move' id="@tabId" data-bs-toggle="pill" data-bs-target="#@Id"
-                                                       data-content="@parentItem.FormName"  data-bind="@parentItem.FormId"
+                                                       data-content="@parentItem.FormName" data-bind="@parentItem.FormId"
                                                        role="tab" aria-controls="@Id" aria-selected="true">
                                                         @if (!string.IsNullOrEmpty(iconFile))
                                                         {
@@ -182,8 +183,8 @@
                                                    class="permission-table row-reorder display dataTable cell-border">
                                                 <thead>
                                                     @*<tr>
-                                    <th colspan="4" class="grid-action-item-bg left"><strong>@parentItem.FormTitle</strong></th>
-                                </tr>*@
+                                                            <th colspan="4" class="grid-action-item-bg left"><strong>@parentItem.FormTitle</strong></th>
+                                                        </tr>*@
                                                     <tr>
                                                         <th class="grid-action-item-bg center">#</th>
                                                         <th class="grid-action-item-bg left">Module</th>
@@ -219,7 +220,7 @@
                                 }
                             </div>
                         </div>
-                        
+
                     </div>
                 </div>
             </div>

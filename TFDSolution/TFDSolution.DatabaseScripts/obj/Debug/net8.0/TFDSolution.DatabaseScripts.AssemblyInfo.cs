@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TFDSolution.DatabaseScripts")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ad4299b9ef46f2f90d6df4053c8766512e7638d8")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+bd663eb45d67f6fbbb5966a4ce4416558e92daed")]
 [assembly: System.Reflection.AssemblyProductAttribute("TFDSolution.DatabaseScripts")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TFDSolution.DatabaseScripts")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -12,6 +12,15 @@ namespace TFDSolution.Business
 
     public static class FormStructureMapper
     {
+        private static T GetFieldValue<T>(DataRow row, string columnName, T defaultValue = default)
+        {
+            if (row.Table.Columns.Contains(columnName) && row[columnName] != DBNull.Value)
+            {
+                return row.Field<T>(columnName);
+            }
+
+            return defaultValue;
+        }
         public static FormMast_Data MapToFormStructure(DataSet ds)
         {
             if (ds == null || ds.Tables.Count < 3)
@@ -101,8 +110,10 @@ namespace TFDSolution.Business
                     AllowMultiDocument = fieldRow.Field<bool?>("AllowMultiDocument"),
                     IsDependencyField = fieldRow.Field<bool?>("IsDependencyField"),
                     FieldDecimal = fieldRow.Field<int>("FieldDecimal"),
-                    IsTimeField = fieldRow.Field<bool?>("IsTimeField"),
-                    FieldFormat = fieldRow.Field<string>("FieldFormat"),
+                    //IsTimeField = fieldRow.Field<bool?>("IsTimeField"),
+                    //FieldFormat = fieldRow.Field<string>("FieldFormat"),
+                    IsTimeField = GetFieldValue<bool?>(fieldRow, "IsTimeField", false),
+                    FieldFormat = GetFieldValue<string>(fieldRow, "FieldFormat", "")
                 };
 
                 // Attach field to the correct tab in the correct section

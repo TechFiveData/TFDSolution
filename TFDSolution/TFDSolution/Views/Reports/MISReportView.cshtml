@@ -84,13 +84,13 @@
 }
 <input type="hidden" id="hdnReportId" />
 <div class="animated fadeIn">
-    <div class="row">
+    <div class="row m-0">
         <div class="col-md-12 p-0">
             <div class="card">
                 <div class="card-header">
                     <div class="col-lg-12 text-right">
                         <label id="lblExportNotification" style="padding-top: 6px;color: crimson;display:none;float:left;">Report export in progress. Please wait...</label>
-                        <a class="btn btn-sm" onclick="ReportLoad();" href="javascript:void(0);"><i class="fa fa-refresh"></i>&nbsp; Refresh</a>
+                        <a class="btn btn-sm" onclick="ReportLoadPagination();" href="javascript:void(0);"><i class="fa fa-refresh"></i>&nbsp; Refresh</a>
                         <a class="btn btn-sm" id="btnExportCsv" href="javascript:void(0);"><i class="fa fa-file-excel-o"></i>&nbsp; Excel</a>
                         <a class="btn btn-sm" id="btnExportPDF" href="javascript:void(0);"><i class="fa fa-file-pdf-o"></i>&nbsp; PDF</a>
                         <a class="btn btn-sm" data-bs-toggle="modal" data-bs-target="#emailModal" href="javascript:void(0);"><i class="fa fa-envelope"></i>&nbsp; e-Mail</a>
@@ -228,19 +228,28 @@
     }
     $(document).ready(function () {
         let today = new Date();
-        // First day of current month
-        let year = today.getFullYear();
-        let month = today.getMonth();
 
-        let firstDay = (month >= 3) ? new Date(year, 3, 1) : new Date(year - 1, 3, 1);
-        firstDay.setMinutes(firstDay.getMinutes() - firstDay.getTimezoneOffset());
-        let formatted = firstDay.toISOString().split('T')[0];
-        // Format yyyy-MM-dd (required for type="date")
-        let formatDate = (d) => d.toISOString().split('T')[0];
-        if ($('[data-bind="FromDate"]').length) {
-            $('[data-bind="FromDate"]').val(formatDate(firstDay));
+        // First day of current month
+        let firstDayOfMonth = new Date(
+            today.getFullYear(),
+            today.getMonth(),
+            1
+        );
+
+        // Format Date as yyyy-MM-dd
+        function formatDate(date) {
+            let year = date.getFullYear();
+            let month = String(date.getMonth() + 1).padStart(2, '0');
+            let day = String(date.getDate()).padStart(2, '0');
+
+            return `${year}-${month}-${day}`;
         }
-        if($('[data-bind="ToDate"]').length) {
+
+        if ($('[data-bind="FromDate"]').length) {
+            $('[data-bind="FromDate"]').val(formatDate(firstDayOfMonth));
+        }
+
+        if ($('[data-bind="ToDate"]').length) {
             $('[data-bind="ToDate"]').val(formatDate(today));
         }
         $("#btnExportCsv").addClass("disabled");
@@ -526,7 +535,6 @@
             ShowToastNotification("error", "Report downloaded failed. Please try again..");
         }
     });
-
     
     function LoadSelections() {
         $('.select2').each(function () {
@@ -579,152 +587,7 @@
             }
         });
     }
-    function ReportLoad() {
-        try {
-            var filterData = [];
-            $(".reportfilter").find("input, select").each(function () {
-                var $el = $(this);
-                var fieldId = $el.attr("data-bind");
-                if (fieldId && fieldId.length > 0) {
-                    if ($el.is("select")) {
-                        const selectedTexts = $el.find("option:selected").map(function () {
-                            return $(this).val();
-                        }).get();
-                        filterData.push({
-                            FieldName: fieldId,
-                            FieldValue: selectedTexts.join(',')
-                        });
-                    } else {
-                        // input type (text, date, hidden, etc.)
-                        filterData.push({
-                            FieldName: fieldId,
-                            FieldValue: $el.val()
-                        });
-                    }
-                }
-            });
-            var model = {
-                FieldData: filterData,
-                ReportId: '@Model.ReportId'
-            }
-            ShowToastNotification("info", "Report is loading. please wait..");
-            $.ajax({
-                url: "@Url.Action("getReportData", "Reports")",
-                type: "POST",
-                contentType: "application/json;",
-                skipLoading: true,
-                data: JSON.stringify(model),
-                async: false,
-                success: function (response) {
-                    if (response != null && response.data != null && response.data.columns != null && response.data.IsSuccess) {
-                        //$('#tblMISReportView thead tr:eq(1) th').each(function (i) {
-                        //    $(this).html('<input type="text" placeholder="Search" style="width:100%;"/>');
-                        //    $('input', this).on('keyup change', function () {
-                        //        if (table.column(i).search() !== this.value) {
-                        //            table.column(i).search(this.value).draw();
-                        //        }
-                        //    });
-                        //});
-                        // do something
-                        if ($('#tblMISReportView tfoot').length === 0) {
-                            let footer = '<tfoot><tr>';
-                            response.data.columns.forEach(() => footer += '<th></th>');
-                            footer += '</tr></tfoot>';
-                            $('#tblMISReportView').append(footer);
-                        }
-                        var table = $('#tblMISReportView').DataTable({
-                            destroy: true,
-                            data: response.data.Data,
-                            columns: response.data.columns,
-                            searching: true,
-                            ordering: true,
-                            orderCellsTop: true,
-                            paging: true,
-                            scrollCollapse: true,
-                            scrollY: '500px',
-                            scrollX: true,
-                            info: true,
-                            processing: true,
-                            fixedHeader: {
-                                header: true,
-                                footer: false
-                            },
-                            autoFill: true,
-                            order: [[0, 'asc']],
-                            language: {
-                                infoEmpty: "No records available - Got it?"
-                            },
-                            footerCallback: function (row, data, start, end, display) {
-                                let api = this.api();
-                                if (!response.data.columns || response.data.columns.length === 0) return;
-                                // 🔄 Clear footer first
-                                $(api.table().footer()).find('th').html('');
-                                // 🔢 Safe numeric conversion
-                                let num = function (val) {
-                                    if (!val) return 0;
-                                    if (typeof val === 'string') {
-                                        val = val.replace(/[^0-9.-]+/g, '');
-                                    }
-                                    val = parseFloat(val);
-                                    return isNaN(val) ? 0 : val;
-                                };
-                                // 🏷 Label
-                                $(api.column(0).footer()).html('<b>Summary</b>');
-                                api.columns().every(function () {
-                                    let column = this;
-                                    let colName = column.dataSrc();
-                                    if (!colName) return;
-                                    try {
-
-                                        // 🔥 Full dataset summary (change if needed)
-                                        let colData = column.data({ search: 'applied' }).toArray();
-
-                                        if (!colData.length) {
-                                            $(column.footer()).html('');
-                                            return;
-                                        }
-
-                                        let total = colData.reduce((sum, v) => sum + num(v), 0);
-
-                                        $(column.footer()).html(total.toLocaleString(undefined, {
-                                            minimumFractionDigits: 2,
-                                            maximumFractionDigits: 2
-                                        }));
-
-                                    } catch (e) {
-                                        $(column.footer()).html('0');
-                                    }
-                                });
-                            }
-                        });
-                        // Remove old filter row if exists
-                        $('#tblMISReportView thead tr.filters').remove();
-                        // Create filter row
-                        var filterRow = $('<tr class="filters"></tr>');
-                        table.columns().every(function () {
-                            var th = $('<th></th>');
-                            $('<input>', {type: 'text', placeholder: 'Search', style: 'width:100%;'})
-                                .appendTo(th)
-                                .on('keyup change clear', function () {
-                                    if (table.column(th.index()).search() !== this.value) {
-                                        table.column(th.index()).search(this.value).draw();
-                                    }
-                                });
-                            filterRow.append(th);
-                        });
-
-                    }
-                    else {
-                        console.log(response.Response);
-                    }
-                },
-                error: function () {
-                    console.log("Error loading data.");
-                }
-            });
-        } catch (e) {
-        }
-    }
+    
     function rebuildThead(keys) {
         const headerHtml = keys.map(k => `<th>${k}</th>`).join("");
         $("#tblMISReportView thead").html(`<tr>${headerHtml}</tr>`);
@@ -771,6 +634,8 @@
                         return;
                     }
                     const dynamicColumns = json.columns;
+                    // Get secondColumns safely
+                    let summaryColumns = json.secondColumns;
                     // re-init
                     if ($('#tblMISReportView tfoot').length === 0) {
                         let footer = '<tfoot><tr>';
@@ -830,43 +695,114 @@
                         },
                         footerCallback: function (row, data, start, end, display) {
                             let api = this.api();
-                            if (!dynamicColumns || dynamicColumns.length === 0) return;
                             // 🔄 Clear footer first
                             $(api.table().footer()).find('th').html('');
+
                             // 🔢 Safe numeric conversion
                             let num = function (val) {
-                                if (!val) return 0;
-                                if (typeof val === 'string') {
-                                    val = val.replace(/[^0-9.-]+/g, '');
+
+                                if (val === null || val === undefined || val === '') {
+                                    return null;
                                 }
-                                val = parseFloat(val);
-                                return isNaN(val) ? 0 : val;
+
+                                if (typeof val === 'string') {
+                                    val = val.replace(/,/g, '').replace(/[^0-9.-]+/g, '');
+                                }
+
+                                let parsed = parseFloat(val);
+
+                                return isNaN(parsed) ? null : parsed;
                             };
-                            // 🏷 Label
+
                             $(api.column(0).footer()).html('<b>Summary</b>');
+
+                            // Check if secondColumns actually exists and has values
+                            let hasSecondColumns =
+                                Array.isArray(summaryColumns) &&
+                                summaryColumns.length > 0;
+                            
+                            console.log("secondColumns:", summaryColumns);
+                            console.log("hasSecondColumns:", hasSecondColumns);
+                            if (hasSecondColumns == false)
+                                return;
                             api.columns().every(function () {
                                 let column = this;
                                 let colName = column.dataSrc();
-                                if (!colName || (colName != null && colName != "amount" && colName != "Qty")) return;
+                                if (!colName) return;
                                 try {
-
-                                    // 🔥 Full dataset summary (change if needed)
-                                    let colData = column.data({ search: 'applied' }).toArray();
+                                    // Get column data
+                                    let colData = column
+                                        .data({ search: 'applied' })
+                                        .toArray();
 
                                     if (!colData.length) {
                                         $(column.footer()).html('');
                                         return;
                                     }
+                                    // --------------------------------------------------
+                                    // Check if current column exists in secondColumns
+                                    // --------------------------------------------------
+                                    let isSummaryColumn = false;
+                                    if (hasSecondColumns) {
+                                        isSummaryColumn = summaryColumns.some(function (x) {
+                                            return x != null &&
+                                                x.toString().trim().toLowerCase() ===
+                                                colName.toString().trim().toLowerCase();
+                                        });
+                                    }
+                                    // --------------------------------------------------
+                                    // Get numeric values
+                                    // --------------------------------------------------
+                                    let numericValues = colData
+                                        .map(num)
+                                        .filter(function (v) {
+                                            return v !== null;
+                                        });
+                                    // --------------------------------------------------
+                                    // Decide whether to calculate summary
+                                    // --------------------------------------------------
+                                    let shouldCalculate = false;
+                                    if (hasSecondColumns) {
+                                        // secondColumns exists
+                                        // Only calculate specified columns
+                                        shouldCalculate = isSummaryColumn;
+                                    } else {
+                                        // secondColumns doesn't exist
+                                        // Automatically calculate numeric columns
+                                        shouldCalculate = numericValues.length > 0;
+                                    }
+                                    // --------------------------------------------------
+                                    // Calculate total
+                                    // --------------------------------------------------
+                                    if (shouldCalculate) {
 
-                                    let total = colData.reduce((sum, v) => sum + num(v), 0);
+                                        let total = numericValues.reduce(function (sum, value) {
+                                            return sum + value;
+                                        }, 0);
 
-                                    $(column.footer()).html(total.toLocaleString(undefined, {
-                                        minimumFractionDigits: 2,
-                                        maximumFractionDigits: 2
-                                    }));
+                                        $(column.footer()).html(
+                                            total.toLocaleString('en-IN', {
+                                                minimumFractionDigits: 2,
+                                                maximumFractionDigits: 2
+                                            })
+                                        );
+
+                                    } else {
+
+                                        // Text / Date / non-summary column
+                                        $(column.footer()).html('');
+                                    }
+                                    $(api.column(0).footer()).html('<b>Summary</b>');
 
                                 } catch (e) {
-                                    $(column.footer()).html('');
+
+                                    console.error(
+                                        'Footer calculation error:',
+                                        colName,
+                                        e
+                                    );
+                                    $(api.column(0).footer()).html('<b>Summary</b>');
+                                    //$(column.footer()).html('');
                                 }
                             });
                         }

@@ -59,26 +59,6 @@
     z-index:9999;text-align:center;padding-top:100px;">
     <img src="/images/loader.gif" alt="Loading..." />
 </div>
-<div class="breadcrumbs">
-    <div class="col-sm-4">
-        <div class="page-header float-left">
-            <div class="page-title">
-                <h1>@Model.Design.FormTitle</h1>
-            </div>
-        </div>
-    </div>
-    <div class="col-sm-8">
-        <div class="page-header float-right">
-            <div class="page-title">
-                <ol class="breadcrumb text-right">
-                    <li><a href="@Url.Action("Index","Home")">Home</a></li>
-                    <li>@Model.Design.ParentFormTitle</li>
-                    <li>@Model.Design.FormTitle</li>
-                </ol>
-            </div>
-        </div>
-    </div>
-</div>
 @{
     var ImagesBase = Url.Content("~/");
 }
@@ -88,113 +68,145 @@
 <input type="hidden" value="@Convert.ToString(Model.Design.CanApprove)" id="hdnCanApprove" />
 <input type="hidden" value="@Convert.ToString(Model.Design.CanDelete)" id="hdnCanDelete" />
 <input type="hidden" value="@Convert.ToString(Model.Design.CanEdit)" id="hdnCanEdit" />
-<div class="animated fadeIn">
-    <div class="row">
-        <div class="col-md-12 p-0">
-            <div class="card">
-                <div class="card-header">
-                    <div class="col-lg-6">
-                        <strong class="card-title"></strong>
-                        <button class="btn btn-sm" data-toggle="modal" data-target="#showCommentsModel" onclick="ShowComments()" title="Comments" type="button">
-                            <i class="fa fa-comment-o font16"></i>
+<div class="page-main">
+    <!-- =====================================================
+         PAGE HEADER
+    ====================================================== -->
+    <div class="page-main-header">
+        <div class="page-main-title">
+            <i class="fa fa-building-o"></i>
+            <span>
+                @Model.Design.FormTitle
+            </span>
+        </div>
+        <nav>
+            <ol class="breadcrumb page-breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="@Url.Action("Index","Home")">
+                        Home
+                    </a>
+                </li>
+                <li class="breadcrumb-item active">
+                    @Model.Design.ParentFormTitle
+                </li>
+                <li class="breadcrumb-item active">
+                    @Model.Design.FormTitle
+                </li>
+            </ol>
+        </nav>
+    </div>
+    <div class="page-main-container">
+        <div class="page-main-card">
+            <div class="page-main-card-header">
+                <div class="page-main-card-title">
+                    <button class="btn btn-sm" data-toggle="modal" data-target="#showCommentsModel" onclick="ShowComments()" title="Comments" type="button">
+                        <i class="fa fa-comment-o font16"></i>
+                    </button>
+                </div>
+                <div class="page-main-card-actions">
+                    <!-- REFRESH -->
+                    <a class="page-main-action-btn" href="@Url.Action("MyPage","Home", new { @pagename = Model.Design.FormName })" title="Refresh">
+                        <i class="fa fa-refresh"></i>
+                        Refresh
+                    </a>
+                    @if (Model.Design.CanAdd == true)
+                    {
+                        <a class="page-main-action-btn primary" id="btnAddNew"
+                           href="@Url.Action("PageDetail", "Home", new { @pagename = Model.Design.FormName })" title="Add New @Model.Design.FormTitle">
+                            <i class="fa fa-plus"></i>&nbsp; New
+                        </a>
+                    }
+                    <div class="dropdown" style="float:right; position:relative;">
+                        <button class="btn btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fa fa-download"></i>&nbsp; Export
                         </button>
-                    </div>
-                    <div class="col-lg-6 text-right">
-                        @if (Model.Design.CanPrint == true && Model.Reports != null && Model.Reports.Count > 0)
-                        {
-                            <div class="dropdown report-print" style="float:right; position:relative;">
-                                <button class="btn btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <i class="fa fa-print"></i>&nbsp;Print
-                                </button>
-                                <div class="dropdown-menu" style="margin: 2.200rem -4.285em 2rem; " aria-labelledby="dropdownMenuButton">
-                                    @foreach (var item in Model.Reports)
-                                    {
-                                        <a class="dropdown-item" onclick="openReport(@item.ReportId);" href="#">@item.ReportTitle</a>
-                                    }
-                                </div>
-                            </div>
-                        }
-                        <a class="btn btn-sm" href="@Url.Action("MyPage","Home", new { @pagename = Model.Design.FormName })"><i class="fa fa-refresh"></i>&nbsp; Refresh</a>
-                        @*<a class="btn btn-sm" id="btnExportCsv" href="javascript:void(0);" title="Export"><i class="fa fa-download"></i>&nbsp; Export</a>*@
-                        <div class="dropdown" style="float:right; position:relative;">
-                            <button class="btn btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="fa fa-download"></i>&nbsp; Export
-                            </button>
-                            <div class="dropdown-menu export-print" style="margin: 2.2rem -1.285em 2rem;min-width: auto !important; width: auto;" aria-labelledby="dropdownMenuButton">
-                                <a class="dropdown-item" title="Export in CSV" id="btnExportCsv" href="javascript:void(0);"><i class="fa fa-file-text-o pr-1" style="color:#555"></i>CSV</a>
-                                <a class="dropdown-item" title="Export in Excel" id="btnExportExcel" href="javascript:void(0);"><i class="fa fa-file-excel-o pr-1" style="color:green"></i>Excel</a>
-                                <a class="dropdown-item" id="btnExportPDF" title="Export in PDF" href="javascript:void(0);"><i class="fa fa-file-pdf-o"></i>&nbsp; PDF</a>
-                            </div>
+                        <div class="dropdown-menu export-print" style="margin: 2.2rem -1.285em 2rem;min-width: auto !important; width: auto;" aria-labelledby="dropdownMenuButton">
+                            <a class="dropdown-item" title="Export in CSV" id="btnExportCsv" href="javascript:void(0);"><i class="fa fa-file-text-o pr-1" style="color:#555"></i>CSV</a>
+                            <a class="dropdown-item" title="Export in Excel" id="btnExportExcel" href="javascript:void(0);"><i class="fa fa-file-excel-o pr-1" style="color:green"></i>Excel</a>
+                            <a class="dropdown-item" id="btnExportPDF" title="Export in PDF" href="javascript:void(0);"><i class="fa fa-file-pdf-o"></i>&nbsp; PDF</a>
                         </div>
-                        @if (Model.Design.CanAdd == true)
-                        {
-                            <a class="btn btn-sm" id="btnAddNew" href="@Url.Action("PageDetail", "Home", new { @pagename = Model.Design.FormName })" title="Add New @Model.Design.FormTitle"><i class="fa fa-plus"></i>&nbsp; New</a>
-                        }
                     </div>
                 </div>
-                <div class="card-body">
-                    <nav>
-                        <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                            <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home" aria-selected="true">
-                                List Record <span id="lblRecordCount" class="font-weight-bold">(0)</span>
-                            </button>
-                            @if (Model.PendingData != null && Model.PendingData.Count > 0)
-                            {
-                                foreach (var item in Model.PendingData)
-                                {
-                                    string liId = "nav-pending-tab-" + item.FormPendingId.ToString();
-                                    string liCount = liId + "Count";
-                                    string contentDiv = "nav-pending-" + item.FormPendingId.ToString();
-                                    string tblId = "tblPending-" + item.FormPendingId.ToString();
-                                    <button class="nav-link" data-interval="@liCount" data-bind="@tblId" data-content="@item.SourceName" id="@liId"
-                                            data-bs-toggle="tab" data-bs-target="#@contentDiv" type="button" role="tab" aria-controls="@contentDiv"
-                                            aria-selected="false" onclick="adjustColumns('@tblId')">
-                                        @item.FormTabName&nbsp;<span id="@liCount" class="font-weight-bold">(0)</span>
-                                        <a href="javascript:void(0);" onclick="BindPendings('@tblId', '@liCount','@item.SourceName');" class="PendingRefresh" title="Refresh"><i class="fa fa-refresh"></i></a>
-                                    </button>
-                                }
-                            }
-                        </div>
-                    </nav>
-                    <div class="tab-content" id="nav-tabContent">
-                        <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
-                            <div class="p-3">
-                                <div class="row form-group">
-                                    <div class="col-md-12">
-                                        <table id="tblpage" class="display cell-border nowrap" cellspacing="0" width="100%"></table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+            </div>
+            <!-- =================================================
+                 CARD BODY
+            ================================================== -->
+            <div class="page-main-card-body">
+                <div class="page-main-list-heading d-none">
+                    <div class="page-main-list-title">
+                        <i class="fa fa-list"></i>
+                        List Of @Model.Design.FormTitle
+                    </div>
+                    <div class="page-main-list-description">
+                        Manage and maintain your records
+                    </div>
+                </div>
+                <nav>
+                    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                        <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home" aria-selected="true">
+                            List Record <span id="lblRecordCount" class="font-weight-bold">(0)</span>
+                        </button>
                         @if (Model.PendingData != null && Model.PendingData.Count > 0)
                         {
                             foreach (var item in Model.PendingData)
                             {
                                 string liId = "nav-pending-tab-" + item.FormPendingId.ToString();
+                                string liCount = liId + "Count";
                                 string contentDiv = "nav-pending-" + item.FormPendingId.ToString();
                                 string tblId = "tblPending-" + item.FormPendingId.ToString();
-                                <div class="tab-pane fade" id="@contentDiv" role="tabpanel" aria-labelledby="@liId">
-                                    <div class="p-3">
-                                        <div class="row form-group">
-                                            <div class="col-md-12" style="width:100%; overflow-x:auto;">
-                                                <table id="@tblId" data-content="@item.FromFormId.ToString()" data-bind="@item.FormPendingId.ToString()" class="display nowrap cell-border" cellspacing="0" width="100%"></table>
-                                            </div>
+                                <button class="nav-link" data-interval="@liCount" data-bind="@tblId" data-content="@item.SourceName" id="@liId"
+                                        data-bs-toggle="tab" data-bs-target="#@contentDiv" type="button" role="tab" aria-controls="@contentDiv"
+                                        aria-selected="false" onclick="adjustColumns('@tblId')">
+                                    @item.FormTabName&nbsp;<span id="@liCount" class="font-weight-bold">(0)</span>
+                                    <a href="javascript:void(0);" onclick="BindPendings('@tblId', '@liCount','@item.SourceName');" class="PendingRefresh" title="Refresh"><i class="fa fa-refresh"></i></a>
+                                </button>
+                            }
+                        }
+                    </div>
+                </nav>
+                <div class="tab-content" id="nav-tabContent">
+                    <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+                        <div class="p-3">
+                            <div class="row form-group">
+                                <div class="col-md-12">
+                                    <table id="tblpage" class="display cell-border nowrap" cellspacing="0" width="100%"></table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @if (Model.PendingData != null && Model.PendingData.Count > 0)
+                    {
+                        foreach (var item in Model.PendingData)
+                        {
+                            string liId = "nav-pending-tab-" + item.FormPendingId.ToString();
+                            string contentDiv = "nav-pending-" + item.FormPendingId.ToString();
+                            string tblId = "tblPending-" + item.FormPendingId.ToString();
+                            <div class="tab-pane fade" id="@contentDiv" role="tabpanel" aria-labelledby="@liId">
+                                <div class="p-3">
+                                    <div class="row form-group">
+                                        <div class="col-md-12" style="width:100%; overflow-x:auto;">
+                                            <table id="@tblId" data-content="@item.FromFormId.ToString()" data-bind="@item.FormPendingId.ToString()" class="display nowrap cell-border" cellspacing="0" width="100%"></table>
                                         </div>
-                                        <div class="row form-group">
-                                            <div class="col-md-12 text-left">
-                                                <button class="btn btn-primary" onclick="CreateRecord('@tblId')">Create @Model.Design.FormTitle</button>
-                                            </div>
+                                    </div>
+                                    <div class="row form-group">
+                                        <div class="col-md-12 text-left">
+                                            <button class="btn btn-primary" onclick="CreateRecord('@tblId')">Create @Model.Design.FormTitle</button>
                                         </div>
                                     </div>
                                 </div>
-                            }
+                            </div>
                         }
+                    }
+                </div>
+                <div class="row form-group mb-0">
+                    <div class="col-12 p-0">
+
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div><!-- .animated -->
+</div>
 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -467,7 +479,7 @@
         </div>
     </div>
 </div>
-<div id="actions" class="dropdown" style="display:none;position:absolute;z-index:9999999;">
+<div id="actions" class="dropdown" style="display:none;position:absolute;">
     <button id="btnApproved" data-bind="2" class="text-success" value="approved">Approved</button>
     <button id="btnNotApproved" data-bind="1" class="text-primary" value="notapproved">Not Approved</button>
     <button id="btnCancelled" data-bind="3" class="text-danger" value="cancelled">Cancelled</button>
@@ -1334,7 +1346,6 @@
             setTimeout(() => {
                 table.columns.adjust().draw();
             }, 100);
-            let actions = document.querySelector('#actions');
             let pageAction = document.querySelector('#PageAction');
             table.on('click', 'button.linkmenu', function (e) {
                 e.stopPropagation();
@@ -1391,7 +1402,7 @@
                     }
                 });
             });
-
+            let actions = document.querySelector('#actions');
             table.on('click', 'button.dropdown', function (e) {
                 e.stopPropagation();
                 var $tr = $(this).closest('tr');
@@ -1437,17 +1448,16 @@
                 $("#statusCommentModel .modal-title").html(urnNo + " : Comment")
                 if (actions != null) {
                     this.parentNode.append(actions);
+                    const currentOffsetLeft = e.pageX;
+                    const currentOffsetTop = e.pageX;
                     if (actions.style != null) {
-                        actions.style.display = 'block';
-                        //if ($('#tblpage tbody tr').length == (trIndex + 1)
-                        //    || (($('#tblpage tbody tr').length - 1) == (trIndex + 1))) {
-                        //    actions.style.top = '-72px';
-                        //    actions.style.right = this.offsetLeft + 'px';
-                        //}
-                        //else {
-                        //    actions.style.top = (this.offsetTop + this.offsetHeight + 5) + 'px';
-                        //    actions.style.right = this.offsetLeft + 'px';
-                        //}
+                        const $actions = $(actions);
+                        $actions.css({
+                            display: 'block',
+                            position: 'fixed',
+                            left: e.pageX + 'px',
+                            top: event.clientY + 'px'
+                        });
                     }
                 }
                 // Remove with the next click on the document
@@ -1881,17 +1891,16 @@
                         $("#statusCommentModel .modal-title").html(urnNo + " : Comment")
                         if (actions != null) {
                             this.parentNode.append(actions);
+                            const currentOffsetLeft = e.pageX;
+                            const currentOffsetTop = e.pageX;
                             if (actions.style != null) {
-                                actions.style.display = 'block';
-                                //if ($('#tblpage tbody tr').length == (trIndex + 1)
-                                //    || (($('#tblpage tbody tr').length - 1) == (trIndex + 1))) {
-                                //    actions.style.top = '-72px';
-                                //    actions.style.right = this.offsetLeft + 'px';
-                                //}
-                                //else {
-                                //    actions.style.top = (this.offsetTop + this.offsetHeight + 5) + 'px';
-                                //    actions.style.right = this.offsetLeft + 'px';
-                                //}
+                                const $actions = $(actions);
+                                $actions.css({
+                                    display: 'block',
+                                    position: 'fixed',
+                                    left: e.pageX + 'px',
+                                    top: event.clientY + 'px'
+                                });
                             }
                         }
                         // Remove with the next click on the document

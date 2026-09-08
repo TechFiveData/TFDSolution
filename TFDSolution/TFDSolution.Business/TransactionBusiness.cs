@@ -1396,7 +1396,7 @@ namespace TFDSolution.Business
                     {
                         AccId = Convert.ToInt32(HeaderFieldData.FieldValue);
                     }
-                    DefaultSQL = DefaultSQL + ",ItemSrNo";
+                    DefaultSQL = DefaultSQL + ",ItemSrNo,RowIndex";
                     var fieldNames = new List<string>();
                     var fieldValues = new List<string>();
                     var tableRows = new List<string>();
@@ -1436,6 +1436,7 @@ namespace TFDSolution.Business
                                 }
                                 itemRow = itemRow + 1;
                                 fieldValues = new List<string>();
+                                fieldValues.Add(Convert.ToString(itemRow));
                                 fieldValues.Add(Convert.ToString(itemRow));
                                 bool isData = false;
                                 foreach (var field in fields)
@@ -1846,7 +1847,7 @@ namespace TFDSolution.Business
                                                                             FieldValue = Convert.ToString(item.FieldValue[0].FieldValue),
                                                                             FieldText = item.FieldTitle
                                                                         });
-                                                                        fieldValues.Add($"'{Convert.ToString(item.FieldValue[0].FieldValue)}'");
+                                                                        //fieldValues.Add($"'{Convert.ToString(item.FieldValue[0].FieldValue)}'");
                                                                     }
                                                                     else
                                                                     {
@@ -1877,7 +1878,7 @@ namespace TFDSolution.Business
                                                                                         FieldValue = Convert.ToString(item1.FieldValue),
                                                                                         FieldText = item1.FieldText
                                                                                     });
-                                                                                    fieldValues.Add($"'{Convert.ToString(item1.FieldValue)}'");
+                                                                                    //fieldValues.Add($"'{Convert.ToString(item1.FieldValue)}'");
                                                                                     _Isfilled = true;
                                                                                 }
                                                                             }

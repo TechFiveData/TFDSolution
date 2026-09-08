@@ -67,7 +67,8 @@
         }
         @Html.HiddenFor(m => m.PartyId)
         @Html.HiddenFor(m => m.PartyCode)
-        <div class="row">
+        <div class="row m-0">
+
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">
@@ -226,7 +227,7 @@
                                             @Html.ValidationMessageFor(m => m.ContactPerson, "", new { @class = "text-danger" })
 
                                         </div>
-                                        
+
                                     </div>
                                     <div class="row form-group">
                                         <div class="col col-md-3"><label class=" form-control-label">Industry</label></div>

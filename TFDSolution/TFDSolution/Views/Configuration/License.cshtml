@@ -3,84 +3,1009 @@
 @{
     ViewBag.Title = "License";
     Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var isExpiringSoon = Model.RemainingDays <= 14 && Model.RemainingDays > 0;
+    var isExpired = Model.RemainingDays <= 0;
+
+    var licenseStatus = isExpired
+        ? "Expired"
+        : isExpiringSoon
+            ? "Expiring Soon"
+            : "Active";
+
+    var progress = Model.RemainingDays <= 0
+        ? 0
+        : Math.Min(100, (Model.RemainingDays * 100) / 365);
 }
 
-<div class="breadcrumbs">
-    <div class="col-sm-4">
-        <div class="page-header float-left">
-            <div class="page-title">
-                <h1>Your Product License Information</h1>
-            </div>
+<!-- =========================================================
+     FONT AWESOME
+========================================================= -->
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer" />
+<style>
+    /* =========================================================
+       LICENSE PAGE
+    ========================================================= */
+
+    .license-page {
+        background: #f4f7f9;
+        min-height: calc(100vh - 100px);
+        color: #30363b;
+        font-family: "Segoe UI", Arial, sans-serif;
+        font-size: 13px;
+    }
+
+
+    /* =========================================================
+       PAGE HEADER
+    ========================================================= */
+
+    .license-page-header {
+        min-height: 52px;
+        background: #ffffff;
+        border-bottom: 1px solid #d9e2e7;
+
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        padding: 0 22px;
+    }
+
+    .license-page-title {
+        font-size: 15px;
+        font-weight: 600;
+        color: #30363b;
+
+        display: flex;
+        align-items: center;
+    }
+
+    .license-page-title i {
+        color: #27a9d7;
+        margin-right: 9px;
+        font-size: 15px;
+    }
+
+    .license-breadcrumb {
+        margin: 0;
+        padding: 0;
+        background: transparent;
+        font-size: 12px;
+    }
+
+    .license-breadcrumb a {
+        color: #27a9d7;
+        text-decoration: none;
+    }
+
+    .license-breadcrumb a:hover {
+        color: #1598c5;
+    }
+
+    .license-breadcrumb .active {
+        color: #71808a;
+    }
+
+
+    /* =========================================================
+       MAIN CONTAINER
+    ========================================================= */
+
+    .license-container {
+        padding: 18px;
+        max-width: 1400px;
+        margin: auto;
+    }
+
+
+    /* =========================================================
+       CARD
+    ========================================================= */
+
+    .license-card {
+        background: #ffffff;
+        border: 1px solid #d9e2e7;
+        border-radius: 5px;
+
+        margin-bottom: 16px;
+        overflow: hidden;
+
+        box-shadow: 0 1px 3px rgba(30, 55, 70, 0.03);
+    }
+
+    .license-card-header {
+        min-height: 43px;
+
+        background: #72c6df;
+
+        padding: 0 15px;
+
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        font-weight: 600;
+        color: #173c49;
+    }
+
+    .license-card-header i {
+        margin-right: 8px;
+    }
+
+    .license-card-body {
+        padding: 18px;
+    }
+
+
+    /* =========================================================
+       STATUS
+    ========================================================= */
+
+    .license-status {
+        padding: 5px 10px;
+
+        border-radius: 15px;
+
+        background: #eaf7ee;
+        color: #288049;
+
+        font-size: 11px;
+        font-weight: 600;
+
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .license-status.warning {
+        background: #fff4df;
+        color: #d98300;
+    }
+
+    .license-status.expired {
+        background: #fdeaea;
+        color: #d33a3a;
+    }
+
+    .license-status-dot {
+        display: inline-block;
+
+        width: 7px;
+        height: 7px;
+
+        border-radius: 50%;
+
+        background: #27ae60;
+
+        margin-right: 5px;
+    }
+
+    .license-status.warning .license-status-dot {
+        background: #f0a000;
+    }
+
+    .license-status.expired .license-status-dot {
+        background: #dc3545;
+    }
+
+
+    /* =========================================================
+       PRODUCT HERO
+    ========================================================= */
+
+    .license-product {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+
+    .license-product-icon {
+        width: 52px;
+        height: 52px;
+        min-width: 52px;
+
+        border-radius: 6px;
+
+        background: #eaf8fc;
+        color: #27a9d7;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        font-size: 22px;
+    }
+
+    .license-product-icon i {
+        margin: 0;
+    }
+
+    .license-product-name {
+        font-size: 16px;
+        font-weight: 600;
+        color: #30363b;
+    }
+
+    .license-product-description {
+        color: #71808a;
+        font-size: 12px;
+        margin-top: 3px;
+    }
+
+
+    /* =========================================================
+       SUMMARY CARDS
+    ========================================================= */
+
+    .license-summary-card {
+        border: 1px solid #d9e2e7;
+        border-radius: 5px;
+
+        background: #ffffff;
+
+        min-height: 75px;
+
+        padding: 15px;
+
+        display: flex;
+        align-items: center;
+        gap: 12px;
+
+        transition: all .25s ease;
+    }
+
+    .license-summary-card:hover {
+        transform: translateY(-2px);
+
+        box-shadow: 0 5px 14px rgba(30, 55, 70, 0.08);
+
+        border-color: #b9dce7;
+    }
+
+    .license-summary-icon {
+        width: 42px;
+        height: 42px;
+        min-width: 42px;
+
+        border-radius: 5px;
+
+        background: #eef8fc;
+        color: #27a9d7;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        font-size: 17px;
+    }
+
+    .license-summary-icon i {
+        margin: 0;
+    }
+
+    .license-summary-label {
+        font-size: 10px;
+        color: #71808a;
+
+        margin-bottom: 3px;
+
+        font-weight: 600;
+
+        letter-spacing: .35px;
+    }
+
+    .license-summary-value {
+        font-size: 16px;
+        font-weight: 600;
+        color: #30363b;
+    }
+
+    .license-summary-value.warning {
+        color: #e58a00;
+    }
+
+    .license-summary-value.danger {
+        color: #dc3545;
+    }
+
+
+    /* =========================================================
+       LICENSE DETAILS TABLE
+    ========================================================= */
+
+    .license-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 0;
+    }
+
+    .license-table tr {
+        border-bottom: 1px solid #e4e9ec;
+    }
+
+    .license-table tr:last-child {
+        border-bottom: none;
+    }
+
+    .license-table td {
+        padding: 12px 15px;
+        vertical-align: middle;
+    }
+
+    .license-table td:first-child {
+        width: 50%;
+        color: #566168;
+    }
+
+    .license-table td:last-child {
+        font-weight: 500;
+        color: #30363b;
+    }
+
+    .license-label-icon {
+        width: 26px;
+
+        color: #27a9d7;
+
+        text-align: center;
+
+        margin-right: 5px;
+    }
+
+    .license-value-danger {
+        color: #dc3545 !important;
+        font-weight: 600 !important;
+    }
+
+    .license-value-warning {
+        color: #e58a00 !important;
+        font-weight: 600 !important;
+    }
+
+    .license-value-success {
+        color: #288049 !important;
+        font-weight: 600 !important;
+    }
+
+
+    /* =========================================================
+       EXPIRATION PANEL
+    ========================================================= */
+
+    .license-expiry-panel {
+        text-align: center;
+        padding: 10px 0;
+    }
+
+    .license-expiry-days {
+        font-size: 42px;
+        font-weight: 600;
+
+        color: #27a9d7;
+
+        line-height: 1;
+    }
+
+    .license-expiry-days.expired {
+        color: #dc3545;
+    }
+
+    .license-expiry-days.warning {
+        color: #e58a00;
+    }
+
+    .license-expiry-text {
+        font-size: 12px;
+        color: #71808a;
+
+        margin-top: 8px;
+    }
+
+
+    /* =========================================================
+       PROGRESS
+    ========================================================= */
+
+    .license-progress {
+        height: 8px;
+
+        margin: 22px 0;
+
+        background: #eaf0f3;
+
+        border-radius: 10px;
+
+        overflow: hidden;
+    }
+
+    .license-progress-bar {
+        height: 100%;
+
+        background: #27a9d7;
+
+        border-radius: 10px;
+
+        transition: width .8s ease;
+    }
+
+    .license-progress-bar.warning {
+        background: #e5a100;
+    }
+
+    .license-progress-bar.expired {
+        background: #dc3545;
+    }
+
+
+    /* =========================================================
+       EXPIRATION INFORMATION
+    ========================================================= */
+
+    .license-expiry-info {
+        border: 1px solid #d9e2e7;
+
+        border-radius: 4px;
+
+        padding: 12px;
+
+        display: flex;
+        justify-content: space-between;
+
+        text-align: left;
+
+        background: #fafcfd;
+    }
+
+    .license-expiry-label {
+        font-size: 11px;
+
+        color: #71808a;
+
+        margin-bottom: 3px;
+    }
+
+    .license-expiry-value {
+        font-weight: 600;
+
+        color: #30363b;
+    }
+
+
+    /* =========================================================
+       SUPPORT / INFORMATION
+    ========================================================= */
+
+    .license-info {
+        display: flex;
+        align-items: flex-start;
+
+        gap: 10px;
+
+        padding: 13px 15px;
+
+        background: #f0f9fc;
+
+        border: 1px solid #d4edf5;
+
+        border-radius: 4px;
+
+        font-size: 12px;
+
+        color: #566168;
+    }
+
+    .license-info > i {
+        color: #27a9d7;
+
+        font-size: 16px;
+
+        margin-top: 1px;
+    }
+
+    .license-info strong {
+        color: #30363b;
+    }
+
+
+    /* =========================================================
+       BUTTONS
+    ========================================================= */
+
+    .license-btn {
+        height: 34px;
+
+        padding: 5px 14px;
+
+        font-size: 12px;
+
+        border-radius: 4px;
+
+        transition: all .2s ease;
+
+        text-decoration: none !important;
+
+        display: inline-flex;
+
+        align-items: center;
+
+        justify-content: center;
+    }
+
+    .license-btn i {
+        margin-right: 6px;
+    }
+
+    .license-btn-outline {
+        background: #ffffff;
+
+        border: 1px solid #cbd7dd;
+
+        color: #566168;
+    }
+
+    .license-btn-outline:hover {
+        background: #f5f9fb;
+
+        border-color: #27a9d7;
+
+        color: #27a9d7;
+    }
+
+    .license-btn-primary {
+        background: #27a9d7;
+
+        border: 1px solid #27a9d7;
+
+        color: #ffffff;
+    }
+
+    .license-btn-primary:hover {
+        background: #1598c5;
+
+        border-color: #1598c5;
+
+        color: #ffffff;
+    }
+
+
+    /* =========================================================
+       RESPONSIVE
+    ========================================================= */
+
+    @@media (max-width: 991px) {
+
+        .license-page-header {
+            padding: 10px 15px;
+        }
+
+        .license-container {
+            padding: 12px;
+        }
+
+    }
+    @@media (max-width: 768px) {
+
+        .license-page-header {
+            flex-direction: column;
+
+            align-items: flex-start;
+
+            gap: 5px;
+
+            padding: 12px 15px;
+        }
+
+        .license-breadcrumb {
+            display: none;
+        }
+
+        .license-container {
+            padding: 10px;
+        }
+
+        .license-card-body {
+            padding: 14px;
+        }
+
+        .license-table td {
+            padding: 10px;
+        }
+
+        .license-table td:first-child {
+            width: 48%;
+        }
+
+        .license-expiry-days {
+            font-size: 36px;
+        }
+
+    }
+
+
+    @@media (max-width: 575px) {
+
+        .license-product-name {
+            font-size: 14px;
+        }
+
+        .license-product-description {
+            font-size: 11px;
+        }
+        .license-table td {
+            display: block;
+            width: 100% !important;
+            padding: 7px 10px;
+        }
+        .license-table tr {
+            padding: 7px 0;
+            display: block;
+        }
+        .license-table td:last-child {
+            padding-top: 0;
+        }
+        .license-expiry-info {
+            gap: 15px;
+        }
+        .license-card-header {
+            min-height: 48px;
+        }
+    }
+</style>
+<div class="page-main">
+    <!-- =====================================================
+         PAGE HEADER
+    ====================================================== -->
+    <div class="page-main-header">
+        <div class="page-main-title">
+            <i class="fa-solid fa-key"></i>
+            <span>
+                ERP License Information
+            </span>
         </div>
+        <nav>
+            <ol class="breadcrumb page-breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="@Url.Action("Index", "Home")">Home</a>
+                </li>
+                <li class="breadcrumb-item">
+                    Configuration
+                </li>
+                <li class="breadcrumb-item active">
+                    License Information
+                </li>
+            </ol>
+        </nav>
     </div>
-    <div class="col-sm-8">
-        <div class="page-header float-right">
-            <div class="page-title">
-                <ol class="breadcrumb text-right">
-                    <li><a href="@Url.Action("Index","Home")">Home</a></li>
-                    <li>Configuration</li>
-                    <li>License Information</li>
-                </ol>
+    <!-- =====================================================
+         PAGE CONTENT
+    ====================================================== -->
+    <div class="page-main-container">
+        <!-- =================================================
+             PRODUCT LICENSE
+        ================================================== -->
+        <div class="page-main-card">
+            <div class="page-main-card-header">
+                <div>
+                    <i class="fa-solid fa-cube"></i>
+                    ERP Product License
+                </div>
+                @if (isExpired)
+                {
+                    <div class="license-status expired">
+                        <span class="license-status-dot"></span>
+                        License Expired
+                    </div>
+                }
+                else if (isExpiringSoon)
+                {
+                    <div class="license-status warning">
+                        <span class="license-status-dot"></span>
+                        Expiring Soon
+                    </div>
+                }
+                else
+                {
+                    <div class="license-status">
+                        <span class="license-status-dot"></span>
+                        License Active
+                    </div>
+                }
             </div>
-        </div>
-    </div>
-</div>
-<div class="animated fadeIn">
-    <div class="row">
-        <div class="col-md-12 p-0">
-            <div class="card">
-                <div class="card-header">
-                    <div class="col-lg-6">
-                        <strong class="card-title">Product License</strong>
+            <div class="page-main-card-body">
+                <div class="license-product">
+                    <div class="license-product-icon">
+                        <i class="fa-solid fa-cubes"></i>
+                    </div>
+                    <div>
+                        <div class="license-product-name">
+                            ERP Business Management System
+                        </div>
+                        <div class="license-product-description">
+                            Product License Information and Subscription Details
+                        </div>
                     </div>
                 </div>
-                <div class="card-body">
-                    <table class="tableLic display disabled table table-bordered">
-                        <tbody>
-                            <tr>
-                                <td><label class="form-label">License scheme version</label></td>
-                                <td><label>@Model.LicenseVersion</label></td>
-                            </tr>
-                            <tr>
-                                <td><label class="form-label">You license key expires on </label></td>
-                                <td><label>@Model.ExpirationDate</label></td>
-                            </tr>
-                            <tr>
-                                <td><label class="form-label">You license key expires withing two weeks </label></td>
-                                <td>
-                                    @if (Model.RemainingDays <= 14)
-                                    {
-                                        <label><span class="text-danger">Yes</span>, Please Contact <a href="mailto:support@techfivedata.com">TechFiveData</a>. to renew the license.</label>
-                                    }
-                                    else
-                                    {
-                                        <label>No</label>
-                                    }
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><label class="form-label">Day remaining till license expiration</label></td>
-                                <td><label class="text-danger">@Model.RemainingDays (Days)</label> </td>
-                            </tr>
-                            <tr>
-                                <td><label class="form-label">License key type</label></td>
-                                <td><label>@Model.LicenseKeyType</label></td>
-                            </tr>
-                            <tr>
-                                <td><label class="form-label">Allowed Maximum Users</label></td>
-                                <td><label>@Model.MaximumUser</label></td>
-                            </tr>
-                            <tr>
-                                <td><label class="form-label">Information</label></td>
-                                <td><label>@Model.Message</label></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <p>
-                        <div class="hint">
-                            If you want to renew the product license, Contact to <a href="mailto:support@techfivedata.com">Tech Five Data</a>.
+            </div>
+        </div>
+        <!-- =================================================
+             LICENSE SUMMARY
+        ================================================== -->
+        <div class="row g-3 mb-3">
+            <!-- LICENSE TYPE -->
+            <div class="col-lg-3 col-md-6">
+                <div class="license-summary-card">
+                    <div class="license-summary-icon">
+                        <i class="fa-solid fa-key"></i>
+                    </div>
+                    <div>
+                        <div class="license-summary-label">
+                            LICENSE TYPE
                         </div>
-                    </p>
+                        <div class="license-summary-value">
+                            @Model.LicenseKeyType
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- LICENSE STATUS -->
+            <div class="col-lg-3 col-md-6">
+                <div class="license-summary-card">
+                    <div class="license-summary-icon">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </div>
+                    <div>
+                        <div class="license-summary-label">
+                            LICENSE STATUS
+                        </div>
+                        <div class="license-summary-value
+                             @(isExpired ? "danger" : isExpiringSoon ? "warning" : "")">
+                            @licenseStatus
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- MAXIMUM USERS -->
+            <div class="col-lg-3 col-md-6">
+                <div class="license-summary-card">
+                    <div class="license-summary-icon">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+                    <div>
+                        <div class="license-summary-label">
+                            MAXIMUM USERS
+                        </div>
+                        <div class="license-summary-value">
+                            @Model.MaximumUser
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- EXPIRY DATE -->
+            <div class="col-lg-3 col-md-6">
+                <div class="license-summary-card">
+                    <div class="license-summary-icon">
+                        <i class="fa-solid fa-calendar-days"></i>
+                    </div>
+                    <div>
+                        <div class="license-summary-label">
+                            EXPIRY DATE
+                        </div>
+                        <div class="license-summary-value
+                             @(isExpired ? "danger" : isExpiringSoon ? "warning" : "")">
+                            @Model.ExpirationDate
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- =================================================
+             LICENSE DETAILS + EXPIRATION
+        ================================================== -->
+        <div class="row g-3">
+            <!-- =================================================
+                 LEFT - LICENSE DETAILS
+            ================================================== -->
+            <div class="col-lg-7">
+                <div class="license-card">
+                    <div class="license-card-header">
+                        <div>
+                            <i class="fa-solid fa-file-shield"></i>
+                            License Details
+                        </div>
+                    </div>
+                    <div class="license-card-body p-0">
+                        <table class="license-table">
+                            <tbody>
+                                <!-- VERSION -->
+                                <tr>
+                                    <td>
+                                        <i class="fa-solid fa-code-branch license-label-icon"></i>
+                                        License Scheme Version
+                                    </td>
+                                    <td>
+                                        @Model.LicenseVersion
+                                    </td>
+                                </tr>
+                                <!-- KEY TYPE -->
+                                <tr>
+                                    <td>
+                                        <i class="fa-solid fa-key license-label-icon"></i>
+                                        License Key Type
+                                    </td>
+                                    <td>
+                                        @Model.LicenseKeyType
+                                    </td>
+                                </tr>
+                                <!-- USERS -->
+                                <tr>
+                                    <td>
+                                        <i class="fa-solid fa-users license-label-icon"></i>
+                                        Allowed Maximum Users
+                                    </td>
+                                    <td>
+                                        @Model.MaximumUser Users
+                                    </td>
+                                </tr>
+                                <!-- EXPIRATION DATE -->
+                                <tr>
+                                    <td>
+                                        <i class="fa-solid fa-calendar-check license-label-icon"></i>
+                                        License Key Expires On
+                                    </td>
+                                    <td class="
+                                        @(isExpired
+                                            ? "license-value-danger"
+                                            : isExpiringSoon
+                                                ? "license-value-warning"
+                                                : "")">
+                                        @Model.ExpirationDate
+                                    </td>
+                                </tr>
+                                <!-- TWO WEEK WARNING -->
+                                <tr>
+                                    <td>
+                                        <i class="fa-solid fa-clock license-label-icon"></i>
+                                        Expires Within Two Weeks
+                                    </td>
+                                    <td>
+                                        @if (isExpired)
+                                        {
+                                            <span class="license-value-danger">
+                                                Yes
+                                            </span>
+                                        }
+                                        else if (isExpiringSoon)
+                                        {
+                                            <span class="license-value-warning">
+                                                Yes
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="license-value-success">
+                                                No
+                                            </span>
+                                        }
+                                    </td>
+                                </tr>
+                                <!-- INFORMATION -->
+                                <tr>
+                                    <td>
+                                        <i class="fa-solid fa-circle-info license-label-icon"></i>
+                                        Information
+                                    </td>
+                                    <td>
+                                        @Model.Message
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <!-- =================================================
+                 RIGHT - EXPIRATION
+            ================================================== -->
+            <div class="col-lg-5">
+                <div class="license-card h-100">
+                    <div class="license-card-header">
+                        <div>
+                            <i class="fa-solid fa-hourglass-half"></i>
+                            License Expiration
+                        </div>
+                    </div>
+                    <div class="license-card-body">
+                        <div class="license-expiry-panel">
+                            <div class="license-expiry-days
+                                 @(isExpired
+                                    ? "expired"
+                                    : isExpiringSoon
+                                        ? "warning"
+                                        : "")">
+                                @Model.RemainingDays
+                            </div>
+                            <div class="license-expiry-text">
+                                Days Remaining Until License Expiration
+                            </div>
+                            <!-- PROGRESS BAR -->
+                            <div class="license-progress">
+                                <div class="license-progress-bar
+                                     @(isExpired
+                                        ? "expired"
+                                        : isExpiringSoon
+                                            ? "warning"
+                                            : "")"
+                                     style="width:@progress%;">
+                                </div>
+                            </div>
+                            <!-- EXPIRY INFO -->
+                            <div class="license-expiry-info">
+                                <div>
+                                    <div class="license-expiry-label">
+                                        Expiration Date
+                                    </div>
+                                    <div class="license-expiry-value">
+                                        @Model.ExpirationDate
+                                    </div>
+                                </div>
+                                <div class="text-right text-end">
+                                    <div class="license-expiry-label">
+                                        Current Status
+                                    </div>
+                                    <div class="license-expiry-value
+                                         @(isExpired
+                                            ? "text-danger"
+                                            : isExpiringSoon
+                                                ? "text-warning"
+                                                : "text-success")">
+                                        @licenseStatus
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- =================================================
+             SUPPORT / RENEWAL
+        ================================================== -->
+        <div class="license-card mt-3">
+            <div class="license-card-header">
+                <div>
+                    <i class="fa-solid fa-headset"></i>
+                    License Renewal & Support
+                </div>
+            </div>
+            <div class="license-card-body">
+                <div class="license-info">
+                    <i class="fa-solid fa-circle-info"></i>
+                    <div>
+                        <strong>
+                            Need to renew your product license?
+                        </strong>
+                        <div class="mt-1">
+                            If you want to renew or upgrade your ERP
+                            product license, please contact
+                            <strong>Tech Five Data</strong>.
+                        </div>
+                    </div>
+                </div>
+                <div class="text-right text-end mt-3">
+                    <a href="mailto:support@techfivedata.com"
+                       class="btn license-btn license-btn-outline mr-1">
+                        <i class="fa-solid fa-envelope"></i>
+                        Contact Support
+                    </a>
+                    <button type="button"
+                            class="btn license-btn license-btn-primary"
+                            onclick="window.location.reload();">
+                        <i class="fa-solid fa-arrows-rotate"></i>
+                        Refresh License
+                    </button>
                 </div>
             </div>
         </div>

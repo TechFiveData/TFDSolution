@@ -80,7 +80,7 @@
     </div>
 </div>
 <div class="animated fadeIn">
-    <div class="row">
+    <div class="row m-0">
         <div class="col-md-12 p-0">
             <div class="card">
                 <div class="card-header">
@@ -326,7 +326,7 @@
                     dataType: 'json',
                     data: {
                         _type: "Ledger",
-                        _whareClause: '@ViewBag.AccountLedger' // or create a separate parameter like _id
+                        _whareClause: '@Html.Raw(@ViewBag.AccountLedger)' // or create a separate parameter like _id
                     },
                     success: function (data) {
                         if (data.results.length > 0) {

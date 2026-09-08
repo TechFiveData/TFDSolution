@@ -47,7 +47,8 @@
     </div>
 </div>
 <div class="animated fadeIn">
-    <div class="row">
+    <div class="row m-0">
+
         <div class="col-md-12 p-0">
             <div class="card">
                 <div class="card-header">
@@ -69,7 +70,7 @@
     </div>
 </div>
 <div class="modal fade top-center" id="ReportModal" tabindex="-1" role="dialog" aria-labelledby="ReportModalLabel" data-backdrop="static" aria-hidden="true">
-    <div class="modal-dialog " role="document">
+    <div class="modal-dialog " role="document" style="top:2%;">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="ReportModalLabel">Add New Report Template</h5>
@@ -238,13 +239,23 @@
                         fieldval = $select.val();
                     }
                     let srNumber = $(this).find(".RTSrNofield").text();
+                    let selectText = '';
+                    let selectValue = '';
+
+                    if (fieldType === "Dropdown") {
+                        selectText = $(this).find(".RTSelectText").val() || '';
+                        selectValue = $(this).find(".RTSelectValue").val() || '';
+                    }
+
                     if (fieldname.length > 0) {                        
                         filters.push({
                             SrNo: srNumber,
                             FieldCaption: fieldcap,
                             FieldName: fieldname,
                             FieldType: fieldType,
-                            FieldDefaultValue: fieldval
+                            FieldDefaultValue: fieldval,
+                            DropdwonTextField: selectText,
+                            DropdwonValueField: selectValue
                         });
                     }
                 });

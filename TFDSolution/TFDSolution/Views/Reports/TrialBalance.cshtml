@@ -40,7 +40,7 @@
     </div>
 </div>
 <div class="animated fadeIn">
-    <div class="row">
+    <div class="row m-0">
         <div class="col-md-12 p-0">
             <div class="card">
                 <div class="card-header">
@@ -79,6 +79,15 @@
                                 <label class="form-control-label mr-2">To Date</label>
                                 <input id="dtToDate" type="date" class="form-control d-inline-block w-auto myDate" />
                             </div>
+                            <!-- Dropdown -->
+                            <div class="d-inline-block pr-3 pb-2">
+                                <label class="form-control-label mr-2">Report Type</label>
+                                <select id="ddlReportType" class="form-select d-inline-block w-auto" style="min-width:120px;">
+                                    <option value="ALL">ALL</option>
+                                    <option value="GROUP">Group</option>
+                                    <option value="LEDGER">Ledger</option>
+                                </select>
+                            </div>
                             <button id="btnGenerate" class="btn btn-primary btn-Generate">Generate</button>
                         </div>
                     </div>
@@ -106,7 +115,7 @@
                 contentType: 'application/json; charset=utf-8',
                 data: JSON.stringify({
                     ReportId: _ReportId,
-                    TableName: "t_TrailBalance_Hist",
+                    TableName: "t_TrialBalance_Hist",
                     reportParameters: SpecificationField
                 }),
                 success: function (response) {
@@ -223,7 +232,12 @@
         });
     });
     function OpenLedger(ledgerId, ledgerName) {
-        var model = { AccountId: ledgerId, AccountLedger : ledgerName, FromDate: $("#dtFromDate").val(),ToDate: $("#dtToDate").val()};
+        var model = {
+            AccountId: ledgerId,
+            AccountLedger: ledgerName,
+            FromDate: $("#dtFromDate").val(),
+            ToDate: $("#dtToDate").val()
+        };
         $.ajax({
             url: "@Url.Action("RedirectToLedger", "Reports")",
             type: 'POST',
@@ -363,6 +377,7 @@
         var requestModel = {
             FromDate: $("#dtFromDate").val(),
             ToDate: $("#dtToDate").val(),
+            ReportType: $("#ddlReportType").val()
         };
         // destroy old instance if any
         if ($.fn.DataTable.isDataTable('#tblDataReportView')) {

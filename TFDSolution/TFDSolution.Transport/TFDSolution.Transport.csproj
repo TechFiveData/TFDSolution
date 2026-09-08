@@ -58,6 +58,7 @@
     <Compile Include="AttachmentModel.cs" />
     <Compile Include="AttachmentViewModel.cs" />
     <Compile Include="BaseRequest.cs" />
+    <Compile Include="ChartDataResult.cs" />
     <Compile Include="clsSelection.cs" />
     <Compile Include="Common\AuditLog.cs" />
     <Compile Include="Common\CalendarEventModel.cs" />
@@ -72,6 +73,7 @@
     <Compile Include="Integration\IntegrationConfiguration.cs" />
     <Compile Include="Master\CompanyMast.cs" />
     <Compile Include="Master\DocumentModel.cs" />
+    <Compile Include="Master\ERPUpdateModel.cs" />
     <Compile Include="Master\FormFieldData.cs" />
     <Compile Include="Master\FormMast.cs" />
     <Compile Include="Master\FormPendingModel.cs" />
@@ -88,6 +90,7 @@
     <Compile Include="Master\SqlTemplateDto.cs" />
     <Compile Include="Master\TransactionModel.cs" />
     <Compile Include="Master\UserMast.cs" />
+    <Compile Include="Master\UserTrackingModel.cs" />
     <Compile Include="m_FieldCode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReportTemplateModel.cs" />

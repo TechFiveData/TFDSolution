@@ -5,509 +5,828 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <!-- /header -->
-<div class="breadcrumbs">
-    <div class="col-sm-4">
-        <div class="page-header float-left">
-            <div class="page-title">
-                <h1>Update Company Information</h1>
-            </div>
+<style>
+    /* =========================================================
+       COMPANY MASTER - PROFESSIONAL ERP UI
+       Keeps existing Razor model, controllers, AJAX and tables.
+    ========================================================= */
+    .company-master-pro,
+    .company-master-pro * {
+        box-sizing: border-box;
+    }
+
+    .company-master-pro {
+        --erp-blue: #28a9d6;
+        --erp-blue-dark: #168fbd;
+        --erp-blue-soft: #eef8fc;
+        --erp-bg: #f4f7f9;
+        --erp-border: #d9e2e7;
+        --erp-text: #30373d;
+        --erp-muted: #77838d;
+        background: var(--erp-bg);
+        min-height: calc(100vh - 90px);
+        color: var(--erp-text);
+        font-family: "Segoe UI",Arial,sans-serif;
+        font-size: 13px;
+    }
+
+        .company-master-pro .company-topline {
+            height: 6px;
+            background: var(--erp-blue);
+        }
+
+        .company-master-pro .company-header {
+            background: #fff;
+            min-height: 54px;
+            padding: 0 22px;
+            border-bottom: 1px solid var(--erp-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .company-master-pro .company-title {
+            margin: 0;
+            font-size: 15px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+            .company-master-pro .company-title i {
+                color: var(--erp-blue);
+            }
+
+        .company-master-pro .company-breadcrumb {
+            margin: 0;
+            background: transparent;
+            font-size: 12px;
+        }
+
+            .company-master-pro .company-breadcrumb a {
+                color: #424a50;
+            }
+
+            .company-master-pro .company-breadcrumb .active {
+                color: var(--erp-blue);
+            }
+
+        .company-master-pro .company-toolbar {
+            min-height: 43px;
+            background: #83cde7;
+            padding: 0 22px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 20px;
+        }
+
+            .company-master-pro .company-toolbar button,
+            .company-master-pro .company-toolbar a {
+                border: 0 !important;
+                background: transparent !important;
+                color: #16465a !important;
+                padding: 5px 7px !important;
+                font-size: 15px !important;
+                box-shadow: none !important;
+                transition: .2s ease;
+                text-decoration: none !important;
+            }
+
+                .company-master-pro .company-toolbar button:hover,
+                .company-master-pro .company-toolbar a:hover {
+                    color: #fff !important;
+                    transform: translateY(-1px);
+                }
+
+        .company-master-pro .company-content {
+            padding: 8px 14px 14px;
+        }
+
+        .company-master-pro .company-card {
+            background: #fff;
+            border: 1px solid var(--erp-border);
+            border-radius: 7px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(34,60,72,.04);
+        }
+
+        .company-master-pro .card-header {
+            background: #f8fafb !important;
+            border-bottom: 1px solid var(--erp-border) !important;
+            min-height: 43px;
+            padding: 7px 14px !important;
+        }
+
+            .company-master-pro .card-header:after {
+                content: "";
+                display: block;
+                clear: both;
+            }
+
+        .company-master-pro .card-body {
+            padding: 12px 14px !important;
+        }
+
+        .company-master-pro .section-caption {
+            font-size: 14px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+            .company-master-pro .section-caption i {
+                color: var(--erp-blue);
+                margin-right: 7px;
+            }
+
+        .company-master-pro .page-head {
+            display: grid !important;
+            grid-template-columns: minmax(0,1fr) minmax(0,1fr);
+            gap: 14px;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+
+        .company-master-pro .section-left,
+        .company-master-pro .section-right {
+            width: auto !important;
+            float: none !important;
+        }
+
+        .company-master-pro .section-left {
+            padding-right: 8px;
+        }
+
+        .company-master-pro .section-right {
+            border: 1px solid var(--erp-border);
+            border-radius: 6px;
+            padding: 13px 13px 3px;
+            background: #fff;
+        }
+
+            .company-master-pro .section-right:before {
+                content: "Addresses";
+                display: block;
+                font-size: 13px;
+                font-weight: 600;
+                color: #343b41;
+                padding: 0 0 10px;
+                border-bottom: 1px solid var(--erp-border);
+                margin-bottom: 12px;
+            }
+
+        .company-master-pro .form-group {
+            margin-bottom: 11px !important;
+        }
+
+        .company-master-pro .form-control,
+        .company-master-pro select.form-control,
+        .company-master-pro textarea.form-control {
+            height: 36px;
+            border: 1px solid #ccd9df !important;
+            border-radius: 5px !important;
+            /*background: #f4f9fc !important;*/
+            color: #465158;
+            font-size: 13px;
+            box-shadow: none !important;
+            transition: .18s ease;
+        }
+
+        .company-master-pro textarea.form-control {
+            min-height: 62px;
+            height: auto;
+            resize: vertical;
+        }
+
+            .company-master-pro .form-control:focus,
+            .company-master-pro select.form-control:focus,
+            .company-master-pro textarea.form-control:focus {
+                background: #fff !important;
+                border-color: var(--erp-blue) !important;
+                box-shadow: 0 0 0 3px rgba(40,169,214,.10) !important;
+            }
+
+        .company-master-pro .form-control[disabled],
+        .company-master-pro .form-control:disabled,
+        .company-master-pro select:disabled,
+        .company-master-pro textarea:disabled {
+            background: #edf2f5 !important;
+            color: #7c8790;
+        }
+
+        .company-master-pro .form-control-label,
+        .company-master-pro .control-label {
+            color: #4b555d;
+            font-weight: 500;
+            font-size: 12px;
+        }
+
+        .company-master-pro .text-danger {
+            font-weight: 500;
+        }
+
+
+
+        .company-master-pro #myTab {
+            border-bottom: 1px solid var(--erp-border);
+            padding: 0;
+            margin-bottom: 0;
+        }
+
+            .company-master-pro #myTab .nav-link {
+                color: var(--erp-blue);
+                font-size: 12.5px;
+                border: 1px solid transparent !important;
+                border-bottom: 0 !important;
+                border-radius: 5px 5px 0 0 !important;
+                padding: 11px 15px;
+                background: transparent;
+            }
+
+                .company-master-pro #myTab .nav-link:hover {
+                    background: var(--erp-blue-soft);
+                    color: var(--erp-blue-dark);
+                }
+
+                .company-master-pro #myTab .nav-link.active {
+                    background: #fff;
+                    color: #30373d;
+                    border-color: var(--erp-border) !important;
+                    margin-bottom: -1px;
+                    font-weight: 600;
+                }
+
+        .company-master-pro #myTabContent {
+            border: 1px solid var(--erp-border);
+            border-top: 0;
+            border-radius: 0 0 6px 6px;
+            padding: 18px !important;
+            background: #fff;
+        }
+
+        .company-master-pro .tab-pane .form-group:last-child {
+            margin-bottom: 0 !important;
+        }
+
+
+        .company-master-pro .modal-header {
+            background: #f7fafb;
+            border-bottom: 1px solid var(--erp-border);
+        }
+
+        .company-master-pro .modal-footer {
+            background: #fafcfd;
+            border-top: 1px solid var(--erp-border);
+        }
+
+        .company-master-pro .switch-3d .switch-label {
+            background: #c8d0d5 !important;
+        }
+
+        .company-master-pro .switch-3d.switch-success input:checked + .switch-label {
+            background: #31b66b !important;
+        }
+
+        .company-master-pro .input-validation-error {
+            border-color: #dc3545 !important;
+            background: #fff8f8 !important;
+        }
+
+    @@media(max-width:991px) {
+        .company-master-pro .page-head {
+            grid-template-columns: 1fr !important;
+        }
+    }
+
+    @@media(max-width:767px) {
+        .company-master-pro .company-header {
+            padding: 10px 14px;
+            align-items: flex-start;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .company-master-pro .company-content {
+            padding: 10px;
+        }
+
+        .company-master-pro .card-body {
+            padding: 12px !important;
+        }
+
+        .company-master-pro .company-toolbar {
+            padding: 0 12px;
+        }
+
+        .company-master-pro .section-right {
+            padding: 10px;
+        }
+
+        .company-master-pro #myTab {
+            overflow-x: auto;
+            flex-wrap: nowrap;
+        }
+
+            .company-master-pro #myTab .nav-link {
+                white-space: nowrap;
+            }
+    }
+    /*
+    .company-master-pro .page-header,
+    .company-master-pro .page-title,
+    .company-master-pro .breadcrumbs {
+        margin: 0 !important;
+        padding: 0 !important;
+    }*/
+</style>
+<input type="hidden" value="@Model.PageAction" id="pageAction" />
+<div class="company-master-pro page-main">
+    <div class="page-main-header">
+        <div class="page-main-title">
+            <span>
+                <i class="fa fa-building"></i> Update Company Information
+            </span>
         </div>
+        <nav>
+            <ol class="breadcrumb page-breadcrumb">
+                <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
+                <li class="breadcrumb-item active">
+                    <a href="@Url.Action("Company", "Master")">Company List</a>
+                </li>
+                <li class="breadcrumb-item active">Update Company</li>
+            </ol>
+        </nav>
     </div>
-    <div class="col-sm-8">
-        <div class="page-header float-right">
-            <div class="page-title">
-                <ol class="breadcrumb text-right">
-                    <li><a href="@Url.Action("Index","Home")">Home</a></li>
-                    <li><a href="@Url.Action("Company","Master")">Company List</a></li>
-                    <li>Update Company</li>
-                </ol>
-            </div>
+    <div class="page-main-container">
+        <div class="page-main-card">
+            @using (Html.BeginForm("CompanyAction", "Master", FormMethod.Post, new { id = "companyMasterForm" }))
+            {
+                <div class="page-main-card-header">
+                    <div class="page-main-card-title">
+
+                    </div>
+                    <div class="page-main-card-actions">
+                        @if (Model.PageAction == "V")
+                        {
+                            <button class="btn btn-sm" onclick="EditPageData()" type="button"><i class="fa fa-pencil font16"></i></button>
+                        }
+                        @if (Model.PageAction == "V")
+                        {
+                            <button class="btn btn-sm" disabled type="submit"><i class="fa fa-save font16"></i></button>
+                        }
+                        else
+                        {
+                            <button class="btn btn-sm" type="submit"><i class="fa fa-save font16"></i></button>
+                        }
+                        <a class="btn btn-sm" href="@Url.Action("Company","Master")"><i class="fa fa-arrow-circle-left font16"></i></a>
+                    </div>
+                </div>
+                <div class="page-main-card-body">
+                    @if (ViewBag.ErrorMessages != null)
+                    {
+                        <div id="divError">
+                            <div class="alert alert-danger">
+                                <strong>Danger!</strong>  @ViewBag.ErrorMessages
+                            </div>
+                        </div>
+                    }
+                    @if (ViewBag.SuccessMessage != null)
+                    {
+                        <div id="divsuccess">
+                            <div class="alert alert-success">
+                                <strong>Success!</strong> @ViewBag.SuccessMessage
+                            </div>
+                        </div>
+                    }
+                    @Html.HiddenFor(m => m.CompanyId)
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="card company-card">
+                                <div class="card-body">
+                                    <div class="page-head">
+                                        <div class="section-left">
+                                            <div class="row">
+                                                <div class="col-md-6 form-group">
+                                                    <div class="col col-md-6 p-0"><label class=" form-control-label">Company Code</label></div>
+                                                    <div class="col-12 col-md-6 text-left">
+                                                        @*<p class="form-control-static">@Model.CompanyCode</p>*@
+                                                        @Html.HiddenFor(m => m.CompanyCode)
+                                                        @Html.TextBoxFor(m => m.CompanyCode, new { @placeholder = "Company Name ", @class = "form-control", @disabled = "disabled" })
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6 form-group">
+                                                    <div class="col col-md-6 p-0 text-right"><label for="select" class=" form-control-label">Status</label></div>
+                                                    <div class="col-12 col-md-6">
+                                                        <label class="switch switch-3d switch-success mr-3">
+                                                            <input type="checkbox" class="switch-input" checked="checked"> <span class="switch-label"></span> <span class="switch-handle"></span>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row form-group">
+                                                <div class="col col-md-3">
+                                                    <label for="text-input" class=" form-control-label">Name<span class="text-danger p-1">(*)</span></label>
+                                                </div>
+                                                <div class="col-12 col-md-9">
+                                                    @Html.TextBoxFor(m => m.CompanyName, new { @placeholder = "Company Name ", @class = "form-control" })
+                                                    @Html.ValidationMessageFor(m => m.CompanyName, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                            <div class="row form-group">
+                                                <div class="col col-md-3">
+                                                    <label for="text-input" class=" form-control-label">Alias</label>
+                                                </div>
+                                                <div class="col-12 col-md-9">
+                                                    @Html.TextBoxFor(m => m.CompanyName, new { @placeholder = "Alias", @class = "form-control" })
+                                                    @Html.ValidationMessageFor(m => m.CompanyName, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                            <div class="row form-group">
+                                                <div class="col col-md-3">
+                                                    <label for="text-input" class=" form-control-label">Email<span class="text-danger p-1">(*)</span></label>
+                                                </div>
+                                                <div class="col-12 col-md-9">
+                                                    <div class="input-group">
+                                                        @Html.TextBoxFor(m => m.Email, new { @placeholder = "Email", @class = "form-control", @name = "input2-group1" })
+                                                        @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row form-group">
+                                                <div class="col col-md-3">
+                                                    <label for="text-input" class=" form-control-label">Web Site</label>
+                                                </div>
+                                                <div class="col-12 col-md-9">
+                                                    @Html.TextBoxFor(m => m.WebStite, new { @placeholder = "Web Site", @class = "form-control" })
+                                                </div>
+                                            </div>
+                                            <div class="row form-group">
+                                                <div class="col col-md-3">
+                                                    <label for="Phone" class="control-label mb-1">Phone<span class="text-danger p-1">(*)</span></label>
+                                                </div>
+                                                <div class="col-12 col-md-9">
+                                                    @Html.TextBoxFor(m => m.Phone, new { @placeholder = "Phone", @class = "form-control" })
+                                                    @Html.ValidationMessageFor(model => model.Phone, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                            <div class="row form-group">
+                                                <div class="col col-md-3">
+                                                    <label for="Mobile" class="control-label mb-1">Mobile<span class="text-danger p-1">(*)</span></label>
+                                                </div>
+                                                <div class="col-12 col-md-9">
+                                                    <div class="input-group">
+                                                        @Html.TextBoxFor(m => m.Mobile, new { @placeholder = "Mobile", @class = "form-control" })
+                                                        @Html.ValidationMessageFor(model => model.Mobile, "", new { @class = "text-danger" })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row form-group">
+                                                <div class="col col-md-3">
+                                                    <label for="text-input" class=" form-control-label">Fax</label>
+                                                </div>
+                                                <div class="col-12 col-md-9">
+                                                    @Html.TextBoxFor(m => m.Fax, new { @placeholder = "Fax", @class = "form-control" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="section-right">
+
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <div class="form-group">
+                                                        <strong for="RegisterAddress1" class="control-label mb-1">Register Address</strong>
+                                                        @Html.TextAreaFor(m => m.RegisterAddress1, new { @placeholder = "Address1", @class = "form-control" })
+                                                        @Html.ValidationMessageFor(model => model.RegisterAddress1, "", new { @class = "text-danger" })
+                                                    </div>
+                                                </div>
+                                                <div class="col-6">
+                                                    <strong for="FactoryAddress1" class="control-label mb-1">Factory Address</strong>
+                                                    <div class="input-group">
+                                                        @Html.TextAreaFor(m => m.FactoryAddress1, new { @placeholder = "Address1", @class = "form-control" })
+                                                        @Html.ValidationMessageFor(model => model.FactoryAddress1, "", new { @class = "text-danger" })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <div class="form-group">
+                                                        @Html.TextAreaFor(m => m.RegisterAddress2, new { @placeholder = "Address 2", @class = "form-control" })
+                                                    </div>
+                                                </div>
+                                                <div class="col-6">
+                                                    <div class="input-group">
+                                                        @Html.TextAreaFor(m => m.FactoryAddress2, new { @placeholder = "Address 2", @class = "form-control" })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <div class="form-group">
+                                                        @Html.DropDownListFor(m => m.RegiterCityId, new SelectList(ViewBag.CityList, "Value", "Text"), "Select City", new { @class = "form-control form-select", @id = "ddlRCity" })
+                                                    </div>
+                                                </div>
+                                                <div class="col-6">
+                                                    <div class="input-group">
+                                                        @Html.DropDownListFor(m => m.FactoryCityId, new SelectList(ViewBag.CityList, "Value", "Text"), "Select City", new { @class = "form-control form-select", @id = "ddlFCity" })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <div class="form-group">
+                                                        @Html.DropDownListFor(m => m.RegiterStateId, new SelectList(ViewBag.StateList, "Value", "Text"), "Select State", new { @class = "form-control form-select", @id = "ddlRState" })
+                                                    </div>
+                                                </div>
+                                                <div class="col-6">
+                                                    <div class="input-group">
+                                                        @Html.DropDownListFor(m => m.FactoryStateId, new SelectList(ViewBag.StateList, "Value", "Text"), "Select State", new { @class = "form-control form-select", @id = "ddlFState" })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <div class="form-group">
+                                                        @Html.DropDownListFor(m => m.RegisterCountryId, new SelectList(ViewBag.CountryList, "Value", "Text"), "Select Country", new { @class = "form-control form-select", @id = "ddlRCountry" })
+                                                    </div>
+                                                </div>
+                                                <div class="col-6">
+                                                    <div class="input-group">
+                                                        @Html.DropDownListFor(m => m.FactoryCountryId, new SelectList(ViewBag.CountryList, "Value", "Text"), "Select Country", new { @class = "form-control form-select", @id = "ddlFCountry" })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <div class="form-group">
+                                                        @Html.TextBoxFor(m => m.RegisterPincode, new { @placeholder = "Pincode", @class = "form-control" })
+                                                    </div>
+                                                </div>
+                                                <div class="col-6">
+                                                    <div class="input-group">
+                                                        @Html.TextBoxFor(m => m.FactoryPincode, new { @placeholder = "Pincode", @class = "form-control" })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="page-breaker"></div>
+                                    <ul class="nav nav-tabs" id="myTab" role="tablist">
+                                        <li class="nav-item">
+                                            <a class="nav-link active" id="profile-tab" data-toggle="tab" href="#Accountdetails" role="tab" aria-controls="Accountdetails" aria-selected="false">Account Details</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" id="financialyear-tab" data-toggle="tab" href="#FinancialYear" role="tab" aria-controls="FinancialYear" aria-selected="false">Financial Year</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" id="bank-tab" data-toggle="tab" href="#Bankdetails" role="tab" aria-controls="Bankdetails" aria-selected="false">Bank Details</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" id="unit-tab" data-toggle="tab" href="#Unitdetails" role="tab" aria-controls="Unitdetails" aria-selected="false">Unit Details</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" id="emailcofig-tab" data-toggle="tab" href="#emailcofig" role="tab" aria-controls="emailcofig" aria-selected="true">Email Configuration</a>
+                                        </li>
+                                    </ul>
+                                    <div class="tab-content pl-3 p-1" id="myTabContent">
+                                        <div class="tab-pane fade show active" id="Accountdetails" role="tabpanel" aria-labelledby="profile-tab">
+                                            <div class="row form-group">
+                                                <div class="col col-md-3"><label for="GSTNo" class="form-control-label">GST No</label></div>
+                                                <div class="col-12 col-md-9">
+                                                    @Html.TextBoxFor(m => m.GSTNo, new { @placeholder = "GST No", @class = "form-control" })
+                                                </div>
+                                            </div>
+                                            <div class="row form-group">
+                                                <div class="col col-md-3">
+                                                    <label for="PANNo" class="form-control-label">PAN No</label>
+                                                </div>
+                                                <div class="col-12 col-md-9">
+                                                    @Html.TextBoxFor(m => m.PANNo, new { @placeholder = "PAN No", @class = "form-control" })
+                                                </div>
+                                            </div>
+                                            <div class="row form-group">
+                                                <div class="col col-md-3"><label for="CINNo" class=" form-control-label"> CIN No</label></div>
+                                                <div class="col-12 col-md-9">
+                                                    @Html.TextBoxFor(m => m.CINNo, new { @placeholder = "CIN No", @class = "form-control" })
+                                                </div>
+                                            </div>
+                                            <div class="row form-group">
+                                                <div class="col col-md-3"><label for="ECCNo" class=" form-control-label">ECC No</label></div>
+                                                <div class="col-12 col-md-9">
+                                                    @Html.TextBoxFor(m => m.ECCNo, new { @placeholder = "ECC No", @class = "form-control", @maxlength = "50" })
+                                                </div>
+                                            </div>
+                                            <div class="row form-group">
+                                                <div class="col col-md-3"><label for="RegistrationNo" class=" form-control-label">Registration No</label></div>
+                                                <div class="col-12 col-md-9">
+                                                    @Html.TextBoxFor(m => m.RegistrationNo, new { @placeholder = "Registration No", @class = "form-control", @maxlength = "30" })
+                                                </div>
+                                            </div>
+                                            <div class="row form-group">
+                                                <div class="col col-md-3"><label for="RegistrationDate" class=" form-control-label">Registration Date</label></div>
+                                                <div class="col-12 col-md-9">
+                                                    @Html.TextBoxFor(m => m.RegistrationDate, "{0:yyyy-MM-dd}", new { @autocomplete = "off", @placeholder = "Registration Date", @class = "form-control datepicker", @type = "date" })
+                                                </div>
+                                            </div>
+                                            <div class="row form-group">
+                                                <div class="col col-md-3"><label for="MSMENo" class=" form-control-label">MSME #</label></div>
+                                                <div class="col-12 col-md-9">
+                                                    @Html.TextBoxFor(m => m.MSMENo, new { @placeholder = "MSME Number", @class = "form-control", @maxlength = "30" })
+                                                </div>
+                                            </div>
+                                            <div class="row form-group">
+                                                <div class="col col-md-3"><label for="TANNo" class=" form-control-label">TAN Registration #</label></div>
+                                                <div class="col-12 col-md-9">
+                                                    @Html.TextBoxFor(m => m.TANNo, new { @placeholder = "TAN Number", @class = "form-control", @maxlength = "30" })
+                                                </div>
+                                            </div>
+                                            <div class="row form-group">
+                                                <div class="col col-md-3"><label for="PFNo" class=" form-control-label">PF Registration #</label></div>
+                                                <div class="col-12 col-md-9">
+                                                    @Html.TextBoxFor(m => m.PFNo, new { @placeholder = "PF Number", @class = "form-control", @maxlength = "30" })
+                                                </div>
+                                            </div>
+                                            <div class="row form-group">
+                                                <div class="col col-md-3"><label for="ESICNo" class=" form-control-label">ESIC Registration #</label></div>
+                                                <div class="col-12 col-md-9">
+                                                    @Html.TextBoxFor(m => m.ESICNo, new { @placeholder = "ESIC Registration Number", @class = "form-control", @maxlength = "30" })
+                                                </div>
+                                            </div>
+                                            <div class="row form-group">
+                                                <div class="col col-md-3"><label for="PrefessionTaxNo" class=" form-control-label">Professonal Tax #</label></div>
+                                                <div class="col-12 col-md-9">
+                                                    @Html.TextBoxFor(m => m.PrefessionTaxNo, new { @placeholder = "Professonal Tax Number", @class = "form-control", @maxlength = "30" })
+                                                </div>
+                                            </div>
+                                            <div class="row form-group">
+                                                <div class="col col-md-3"><label for="LWFPrefessionNo" class=" form-control-label">LWF Registration #</label></div>
+                                                <div class="col-12 col-md-9">
+                                                    @Html.TextBoxFor(m => m.LWFPrefessionNo, new { @placeholder = "LWF Registration Number", @class = "form-control", @maxlength = "30" })
+                                                </div>
+                                            </div>
+                                            <div class="row form-group">
+                                                <div class="col col-md-3"><label for="DefaultCurrencyId" class=" form-control-label">Default Currency</label></div>
+                                                <div class="col-12 col-md-9">
+                                                    @Html.DropDownListFor(m => m.DefaultCurrencyId, new SelectList(ViewBag.CurrencyList, "Value", "Text"), "Select Currency", new { @class = "form-control form-select", @id = "ddlCurrency" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane fade" id="FinancialYear" role="tabpanel" aria-labelledby="financialyear-tab">
+                                            <div class="row form-group">
+                                                <div class="col col-md-12 text-right">
+                                                    <a class="btn btn-primary" href="javascript:void(0);" title="Add New Fiancial" data-toggle="modal" data-target="#mediumModal"><i class="fa fa-plus"></i></a>
+                                                </div>
+                                            </div>
+                                            <div class="row form-group">
+                                                <table id="tblFinancial" class="display cell-border row-border nowrap" cellspacing="0" width="100%"></table>
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane fade" id="Bankdetails" role="tabpanel" aria-labelledby="Bankdetails-tab">
+                                            <div class="row form-group">
+                                                <div class="col col-md-12 text-right">
+                                                    <a class="btn btn-primary" href="javascript:void(0);" title="Add New Bank" data-toggle="modal" data-target="#mediumModalBank"><i class="fa fa-plus"></i></a>
+                                                </div>
+                                            </div>
+                                            <div class="row form-group">
+                                                <table id="tblBankDetails" class="display cell-border row-border nowrap" cellspacing="0" width="100%"></table>
+                                            </div>
+                                            @*<div class="row form-group">*@
+                                            @*<table id="bootstrap-data-table-export" class="table table-striped table-bordered">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Name</th>
+                                                            <th>Position</th>
+                                                            <th>Office</th>
+                                                            <th>Salary</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>Tiger Nixon</td>
+                                                            <td>System Architect</td>
+                                                            <td>Edinburgh</td>
+                                                            <td>$320,800</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>Garrett Winters</td>
+                                                            <td>Accountant</td>
+                                                            <td>Tokyo</td>
+                                                            <td>$170,750</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>*@
+                                            @*</div>*@
+                                        </div>
+                                        <div class="tab-pane fade" id="Unitdetails" role="tabpanel" aria-labelledby="contact-tab">
+                                            <div class="row form-group">
+                                                <div class="row form-group">
+                                                    <div class="col col-md-12 text-right">
+                                                        <a class="btn btn-primary" href="javascript:void(0);" title="Add New Bank" data-toggle="modal" data-target="#mediumModalUnit"><i class="fa fa-plus"></i></a>
+                                                    </div>
+                                                </div>
+                                                <div class="row form-group">
+                                                    <table id="tblUnitDetails" class="display cell-border row-border nowrap" cellspacing="0" width="100%"></table>
+                                                </div>
+                                                @*<div class="col-12 col-md-12">
+                                                        <table id="bootstrap-data-table-export" class="table table-striped table-bordered">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>Name</th>
+                                                                    <th>Position</th>
+                                                                    <th>Office</th>
+                                                                    <th>Salary</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td>Tiger Nixon</td>
+                                                                    <td>System Architect</td>
+                                                                    <td>Edinburgh</td>
+                                                                    <td>$320,800</td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>*@
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane fade" id="emailcofig" role="tabpanel" aria-labelledby="emailcofig-tab">
+                                            <div class="form-horizontal page-head">
+                                                <div class="section-left">
+                                                    <!-- Email Subject Field -->
+                                                    <div class="row form-group">
+                                                        <div class="col col-md-3">
+                                                            <label for="text-input" class="form-control-label">From Email</label>
+                                                        </div>
+                                                        <div class="col-12 col-md-9">
+                                                            @Html.TextBoxFor(m => m.FromEmail, new { @class = "form-control", @placeholder = "From Email", @maxlength = "255" })
+                                                            @Html.ValidationMessageFor(m => m.FromEmail, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                    <!-- Password -->
+                                                    <div class="row form-group">
+                                                        <div class="col col-md-3">
+                                                            <label for="text-input" class="form-control-label">Password</label>
+                                                        </div>
+                                                        <div class="col-12 col-md-9">
+                                                            @Html.TextBoxFor(m => m.FromPassword, new { @class = "form-control", @type = "password", @placeholder = "Email Password", @maxlength = "255" })
+                                                            @Html.ValidationMessageFor(m => m.FromPassword, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                    <!-- Display Name -->
+                                                    <div class="row form-group">
+                                                        <div class="col col-md-3">
+                                                            <label for="text-input" class="form-control-label">Display Name</label>
+                                                        </div>
+                                                        <div class="col-12 col-md-9">
+                                                            @Html.TextBoxFor(m => m.DisplayName, new { @placeholder = "Recipient Email", @class = "form-control", @maxlength = "100" })
+                                                            @Html.ValidationMessageFor(m => m.DisplayName, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="section-right">
+                                                    <!-- SmtpServer -->
+                                                    <div class="row form-group">
+                                                        <div class="col col-md-3">
+                                                            <label for="text-input" class="form-control-label">SMTP Server</label>
+                                                        </div>
+                                                        <div class="col-12 col-md-9">
+                                                            @Html.TextBoxFor(m => m.SmtpServer, new { @placeholder = "SMTP Server", @class = "form-control", @maxlength = "255" })
+                                                            @Html.ValidationMessageFor(m => m.SmtpServer, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                    <!-- SmtpPort Field -->
+                                                    <div class="row form-group">
+                                                        <div class="col col-md-3">
+                                                            <label for="text-input" class="form-control-label">SMTP Port</label>
+                                                        </div>
+                                                        <div class="col-12 col-md-9">
+                                                            @Html.TextBoxFor(m => m.SmtpPort, new { @placeholder = "SMTP Port", @class = "form-control", @maxlength = "100" })
+                                                            @Html.ValidationMessageFor(m => m.SmtpPort, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                    <!-- EnableSSL -->
+                                                    <div class="row form-group">
+                                                        <div class="col col-md-3">
+                                                            <label for="text-input" class="form-control-label">EnableSSL</label>
+                                                        </div>
+                                                        <div class="col-12 col-md-9">
+                                                            @Html.CheckBoxFor(m => m.EnableSSL, new { @placeholder = "Enable SSL", @class = "form-check", @maxlength = "100" })
+                                                            @Html.ValidationMessageFor(m => m.EnableSSL, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
         </div>
     </div>
 </div>
-<input type="hidden" value="@Model.PageAction" id="pageAction" />
-<div id="divpageDetail" class="animated fadeIn mypage">
-    @using (Html.BeginForm("CompanyAction", "Master", FormMethod.Post))
-    {
-        if (ViewBag.ErrorMessages != null)
-        {
-            <div id="divError">
-                <div class="alert alert-danger">
-                    <strong>Danger!</strong>  @ViewBag.ErrorMessages
-                </div>
-            </div>
-        }
-        if (ViewBag.SuccessMessage != null)
-        {
-            <div id="divsuccess">
-                <div class="alert alert-success">
-                    <strong>Success!</strong> @ViewBag.SuccessMessage
-                </div>
-            </div>
-        }
-        @Html.HiddenFor(m => m.CompanyId)
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header">
-                        <div class="col-lg-6">
-                            <strong class="card-title">
-
-                            </strong>
-                        </div>
-                        <div class="col-lg-6 text-right">
-                            @*@if (Model.PageAction == "A")
-                                {
-                                    <button class="btn btn-sm" disabled type="button"><i class="fa fa-plus"></i>&nbsp; New</button>
-                                }
-                                else
-                                {
-                                    <button class="btn btn-sm" onclick="AddNewRecord()" type="button"><i class="fa fa-plus"></i>&nbsp; New</button>
-                                }*@
-                            @if (Model.PageAction == "V")
-                            {
-                                <button class="btn btn-sm" onclick="EditPageData()" type="button"><i class="fa fa-pencil font16"></i></button>
-                            }
-                            @*@if (Model.PageAction != "V")
-                                {
-                                    <button class="btn btn-sm" disabled type="button"><i class="fa fa-trash"></i>&nbsp; Delete</button>
-                                }
-                                else
-                                {
-                                    <button class="btn btn-sm" onclick="DeletePageData()" type="button"><i class="fa fa-trash"></i>&nbsp; Delete</button>
-                                }*@
-                            @if (Model.PageAction == "V")
-                            {
-                                <button class="btn btn-sm" disabled type="submit"><i class="fa fa-save font16"></i></button>
-                            }
-                            else
-                            {
-                                <button class="btn btn-sm" type="submit"><i class="fa fa-save font16"></i></button>
-                            }
-                            <a class="btn btn-sm" href="@Url.Action("Company","Master")"><i class="fa fa-arrow-circle-left font16"></i></a>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="page-head">
-                            <div class="section-left">
-                                <div class="row">
-                                    <div class="col-md-6 form-group">
-                                        <div class="col col-md-6 p-0"><label class=" form-control-label">Company Code</label></div>
-                                        <div class="col-12 col-md-6 text-left">
-                                            @*<p class="form-control-static">@Model.CompanyCode</p>*@
-                                            @Html.HiddenFor(m => m.CompanyCode)
-                                            @Html.TextBoxFor(m => m.CompanyCode, new { @placeholder = "Company Name ", @class = "form-control", @disabled = "disabled" })
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6 form-group">
-                                        <div class="col col-md-6 p-0 text-right"><label for="select" class=" form-control-label">Status</label></div>
-                                        <div class="col-12 col-md-6">
-                                            <label class="switch switch-3d switch-success mr-3">
-                                                <input type="checkbox" class="switch-input" checked="true"> <span class="switch-label"></span> <span class="switch-handle"></span>
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row form-group">
-                                    <div class="col col-md-3">
-                                        <label for="text-input" class=" form-control-label">Name<span class="text-danger p-1">(*)</span></label>
-                                    </div>
-                                    <div class="col-12 col-md-9">
-                                        @Html.TextBoxFor(m => m.CompanyName, new { @placeholder = "Company Name ", @class = "form-control" })
-                                        @Html.ValidationMessageFor(m => m.CompanyName, "", new { @class = "text-danger" })
-                                    </div>
-                                </div>
-                                <div class="row form-group">
-                                    <div class="col col-md-3">
-                                        <label for="text-input" class=" form-control-label">Alias</label>
-                                    </div>
-                                    <div class="col-12 col-md-9">
-                                        @Html.TextBoxFor(m => m.CompanyName, new { @placeholder = "Alias", @class = "form-control" })
-                                        @Html.ValidationMessageFor(m => m.CompanyName, "", new { @class = "text-danger" })
-                                    </div>
-                                </div>
-                                <div class="row form-group">
-                                    <div class="col col-md-3">
-                                        <label for="text-input" class=" form-control-label">Email<span class="text-danger p-1">(*)</span></label>
-                                    </div>
-                                    <div class="col-12 col-md-9">
-                                        <div class="input-group">
-                                            @Html.TextBoxFor(m => m.Email, new { @placeholder = "Email", @class = "form-control", @name = "input2-group1" })
-                                            @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row form-group">
-                                    <div class="col col-md-3">
-                                        <label for="text-input" class=" form-control-label">Web Site</label>
-                                    </div>
-                                    <div class="col-12 col-md-9">
-                                        @Html.TextBoxFor(m => m.WebStite, new { @placeholder = "Web Site", @class = "form-control" })
-                                    </div>
-                                </div>
-                                <div class="row form-group">
-                                    <div class="col col-md-3">
-                                        <label for="Phone" class="control-label mb-1">Phone<span class="text-danger p-1">(*)</span></label>
-                                    </div>
-                                    <div class="col-12 col-md-9">
-                                        @Html.TextBoxFor(m => m.Phone, new { @placeholder = "Phone", @class = "form-control" })
-                                        @Html.ValidationMessageFor(model => model.Phone, "", new { @class = "text-danger" })
-                                    </div>
-                                </div>
-                                <div class="row form-group">
-                                    <div class="col col-md-3">
-                                        <label for="Mobile" class="control-label mb-1">Mobile<span class="text-danger p-1">(*)</span></label>
-                                    </div>
-                                    <div class="col-12 col-md-9">
-                                        <div class="input-group">
-                                            @Html.TextBoxFor(m => m.Mobile, new { @placeholder = "Mobile", @class = "form-control" })
-                                            @Html.ValidationMessageFor(model => model.Mobile, "", new { @class = "text-danger" })
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row form-group">
-                                    <div class="col col-md-3">
-                                        <label for="text-input" class=" form-control-label">Fax</label>
-                                    </div>
-                                    <div class="col-12 col-md-9">
-                                        @Html.TextBoxFor(m => m.Fax, new { @placeholder = "Fax", @class = "form-control" })
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="section-right">
-
-                                <div class="row">
-                                    <div class="col-6">
-                                        <div class="form-group">
-                                            <strong for="RegisterAddress1" class="control-label mb-1">Register Address</strong>
-                                            @Html.TextAreaFor(m => m.RegisterAddress1, new { @placeholder = "Address1", @class = "form-control" })
-                                            @Html.ValidationMessageFor(model => model.RegisterAddress1, "", new { @class = "text-danger" })
-                                        </div>
-                                    </div>
-                                    <div class="col-6">
-                                        <strong for="FactoryAddress1" class="control-label mb-1">Factory Address</strong>
-                                        <div class="input-group">
-                                            @Html.TextAreaFor(m => m.FactoryAddress1, new { @placeholder = "Address1", @class = "form-control" })
-                                            @Html.ValidationMessageFor(model => model.FactoryAddress1, "", new { @class = "text-danger" })
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-6">
-                                        <div class="form-group">
-                                            @Html.TextAreaFor(m => m.RegisterAddress2, new { @placeholder = "Address 2", @class = "form-control" })
-                                        </div>
-                                    </div>
-                                    <div class="col-6">
-                                        <div class="input-group">
-                                            @Html.TextAreaFor(m => m.FactoryAddress2, new { @placeholder = "Address 2", @class = "form-control" })
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-6">
-                                        <div class="form-group">
-                                            @Html.DropDownListFor(m => m.RegiterCityId, new SelectList(ViewBag.CityList, "Value", "Text"), "Select City", new { @class = "form-control form-select", @id = "ddlRCity" })
-                                        </div>
-                                    </div>
-                                    <div class="col-6">
-                                        <div class="input-group">
-                                            @Html.DropDownListFor(m => m.FactoryCityId, new SelectList(ViewBag.CityList, "Value", "Text"), "Select City", new { @class = "form-control form-select", @id = "ddlFCity" })
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-6">
-                                        <div class="form-group">
-                                            @Html.DropDownListFor(m => m.RegiterStateId, new SelectList(ViewBag.StateList, "Value", "Text"), "Select State", new { @class = "form-control form-select", @id = "ddlRState" })
-                                        </div>
-                                    </div>
-                                    <div class="col-6">
-                                        <div class="input-group">
-                                            @Html.DropDownListFor(m => m.FactoryStateId, new SelectList(ViewBag.StateList, "Value", "Text"), "Select State", new { @class = "form-control form-select", @id = "ddlFState" })
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-6">
-                                        <div class="form-group">
-                                            @Html.DropDownListFor(m => m.RegisterCountryId, new SelectList(ViewBag.CountryList, "Value", "Text"), "Select Country", new { @class = "form-control form-select", @id = "ddlRCountry" })
-                                        </div>
-                                    </div>
-                                    <div class="col-6">
-                                        <div class="input-group">
-                                            @Html.DropDownListFor(m => m.FactoryCountryId, new SelectList(ViewBag.CountryList, "Value", "Text"), "Select Country", new { @class = "form-control form-select", @id = "ddlFCountry" })
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-6">
-                                        <div class="form-group">
-                                            @Html.TextBoxFor(m => m.RegisterPincode, new { @placeholder = "Pincode", @class = "form-control" })
-                                        </div>
-                                    </div>
-                                    <div class="col-6">
-                                        <div class="input-group">
-                                            @Html.TextBoxFor(m => m.FactoryPincode, new { @placeholder = "Pincode", @class = "form-control" })
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="page-breaker"></div>
-                        <ul class="nav nav-tabs" id="myTab" role="tablist">
-                            <li class="nav-item">
-                                <a class="nav-link active" id="profile-tab" data-toggle="tab" href="#Accountdetails" role="tab" aria-controls="Accountdetails" aria-selected="false">Account Details</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" id="financialyear-tab" data-toggle="tab" href="#FinancialYear" role="tab" aria-controls="FinancialYear" aria-selected="false">Financial Year</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" id="bank-tab" data-toggle="tab" href="#Bankdetails" role="tab" aria-controls="Bankdetails" aria-selected="false">Bank Details</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" id="unit-tab" data-toggle="tab" href="#Unitdetails" role="tab" aria-controls="Unitdetails" aria-selected="false">Unit Details</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" id="emailcofig-tab" data-toggle="tab" href="#emailcofig" role="tab" aria-controls="emailcofig" aria-selected="true">Email Configuration</a>
-                            </li>
-                        </ul>
-                        <div class="tab-content pl-3 p-1" id="myTabContent">
-                            <div class="tab-pane fade show active" id="Accountdetails" role="tabpanel" aria-labelledby="profile-tab">
-                                <div class="row form-group">
-                                    <div class="col col-md-3"><label for="GSTNo" class="form-control-label">GST No</label></div>
-                                    <div class="col-12 col-md-9">
-                                        @Html.TextBoxFor(m => m.GSTNo, new { @placeholder = "GST No", @class = "form-control" })
-                                    </div>
-                                </div>
-                                <div class="row form-group">
-                                    <div class="col col-md-3">
-                                        <label for="PANNo" class="form-control-label">PAN No</label>
-                                    </div>
-                                    <div class="col-12 col-md-9">
-                                        @Html.TextBoxFor(m => m.PANNo, new { @placeholder = "PAN No", @class = "form-control" })
-                                    </div>
-                                </div>
-                                <div class="row form-group">
-                                    <div class="col col-md-3"><label for="CINNo" class=" form-control-label"> CIN No</label></div>
-                                    <div class="col-12 col-md-9">
-                                        @Html.TextBoxFor(m => m.CINNo, new { @placeholder = "CIN No", @class = "form-control" })
-                                    </div>
-                                </div>
-                                <div class="row form-group">
-                                    <div class="col col-md-3"><label for="ECCNo" class=" form-control-label">ECC No</label></div>
-                                    <div class="col-12 col-md-9">
-                                        @Html.TextBoxFor(m => m.ECCNo, new { @placeholder = "ECC No", @class = "form-control", @maxlength = "50" })
-                                    </div>
-                                </div>
-                                <div class="row form-group">
-                                    <div class="col col-md-3"><label for="RegistrationNo" class=" form-control-label">Registration No</label></div>
-                                    <div class="col-12 col-md-9">
-                                        @Html.TextBoxFor(m => m.RegistrationNo, new { @placeholder = "Registration No", @class = "form-control", @maxlength = "30"})
-                                    </div>
-                                </div>
-                                <div class="row form-group">
-                                    <div class="col col-md-3"><label for="RegistrationDate" class=" form-control-label">Registration Date</label></div>
-                                    <div class="col-12 col-md-9">
-                                        @Html.TextBoxFor(m => m.RegistrationDate, "{0:yyyy-MM-dd}", new { @autocomplete = "off", @placeholder = "Registration Date", @class = "form-control datepicker", @type = "date" })
-                                    </div>
-                                </div>
-                                <div class="row form-group">
-                                    <div class="col col-md-3"><label for="MSMENo" class=" form-control-label">MSME #</label></div>
-                                    <div class="col-12 col-md-9">
-                                        @Html.TextBoxFor(m => m.MSMENo, new { @placeholder = "MSME Number", @class = "form-control", @maxlength = "30" })
-                                    </div>
-                                </div>
-                                <div class="row form-group">
-                                    <div class="col col-md-3"><label for="TANNo" class=" form-control-label">TAN Registration #</label></div>
-                                    <div class="col-12 col-md-9">
-                                        @Html.TextBoxFor(m => m.TANNo, new { @placeholder = "TAN Number", @class = "form-control", @maxlength = "30" })
-                                    </div>
-                                </div>
-                                <div class="row form-group">
-                                    <div class="col col-md-3"><label for="PFNo" class=" form-control-label">PF Registration #</label></div>
-                                    <div class="col-12 col-md-9">
-                                        @Html.TextBoxFor(m => m.PFNo, new { @placeholder = "PF Number", @class = "form-control", @maxlength = "30" })
-                                    </div>
-                                </div>
-                                <div class="row form-group">
-                                    <div class="col col-md-3"><label for="ESICNo" class=" form-control-label">ESIC Registration #</label></div>
-                                    <div class="col-12 col-md-9">
-                                        @Html.TextBoxFor(m => m.ESICNo, new { @placeholder = "ESIC Registration Number", @class = "form-control", @maxlength = "30" })
-                                    </div>
-                                </div>
-                                <div class="row form-group">
-                                    <div class="col col-md-3"><label for="PrefessionTaxNo" class=" form-control-label">Professonal Tax #</label></div>
-                                    <div class="col-12 col-md-9">
-                                        @Html.TextBoxFor(m => m.PrefessionTaxNo, new { @placeholder = "Professonal Tax Number", @class = "form-control", @maxlength = "30" })
-                                    </div>
-                                </div>
-                                <div class="row form-group">
-                                    <div class="col col-md-3"><label for="LWFPrefessionNo" class=" form-control-label">LWF Registration #</label></div>
-                                    <div class="col-12 col-md-9">
-                                        @Html.TextBoxFor(m => m.LWFPrefessionNo, new { @placeholder = "LWF Registration Number", @class = "form-control", @maxlength = "30" })
-                                    </div>
-                                </div>
-                                <div class="row form-group">
-                                    <div class="col col-md-3"><label for="DefaultCurrencyId" class=" form-control-label">Default Currency</label></div>
-                                    <div class="col-12 col-md-9">
-                                        @Html.DropDownListFor(m => m.DefaultCurrencyId, new SelectList(ViewBag.CurrencyList, "Value", "Text"), "Select Currency", new { @class = "form-control form-select", @id = "ddlCurrency" })
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="tab-pane fade" id="FinancialYear" role="tabpanel" aria-labelledby="financialyear-tab">
-                                <div class="row form-group">
-                                    <div class="col col-md-12 text-right">
-                                        <a class="btn btn-primary" href="javascript:void(0);" title="Add New Fiancial" data-toggle="modal" data-target="#mediumModal"><i class="fa fa-plus"></i></a>
-                                    </div>
-                                </div>
-                                <div class="row form-group">
-                                    <table id="tblFinancial" class="display cell-border row-border nowrap" cellspacing="0" width="100%"></table>
-                                </div>
-                            </div>
-                            <div class="tab-pane fade" id="Bankdetails" role="tabpanel" aria-labelledby="Bankdetails-tab">
-                                <div class="row form-group">
-                                    <div class="col col-md-12 text-right">
-                                        <a class="btn btn-primary" href="javascript:void(0);" title="Add New Bank" data-toggle="modal" data-target="#mediumModalBank"><i class="fa fa-plus"></i></a>
-                                    </div>
-                                </div>
-                                <div class="row form-group">
-                                    <table id="tblBankDetails" class="display cell-border row-border nowrap" cellspacing="0" width="100%"></table>
-                                </div>
-                                @*<div class="row form-group">*@
-                                @*<table id="bootstrap-data-table-export" class="table table-striped table-bordered">
-                                        <thead>
-                                            <tr>
-                                                <th>Name</th>
-                                                <th>Position</th>
-                                                <th>Office</th>
-                                                <th>Salary</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td>Tiger Nixon</td>
-                                                <td>System Architect</td>
-                                                <td>Edinburgh</td>
-                                                <td>$320,800</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Garrett Winters</td>
-                                                <td>Accountant</td>
-                                                <td>Tokyo</td>
-                                                <td>$170,750</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>*@
-                                @*</div>*@
-                            </div>
-                            <div class="tab-pane fade" id="Unitdetails" role="tabpanel" aria-labelledby="contact-tab">
-                                <div class="row form-group">
-                                    <div class="row form-group">
-                                        <div class="col col-md-12 text-right">
-                                            <a class="btn btn-primary" href="javascript:void(0);" title="Add New Bank" data-toggle="modal" data-target="#mediumModalUnit"><i class="fa fa-plus"></i></a>
-                                        </div>
-                                    </div>
-                                    <div class="row form-group">
-                                        <table id="tblUnitDetails" class="display cell-border row-border nowrap" cellspacing="0" width="100%"></table>
-                                    </div>
-                                    @*<div class="col-12 col-md-12">
-                                            <table id="bootstrap-data-table-export" class="table table-striped table-bordered">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Name</th>
-                                                        <th>Position</th>
-                                                        <th>Office</th>
-                                                        <th>Salary</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr>
-                                                        <td>Tiger Nixon</td>
-                                                        <td>System Architect</td>
-                                                        <td>Edinburgh</td>
-                                                        <td>$320,800</td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>*@
-                                </div>
-                            </div>
-                            <div class="tab-pane fade" id="emailcofig" role="tabpanel" aria-labelledby="emailcofig-tab">
-                                <div class="form-horizontal page-head">
-                                    <div class="section-left">
-                                        <!-- Email Subject Field -->
-                                        <div class="row form-group">
-                                            <div class="col col-md-3">
-                                                <label for="text-input" class="form-control-label">From Email</label>
-                                            </div>
-                                            <div class="col-12 col-md-9">
-                                                @Html.TextBoxFor(m => m.FromEmail, new { @class = "form-control", @placeholder = "From Email", @maxlength = "255" })
-                                                @Html.ValidationMessageFor(m => m.FromEmail, "", new { @class = "text-danger" })
-                                            </div>
-                                        </div>
-                                        <!-- Password -->
-                                        <div class="row form-group">
-                                            <div class="col col-md-3">
-                                                <label for="text-input" class="form-control-label">Password</label>
-                                            </div>
-                                            <div class="col-12 col-md-9">
-                                                @Html.TextBoxFor(m => m.FromPassword, new { @class = "form-control", @type = "password", @placeholder = "Email Password", @maxlength = "255" })
-                                                @Html.ValidationMessageFor(m => m.FromPassword, "", new { @class = "text-danger" })
-                                            </div>
-                                        </div>
-                                        <!-- Display Name -->
-                                        <div class="row form-group">
-                                            <div class="col col-md-3">
-                                                <label for="text-input" class="form-control-label">Display Name</label>
-                                            </div>
-                                            <div class="col-12 col-md-9">
-                                                @Html.TextBoxFor(m => m.DisplayName, new { @placeholder = "Recipient Email", @class = "form-control", @maxlength = "100" })
-                                                @Html.ValidationMessageFor(m => m.DisplayName, "", new { @class = "text-danger" })
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="section-right">
-                                        <!-- SmtpServer -->
-                                        <div class="row form-group">
-                                            <div class="col col-md-3">
-                                                <label for="text-input" class="form-control-label">SMTP Server</label>
-                                            </div>
-                                            <div class="col-12 col-md-9">
-                                                @Html.TextBoxFor(m => m.SmtpServer, new { @placeholder = "SMTP Server", @class = "form-control", @maxlength = "255" })
-                                                @Html.ValidationMessageFor(m => m.SmtpServer, "", new { @class = "text-danger" })
-                                            </div>
-                                        </div>
-                                        <!-- SmtpPort Field -->
-                                        <div class="row form-group">
-                                            <div class="col col-md-3">
-                                                <label for="text-input" class="form-control-label">SMTP Port</label>
-                                            </div>
-                                            <div class="col-12 col-md-9">
-                                                @Html.TextBoxFor(m => m.SmtpPort, new { @placeholder = "SMTP Port", @class = "form-control", @maxlength = "100" })
-                                                @Html.ValidationMessageFor(m => m.SmtpPort, "", new { @class = "text-danger" })
-                                            </div>
-                                        </div>
-                                        <!-- EnableSSL -->
-                                        <div class="row form-group">
-                                            <div class="col col-md-3">
-                                                <label for="text-input" class="form-control-label">EnableSSL</label>
-                                            </div>
-                                            <div class="col-12 col-md-9">
-                                                @Html.CheckBoxFor(m => m.EnableSSL, new { @placeholder = "Enable SSL", @class = "form-check", @maxlength = "100" })
-                                                @Html.ValidationMessageFor(m => m.EnableSSL, "", new { @class = "text-danger" })
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    }
-</div><!-- .animated -->
 <div class="modal fade" id="mediumModal" tabindex="-1" role="dialog" aria-labelledby="mediumModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document" style="width:400px;">
         <div class="modal-content">
@@ -1244,9 +1563,9 @@
                         SiteName: $("#txtSiteName").val(),
                         Address1:$("#txtAddress1").val(),
                         Address2: $("#txtAddress2").val(),
-                        CityId: $("#txtCity").val(),
-                        StateId: $("#txtStateId").val(),
-                        CountryId: $("#txtCountryId").val(),
+                        CityId: $("#ddlUnitCity").val(),
+                        StateId: $("#ddlUnitState").val(),
+                        CountryId: $("#ddlUnitCountry").val(),
                         Pincode: $("#txtPincode").val(),
                         GSTNo: $("#txtGSTNo").val(),
                         PANNo: $("#txtPANNo").val(),
@@ -1347,9 +1666,9 @@
                 $("#txtSiteName").val(respaonse.SiteName),
                 $("#txtAddress1").val(respaonse.Address1),
                 $("#txtAddress2").val(respaonse.Address2),
-                $("#txtCity").val(respaonse.CityId),
-                $("#txtStateId").val(respaonse.StateId),
-                $("#txtCountryId").val(respaonse.CountryId),
+                $("#ddlUnitCity").val(respaonse.CityId).trigger("change"),
+                $("#ddlUnitState").val(respaonse.StateId).trigger("change"),
+                $("#ddlUnitCountry").val(respaonse.CountryId).trigger("change"),
                 $("#txtPincode").val(respaonse.Pincode),
                 $("#txtGSTNo").val(respaonse.GSTNo),
                 $("#txtPANNo").val(respaonse.PANNo),
@@ -1381,9 +1700,9 @@
         $("#txtSiteName").val(""),
             $("#txtAddress1").val(""),
             $("#txtAddress2").val(""),
-            $("#txtCity").val(""),
-            $("#txtStateId").val(""),
-            $("#txtCountryId").val(""),
+            $("#ddlUnitCity").val("").trigger("change"),
+            $("#ddlUnitState").val("").trigger("change"),
+            $("#ddlUnitCountry").val("").trigger("change"),
             $("#txtPincode").val(""),
             $("#txtGSTNo").val(""),
             $("#txtPANNo").val(""),
@@ -1391,3 +1710,4 @@
             $("#txtEmail").val("")
     }
 </script>
+

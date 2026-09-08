@@ -74,7 +74,7 @@
         @*@Html.HiddenFor(m => m.RoleName)
             @Html.HiddenFor(m => m.CreatedOn)
             @Html.HiddenFor(m => m.UserId)*@
-        <div class="row">
+        <div class="row m-0">
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">
@@ -345,7 +345,7 @@
             updatePermissionIndicator($table);
         });
 
-    //To update parent accordian indicator
+        //To update parent accordian indicator
         function updatePermissionIndicator($table) {
             const parentId = $table.data('parent-id');
             let hasPermission = false;

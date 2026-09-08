@@ -7,8 +7,124 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="~/Content/main/chart.js/Chart.bundle.min.js"></script>
 <style>
+    .widget-empty-state {
+        min-height: 300px;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        color: #9aa4ad;
+        padding: 30px 15px;
+    }
+
+    .widget-empty-state-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .widget-empty-state i {
+        font-size: 32px;
+        margin-bottom: 10px;
+        opacity: 0.55;
+    }
+
+    .widget-empty-state .empty-title {
+        font-size: 14px;
+        font-weight: 500;
+        color: #6c757d;
+    }
+
+    .widget-empty-state .empty-description {
+        font-size: 12px;
+        color: #adb5bd;
+        margin-top: 4px;
+    }
+    .widget-loader {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0.75);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 100;
+    }
+
+        .widget-loader.active {
+            display: flex;
+        }
+
+    .widget-loader-spinner {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: #27a9d7;
+        font-size: 13px;
+    }
+
+        .widget-loader-spinner i {
+            font-size: 26px;
+            margin-bottom: 8px;
+        }
+
+        .widget-loader-spinner span {
+            font-size: 12px;
+            color: #666;
+        }
+
     .dataTables_wrapper {
         max-width: 100% !important;
+    }
+
+    .filter {
+        margin-right: 10px;
+        color: gray !important;
+    }
+
+    .card {
+        border-radius: 5px 5px 0 0 !important;
+        border-color: skyblue !important;
+    }
+
+        .card .card-header {
+            padding: 10px !important;
+            background: skyblue;
+            border-radius: 5px 5px 0 0;
+        }
+
+    .dataTable thead th {
+        background: #f1f7fa !important;
+    }
+
+    .dataTables_scrollHead {
+        border-bottom: 1px solid #ccc !important;
+        background: #f1f7fa !important;
+    }
+
+    .dataTable tbody td {
+        font-size: 12px;
+        font-weight: 500;
+        color: #34454e;
+        white-space: nowrap;
+        vertical-align: middle;
+    }
+
+    .dashboard .dataTables_scrollBody table tbody tr td {
+        box-shadow: none !important;
+    }
+
+    .dropdown-item.active, .dropdown-item:active {
+        background-color: skyblue !important;
+    }
+
+    .dropdown-item:focus, .dropdown-item:hover {
+        background-color: skyblue !important;
     }
 </style>
 <div class="breadcrumbs">
@@ -42,7 +158,7 @@
                             <div class="card text-white" style="height:90px;color:@item.FontColor !important; background-color: @item.BackgroundColor">
                                 <div class="card-body pb-0">
                                     <div class="dropdown float-right">
-                                        <a href="@item.RedirectURL" title="Redirect" target="_blank"><i class="fa fa-external-link" style="color:#fff;"></i></a>
+                                        <a href="@item.RedirectURL" title="Redirect" target="_blank"><i class="fa fa-arrow-right" style="color:#fff;"></i></a>
                                     </div>
                                     @if (item.Data != null && item.Data.Count() > 0)
                                     {
@@ -51,14 +167,11 @@
                                             string counter = row.ContainsKey("FieldValue") ? row["FieldValue"].ToString().Replace(",", "") : "0";
                                             string caption = row.ContainsKey("Caption") ? row["Caption"].ToString() : item.Title;
                                             decimal TotalVal = 0;
-                                            if (row.ContainsKey("FieldValue") &&
-                                                decimal.TryParse(row["FieldValue"].ToString().Replace(",", ""),
-                                                                 out decimal result))
+                                            if (row.ContainsKey("FieldValue") && decimal.TryParse(row["FieldValue"].ToString().Replace(",", ""), out decimal result))
                                             {
                                                 TotalVal = result;
                                                 counter = TotalVal.ToString("N0", new System.Globalization.CultureInfo("en-IN"));
                                             }
-
                                             <h4 class="mb-0 pb-2">
                                                 @Html.Raw(counter)
                                             </h4>
@@ -74,23 +187,48 @@
         }
         @{
             <div class="col-lg-12 dashboard">
-                @foreach (var item in Model.Settings.Where(x => x.WidgetType != "WidgetBox"))
+                @foreach (var item in Model.Settings.Where(x => x.WidgetType == "Table"))
                 {
-                    string displaySizeClass = string.Equals(item.DisplaySize, "Medium", StringComparison.OrdinalIgnoreCase)
-                    || string.IsNullOrEmpty(item.DisplaySize) ? "col-lg-6" : "col-lg-12";
+                    string displaySizeClass = string.Equals(item.DisplaySize, "Medium", StringComparison.OrdinalIgnoreCase) || string.IsNullOrEmpty(item.DisplaySize) ? "col-lg-6" : "col-lg-12";
                     if (item.WidgetType == "Table")
                     {
+                        string tableId = "table_" + item.Title;
                         <div class="dashboard @displaySizeClass">
                             <div class="card">
+                                <!-- Widget Loader -->
+                                <div class="widget-loader">
+                                    <div class="widget-loader-spinner">
+                                        <i class="fa fa-refresh fa-spin"></i>
+                                        <span>Loading...</span>
+                                    </div>
+                                </div>
                                 <div class="card-header" style="padding:10px !important;">
-                                    <strong class="card-title">@item.Title</strong>
+                                    <span class="card-title">
+                                        <i class="fa fa-table"></i>
+                                        @item.Title
+                                    </span>
                                     <div class="float-right">
-                                        <a href="@item.RedirectURL" target="_blank">
-                                            <i class="fa fa-link"></i>
+                                        <div class="dropdown d-inline-block">
+                                            <a href="javascript:void(0);" title="Filter" data-toggle="dropdown" aria-expanded="false" class="filter">
+                                                <i class="fa fa-filter"></i>
+                                            </a>
+                                            <div class="dropdown-menu dropdown-menu-right">
+                                                <a class="dropdown-item" href="javascript:void(0);">Today</a>
+                                                <a class="dropdown-item" href="javascript:void(0);">This Week</a>
+                                                <a class="dropdown-item" href="javascript:void(0);">This Month</a>
+                                                <a class="dropdown-item" href="javascript:void(0);">Last 6 Months</a>
+                                                <a class="dropdown-item" href="javascript:void(0);">This Year</a>
+                                            </div>
+                                        </div>
+                                        @*<a href="javascript:void(0);" onclick="RefreshTable(this);" class="filter">
+                                                <i class="fa fa-refresh"></i>
+                                            </a>*@
+                                        <a href="@item.RedirectURL" target="_blank" class="filter">
+                                            <i class="fa fa-arrow-right"></i>
                                         </a>
                                     </div>
                                 </div>
-                                <div class="card-body p-1">
+                                <div class="card-body p-0">
                                     @if (item.ResultData != null && item.ResultData.Data != null && item.ResultData.Data.Count() > 0)
                                     {
                                         var result = item.ResultData.Data.FirstOrDefault()?.ToDictionary(x => x.Key, x => x.Value?.ToString());
@@ -108,7 +246,6 @@
                                             <thead>
                                                 <tr>
                                                     @{
-
                                                         var headers = item.ResultData.Data.FirstOrDefault()?.Keys.ToList();
                                                         if (headers != null)
                                                         {
@@ -156,11 +293,588 @@
                                             }
                                         </table>
                                     }
+                                    else
+                                    {
+                                        <div class="widget-empty-state">
+                                            <div class="widget-empty-state-content">
+                                                <i class="fa fa-inbox"></i>
+                                                <div class="empty-title">Dat Not Avaiable</div>
+                                            </div>
+                                        </div>
+                                    }
                                 </div>
                             </div>
                         </div>
                     }
+                }
+            </div>
+        }
+        @{
+            <div class="col-lg-12 dashboard">
+                @{
+                    int chartIndex = 0;
+                    <script>
+                         function showWidgetEmpty(widgetId, message) {
+                             var $card = $('.card[data-widget-id="' + widgetId + '"]');
+                             var $body = $card.find('.card-body').first();
 
+                             if (!$body.length)
+                                 return;
+
+                             message = message || 'No data available';
+                             $body.html(
+                                 '<div class="widget-empty-state">' +
+                                 '<div class="widget-empty-state-content">' +
+                                 '<i class="fa fa-inbox"></i>' +
+                                 '<div class="empty-title">' + message + '</div>' +
+                                 '</div>' +
+                                 '</div>'
+                             );
+                         }
+                         function loadChartData(chartId, period, chartJsType, sqlScript) {
+                             var $chart = $('.card[data-widget-id="' + chartId + '"]');
+                           if (!$chart.length) {
+                               console.warn('Chart not found:', chartId);
+                               return;
+                           }
+                           // Find only this widget's loader
+                           var $loader = $chart.find('.widget-loader');
+                           // Show loader
+                           $loader.addClass('active');
+                            $.ajax({
+                                url: '@Url.Action("GetChartData", "Dashboard")',
+                                skipLoading: true,
+                                type: 'GET',
+                                data: { period: period, sqlScript: sqlScript },
+                                success: function (response) {
+                                    if (!response || response.IsSuccess === false) {
+                                        //console.warn('Failed to load chart data for', chartId, response ? response.Message : '');
+                                        showWidgetEmpty(chartId, "Failed to load chart data");
+                                        return;
+                                    }
+                                    if (chartJsType == "bar") {
+                                        updateBarChart(chartId, response.data, chartJsType);
+                                    }
+                                    else if (chartJsType == "line") {
+                                        updateLineChart(chartId, response.data, chartJsType);
+                                    }
+                                    else if (chartJsType == "bubble") {
+                                        updateLineChart(chartId, response.data, chartJsType);
+                                    }
+                                    else if (chartJsType == "pie") {
+                                        updatePieChart(chartId, response.data, chartJsType);
+                                    }
+                                    else {
+                                        updateChart(chartId, response.Labels, response.Values, chartJsType);
+                                    }
+                                },
+                                error: function () {
+                                    console.error('Error fetching chart data for', chartId);
+                                },
+                                complete: function () {
+
+                                    // Hide only this widget's loader
+                                    $loader.removeClass('active');
+                                }
+                            });
+                        }
+                        function updateBubbleChart(chartId, data, chartJsType) {
+
+                            var chart = window.chartInstances[chartId];
+
+                            if (!chart || !data || !data.length)
+                                return;
+
+                            // -----------------------------------------
+                            // X-axis labels
+                            // -----------------------------------------
+                            var labels = [...new Set(
+                                data.map(x => x.XAxisLabel)
+                            )];
+
+                            // -----------------------------------------
+                            // Categories
+                            // -----------------------------------------
+                            var categories = [...new Set(
+                                data.map(x => x.Category)
+                            )];
+
+                            // -----------------------------------------
+                            // Colors
+                            // -----------------------------------------
+                            var palette = [
+                                'rgb(153, 102, 255)',  // Purple
+                                'rgb(255, 99, 132)',   // Pink
+                                'rgb(255, 205, 86)',   // Yellow
+                                'rgb(0, 200, 150)',    // Green
+                                'rgb(201, 203, 207)',  // Gray
+                                'rgb(99, 102, 241)',   // Indigo
+                                'rgb(54, 162, 235)',   // Blue
+                                'rgb(75, 192, 192)',   // Teal
+                                'rgb(255, 159, 64)',   // Orange
+                            ];
+
+                            // Fixed colors for known categories
+                            var categoryColors = {
+                                "Purchase": "rgb(54, 162, 235)",
+                                "Sales": "rgb(75, 192, 192)",
+                                "Return": "rgb(255, 159, 64)",
+                                "Quotation": "rgb(153, 102, 255)"
+                            };
+
+                            // -----------------------------------------
+                            // Find maximum value
+                            // -----------------------------------------
+                            var maxValue = Math.max.apply(
+                                null,
+                                data.map(function (x) {
+                                    return Number(x.YAxisValue) || 0;
+                                })
+                            );
+
+                            // -----------------------------------------
+                            // Create datasets
+                            // -----------------------------------------
+                            var datasets = categories.map(function (category, categoryIndex) {
+
+                                var color = categoryColors[category]
+                                    || palette[categoryIndex % palette.length];
+
+                                var points = [];
+
+                                data
+                                    .filter(function (x) {
+                                        return x.Category === category;
+                                    })
+                                    .forEach(function (item) {
+
+                                        var labelIndex = labels.indexOf(item.XAxisLabel);
+
+                                        var value = Number(item.YAxisValue) || 0;
+
+                                        // Bubble radius between 6 and 25
+                                        var radius = maxValue > 0
+                                            ? 6 + ((value / maxValue) * 19)
+                                            : 6;
+
+                                        points.push({
+                                            x: labelIndex,
+                                            y: value,
+                                            r: radius,
+
+                                            // Custom values for tooltip
+                                            label: item.XAxisLabel,
+                                            category: item.Category,
+                                            amount: value
+                                        });
+                                    });
+
+                                return {
+                                    label: category,
+                                    data: points,
+
+                                    backgroundColor: color.replace('rgb(', 'rgba(').replace(')', ', 0.65)'),
+                                    borderColor: color,
+                                    borderWidth: 2,
+
+                                    hoverBackgroundColor: color,
+                                    hoverBorderColor: color,
+                                    hoverBorderWidth: 3
+                                };
+                            });
+
+                            // -----------------------------------------
+                            // Update chart
+                            // -----------------------------------------
+                            chart.data.labels = labels;
+                            chart.data.datasets = datasets;
+
+                            chart.update();
+                        }
+                        function updateChart(chartId, labels, values, chartJsType) {
+                            var chart = window.chartInstances[chartId];
+                            if (!chart) return;
+                            chart.data.labels = labels;
+                            chart.data.datasets[0].data = values;
+                            var isSliceType = ['pie', 'doughnut', 'polararea'].includes(chartJsType || chart.config.type);
+                            if (isSliceType) {
+                                var palette = [
+                                    'rgb(255, 99, 132)', 'rgb(54, 162, 235)', 'rgb(255, 205, 86)',
+                                    'rgb(75, 192, 192)', 'rgb(153, 102, 255)', 'rgb(255, 159, 64)',
+                                    'rgb(201, 203, 207)', 'rgb(0, 200, 150)', 'rgb(255, 99, 255)'
+                                ];
+                                var colors = labels.map((_, i) => palette[i % palette.length]);
+                                chart.data.datasets[0].backgroundColor = colors;
+                                chart.data.datasets[0].borderColor = colors;
+                            }
+                            chart.update();
+                        }
+                        function updateLineChart(chartId, data, chartJsType) {
+
+                            var chart = window.chartInstances[chartId];
+
+                            if (!chart || !data || !data.length)
+                                return;
+
+                            // -----------------------------------------
+                            // X-axis labels
+                            // -----------------------------------------
+                            var labels = [...new Set(
+                                data.map(x => x.XAxisLabel)
+                            )];
+
+                            // -----------------------------------------
+                            // Categories / Series
+                            // -----------------------------------------
+                            var categories = [...new Set(
+                                data.map(x => x.Category)
+                            )];
+
+                            // -----------------------------------------
+                            // Category colors
+                            // -----------------------------------------
+                            var palette = [
+                                'rgb(153, 102, 255)',  // Purple
+                                'rgb(255, 99, 132)',   // Pink
+                                'rgb(255, 205, 86)',   // Yellow
+                                'rgb(0, 200, 150)',    // Green
+                                'rgb(54, 162, 235)',   // Blue
+                                'rgb(75, 192, 192)',   // Teal
+                                'rgb(255, 159, 64)',   // Orange
+                                'rgb(201, 203, 207)',  // Gray
+                                'rgb(99, 102, 241)'    // Indigo
+                            ];
+
+                            // Optional: fixed colors for known categories
+                            var categoryColors = {
+                                "Purchase": "rgb(54, 162, 235)",
+                                "Sales": "rgb(75, 192, 192)",
+                                "Return": "rgb(255, 159, 64)",
+                                "Quotation": "rgb(153, 102, 255)"
+                            };
+
+                            // -----------------------------------------
+                            // Create datasets
+                            // -----------------------------------------
+                            var datasets = categories.map(function (category, index) {
+
+                                var color = categoryColors[category]
+                                    || palette[index % palette.length];
+
+                                return {
+
+                                    label: category,
+
+                                    data: labels.map(function (label) {
+
+                                        var row = data.find(function (x) {
+                                            return x.XAxisLabel === label &&
+                                                x.Category === category;
+                                        });
+
+                                        return row
+                                            ? Number(row.YAxisValue)
+                                            : 0;
+                                    }),
+
+                                    borderColor: color,
+                                    backgroundColor: color,
+
+                                    borderWidth: 2,
+
+                                    // Smooth line
+                                    tension: 0.35,
+
+                                    // Show points
+                                    pointRadius: 4,
+                                    pointHoverRadius: 6,
+
+                                    // Fill disabled
+                                    fill: false
+                                };
+                            });
+
+                            // -----------------------------------------
+                            // Update chart
+                            // -----------------------------------------
+                            chart.data.labels = labels;
+                            chart.data.datasets = datasets;
+
+                            chart.update();
+                        }
+                        function updateBarChart(chartId, data, chartJsType) {
+
+                            var chart = window.chartInstances[chartId];
+
+                            if (!chart || !data || !data.length)
+                                return;
+
+                            var type = chartJsType || chart.config.type;
+
+                            // Get unique labels
+                            var labels = [...new Set(
+                                data.map(x => x.XAxisLabel)
+                            )];
+
+                            // Get unique categories
+                            var categories = [...new Set(
+                                data.map(x => x.Category)
+                            )];
+
+                            // Dynamic colors for each category
+                            var palette = [
+                                'rgb(54, 162, 235)',   // Blue
+                                'rgb(75, 192, 192)',   // Teal
+                                'rgb(255, 159, 64)',   // Orange
+                                'rgb(153, 102, 255)',  // Purple
+                                'rgb(255, 99, 132)',   // Pink
+                                'rgb(255, 205, 86)',   // Yellow
+                                'rgb(0, 200, 150)',    // Green
+                                'rgb(201, 203, 207)',  // Gray
+                                'rgb(99, 102, 241)'    // Indigo
+                            ];
+
+                            // Create datasets
+                            var datasets = categories.map(function (category, index) {
+
+                                var color = palette[index % palette.length];
+
+                                return {
+                                    label: category,
+
+                                    data: labels.map(function (label) {
+
+                                        var row = data.find(function (x) {
+                                            return x.XAxisLabel === label &&
+                                                x.Category === category;
+                                        });
+
+                                        return row
+                                            ? Number(row.YAxisValue)
+                                            : 0;
+                                    }),
+
+                                    backgroundColor: color,
+                                    borderColor: color,
+                                    borderWidth: 1,
+
+                                    // Rounded bar
+                                    borderRadius: 5,
+
+                                    // Space between bars
+                                    barPercentage: 0.75,
+                                    categoryPercentage: 0.75
+                                };
+                            });
+
+                            chart.data.labels = labels;
+                            chart.data.datasets = datasets;
+
+                            chart.update();
+                        }
+                        function updatePieChart(chartId, data, chartJsType) {
+
+                            var chart = window.chartInstances[chartId];
+
+                            if (!chart || !data || !data.length)
+                                return;
+
+                            var type = chartJsType || chart.config.type;
+
+                            // -----------------------------------------
+                            // Dynamic colors
+                            // -----------------------------------------
+                            var palette = [
+                                'rgb(255, 159, 64)',   // Orange
+                                'rgb(255, 99, 132)',   // Pink
+                                'rgb(0, 200, 150)',    // Green
+                                'rgb(75, 192, 192)',   // Teal
+                                'rgb(153, 102, 255)',  // Purple
+                                'rgb(255, 205, 86)',   // Yellow
+                                'rgb(54, 162, 235)',   // Blue
+                                'rgb(201, 203, 207)',  // Gray
+                                'rgb(99, 102, 241)'    // Indigo
+                            ];
+
+                            // -----------------------------------------
+                            // Group data by Category
+                            // -----------------------------------------
+                            var groupedData = {};
+
+                            data.forEach(function (item) {
+
+                                var category = item.Category;
+                                var value = Number(item.YAxisValue) || 0;
+
+                                if (!groupedData[category]) {
+                                    groupedData[category] = 0;
+                                }
+
+                                groupedData[category] += value;
+                            });
+
+                            // -----------------------------------------
+                            // Labels
+                            // -----------------------------------------
+                            var labels = Object.keys(groupedData);
+
+                            // -----------------------------------------
+                            // Values
+                            // -----------------------------------------
+                            var values = labels.map(function (category) {
+                                return groupedData[category];
+                            });
+
+                            // -----------------------------------------
+                            // Colors
+                            // -----------------------------------------
+                            var colors = labels.map(function (category, index) {
+                                return palette[index % palette.length];
+                            });
+
+                            // -----------------------------------------
+                            // Update chart
+                            // -----------------------------------------
+                            chart.data.labels = labels;
+
+                            chart.data.datasets = [
+                                {
+                                    data: values,
+                                    backgroundColor: colors,
+                                    borderColor: '#ffffff',
+                                    borderWidth: 2,
+                                    hoverOffset: 6
+                                }
+                            ];
+
+                            chart.update();
+                        }
+                        function applyWidgetFilter(chartId, period, el, sqlscript) {
+                            $(el).closest('.dropdown-menu').find('.dropdown-item').removeClass('active');
+                            $(el).addClass('active');
+                            var chart = window.chartInstances[chartId];
+                            var chartJsType = chart ? chart.config.type : null;
+                            loadChartData(chartId, period, chartJsType, sqlscript);
+                        }
+                        function RefreshChart(element) {
+
+                            var $parent = $(element).parent();
+
+                            var $activeFilter = $parent
+                                .find('.dropdown-menu .dropdown-item.active')
+                                .first();
+
+                            if ($activeFilter.length) {
+                                $activeFilter.trigger('click');
+                            }
+                        }
+                    </script>
+                    <div>
+                        @foreach (var item in Model.Settings.Where(x => x.WidgetType == "Chart"))
+                        {
+                            string displaySizeClass = string.Equals(item.DisplaySize, "Medium", StringComparison.OrdinalIgnoreCase)
+                            || string.IsNullOrEmpty(item.DisplaySize) ? "col-lg-6" : "col-lg-12";
+                            bool isHalf = item.WidgetType == "Chart" ? true
+                                            : string.Equals(item.DisplaySize, "Medium", StringComparison.OrdinalIgnoreCase)
+                                                || string.IsNullOrEmpty(item.DisplaySize);
+                            string colStyle = isHalf
+                                    ? "flex:0 0 50% !important; max-width:50% !important; width:50% !important; padding:0 8px; box-sizing:border-box; margin-bottom:16px;"
+                                    : "flex:0 0 50% !important; max-width:50% !important; width:50% !important; padding:0 8px; box-sizing:border-box; margin-bottom:16px;";
+
+                            if (item.WidgetType == "Chart")
+                            {
+                                string chartId = "chart_" + chartIndex;
+                                chartIndex++;
+                                string chartJsType = (item.ChartType ?? "bar").ToLower();
+                                string sqlScript = item.SQLDataScript;
+                                <div class="dashboard @displaySizeClass">
+                                    <div class="card" data-widget-id="@chartId">
+                                        <!-- Widget Loader -->
+                                        <div class="widget-loader">
+                                            <div class="widget-loader-spinner">
+                                                <i class="fa fa-refresh fa-spin"></i>
+                                                <span>Loading...</span>
+                                            </div>
+                                        </div>
+                                        <div class="card-header" style="padding:10px !important;">
+                                            <span class="card-title">
+                                                @if (item.ChartType == "Bar")
+                                                {
+                                                    <i class="fa fa-bar-chart"></i>
+                                                }
+                                                else if (item.ChartType == "Line")
+                                                {
+                                                    <i class="fa fa-line-chart"></i>
+                                                }
+                                                else if (item.ChartType == "Pie")
+                                                {
+                                                    <i class="fa fa-pie-chart"></i>
+                                                }
+                                                else if (item.ChartType == "Area")
+                                                {
+                                                    <i class="fa fa-area-chart"></i>
+                                                }
+                                                @item.Title
+                                            </span>
+                                            <div class="float-right">
+                                                <div class="dropdown d-inline-block">
+                                                    <a class="filter" href="javascript:void(0);" title="Filter" data-toggle="dropdown" aria-expanded="false">
+                                                        <i class="fa fa-filter"></i>
+                                                    </a>
+                                                    <div class="dropdown-menu dropdown-menu-right">
+                                                        <a class="dropdown-item" href="javascript:void(0);" onclick="applyWidgetFilter('@chartId', 'today', this, '@sqlScript')">Today</a>
+                                                        <a class="dropdown-item" href="javascript:void(0);" onclick="applyWidgetFilter('@chartId', 'week', this, '@sqlScript')">This Week</a>
+                                                        <a class="dropdown-item active" href="javascript:void(0);" onclick="applyWidgetFilter('@chartId', 'month', this, '@sqlScript')">This Month</a>
+                                                        <a class="dropdown-item" href="javascript:void(0);" onclick="applyWidgetFilter('@chartId', 'sixmonth', this, '@sqlScript')">Last 6 Months</a>
+                                                        <a class="dropdown-item" href="javascript:void(0);" onclick="applyWidgetFilter('@chartId', 'year', this, '@sqlScript')">This Year</a>
+                                                    </div>
+                                                </div>
+                                                <a href="javascript:void(0);" onclick="RefreshChart(this);" class="filter">
+                                                    <i class="fa fa-refresh"></i>
+                                                </a>
+                                                <a href="@item.RedirectURL" target="_blank" class="filter">
+                                                    <i class="fa fa-arrow-right"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <div class="card-body p-0">
+                                            <div style="position:relative; height:300px;">
+                                                <canvas id="@chartId"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <script>
+                                    (function () {
+                                        const ctx = document.getElementById('@chartId');
+                                        window.chartInstances = window.chartInstances || {};
+                                        // Create chart with empty data first — real data loads right after
+                                        window.chartInstances['@chartId'] = new Chart(ctx, {
+                                            type: '@chartJsType',
+                                            data: {
+                                                labels: [],
+                                                datasets: [{
+                                                    label: '@item.Title',
+                                                    data: [],
+                                                    backgroundColor: 'rgba(54, 162, 235, 0.3)',
+                                                    borderColor: 'rgb(54, 162, 235)',
+                                                    borderWidth: 2
+                                                }]
+                                            },
+                                            options: {
+                                                responsive: true,
+                                                maintainAspectRatio: false,
+                                                scales: ['pie', 'doughnut', 'polararea'].includes('@chartJsType') ? {} : {
+                                                    y: { beginAtZero: true }
+                                                }
+                                            }
+                                        });
+                                        // Load default data: This Week
+                                        loadChartData('@chartId', 'month', '@chartJsType', '@sqlScript');})();
+                                </script>
+                            }
+                        }
+                    </div>
                 }
             </div>
         }
@@ -243,5 +957,37 @@ else if (Model.IsSuccess == false && !string.IsNullOrEmpty(Model.Response))
             }
         });
     })
+
+    //function applyWidgetFilter(chartId, period, el) {
+    //        // Highlight which option was clicked (just visual)
+    //        $(el).closest('.dropdown-menu').find('.dropdown-item').removeClass('active');
+    //        $(el).addClass('active');
+
+    //        // Call your server, asking for real data for this period
+    //        $.ajax({
+    //            url: '/Dashboard/GetChartData',
+    //            type: 'GET',
+    //            data: { period: period },
+    //            success: function (response) {
+    //                if (!response || response.IsSuccess === false) {
+    //                    alert('Could not load data.');
+    //                    return;
+    //                }
+    //                updateChart(chartId, response.Labels, response.Values);
+    //            },
+    //            error: function () {
+    //                alert('Error while fetching data.');
+    //            }
+    //        });
+    //    }
+
+    //function updateChart(chartId, labels, values) {
+    //    var chart = window.chartInstances[chartId];
+    //    if (!chart) return;
+
+    //    chart.data.labels = labels;
+    //    chart.data.datasets[0].data = values;
+    //    chart.update();
+    //}
 </script>
 <script src="~/Content/main/assets/js/init-scripts/chart-js/chartjs-init.js"></script>

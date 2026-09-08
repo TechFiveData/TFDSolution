@@ -40,7 +40,7 @@
     </div>
 </div>
 <div class="animated fadeIn">
-    <div class="row">
+    <div class="row m-0">
         <div class="col-md-12 p-0">
             <div class="card">
                 <div class="card-header">
@@ -78,6 +78,15 @@
                             <div class="d-inline-block pr-3 pb-2">
                                 <label class="form-control-label mr-2">To Date</label>
                                 <input id="dtToDate" type="date" class="form-control d-inline-block w-auto myDate" />
+                            </div>
+                            <!-- Dropdown -->
+                            <div class="d-inline-block pr-3 pb-2">
+                                <label class="form-control-label mr-2">Report Type</label>
+                                <select id="ddlReportType" class="form-select d-inline-block w-auto" style="min-width:120px;">
+                                    <option value="ALL">ALL</option>
+                                    <option value="GROUP">Group</option>
+                                    <option value="LEDGER">Ledger</option>
+                                </select>
                             </div>
                             <button id="btnGenerate" class="btn btn-primary btn-Generate">Generate</button>
                         </div>
@@ -256,7 +265,12 @@
         });
     });
     function OpenLedger(ledgerId, ledgerName) {
-        var model = { AccountId: ledgerId, AccountLedger : ledgerName, FromDate: $("#dtFromDate").val(),ToDate: $("#dtToDate").val()};
+        var model = {
+            AccountId: ledgerId,
+            AccountLedger: ledgerName,
+            FromDate: $("#dtFromDate").val(),
+            ToDate: $("#dtToDate").val()
+        };
         $.ajax({
             url: "@Url.Action("RedirectToLedger", "Reports")",
             type: 'POST',
@@ -306,7 +320,6 @@
                 }
             }
         });
-        dynamicColumns.push({ title: "Account Name", data: "AccountName" });
         dynamicColumns.push({
             title: "Debit",
             data: "Debit",
@@ -391,7 +404,8 @@
             FromDate: $("#dtFromDate").val(),
             ToDate: $("#dtToDate").val(),
             AccountId: $("#ddlLedger").val(),
-            AccountName: $("#ddlLedger option:selected").text()
+            AccountName: $("#ddlLedger option:selected").text(),
+            ReportType: $("#ddlReportType").val()
         };
         // destroy old instance if any
         if ($.fn.DataTable.isDataTable('#tblLedgerReportView')) {
@@ -496,8 +510,8 @@
                         // 🔹 Get all rows data
                         let rowsData = api.rows().data().toArray();
 
-                        // 🔹 Filter rows where RowType === "LEDGER"
-                        let filtered = rowsData.filter(row => row.RowType === "LEDGER");
+                        // 🔹 Filter rows where RowType === "LEDGER"                       
+                        let filtered = rowsData;//.filter(row => row.RowType === "LEDGER");
 
                         if (!filtered.length) {
                             $(column.footer()).html('');
