@@ -319,7 +319,7 @@ namespace TFDSolution.Common
             {
                 string macId = GetPhysicalAddress();
                 //string content = "Trial+5.2+31/12/2026+100+RKS_Test+02-00-A4-34-DF-32";
-                string content = "LIVE+3.2+31/12/2026+100+TFDDSTech+" + macId;
+                string content = "LIVE+3.2+31/12/2026+100+TFDBalaji+" + macId;
                 //sstring content = "Trial+5.2+31/12/2026+100+RKS_TEST+02-00-A4-34-DF-32";
                 //string content = "Trial+5.2+31/12/2026+100+DIVINETUBE+02-00-A4-34-DF-32";
                 //string content = "Trial+5.2+31/12/2026+100+INSUBASKET+02-00-A4-34-DF-32";

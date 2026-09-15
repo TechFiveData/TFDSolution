@@ -7612,11 +7612,11 @@ table.dataTable.hover > tbody > tr.selected:hover > *, table.dataTable.display >
 
     .custom-tab .nav-link {
         color: #28a9d6;
-        font-size: 12.5px;
+        font-size: 12px;
         border: 1px solid transparent !important;
         border-bottom: 0 !important;
         border-radius: 5px 5px 0 0 !important;
-        padding: 11px 15px;
+        padding: 9px 12px;
         background: transparent;
     }
 
@@ -8444,7 +8444,7 @@ table.dataTable td, table.dataTable th {
     background-color: aliceblue;
     margin-bottom: 0 !important;
     border: none;
-    height: 24px;
+    height: auto;
 }
 
 .InlineForm a.btn {
@@ -9463,9 +9463,9 @@ th:has(.selectAll) {
 }
 
     .page-main-card .page-main-card-header {
-        min-height: 48px;
+        min-height: 38px;
         background: #7ACBE5;
-        padding: 0 15px;
+        padding: 0 14px;
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -10125,3 +10125,7 @@ th:has(.selectAll) {
         background: #aebfc5;
     }
 
+.grid-button {
+    padding: 2px 13px;
+    font-size: 13px;
+}

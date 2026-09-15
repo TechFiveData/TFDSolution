@@ -16,7 +16,7 @@ namespace TFDSolution.Business.Interface
     {
         List<FormSettings> getFormTabSettings(string formId, string tabId, string type = "");
         ResponseModel RunPageStatusScript(string pageStatusScript, string formId, int status, int ParentId, string UserId, string CompanyId);
-        List<List<Dictionary<string, object>>> GetPendingMaster(int fromPendingId, string ItemSrNo);
+        List<List<Dictionary<string, object>>> GetPendingMaster(int fromPendingId, string ItemSrNo, string formTabId);
         CompanyData GetCompanyData();
         List<GridField> getHeaderFieldDependency(SubmitFormModel model);
         ResponseModel SaveFormCaption(FormDataModel mast);
@@ -90,7 +90,7 @@ namespace TFDSolution.Business.Interface
         //Task<FormTabData> GetDynamicTabDataFromSPAsync(string tabId, int ParentId, string userId, int ProcessId = 0);
         Task<FormTabData> GetDynamicTabDataFromSPAsync(string tabId, int ParentId, string userId, int ProcessId = 0, int DetailParentId = 0);
         Task<FormMast_Data> FillFieldValue(int uid, FormMast_Data Formdata, string UserId);
-        Task<FormMast_Data> FillPendingMaster(int fromPendingId, string ItemSrNo, FormMast_Data Formdata);
+        FormMast_Data FillPendingMaster(int fromPendingId, string ItemSrNo, string formTabId, FormMast_Data Formdata);
         Task<PageTabModel> FillTabFieldValue(int uid, PageTabModel Tabdata);
         PageTotalData getPageTotal(string formId, int parentId, string userId);
         ResponseModel SaveOtherChargesItem(ItemOtherChargeData model);
@@ -101,7 +101,7 @@ namespace TFDSolution.Business.Interface
         ResponseModel DeleteDocument(int DocuId);
         DocumentModel GetDocument(int DocuId);
         IEnumerable<IDictionary<string, object>> GetDynamicData(string pageName, int recordId, string UserId);
-        IEnumerable<IDictionary<string, object>> GetDynamicPendingData(int formPendingId, string ItemSrNos);
+        IEnumerable<IDictionary<string, object>> GetDynamicPendingData(int formPendingId, string ItemSrNos, string formTabId);
         ResponseModel UpdateFielSortOrder(List<FormSortOrderUpdateModel> updatedFields);
         ResponseModel SaveFormPending(FormPendingModel pendingModal);
         List<FormPendingModel> getFormPendingList(string formId);

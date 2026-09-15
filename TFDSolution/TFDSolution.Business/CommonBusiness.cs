@@ -859,8 +859,15 @@ namespace TFDSolution.Business
                         {
                             foreach (var field in model.HeaderFieldData)
                             {
-                                if (sqlQuery.Contains("@Head_" + field.FieldName + " ="))
-                                    sqlQuery = sqlQuery.Replace("{ParentId}", "'" + Convert.ToString(field.FieldValue) + "'");
+                                string pattern = $@"@Head_{Regex.Escape(field.FieldName)}\s*=\s*\{{ParentId\}}";
+
+                                sqlQuery = Regex.Replace(
+                                    sqlQuery,
+                                    pattern,
+                                    $"@Head_{field.FieldName} = '{Convert.ToString(field.FieldValue)}'"
+                                );
+                                //if (sqlQuery.Contains("@Head_" + field.FieldName + " ="))
+                                //    sqlQuery = sqlQuery.Replace("{ParentId}", "'" + Convert.ToString(field.FieldValue) + "'");
                             }
                         }
                         string strSQL = Convert.ToString(sqlQuery).Replace(" ", "");

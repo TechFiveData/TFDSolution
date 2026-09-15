@@ -1,11 +1,11 @@
 ﻿@model TFDSolution.Transport.Master.FormMast
 @{
-        ViewBag.Title = "Settings";
-        Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Settings";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 @{
-        var formSettingsList = ViewBag.FormSettings as
-                               IEnumerable<TFDSolution.Transport.Master.FormSettings>;
+    var formSettingsList = ViewBag.FormSettings as
+                           IEnumerable<TFDSolution.Transport.Master.FormSettings>;
 }
 <script src="~/Scripts/dataTables.rowReorder.js"></script>
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
@@ -266,8 +266,8 @@
                 </div>
                 <div class="card-body">
                     @*<div class="panel-left">
-                        <table id="tblForms" class="display" cellspacing="0" width="100%"></table>
-                    </div>*@
+                            <table id="tblForms" class="display" cellspacing="0" width="100%"></table>
+                        </div>*@
                     <div>
                         <div class="card" id="btnFormData">
                             <div class="card-header">
@@ -491,19 +491,19 @@
                         </div>
                         <div class="col-12 col-md-12">
                             <select id="ddlfrmPending" class="form-control form-select">
-                                @if (Model!= null && Model.ChildForm!= null)
-                                                                {
-                                                                    foreach (var item in Model.ChildForm)
-                                                                    {
-                                <option data-bind="@item.Prefix" value="@item.FormId.ToString().ToUpper()">@item.FormTitle</option>
-                                                                    }
-                                                                }
+                                @if (Model != null && Model.ChildForm != null)
+                                {
+                                    foreach (var item in Model.ChildForm)
+                                    {
+                                        <option data-bind="@item.Prefix" value="@item.FormId.ToString().ToUpper()">@item.FormTitle</option>
+                                    }
+                                }
                             </select>
                         </div>
                     </div>
                     <div class="row form-group">
                         <div class="col col-md-12">
-                            <label for="text-input" class="form-control-label">From Form <span class="text-danger p-1">(*)</span></label>
+                            <label for="text-input" class="form-control-label">From Form</label>
                         </div>
                         <div class="col-12 col-md-12">
                             <select id="ddlfrmSubPending" class="form-control form-select"></select>
@@ -887,7 +887,7 @@
                         <div id="divDateTimeFormat" class="row">
                             <div class="col-md-12 form-group">
                                 <label for="text-input" class="form-control-label">Format<span class="text-danger p-1">(*)</span></label>
-                                <select id="ddlFieldFormat" class="form-control form-select" >
+                                <select id="ddlFieldFormat" class="form-control form-select">
                                     <option>Select</option>
                                 </select>
                             </div>
@@ -1548,16 +1548,19 @@
                 console.log("Fill Form Tab");
                 var formId = $("#ddlfrmSubPending option:selected").val();
                 console.log("Tesing ID" + formId);
-                $.get('@Url.Action("getSectionTab", "FormSetting")', { FormId: formId, sectionId: "2629a112-68df-4660-a528-6b5d9041b5eb" }, function (tables) {
-                    if (tables != null) {
-                        tableDropdown.append('<option value="">Select ' + $("#ddlfrmSubPending option:selected").text() + ' Tab</option>')
-                        tables.forEach(table => {
-                            tableDropdown.append(`<option value="${table.FormTabId}">${table.TabTitle}</option>`);
-                        });
-                    }
-                }).fail(function () {
-                    // Error callback if the request fails
-                });
+                tableDropdown.append('<option value="">Select From Tab</option > ')
+                if (formId != null && formId != "") {
+                    $.get('@Url.Action("getSectionTab", "FormSetting")', { FormId: formId, sectionId: "2629a112-68df-4660-a528-6b5d9041b5eb" }, function (tables) {
+                        if (tables != null) {
+
+                            tables.forEach(table => {
+                                tableDropdown.append(`<option value="${table.FormTabId}">${table.TabTitle}</option>`);
+                            });
+                        }
+                    }).fail(function () {
+                        // Error callback if the request fails
+                    });
+                }
             }
         });
         $("#btnEditChildForm").click(function () {
@@ -1799,7 +1802,7 @@
             skipLoading: true,
             success: function (response) {
                 if (response != null && response.length > 0) {
-                    //dropdown.empty().append('<option value="">Select ' + fieldcap + '</option>');
+                    dropdown.empty().append('<option value="">Select Page</option>');
                     $.each(response, function (i, item) {
                         dropdown.append($('<option data-content=' + item.SqlTemplateId + ' data-bind=' + item.SQLTableName + '></option>').val(item.FormId).text(item.FormTitle));
                     });
@@ -2305,7 +2308,7 @@
         if (!skipDateFormatLoad) {
             bindDateTimeFormats(fieldType, "");
         }
-        
+
         if (fieldType === "TextBox" || fieldType === "MultiText") {
             $(".row_Text").show();
             $("#row_LengthText").show();
@@ -2713,7 +2716,7 @@
                         TemplateId: $("#ddlButtonTemplate").val(),
                         FieldFormat: $("#ddlFieldFormat").val(),
                         IsTimeField: $("#chkIsWithTime").prop("checked")
-                        
+
                     };
 
                     $.ajax({
@@ -3647,7 +3650,7 @@
         var isFormValid = true;
         $("#formPendingModal select").each(function () {
             if ($.trim($(this).val()).length == 0) {
-                if (($(this).attr("id") == "txtFormPendingId" || $(this).attr("id") == "ddlfrmTabPending" || $(this).attr("id") == "ddlfrmTab")) { }
+                if (($(this).attr("id") == "txtFormPendingId" || $(this).attr("id") == "ddlfrmSubPending" || $(this).attr("id") == "ddlfrmTabPending" || $(this).attr("id") == "ddlfrmTab")) { }
                 else {
                     $(this).addClass("input-validation-error");
                     if (isFormValid == true) {

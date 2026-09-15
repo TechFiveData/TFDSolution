@@ -181,11 +181,12 @@
                             string liId = "nav-pending-tab-" + item.FormPendingId.ToString();
                             string contentDiv = "nav-pending-" + item.FormPendingId.ToString();
                             string tblId = "tblPending-" + item.FormPendingId.ToString();
+                            string FromFormId = Convert.ToString(item.FromFormId);
                             <div class="tab-pane fade" id="@contentDiv" role="tabpanel" aria-labelledby="@liId">
                                 <div class="p-3">
                                     <div class="row form-group">
                                         <div class="col-md-12" style="width:100%; overflow-x:auto;">
-                                            <table id="@tblId" data-content="@item.FromFormId.ToString()" data-bind="@item.FormPendingId.ToString()" class="display nowrap cell-border" cellspacing="0" width="100%"></table>
+                                            <table id="@tblId" data-content="@FromFormId" data-bind="@item.FormPendingId.ToString()" class="display nowrap cell-border" cellspacing="0" width="100%"></table>
                                         </div>
                                     </div>
                                     <div class="row form-group">
@@ -625,8 +626,25 @@
             ShowToastNotification("error", "Please select at least record");
         }
         else {
+            var PendingSelectedRequest = [];
+            if (PendingSelected.length > 0) {
+                var firstFormTabId = PendingSelected[0].FormTabId;
+                var isSameFormTab = PendingSelected.every(function (entry) {
+                    return entry.FormTabId === firstFormTabId;
+                });
+                if (!isSameFormTab) {
+                    ShowToastNotification("error", "You can not select mix page entry from pending.");
+                    return false;
+                }
+                // All selected records belong to the same page
+                PendingSelectedRequest = PendingSelected.filter(function (entry) {
+                    return entry.TableName === tableId;
+                });
+            }
+
             var paramItem_SRNo = (tableEntry?.FieldValues || "");
             // Remove first comma if it exists at the beginning
+            var _formTabId = (tableEntry?.FormTabId || "");
             paramItem_SRNo = paramItem_SRNo.replace(/^,/, '');
             console.log("paramItem_SRNo : " + paramItem_SRNo);
             // Split current values into array
@@ -636,7 +654,11 @@
                     type: "GET",
                     url: "@Url.Action("SelectedPendingData", "Home")",
                     contentType: "application/json; charset=utf-8",
-                    data: { formPendingId: pendingId, ItemSrNos: paramItem_SRNo },
+                    data: {
+                        formPendingId: pendingId,
+                        ItemSrNos: paramItem_SRNo,
+                        FormTabId: _formTabId
+                    },
                     dataType: "json",
                     /*success: OnSuccess,*/
                     success: function (response) {
@@ -715,7 +737,8 @@
                 /* title: 'Select',*/
                 className: "grid-action-item select-checkbox",
                 render: function (data, type, row, meta) {
-                    var ddlhtml = '<input type="checkbox" data-bind="' + row["URNNo"] + '" data-content="' + row["Id"] + '" id="chkForNext" name="chkForNext" class="select-checkbox"/>';
+                    var _fromTablId = Object.prototype.hasOwnProperty.call(row, "FormTabId") ? row["FormTabId"] : "";
+                    var ddlhtml = `<input type="checkbox" data-bind="${row["URNNo"] || ""}" data-FormTabId="${_fromTablId || ""}" data-content="${row["Id"] || ""}" id="chkForNext" name="chkForNext" class="select-checkbox" />`;
                     return ddlhtml;
                     //return '<input type="checkbox" name="id[]" value="' + $('<div/>').text(data).html() + '">';
                 },
@@ -733,7 +756,7 @@
         if (tableColumn.length > 0) {
             columnNames = tableColumn;
             for (var i in columnNames) {
-                if (columnNames[i] == "ParentId" || columnNames[i] == "Id") { }
+                if (columnNames[i] == "ParentId" || columnNames[i] == "Id" || columnNames[i] == "FormTabId") { }
                 else if (columnNames[i] == "Status") {
                     columns.push({
                         orderable: false, // disable sorting for all columns
@@ -742,7 +765,8 @@
                         defaultContent: '<button class="dropdown">Action</button>',
                         orderable: true,
                         render: function (data, type, row, meta) {
-                            return '<button class="dropdown" data-bind=' + row["Status"] + ' data-interval=' + row["ParentId"] + ' data-content=' + row["Id"] + ' >' + DisplayStatus(row["Status"]) + '</button>';
+                            var _fromTablId = Object.prototype.hasOwnProperty.call(row, "FormTabId") ? row["FormTabId"] : "";
+                            return '<button class="dropdown" data-bind=' + row["Status"] + ' data-FormTabId=' + _fromTablId + ' data-interval=' + row["ParentId"] + ' data-content=' + row["Id"] + ' >' + DisplayStatus(row["Status"]) + '</button>';
                         },
                     });
                 }
@@ -805,7 +829,8 @@
             if ($(this).data('content') != undefined && $(this).data('content') != null) {
                 const id = String($(this).data('content')).trim();
                 const isChecked = $(this).is(':checked');
-                addselectedPending(tblId, id, isChecked);
+                const formTabId = String($(this).data('formtabid')).trim();
+                addselectedPending(tblId, id, isChecked, formTabId);
                 console.log(id + " Is Checked: " + isChecked);
             }
         });
@@ -818,20 +843,25 @@
             var currectStatus = $(this).attr("data-bind");
             var recordId = $(this).attr("data-content");
             var ParentId = $(this).attr("data-interval");
-
             $("#btnCancelledDet").show();
-
             $("#btnCancelledDet").attr("data-container", $('#' + tblId).attr("data-content"));
             $("#btnCancelledDet").attr("data-bind", currectStatus);
             $("#btnCancelledDet").attr("data-content", recordId);
             $("#btnCancelledDet").attr("data-interval", ParentId);
             const currentOffsetLeft = e.pageX;
             const currentOffsetTop = e.pageX;// + e.offsetHeight - 5;
-            if (actions != null) {
+            if (actions != null) {               
                 this.parentNode.append(actions);
+                const currentOffsetLeft = e.pageX;
+                const currentOffsetTop = e.pageX;
                 if (actions.style != null) {
-                    actions.style.display = 'block';
-                    //actions.style.right = this.offsetLeft + 'px';
+                    const $actions = $(actions);
+                    $actions.css({
+                        display: 'block',
+                        position: 'fixed',
+                        left: e.pageX + 'px',
+                        top: event.clientY + 'px'
+                    });
                 }
             }
             // Remove with the next click on the document
@@ -862,8 +892,9 @@
             $('#' + tblId).find('tbody input.select-checkbox').prop('checked', isChecked);
             $('#' + tblId).find('tbody input.select-checkbox:checked').each(function () {
                 const value = $(this).data('content'); // or .attr('data-content') if needed
-                if (value !== undefined) {
-                    addselectedPending(tblId, value, true);
+                const _formTabId = $(this).data('formtabid');
+                if (value !== undefined || _formTabId !== undefined) {
+                    addselectedPending(tblId, value, true, _formTabId);
                 }
             });
         });
@@ -1043,13 +1074,13 @@
          ShowToastNotification("error", "Report downloaded failed. Please try again..");
      }
  }
-    function addselectedPending(tblId, id, isChecked) {
+    function addselectedPending(tblId, id, isChecked, formTabId) {
         // Find or create table entry
         id = id.toString();
-        let tableEntry = PendingSelected.find(entry => entry.TableName === tblId);
+        let tableEntry = PendingSelected.find(entry => entry.TableName === tblId && entry.FormTabId == formTabId );
         if (!tableEntry) {
             if (isChecked) {
-                PendingSelected.push({ TableName: tblId, FieldValues: id });
+                PendingSelected.push({ TableName: tblId, FieldValues: id, FormTabId: formTabId });
             }
             return;
         }
@@ -1087,6 +1118,10 @@
                     tableEntry.FieldValues = "";
                 }
             }
+            PendingSelected = PendingSelected.filter(
+                entry => entry.FieldValues != null &&
+                    entry.FieldValues.toString().trim() !== ""
+            );
             // Save back to FieldValues as comma-separated string
         }
     }

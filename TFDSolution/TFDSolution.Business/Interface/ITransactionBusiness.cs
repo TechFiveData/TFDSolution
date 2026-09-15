@@ -13,9 +13,9 @@ namespace TFDSolution.Business.Interface
     public interface ITransactionBusiness
     {
         Task<FormTabData> getPendingRecords(string spName, string compnayId, int fYearId, string UserId);
-        ResponseModel getPendingSelectedRecords(int formPendingId, string ItemSrNos, string userId);
+        ResponseModel getPendingSelectedRecords(int formPendingId, string ItemSrNos, string userId, string FormTabId);
         ResponseModel SaveBOMProcess(BomProcessModel model);
-        List<BomProcessModel> GetBOMProcess(BomProcessModel model);       
+        List<BomProcessModel> GetBOMProcess(BomProcessModel model);
         BomProcessModel GetBOMProcessById(BomProcessModel model);
         ResponseModel DeleteBOMProcess(BomProcessModel model);
         ResponseModel ExecuteNextStoredProcedure(int ParentId, string spName, string CompanyId, string userId);

@@ -546,7 +546,7 @@
         </nav>
     </div>
     <div class="page-main-container">
-        <div class="page-main-card">
+        <div class="page-main-card" style="border-radius: 5px 5px 0 0 !important;border-bottom: 0;">
             <div class="page-main-card-header">
                 <div class="page-main-card-title">
                     <!-- Previous / Current / Next -->
@@ -702,7 +702,7 @@
                 </div>
             </div>
         </div>
-        <div class="page-main-card-body">
+        <div class="page-main-card-body p-0">
             @if (Model.Design.Sections != null && Model.Design.Sections.Count > 0)
             {
                 foreach (var section in Model.Design.Sections.OrderByDescending(x => x.SectionName).ToList())
@@ -713,6 +713,7 @@
                     if (section.SectionName == "Header")
                     {
                         headdcls = "pageHead";
+                        //style="border - radius: 0!important;border - top: 0;"
                     }
                     else if (AllowBillOfMaterial == "y")
                     {
@@ -1383,7 +1384,7 @@
                                                                         break;
                                                                     case "TextBox":
                                                                         var htmlAttributes = new Dictionary<string, object>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            {
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    {
                                                                                     { "class", "form-control" },
                                                                                     { "data-decimal", field.FieldDecimal },
                                                                                     { "data-path", field.FieldFormula },
@@ -1814,70 +1815,70 @@
                 </button>
             </div>
             @*<div class="tracking-header">
-                <div class="tracking-title-area">
-                    <div class="tracking-title-icon">
-                        <i class="fa fa-history"></i>
+                    <div class="tracking-title-area">
+                        <div class="tracking-title-icon">
+                            <i class="fa fa-history"></i>
+                        </div>
+                        <div>
+                            <h5 class="tracking-title">User Tracking</h5>
+                            <div class="tracking-subtitle">Record activity history</div>
+                        </div>
+                    </div>
+                    <button type="button" class="tracking-close" data-dismiss="modal">
+                        <i class="fa fa-times"></i>
+                    </button>
+                </div>*@
+            <!-- =================================================
+                 RECORD SUMMARY
+            ================================================== -->
+            <div class="record-summary">
+                <div class="record-summary-left">
+                    <div class="record-document-icon">
+                        <i class="fa fa-file-text-o"></i>
                     </div>
                     <div>
-                        <h5 class="tracking-title">User Tracking</h5>
-                        <div class="tracking-subtitle">Record activity history</div>
+                        <div class="record-name">
+                            @Model.Design.FormTitle
+                        </div>
+                        <div class="record-number">
+                            @urnNo
+                        </div>
                     </div>
                 </div>
-                <button type="button" class="tracking-close" data-dismiss="modal">
-                    <i class="fa fa-times"></i>
-                </button>
-            </div>*@
-            <!-- =================================================
-         RECORD SUMMARY
-    ================================================== -->
-        <div class="record-summary">
-            <div class="record-summary-left">
-                <div class="record-document-icon">
-                    <i class="fa fa-file-text-o"></i>
-                </div>
-                <div>
-                    <div class="record-name">
-                        @Model.Design.FormTitle
-                    </div>
-                    <div class="record-number">
-                        @urnNo
-                    </div>
-                </div>
-            </div>
-            @{
-                string statusClass = "status-default";
-                string statusIcon = "fa-circle";
-                switch (statusName)
-                {
-                    case "Not Approved":
-                        statusClass = "status-not-approved";
-                        statusIcon = "fa-clock-o";
-                        break;
+                @{
+                    string statusClass = "status-default";
+                    string statusIcon = "fa-circle";
+                    switch (statusName)
+                    {
+                        case "Not Approved":
+                            statusClass = "status-not-approved";
+                            statusIcon = "fa-clock-o";
+                            break;
 
-                    case "Forwarded":
-                        statusClass = "status-forwarded";
-                        statusIcon = "fa-share";
-                        break;
+                        case "Forwarded":
+                            statusClass = "status-forwarded";
+                            statusIcon = "fa-share";
+                            break;
 
-                    case "Partial Approved":
-                        statusClass = "status-partial-approved";
-                        statusIcon = "fa-adjust";
-                        break;
+                        case "Partial Approved":
+                            statusClass = "status-partial-approved";
+                            statusIcon = "fa-adjust";
+                            break;
 
-                    case "Draft":
-                        statusClass = "status-draft";
-                        statusIcon = "fa-pencil";
-                        break;
+                        case "Draft":
+                            statusClass = "status-draft";
+                            statusIcon = "fa-pencil";
+                            break;
+                    }
                 }
-            } 
-            <span class="record-status @statusClass">
-                <i class="fa @statusIcon"></i>
-                @statusName
-            </span>
-        </div>
+                <span class="record-status @statusClass">
+                    <i class="fa @statusIcon"></i>
+                    @statusName
+                </span>
+            </div>
             <!-- =================================================
-         ACTION FILTERS
-    ================================================== -->
+                 ACTION FILTERS
+            ================================================== -->
             <div class="action-filter-wrapper">
                 <div class="action-filter-title">
                     <i class="fa fa-filter"></i>
@@ -1922,13 +1923,13 @@
                 </div>
             </div>
             <!-- =================================================
-         TRACKING BODY
-    ================================================== -->
+                 TRACKING BODY
+            ================================================== -->
             <div class="tracking-body">
                 <div class="timeline">
                     <!-- =========================================
-                 RECORD CREATED
-            ========================================== -->
+                         RECORD CREATED
+                    ========================================== -->
                     <div class="timeline-item" data-action="create">
                         <div class="timeline-icon create">
                             <i class="fa fa-plus"></i>
@@ -1962,8 +1963,8 @@
                         </div>
                     </div>
                     <!-- =========================================
-                 CREATED FROM OTHER RECORD
-            ========================================== -->
+                         CREATED FROM OTHER RECORD
+                    ========================================== -->
                     <div class="timeline-item" data-action="source">
                         <div class="timeline-icon source">
                             <i class="fa fa-copy"></i>
@@ -1997,8 +1998,8 @@
                         </div>
                     </div>
                     <!-- =========================================
-                 STATUS CHANGED
-            ========================================== -->
+                         STATUS CHANGED
+                    ========================================== -->
                     <div class="timeline-item" data-action="status">
                         <div class="timeline-icon status">
                             <i class="fa fa-exchange"></i>
@@ -2038,8 +2039,8 @@
                         </div>
                     </div>
                     <!-- =========================================
-                 RECORD UPDATED
-            ========================================== -->
+                         RECORD UPDATED
+                    ========================================== -->
                     <div class="timeline-item" data-action="update">
                         <div class="timeline-icon update">
                             <i class="fa fa-pencil"></i>
@@ -2072,8 +2073,8 @@
                         </div>
                     </div>
                     <!-- =========================================
-                 ITEM ADDED
-            ========================================== -->
+                         ITEM ADDED
+                    ========================================== -->
                     <div class="timeline-item" data-action="item">
                         <div class="timeline-icon item">
                             <i class="fa fa-plus"></i>
@@ -2109,8 +2110,8 @@
                         </div>
                     </div>
                     <!-- =========================================
-                 ITEM UPDATED
-            ========================================== -->
+                         ITEM UPDATED
+                    ========================================== -->
 
                     <div class="timeline-item"
                          data-action="item">
@@ -2185,8 +2186,8 @@
 
 
                     <!-- =========================================
-                 AMENDED
-            ========================================== -->
+                         AMENDED
+                    ========================================== -->
 
                     <div class="timeline-item"
                          data-action="amend">
@@ -2249,8 +2250,8 @@
 
 
                     <!-- =========================================
-                 REPLICATION
-            ========================================== -->
+                         REPLICATION
+                    ========================================== -->
 
                     <div class="timeline-item"
                          data-action="replication">
@@ -2310,8 +2311,8 @@
 
                     </div>
                     <!-- =========================================
-                 ITEM DELETED
-            ========================================== -->
+                         ITEM DELETED
+                    ========================================== -->
                     <div class="timeline-item" data-action="delete">
                         <div class="timeline-icon delete">
                             <i class="fa fa-trash"></i>
@@ -2348,8 +2349,8 @@
                         </div>
                     </div>
                     <!-- =========================================
-                 RECORD DELETED
-            ========================================== -->
+                         RECORD DELETED
+                    ========================================== -->
                     <div class="timeline-item"
                          data-action="delete">
                         <div class="timeline-icon delete">
@@ -2382,8 +2383,8 @@
                 </div>
             </div>
             <!-- =================================================
-         FOOTER
-    ================================================== -->
+                 FOOTER
+            ================================================== -->
             <div class="tracking-footer">
                 <div class="tracking-total">
                     <i class="fa fa-history"></i>
@@ -4338,6 +4339,7 @@
                 var recordId = $("#hdnRecordId").val(); // Get the hidden ID field
                 //console.log("Opend Tab ID: " + detailId);
                 $("#tabModalData").empty();
+                $("#tabModalData").addClass("partial-loading");
                  $.ajax({
                      type: "GET", url: '@Url.Action("ParticalDetailPopup", "Home")',
                      contentType: "application/json;",
@@ -4349,7 +4351,6 @@
                          ParentId: recordId,
                          DetailParentId: _detParentId
                      },
-                     async: false,
                      success: function (response) {
                          if (response != null) {
                              $("#tabModalData").html(response);
@@ -4362,11 +4363,24 @@
                          }
                      },
                      failure: function (response) { },
-                     error: function (response) { }
+                     error: function () {
+                         $("#tabModalData")
+                             .removeClass("partial-loading")
+                             .addClass("partial-error");
+                     }
                  });
             }
         } catch (e) {
         }
+    }
+    function partialDetailPopupLoaded() {
+        console.log("Partial completely initialized");
+        $("#tabModalData")
+            .removeClass("partial-loading")
+            .addClass("partial-loaded");
+
+        $('#tabModalData div.navigation-controls a.enableButton')
+            .removeClass('disabled');
     }
     function InlinTabData(detailId, _action, _tabId, tabGrid) {
         try {
@@ -4812,14 +4826,12 @@
                         title: columnNames[i].ColumnTitle,
                         render: function (data, type, row, meta) {
                             const rowData = encodeURIComponent(JSON.stringify(row));
-
-                            return `<a class="btn btn-primary" href="javascript:void(0);"
+                            return `<a class="btn btn-primary grid-button" href="javascript:void(0);"
     onclick="DetailButtonViewModel('${tbId}','${rowData}','${_fieldId}','${datafield}',${row.Id},'${_templateId}')">
     Click Here</a>`;
                         },
                     });
                 }
-
                 }
             }
             //// Add footer inside table

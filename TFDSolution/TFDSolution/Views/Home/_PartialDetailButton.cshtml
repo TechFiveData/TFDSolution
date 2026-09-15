@@ -2,6 +2,29 @@
 @{
     string tabGrid = "tblDetailButton";
 }
+<style>
+    .select-all-header {
+        white-space: nowrap;
+        vertical-align: middle !important;
+    }
+
+        .select-all-header span {
+            display: inline-block;
+            margin-right: 6px;
+            vertical-align: middle;
+            font-weight: 600;
+        }
+
+        .select-all-header input[type="checkbox"] {
+            width: 17px;
+            height: 17px;
+            margin: 0;
+            padding: 0;
+            cursor: pointer;
+            vertical-align: middle;
+            accent-color: #27a9d7;
+        }
+</style>
 <input id="DetailButtonId" value="@Model.DetailId" type="hidden" />
 <input id="DetailButtonSrNo" value="@Model.ItemSrNo" type="hidden" />
 <input id="DetailButtonTemplateId" value="@Model.TemplateId" type="hidden" />
@@ -27,14 +50,16 @@
                     {
                         <th></th>
                     }
-                    <th class="grid-action-item-bg text-center">#</th>
-                    <th class="grid-action-item-bg text-center">Select</th>
+                        <th class="grid-action-item-bg text-center">#</th>
+                        <th class="grid-action-item-bg text-center select-all-header">
+                            <span>Select All</span>
+                            <input type="checkbox" id="chkSelectAllButton" />
+                        </th>
                     @{
                         List<string> commongcol = new List<string>();
                     }
 
-                    @foreach (var field in Model.Data.PageData.Where(x => x.ColumnName != "SrNo" && x.ColumnName != "ItemSrNo"
-&& x.ColumnName != "FiancialYearId" && x.ColumnName != "FinancialYearId").ToList())
+                    @foreach (var field in Model.Data.PageData.Where(x => x.ColumnName != "SrNo" && x.ColumnName != "ItemSrNo" && x.ColumnName != "FiancialYearId" && x.ColumnName != "FinancialYearId").ToList())
                     {
                         if (field.IsRequired)
                         {
@@ -124,11 +149,11 @@
                                     @{
                                         if (Model.PageAction != "V")
                                         {
-                                            <input type="checkbox" id="chk" @srNumber class="form-check" />
+                                            <input type="checkbox" id="chk" @srNumber class="form-check rowSelectChk" />
                                         }
                                         else
                                         {
-                                            <input type="checkbox" checked="checked" id="chk" @srNumber class="form-check" disabled="disabled" />
+                                            <input type="checkbox" checked="checked" id="chk" @srNumber class="form-check rowSelectChk" disabled="disabled" />
                                         }
                                     }
                                 </td>
@@ -140,6 +165,10 @@
                                     if (_it.TryGetValue(field.ColumnName, out srvalue))
                                     {
                                         srvalue = Convert.ToString(srvalue);
+                                    }
+                                    if (Convert.ToString(srvalue).Length <=0)
+                                    {
+                                        srvalue = "0";
                                     }
                                     if (field.ColumnType == "Numeric")
                                     {
@@ -228,13 +257,14 @@
                                                 }
                                                 break;
                                             case "CheckBox":
+                                                bool isChecked = field.FieldValue == "1" || string.Equals(field.FieldValue, "true", StringComparison.OrdinalIgnoreCase); 
+                                                bool isDisabled = field.IsReadOnly == true;
                                                 if (Model.PageAction != "V")
                                                 {
-                                                    <input type="checkbox" id="@ctrlId" data-bind="@field.FieldName" value="@field.FieldValue" @(isReadOnlyOrDisabled ? "disabled='disabled' tabindex=\"-1\"" : "") class="form-check edit" data-content="@field.FieldType" @(field.IsRequired == true ? "required" : null) data-html="@field.FieldCaption" data-bind="@field.FieldName" />
-                                                }
+                                                    <input type="checkbox" id="@ctrlId" data-bind="@field.FieldName" value="1" class="form-check edit" data-content="@field.FieldType" data-html="@field.FieldCaption" @(field.IsRequired == true ? "required" : null) @(isChecked ? "checked" : null) @(isDisabled ? "disabled tabindex=\"-1\"" : "") /> }
                                                 else
-                                                {
-                                                    <label tabindex="-1" data-bind="@field.FieldName" class="view">@field.FieldValue</label>
+                                                { 
+                                                    <label tabindex="-1" data-bind="@field.FieldName" class="view"> @(isChecked ? "Yes" : "No") </label>
                                                 }
                                                 break;
                                             case "Numeric":
@@ -269,8 +299,8 @@
                                                 {
                                                     <label tabindex="-1" data-bind="@field.FieldName" class="view">@field.FieldValue</label>
                                                     @*<label tabindex="-1" data-bind="@field.FieldName" class="view">
-                                                            @(decimal.TryParse(Convert.ToString(field.FieldValue), out decimal amount) ? "₹" + amount.ToString("#,##,##0.00"): field.FieldValue)
-                                                        </label>*@
+                        @(decimal.TryParse(Convert.ToString(field.FieldValue), out decimal amount) ? "₹" + amount.ToString("#,##,##0.00"): field.FieldValue)
+                    </label>*@
                                                 }
                                                 break;
                                             case "Selection":
@@ -560,6 +590,17 @@
             && pageActions != "V") {
             autoSelect();
         }
+        $(document).on('change', '#chkSelectAllButton', function () {
+            var isChecked = $(this).is(':checked');
+            $('.rowSelectChk:not(:disabled)').each(function () {
+                // Only trigger change if value actually changes
+                if ($(this).prop('checked') !== isChecked) {
+                    $(this)
+                        .prop('checked', isChecked)
+                        .trigger('change');
+                }
+            });
+        });
         $(document).on('keydown', '#tblDetailButton tbody input[type="text"]', function (e) {
             let $inputs = $('#tblDetailButton tbody input[type="text"]');
             let index = $inputs.index(this);

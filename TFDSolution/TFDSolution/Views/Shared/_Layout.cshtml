@@ -629,7 +629,8 @@
                             <button class="btn btn-secondary dropdown-toggle" type="button" id="btnnotification"
                                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
                                     onclick="ResetNotificationTab()">
-                                <i class="fa fa-bell"></i><span id="notificationCount" class="count bg-danger">1</span>
+                                <i class="fa fa-bell"></i>
+                                <span id="notificationCount" class="count bg-danger">0</span>
                             </button>
                             <div id="divDataNofication" class="notification-menu dropdown-menu" aria-labelledby="notification">
                                 <!-- Tab Header -->
@@ -652,7 +653,7 @@
                                 <div class="notif-tab-content active" id="tab-notifications">
                                     <div class="notification-header">
                                         <span>You have <span class="badge">0</span> Notifications</span>
-                                        <a href="../Account/MyNofications">View All</a>
+                                        <a href="@Url.Action("MyNofications", "Account")">View All</a>
                                     </div>
                                     <div class="notification-list"></div>
                                 </div>
@@ -992,7 +993,7 @@
                 $(this).next('.dropdown-menu').toggle();
             });
             // Show loader when page starts loading
-            $("#pageLoader").fadeOut();
+            $("#pageLoader").fadeOut();            
             BindUserNotifications();
             setInterval(function () {
                 BindUserNotifications();
@@ -1090,7 +1091,7 @@
         }
     function BindUserNotifications() {
         // reset UI first (prevents stale/incorrect values during first run)
-        //$("#notificationCount").text(0);
+        //$("#notificationCount").text(0
         $("#divDataNofication span.badge").text(0);
         $("#divDataNofication .notification-list").empty();
         $.ajax({
@@ -1134,7 +1135,7 @@
                     $("#notificationCount").text(count);
                 }
                 $("#divDataNofication span.badge").text(count);
-
+                $("#btnnotification span").text(count);
                 // compute unread count robustly (use max or sum depending on server semantics)
                 // Using max to preserve original pattern where server supplied UnReadCount per item.
 

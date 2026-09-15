@@ -619,26 +619,21 @@ namespace TFDSolution.Controllers
                 FormMast_Data Design = masterBusines.GetFormStructure(pagename, uId, SessionPersister.LoginedUser.UserId.Value.ToString(), Convert.ToInt32(SessionPersister.LoginedUser.RoleID));
                 int formPendingId = 0;
                 string ItemSrNos = string.Empty;
-                //if (!string.IsNullOrEmpty(uId) && uId != "-1" && Design.Data == null)
-                //{
-                //    act = "A";
-                //    uId = "-1";
-                //    goto startagain;
-                //}
+                string PendingTabId = string.Empty;
                 if (TempData["PendingId"] != null && TempData["PendingItemSrNos"] != null)
                 {
                     formPendingId = Convert.ToInt32(Convert.ToString(TempData["PendingId"]));
                     ItemSrNos = Convert.ToString(TempData["PendingItemSrNos"]);
+                    PendingTabId = Convert.ToString(TempData["PendingPendingTabId"]);
                     TempData["PendingId"] = formPendingId;
                     TempData["PendingItemSrNos"] = ItemSrNos;
+                    TempData["PendingPendingTabId"] = PendingTabId;
                     if (formPendingId > 0 && ItemSrNos != string.Empty)
                     {
-                        masterBusines.FillPendingMaster(formPendingId, ItemSrNos, Design);
-
-                        Design.Data = masterBusines.GetDynamicPendingData(formPendingId, ItemSrNos);
+                        masterBusines.FillPendingMaster(formPendingId, ItemSrNos, PendingTabId, Design);
+                        Design.Data = masterBusines.GetDynamicPendingData(formPendingId, ItemSrNos, PendingTabId);
                     }
                 }
-
                 if (!string.IsNullOrEmpty(uId) && uId == "-1")
                 {
                     uId = string.Empty;
@@ -977,11 +972,13 @@ namespace TFDSolution.Controllers
             };
         }
 
-        public async Task<ActionResult> SelectedPendingData(int formPendingId, string ItemSrNos)
+        public async Task<ActionResult> SelectedPendingData(int formPendingId, string ItemSrNos, string FormTabId)
         {
-            ResponseModel response = transactionBusines.getPendingSelectedRecords(formPendingId, ItemSrNos, SessionPersister.LoginedUser.UserId.Value.ToString());
+            ResponseModel response = transactionBusines.getPendingSelectedRecords(formPendingId, ItemSrNos,
+                SessionPersister.LoginedUser.UserId.Value.ToString(), FormTabId);
             TempData["PendingId"] = formPendingId;
             TempData["PendingItemSrNos"] = ItemSrNos;
+            TempData["PendingPendingTabId"] = FormTabId;            
             return Json(response, JsonRequestBehavior.AllowGet);
         }
         #endregion

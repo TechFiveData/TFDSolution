@@ -124,7 +124,7 @@ namespace TFDSolution.Controllers
                 string ItemSrNos = model.DetailId;
                 pageModel.PendingId = formPendingId;
                 pageModel.ItemSrNos = ItemSrNos;
-                List<List<Dictionary<string, object>>> records = masterBusines.GetPendingMaster(formPendingId, ItemSrNos);
+                List<List<Dictionary<string, object>>> records = masterBusines.GetPendingMaster(formPendingId, ItemSrNos, "");
                 string companyID = records[0].FirstOrDefault()?["COMPANYID"]?.ToString();
                 string UserId = records[0].FirstOrDefault()?["CREATEDBY"]?.ToString();
                 string IsPosted = records[0].FirstOrDefault()?["STATUS"]?.ToString();
@@ -147,14 +147,14 @@ namespace TFDSolution.Controllers
                     return RedirectToAction("RequestAlreadySubmitted");
                 }
                 pageModel.Design = new FormMast_Data();
-                ResponseModel responsePend = transactionBusines.getPendingSelectedRecords(formPendingId, ItemSrNos, UserId);
+                ResponseModel responsePend = transactionBusines.getPendingSelectedRecords(formPendingId, ItemSrNos, UserId, "");
                 List<clsSelection> _currency = masterBusines.getSelection("Currency", Convert.ToString(companyID));
                 string currenctyId = Convert.ToString(CompanyMast.DefaultCurrencyId);
                 FormMast_Data Design = masterBusines.GetFormStructure(pagename, uId, UserId.ToString(), RoleID);
                 if (formPendingId > 0 && ItemSrNos != string.Empty)
                 {
-                    masterBusines.FillPendingMaster(formPendingId, ItemSrNos, Design);
-                    Design.Data = masterBusines.GetDynamicPendingData(formPendingId, ItemSrNos);
+                    masterBusines.FillPendingMaster(formPendingId, ItemSrNos, "", Design);
+                    Design.Data = masterBusines.GetDynamicPendingData(formPendingId, ItemSrNos, "");
                 }
                 string act = "A";
                 string docNo = string.Empty, URLNo = string.Empty, status = "0", _exchangeRate = "";
@@ -369,10 +369,10 @@ namespace TFDSolution.Controllers
 
         public ActionResult QuoteSubmitted(string uRNNo, int Id, int PendingId, string ItemSrNos)
         {
-            RFQDataModel rFQDataModel = new RFQDataModel();
+            RFQDataModel rFQDataModel = new RFQDataModel(); 
             //SubmitFormModel model = (SubmitFormModel)TempData["QuoteSubmittedData"];
             //TempData.Keep("QuoteSubmittedData");
-            List<List<Dictionary<string, object>>> records = masterBusines.GetPendingMaster(PendingId, ItemSrNos);
+            List<List<Dictionary<string, object>>> records = masterBusines.GetPendingMaster(PendingId, ItemSrNos, "");
             string URNno = uRNNo;
             string IsPosted = records[0].FirstOrDefault()?["STATUS"]?.ToString();
             string companyID = records[0].FirstOrDefault()?["COMPANYID"]?.ToString();

@@ -2971,7 +2971,7 @@ namespace TFDSolution.Business
             return Formdata;
         }
 
-        public List<List<Dictionary<string, object>>> GetPendingMaster(int fromPendingId, string ItemSrNo)
+        public List<List<Dictionary<string, object>>> GetPendingMaster(int fromPendingId, string ItemSrNo, string formTabId)
         {
             //List<Dictionary<string, object>> items = new List<Dictionary<string, object>>();
             List<List<Dictionary<string, object>>> items = new List<List<Dictionary<string, object>>>();
@@ -2990,6 +2990,10 @@ namespace TFDSolution.Business
                             command.Parameters.Add(new SqlParameter { ParameterName = "@FormPendingId", Value = fromPendingId });
                             command.Parameters.Add(new SqlParameter { ParameterName = "@ITEMSRNO", Value = ItemSrNo });
                             //command.Transaction = context.Database.Connection.BeginTransaction();
+                            if (CodeHelper.HasParameter("m_GetPendingMaster_Data", "@FormTabId", context))
+                            {
+                                command.Parameters.Add(new SqlParameter { ParameterName = "@FormTabId", Value = formTabId });
+                            }
                             command.CommandText = storedProcedureName;
                             command.CommandType = CommandType.StoredProcedure;
 
@@ -3027,7 +3031,7 @@ namespace TFDSolution.Business
             return items;
         }
 
-        public async Task<FormMast_Data> FillPendingMaster(int fromPendingId, string ItemSrNo, FormMast_Data Formdata)
+        public FormMast_Data FillPendingMaster(int fromPendingId, string ItemSrNo, string formTabId, FormMast_Data Formdata)
         {
             try
             {
@@ -3048,13 +3052,17 @@ namespace TFDSolution.Business
                                 command.Parameters.Add(new SqlParameter { ParameterName = "@FormPendingId", Value = fromPendingId });
                                 command.Parameters.Add(new SqlParameter { ParameterName = "@ITEMSRNO", Value = ItemSrNo });
                                 //command.Transaction = context.Database.Connection.BeginTransaction();
+                                if (CodeHelper.HasParameter("m_GetPendingMaster", "FormTabId", context))
+                                {
+                                    command.Parameters.Add(new SqlParameter { ParameterName = "@FormTabId", Value = formTabId });
+                                }
                                 command.CommandText = storedProcedureName;
                                 command.CommandType = CommandType.StoredProcedure;
                                 using (var reader = command.ExecuteReader())
                                 {
                                     if (reader.HasRows)
                                     {
-                                        while (await reader.ReadAsync())
+                                        while (reader.Read())
                                         {
                                             Dictionary<string, object> obj = new Dictionary<string, object>();
                                             for (int i = 0; i < reader.FieldCount; i++)
@@ -3363,7 +3371,7 @@ namespace TFDSolution.Business
             }
             return items;
         }
-        public IEnumerable<IDictionary<string, object>> GetDynamicPendingData(int fromPendingId, string ItemSrNo) //Task<IEnumerable<IDictionary<string, object>>>
+        public IEnumerable<IDictionary<string, object>> GetDynamicPendingData(int fromPendingId, string ItemSrNo, string formTabId) //Task<IEnumerable<IDictionary<string, object>>>
         {
             List<Dictionary<string, object>> items = new List<Dictionary<string, object>>();
             try
@@ -3379,6 +3387,10 @@ namespace TFDSolution.Business
 
                         command.Parameters.Add(new SqlParameter { ParameterName = "@FormPendingId", Value = fromPendingId });
                         command.Parameters.Add(new SqlParameter { ParameterName = "@ITEMSRNO", Value = ItemSrNo });
+                        if (CodeHelper.HasParameter("m_GetPendingMaster", "FormTabId", context))
+                        {
+                            command.Parameters.Add(new SqlParameter { ParameterName = "@FormTabId", Value = formTabId });
+                        }
                         command.CommandText = storedProcedureName;
                         command.CommandType = CommandType.StoredProcedure;
                         using (var reader = command.ExecuteReader())
@@ -4183,7 +4195,7 @@ namespace TFDSolution.Business
                                         IsActive = reader["IsActive"] != DBNull.Value ? Convert.ToBoolean(reader["IsActive"]) : false,
                                         IsSummary = reader["IsSummary"] != DBNull.Value ? Convert.ToBoolean(reader["IsSummary"]) : false,
                                         IsUnique = reader["IsUnique"] != DBNull.Value ? Convert.ToBoolean(reader["IsUnique"]) : false,
-
+                                        IsReadOnly = reader["IsReadOnly"] != DBNull.Value ? Convert.ToBoolean(reader["IsReadOnly"]) : false,
                                         FieldName = reader["FieldName"] != DBNull.Value ? reader["FieldName"].ToString() : "",
                                         FieldCaption = reader["FieldCaption"] != DBNull.Value ? reader["FieldCaption"].ToString() : "",
                                         FieldFormula = reader["FieldFormula"] != DBNull.Value ? reader["FieldFormula"].ToString() : "",
@@ -4496,7 +4508,7 @@ namespace TFDSolution.Business
                     var SourceRequest = new SqlParameter("@SourceRequest", pendingModal.SourceRequest ?? (object)DBNull.Value);
                     var SortOrder = new SqlParameter("@SortOrder", pendingModal.SortOrder);
                     var UserId = new SqlParameter("@UserId", pendingModal.UserId);
-                    var fromFormId = new SqlParameter("@FromFormId", pendingModal.FromFormId);
+                    var fromFormId = new SqlParameter("@FromFormId", pendingModal.FromFormId ?? (object)DBNull.Value);
                     var fromFormTabId = new SqlParameter("@FromFormTabId", pendingModal.FromFormTabId ?? (object)DBNull.Value);
                     var formTabId = new SqlParameter("@FormTabId", pendingModal.FormTabId ?? (object)DBNull.Value);
                     // Capture stored procedure result set

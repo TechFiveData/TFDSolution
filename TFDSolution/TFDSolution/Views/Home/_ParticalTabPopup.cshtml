@@ -488,7 +488,7 @@
             {
                 <div id="divOtherCharge" class="accordion-item d-none">
                     <h2 class="accordion-header">
-                        <button class="accordion-button @headcol" type="button" data-bs-toggle="collapse" data-bs-target="#collapsecharges" aria-expanded="false" aria-controls="collapsecharges">
+                        <button class="accordion-button @headcol" type="button" data-bs-toggle="collapse" data-bs-target="#collapsecharges" aria-expanded="true" aria-controls="collapsecharges">
                             Other Charges
                         </button>
                     </h2>
@@ -614,912 +614,402 @@
 </div>
 
 <script type="text/javascript">
-    $(document).on('focus click', 'input[type="date"]', function () {
-        $(this).select();
-    });
-    $(document).on('blur', 'input[type="number"]#Amount', function () {
-        if ($("#divOtherCharge").length > 0) {
-            $("#divOtherCharge button").click();
-            $('#ChargesId').trigger('change');
-            CalculateTotal();
-        }
-    });
-    $(document).on('paste', 'input[type="date"]', function (e) {
-        e.preventDefault(); // stop default paste
-
-        // Get pasted text
-        let pastedData = (e.originalEvent || e).clipboardData.getData('text').trim();
-
-        // Normalize delimiters (accept -, /, .)
-        let clean = pastedData.replace(/[.\-]/g, '/');
-        let parts = clean.split('/');
-        let formatted = "";
-
-        // Case: yyyy-MM-dd or yyyy/MM/dd (ISO format)
-        if (parts.length === 3 && parts[0].length === 4) {
-            let yyyy = parts[0];
-            let mm = parts[1].padStart(2, '0');
-            let dd = parts[2].padStart(2, '0');
-            formatted = `${yyyy}-${mm}-${dd}`;
-        }
-        // Case: dd/MM/yyyy (European/India format)
-        else if (parts.length === 3 && parts[0].length <= 2 && parts[1].length <= 2) {
-            let dd = parts[0].padStart(2, '0');
-            let mm = parts[1].padStart(2, '0');
-            let yyyy = parts[2];
-            formatted = `${yyyy}-${mm}-${dd}`;
-        }
-        // Case: MM/dd/yyyy (US format)
-        else if (parts.length === 3 && parts[0].length <= 2 && parts[1].length <= 2 && parts[2].length === 4 && parts[0] <= 12) {
-            let mm = parts[0].padStart(2, '0');
-            let dd = parts[1].padStart(2, '0');
-            let yyyy = parts[2];
-            formatted = `${yyyy}-${mm}-${dd}`;
-        }
-
-        if (formatted) {
-            $(this).val(formatted);
-        } else {
-            console.log("⚠️ Invalid date format! Use dd/MM/yyyy, MM-dd-yyyy, or yyyy-MM-dd.");
-        }
-    });
-    //document.getElementById("OpenDeliverySchedulerModel").addEventListener("click", function () {
-    //    // Show second modal without closing the first
-    //    let secondModal = new bootstrap.Modal(document.getElementById('deliveryScheduleModel'), {
-    //        backdrop: 'static',
-    //        keyboard: false
-    //    });
-    //    secondModal.show();
-    //});
-    $(document).on("focusout", "#txtISBatchLot", function () {
-        NewItemStockSerial();
-    });
-    function showCopiedLabel(ctrl) {
-        $('#DataTabPopup #' + ctrl).before('<span class="my-label">Copied</span>');
-        // Remove the span after 5 seconds (5000 milliseconds)
-        setTimeout(function () {
-            $('#DataTabPopup #' + ctrl).prev('span.my-label').fadeOut(1000, function () {
-                $(this).remove(); // Remove after fade out
-            });
-        }, 5000);
+    var partialProcess = {
+        pending: 0,
+        initialized: false
+    };
+    function startPartialProcess(name) {
+        partialProcess.pending++;
+        //console.log("START:", name, "Pending:", partialProcess.pending);
     }
-    function CopySelectedOptionItem(ctrl) {
-        const $select = $('#DataTabPopup #' + ctrl);
-        $('#DataTabPopup #' + ctrl).prev('span.my-label').remove();
-
-        let selectedValues = "";
-        const isMultiSelection = $select.attr("data-multiselection");
-
-        if (isMultiSelection === "True") {
-            selectedValues = $select.find('option:selected')
-                .map(function () { return $(this).text(); })
-                .get()
-                .join(',');
-        } else {
-            selectedValues = $select.find('option:selected').text();
-        }
-
-        if (!selectedValues) return;
-
-        copyText(selectedValues, ctrl);
+    function completePartialProcess(name) {
+        partialProcess.pending--;
+        //console.log("COMPLETE:", name, "Pending:", partialProcess.pending);
+        checkPartialProcessCompleted();
     }
-
-    function copyText(text, ctrl) {
-        if (navigator.clipboard && window.isSecureContext) {
-            navigator.clipboard.writeText(text)
-                .then(() => showCopiedLabel(ctrl))
-                .catch(() => legacyCopy(text, ctrl));
-        } else {
-            legacyCopy(text, ctrl);
+    function checkPartialProcessCompleted() {
+        if (partialProcess.pending === 0 &&
+            !partialProcess.initialized) {
+            partialProcess.initialized = true;
+            console.log("=================================");
+            console.log("ALL PARTIAL PROCESSES COMPLETED");
+            console.log("=================================");
+            partialDetailPopupLoaded();
         }
     }
-
-    function legacyCopy(text, ctrl) {
-        const textarea = document.createElement("textarea");
-        textarea.value = text;
-        textarea.style.position = "fixed";
-        textarea.style.opacity = "0";
-        document.body.appendChild(textarea);
-        textarea.focus();
-        textarea.select();
-
-        try {
-            document.execCommand("copy");
-            showCopiedLabel(ctrl);
-        } catch (err) {
-            console.error("Copy failed", err);
-        }
-
-        document.body.removeChild(textarea);
-    }
-
-    function CopySelectedOptionItem1(ctrl) {
-        try {
-
-        var $select = $('#DataTabPopup #' + ctrl);
-        $('#DataTabPopup #' + ctrl).prev('span.my-label').remove();
-        // Make sure Select2 is initialized
-        if (!$select.hasClass('select2-hidden-accessible') && $("#hdnPageActionDetail").val() != "V") {
-            //alert('Select2 not initialized!');
-            return;
-        }
-        var selectedValues = "";
-        var isMultiSelection = $select.attr("data-multiselection");
-        if (isMultiSelection != undefined && isMultiSelection != "" && isMultiSelection == "True") {
-            var multiText = $select.find('option:selected').map(function () {
-                return $(this).text(); // Use .val() if you want IDs
-            }).get().join(',');
-            selectedValues = multiText;
-        }
-        else {
-            selectedValues = $('#DataTabPopup #' + ctrl + ' option:selected').text();
-        }
-
-        if (selectedValues.length === 0) {
-            selectedValues = $('#DataTabPopup #' + ctrl + ' option:selected').text();
-            return;
-        }
-        var textToCopy = selectedValues;
-        // Use a fallback method if navigator.clipboard is not supported
-            if (navigator.clipboard && window.isSecureContext && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(textToCopy).then(function () {
-                console.log('Copied: ' + textToCopy);
-                $('#DataTabPopup #' + ctrl).before('<span class="my-label">Copied</span>');
-                // Remove the span after 5 seconds (5000 milliseconds)
-                setTimeout(function () {
-                    $('#DataTabPopup #' + ctrl).prev('span.my-label').fadeOut(1000, function () {
-                        $(this).remove(); // Remove after fade out
-                    });
-                }, 5000);
-            }).catch(function (err) {
-                console.error('Clipboard failed:', err);
-            });
-        } else {
-            // Fallback for insecure context
-            var textArea = document.createElement("textarea");
-            textArea.value = textToCopy;
-            document.body.appendChild(textArea);
-            textArea.focus();
-            textArea.select();
-            try {
-                document.execCommand('copy');
-                console.log('Copied: ' + textToCopy);
-                $('#DataTabPopup #' + ctrl).before('<span class="my-label">Copied</span>');
-                // Remove the span after 5 seconds (5000 milliseconds)
-                setTimeout(function () {
-                    $('#DataTabPopup #' + ctrl).prev('span.my-label').fadeOut(1000, function () {
-                        $(this).remove(); // Remove after fade out
-                    });
-                }, 5000);
-            } catch (err) {
-                console.error('Fallback: Unable to copy', err);
+    $(function () {
+        $(document).on('focus click', 'input[type="date"]', function () {
+            $(this).select();
+        });
+        //$(".myDropdown").on("change", function (e) {
+        //    dropdownChange(this, e);
+        //});
+        $(document).on('blur', 'input[type="number"]#Amount', function () {
+            if ($("#divOtherCharge").length > 0) {                
+                if ($("#divOtherCharge button").hasClass("collapsed") == true) {
+                    $("#divOtherCharge button").click();
+                }
+                $('#ChargesId').trigger('change');
+                CalculateTotal();
             }
-            document.body.removeChild(textArea);
-            // Fallback using temporary input element
-            //alert('Copied: ' + textToCopy);
-            }
-        } catch (e) {
+        });
+        $(document).on('paste', 'input[type="date"]', function (e) {
+            e.preventDefault(); // stop default paste
 
-        }
-    }
-    $(document).on('focusout', '#DataTabPopup input[type="number"]', function () {
-        // your code here
-        let fieldname = $(this).attr('id');
-        BindDependencyData(fieldname, false);
-        $("#DataTabPopup #" + fieldname).trigger('change');
-    });
-    $(document).on('focusout', '#DataTabPopup input[type="text"]', function () {
-        // your code here
-        if ($(this).attr("data-language") == "True") {
+            // Get pasted text
+            let pastedData = (e.originalEvent || e).clipboardData.getData('text').trim();
+
+            // Normalize delimiters (accept -, /, .)
+            let clean = pastedData.replace(/[.\-]/g, '/');
+            let parts = clean.split('/');
+            let formatted = "";
+
+            // Case: yyyy-MM-dd or yyyy/MM/dd (ISO format)
+            if (parts.length === 3 && parts[0].length === 4) {
+                let yyyy = parts[0];
+                let mm = parts[1].padStart(2, '0');
+                let dd = parts[2].padStart(2, '0');
+                formatted = `${yyyy}-${mm}-${dd}`;
+            }
+            // Case: dd/MM/yyyy (European/India format)
+            else if (parts.length === 3 && parts[0].length <= 2 && parts[1].length <= 2) {
+                let dd = parts[0].padStart(2, '0');
+                let mm = parts[1].padStart(2, '0');
+                let yyyy = parts[2];
+                formatted = `${yyyy}-${mm}-${dd}`;
+            }
+            // Case: MM/dd/yyyy (US format)
+            else if (parts.length === 3 && parts[0].length <= 2 && parts[1].length <= 2 && parts[2].length === 4 && parts[0] <= 12) {
+                let mm = parts[0].padStart(2, '0');
+                let dd = parts[1].padStart(2, '0');
+                let yyyy = parts[2];
+                formatted = `${yyyy}-${mm}-${dd}`;
+            }
+
+            if (formatted) {
+                $(this).val(formatted);
+            } else {
+                console.log("⚠️ Invalid date format! Use dd/MM/yyyy, MM-dd-yyyy, or yyyy-MM-dd.");
+            }
+        });
+        //document.getElementById("OpenDeliverySchedulerModel").addEventListener("click", function () {
+        //    // Show second modal without closing the first
+        //    let secondModal = new bootstrap.Modal(document.getElementById('deliveryScheduleModel'), {
+        //        backdrop: 'static',
+        //        keyboard: false
+        //    });
+        //    secondModal.show();
+        //});
+        $(document).on("focusout", "#txtISBatchLot", function () {
+            NewItemStockSerial();
+        });
+        $(document).on('focusout', '#DataTabPopup input[type="number"]', function () {
+          // your code here
             let fieldname = $(this).attr('id');
-            var fieldId = $('#DataTabPopup #' + fieldname).attr("data-container");
-            BindLanguageConversation(fieldId, fieldname);
-        }
-    });
-    $(document).on("focusout", "#DataTabPopup #Quantity", function () {
-        var isLockedPendingQty = '@IsLockedPendingQty.ToString()';
-        if (isLockedPendingQty == 'True' && $("#IsFromPending").val() == '1') {
-            let max = Number($(this).attr('max'));
-            if (Number(this.value) > max) {
-              this.value = max;
+            let isDependency = $(this).attr('data-dependency');
+            if (isDependency != 'False') {                
+                BindDependencyData(fieldname, false);                
             }
-        }
-        if ($("#tblItem_StockSerial").length > 0 && $("#tblItem_StockSerial tbody tr").length > 0 && $("#tblItem_StockSerial tbody tr td").length > 1) {
-            var qty = $("#DataTabPopup #Quantity").val();
-            if (qty && qty !== "0") {
-                var TotalQTY = parseFloat(parseFloat(qty).toFixed(3));
-                var total = 0;
-                $("#tblItem_StockSerial tbody tr").each(function () {
-                    const $row = $(this);
-                    $row.find(".ISCheckfield").prop("checked", false);
-                    $row.find(".ISQTYfield").val(0);
-                    const $stockCtrl = $row.find(".ISStockfield");
-                    const stock = parseFloat(parseFloat($stockCtrl.val()).toFixed(3) || 0);
-                    $row.find(".ISBalancefield").val(stock - 0);
-                    if (parseFloat(total) < parseFloat(TotalQTY)) {
-                        if ($stockCtrl.length) {
-                            if (stock > 0) {
-                                const qty = Math.min(stock, (TotalQTY - total)); // take smaller of stock or TotalQTY
-                                $row.find(".ISQTYfield").val(parseFloat(qty.toFixed(3)));
-                                $row.find(".ISCheckfield").prop("checked", true);
-                                // Increase total only by qty or remaining required
-                                const remain = parseFloat(parseFloat(TotalQTY).toFixed(3)) - parseFloat(parseFloat(qty).toFixed(3));
-                                total += (TotalQTY - remain);
-                            }
-                            const fieldQTY = parseFloat(parseFloat($row.find(".ISQTYfield").val()).toFixed(3) || 0);
-                            const _balance = parseFloat(stock - fieldQTY);
-                            $row.find(".ISBalancefield").val(_balance.toFixed(3));
-                        }
-                    }
-                });
-                if ($("#txtISTotalQty").length > 0) {
-                    $("#txtISTotalQty").text(parseFloat(total));
-                    $("#txtISTotalQty").removeClass("text-danger");
-                    $("#txtISTotalQty").removeClass("text-success");
-                    if (parseFloat(TotalQTY) != parseFloat(total)) {
-                        $("#txtISTotalQty").addClass("text-danger");
-                    }
-                    else if (parseFloat(TotalQTY) = parseFloat(total)) {
-                        $("#txtISTotalQty").addClass("text-success");
-                    }
-                }
-            }
-        }
-    });
-    $('#DataTabPopup .select2').each(function () {
-        let selectId = $(this).attr('id');
-        if (selectId) {
-            try {
-                let parentWrapper = $('#DataTabPopup #' + selectId).closest('.modal');
-                var sourceType = $("#DataTabPopup #" + selectId).attr("data-sourcetype");
-                var _fieldId = $("#DataTabPopup #" + selectId).attr("data-container");
-                let selectedValues = $("#DataTabPopup #" + selectId).attr("data-interval");
-                let selectedText = $("#DataTabPopup #" + selectId).attr("data-display");
-                let caption = $("#DataTabPopup #" + selectId).attr("data-html");
-                let firstFive = selectedText ? selectedText.substring(0, 40) : "";
-                let isDependency = $("#DataTabPopup #" + selectId).attr("data-dependency");
-                if (sourceType == "StoredProcedure" && isDependency != "True") {
-                    //$('#DataTabPopup #' + selectId).select2({
-                    //    dropdownParent: parentWrapper
-                    //});
-                    const pageFieldData = getPageFieldData();
-                    const _headerFieldData = getPageHeaderFieldData();
-                    const $selectElement = $('#DataTabPopup #' + selectId);
-                    $selectElement.select2({
-                        dropdownParent: parentWrapper,
-                        placeholder: `Select ${caption}`,
-                        allowClear: true,
-                        skipLoading: true, // Custom flag
-                        delay: 250,
-                        minimumInputLength: 0, // Set to 0 to allow dropdown without typing
-                        ajax: {
-                            url: '@Url.Action("FillSelctionPagingSP", "Common")',
-                            type: 'POST', // <-- Use POST instead of GET
-                            contentType: 'application/json', // <-- Send JSON body
-                            dataType: 'json',
-                            skipLoading: true, // Custom flag
-                            delay: 250,
-                            cache: true,cache: true,
-                            data: function (params) {
-                                return JSON.stringify({
-                                    FieldId: _fieldId,
-                                    searchTerm: params.term || '',
-                                    page: params.page || 1,
-                                    fieldValue: '',
-                                    pageFieldData: pageFieldData,
-                                    headerFieldData: _headerFieldData
-                                });
-                            },
-                            processResults: function (data) {
-                                return {
-                                    results: data.results,
-                                    pagination: {
-                                        more: data.pagination?.more || false
-                                    }
-                                };
-                            },
-                            error: function (xhr, status, error) {
-                                console.error("Select2 AJAX Error:", {
-                                    error,
-                                    status,
-                                    response: xhr.responseText
-                                });
-                            }
-                        }
-                    });
+            $("#DataTabPopup #" + fieldname).trigger('change');
+        });
+        $(document).on('focusout', '#DataTabPopup input[type="text"]', function () {
+             // your code here
+             if ($(this).attr("data-language") == "True") {
+                 let fieldname = $(this).attr('id');
+                 var fieldId = $('#DataTabPopup #' + fieldname).attr("data-container");
+                 BindLanguageConversation(fieldId, fieldname);
+             }
+         });
+        $(document).on("focusout", "#DataTabPopup #Quantity", function () {
+             var isLockedPendingQty = '@IsLockedPendingQty.ToString()';
+             if (isLockedPendingQty == 'True' && $("#IsFromPending").val() == '1') {
+                 let max = Number($(this).attr('max'));
+                 if (Number(this.value) > max) {
+                   this.value = max;
+                 }
+             }
+             if ($("#tblItem_StockSerial").length > 0 && $("#tblItem_StockSerial tbody tr").length > 0 && $("#tblItem_StockSerial tbody tr td").length > 1) {
+                 var qty = $("#DataTabPopup #Quantity").val();
+                 if (qty && qty !== "0") {
+                     var TotalQTY = parseFloat(parseFloat(qty).toFixed(3));
+                     var total = 0;
+                     $("#tblItem_StockSerial tbody tr").each(function () {
+                         const $row = $(this);
+                         $row.find(".ISCheckfield").prop("checked", false);
+                         $row.find(".ISQTYfield").val(0);
+                         const $stockCtrl = $row.find(".ISStockfield");
+                         const stock = parseFloat(parseFloat($stockCtrl.val()).toFixed(3) || 0);
+                         $row.find(".ISBalancefield").val(stock - 0);
+                         if (parseFloat(total) < parseFloat(TotalQTY)) {
+                             if ($stockCtrl.length) {
+                                 if (stock > 0) {
+                                     const qty = Math.min(stock, (TotalQTY - total)); // take smaller of stock or TotalQTY
+                                     $row.find(".ISQTYfield").val(parseFloat(qty.toFixed(3)));
+                                     $row.find(".ISCheckfield").prop("checked", true);
+                                     // Increase total only by qty or remaining required
+                                     const remain = parseFloat(parseFloat(TotalQTY).toFixed(3)) - parseFloat(parseFloat(qty).toFixed(3));
+                                     total += (TotalQTY - remain);
+                                 }
+                                 const fieldQTY = parseFloat(parseFloat($row.find(".ISQTYfield").val()).toFixed(3) || 0);
+                                 const _balance = parseFloat(stock - fieldQTY);
+                                 $row.find(".ISBalancefield").val(_balance.toFixed(3));
+                             }
+                         }
+                     });
+                     if ($("#txtISTotalQty").length > 0) {
+                         $("#txtISTotalQty").text(parseFloat(total));
+                         $("#txtISTotalQty").removeClass("text-danger");
+                         $("#txtISTotalQty").removeClass("text-success");
+                         if (parseFloat(TotalQTY) != parseFloat(total)) {
+                             $("#txtISTotalQty").addClass("text-danger");
+                         }
+                         else if (parseFloat(TotalQTY) = parseFloat(total)) {
+                             $("#txtISTotalQty").addClass("text-success");
+                         }
+                     }
+                 }
+             }
+         });
+        $('#DataTabPopup .select2').each(function () {
+             let selectId = $(this).attr('id');
+             if (selectId) {
+                 try {
+                     let parentWrapper = $('#DataTabPopup #' + selectId).closest('.modal');
+                     var sourceType = $("#DataTabPopup #" + selectId).attr("data-sourcetype");
+                     var _fieldId = $("#DataTabPopup #" + selectId).attr("data-container");
+                     let selectedValues = $("#DataTabPopup #" + selectId).attr("data-interval");
+                     let selectedText = $("#DataTabPopup #" + selectId).attr("data-display");
+                     let caption = $("#DataTabPopup #" + selectId).attr("data-html");
+                     let firstFive = selectedText ? selectedText.substring(0, 40) : "";
+                     let isDependency = $("#DataTabPopup #" + selectId).attr("data-dependency");
+                     if (sourceType == "StoredProcedure" && isDependency != "True") {
+                         //$('#DataTabPopup #' + selectId).select2({
+                         //    dropdownParent: parentWrapper
+                         //});
+                         const pageFieldData = getPageFieldData();
+                         const _headerFieldData = getPageHeaderFieldData();
+                         const $selectElement = $('#DataTabPopup #' + selectId);
+                         startPartialProcess("Load Select2 Values");
+                         $selectElement.select2({
+                             dropdownParent: parentWrapper,
+                             placeholder: `Select ${caption}`,
+                             allowClear: true,
+                             skipLoading: true, // Custom flag
+                             delay: 250,
+                             minimumInputLength: 0, // Set to 0 to allow dropdown without typing
+                             ajax: {
+                                 url: '@Url.Action("FillSelctionPagingSP", "Common")',
+                                 type: 'POST', // <-- Use POST instead of GET
+                                 contentType: 'application/json', // <-- Send JSON body
+                                 dataType: 'json',
+                                 skipLoading: true, // Custom flag
+                                 delay: 250,
+                                 cache: true,cache: true,
+                                 data: function (params) {
+                                     return JSON.stringify({
+                                         FieldId: _fieldId,
+                                         searchTerm: params.term || '',
+                                         page: params.page || 1,
+                                         fieldValue: '',
+                                         pageFieldData: pageFieldData,
+                                         headerFieldData: _headerFieldData
+                                     });
+                                 },
+                                 processResults: function (data) {
+                                     return {
+                                         results: data.results,
+                                         pagination: {
+                                             more: data.pagination?.more || false
+                                         }
+                                     };
+                                 },
+                                 transport: function (params, success, failure) {
+                                     console.log("START FillSelctionPagingSP");
+                                     startPartialProcess("Load Select2 Values");
+                                     var request = $.ajax(params);
+                                     request.done(function (data) {
+                                         success(data);
+                                     });
+                                     request.fail(function (xhr, status, error) {
+                                         console.error("Select2 AJAX Error:", error);
+                                         failure(xhr, status, error);
+                                     });
+                                     request.always(function () {
+                                         console.log("COMPLETE FillSelctionPagingSP");
+                                         completePartialProcess("Load Select2 Values");
+                                     });
+                                     return request;
+                                 },
+                                 error: function (xhr, status, error) {
+                                     console.error("Select2 AJAX Error:", {
+                                         error,
+                                         status,
+                                         response: xhr.responseText
+                                     });
+                                 }
+                             }
+                         });
 
-                    if (selectedValues.length) {
-                        $.ajax({
-                            url: '@Url.Action("FillSelctionPagingSP", "Common")',
-                            skipLoading: true, // <-- Custom flag
-                            type: 'POST', // <-- Use POST instead of GET
-                            contentType: 'application/json', // <-- Send JSON body
-                            data: JSON.stringify({
-                                FieldId: _fieldId, searchTerm: '', page: 1, fieldValue: '', pageFieldData: pageFieldData,
-                                headerFieldData: _headerFieldData }),
-                            success: function (data) {
-                                var isMultiSelection = $selectElement.attr("data-multiselection");
+                         if (selectedValues.length) {
+                             startPartialProcess("Load FillSelctionPagingSP");
+                             $.ajax({
+                                 url: '@Url.Action("FillSelctionPagingSP", "Common")',
+                                 skipLoading: true, // <-- Custom flag
+                                 type: 'POST', // <-- Use POST instead of GET
+                                 contentType: 'application/json', // <-- Send JSON body
+                                 data: JSON.stringify({
+                                     FieldId: _fieldId, searchTerm: '', page: 1, fieldValue: '', pageFieldData: pageFieldData,
+                                     headerFieldData: _headerFieldData
+                                 }),
+                                 transport: function (params, success, failure) {
+                                     console.log("START FillSelctionPagingSP");
+                                     startPartialProcess("Load FillSelctionPagingSP");
+                                     var request = $.ajax(params);
+                                     request.done(function (data) {
+                                         success(data);
+                                     });
+                                     request.fail(function (xhr, status, error) {
+                                         console.error("Select2 AJAX Error:", error);
+                                         failure(xhr, status, error);
+                                     });
+                                     request.always(function () {
+                                         console.log("COMPLETE FillSelctionPagingSP");
+                                         completePartialProcess("Load FillSelctionPagingSP");
+                                     });
+                                     return request;
+                                 },
+                                 success: function (data) {
+                                     var isMultiSelection = $selectElement.attr("data-multiselection");
 
-                                if (isMultiSelection != undefined && isMultiSelection != "" && isMultiSelection == "True") {
-                                    const multiVal = selectedValues.split(',');
-                                    $selectElement.val([]).trigger('change');
-                                    multiVal.forEach(function (val) {
-                                        let item = data.results.find(x => x.id.trim().toLowerCase() == val.trim().toLowerCase());
-                                        if (item) {
-                                            let option = new Option(item.text, item.id, true, true);
-                                            $selectElement.append(option);
-                                            $selectElement.trigger('change');
-                                        }
-                                    });
-                                }
-                                else {
-                                    if (data != null && data.results != null) {
-                                        let item = data.results.find(x => x.id.trim().toLowerCase() == selectedValues.trim().toLowerCase());
-                                        if (item) {
-                                            let option = new Option(item.text, item.id, true, true);
-                                            $selectElement.append(option).trigger('change');
-                                        }
-                                    }
-                                }
-                            }
-                        });
-                    }
-                }
-                else if (isDependency != "True") {
-                    $('#DataTabPopup #' + selectId).select2({
-                        dropdownParent: parentWrapper,
-                        placeholder: 'Select ' + caption,
-                        allowClear: true,
-                        skipLoading: true, // <-- Custom flag
-                        delay: 250,
-                        minimumInputLength: 0, // change to 0 if you want scrolling without typing
-                        ajax: {
-                            url: '@Url.Action("FillSelctionPaging", "Common")',
-                            dataType: 'json',
-                            skipLoading: true, // <-- Custom flag
-                            delay: 250,
-                            data: function (params) {
-                                return {
-                                    FieldId: _fieldId,
-                                    searchTerm: params.term || '', // search term
-                                    page: params.page || 1,
-                                    fieldValue: ''
-                                };
-                            },
-                            processResults: function (data) {
-                                return {
-                                    results: data.results,
-                                    pagination: {
-                                        more: data.pagination.more
-                                    }
-                                };
-                            },
-                            error: function (xhr, status, error) {
-                                console.error("Select2 AJAX Error:", error);
-                                console.error("Status:", status);
-                                console.error("Response:", xhr.responseText);
-                            },
-                            cache: true
-                        }
-                    });
+                                     if (isMultiSelection != undefined && isMultiSelection != "" && isMultiSelection == "True") {
+                                         const multiVal = selectedValues.split(',');
+                                         $selectElement.val([]).trigger('change');
+                                         multiVal.forEach(function (val) {
+                                             let item = data.results.find(x => x.id.trim().toLowerCase() == val.trim().toLowerCase());
+                                             if (item) {
+                                                 let option = new Option(item.text, item.id, true, true);
+                                                 $selectElement.append(option);
+                                                 $selectElement.trigger('change');
+                                             }
+                                         });
+                                     }
+                                     else {
+                                         if (data != null && data.results != null) {
+                                             let item = data.results.find(x => x.id.trim().toLowerCase() == selectedValues.trim().toLowerCase());
+                                             if (item) {
+                                                 let option = new Option(item.text, item.id, true, true);
+                                                 $selectElement.append(option).trigger('change');
+                                             }
+                                         }
+                                     }
+                                 }
+                             });
+                         }
+                     }
+                     else if (isDependency != "True") {
+                         //startPartialProcess("Load FillSelctionPaging-1");
+                         $('#DataTabPopup #' + selectId).select2({
+                             dropdownParent: parentWrapper,
+                             placeholder: 'Select ' + caption,
+                             allowClear: true,
+                             skipLoading: true, // <-- Custom flag
+                             delay: 250,
+                             minimumInputLength: 0, // change to 0 if you want scrolling without typing
+                             ajax: {
+                                 url: '@Url.Action("FillSelctionPaging", "Common")',
+                                 dataType: 'json',
+                                 skipLoading: true, // <-- Custom flag
+                                 delay: 250,
+                                 data: function (params) {
+                                     return {
+                                         FieldId: _fieldId,
+                                         searchTerm: params.term || '', // search term
+                                         page: params.page || 1,
+                                         fieldValue: ''
+                                     };
+                                 },
+                                 processResults: function (data) {
+                                     return {
+                                         results: data.results,
+                                         pagination: {
+                                             more: data.pagination.more
+                                         }
+                                     };
+                                 },
+                                 transport: function (params, success, failure) {
+                                     console.log("START FillSelctionPaging-1");
+                                     startPartialProcess("Load FillSelctionPaging-1");
+                                     var request = $.ajax(params);
+                                     request.done(function (data) {
+                                         success(data);
+                                     });
+                                     request.fail(function (xhr, status, error) {
+                                         console.error("Select2 AJAX Error:", error);
+                                         failure(xhr, status, error);
+                                     });
+                                     request.always(function () {
+                                         console.log("COMPLETE FillSelctionPaging-1");
+                                         completePartialProcess("Load FillSelctionPaging-1");
+                                     });
+                                     return request;
+                                 },
+                                 //complete: function () {
+                                 //    console.lo("Completed process FillSelctionPaging-1");
+                                 //    completePartialProcess("Load FillSelctionPaging-1");
+                                 //},
+                                 error: function (xhr, status, error) {
+                                     console.error("Select2 AJAX Error:", error);
+                                     console.error("Status:", status);
+                                     console.error("Response:", xhr.responseText);
+                                 },
+                                 cache: true
+                             }
+                         });
 
-                    /// Pre-load selected values (important when editing)
-                    if (selectedValues.length) {
-                        $.ajax({
-                            url: '@Url.Action("FillSelctionPaging", "Common")',
-                            type: 'GET',
-                            skipLoading: true, // <-- Custom flag
-                            data: { FieldId: _fieldId, searchTerm: firstFive, page: 1, fieldValue: '' },
-                            success: function (data) {
-                                var isMultiSelection = $(this).attr("data-multiselection");
-                                if (isMultiSelection != undefined && isMultiSelection != "" && isMultiSelection == "True") {
-                                    selectedValues.forEach(function (val) {
-                                        let item = data.results.find(x => x.id.trim().toLowerCase() == val.trim().toLowerCase());
-                                        if (item) {
-                                            let option = new Option(item.text, item.id, true, true);
-                                            $('#DataTabPopup #' + selectId).append(option);
-                                            $('#DataTabPopup #' + selectId).trigger('change');
-                                        }
-                                    });
-                                }
-                                else {
-                                    if (data != null && data.results != null) {
-                                        let item = data.results.find(x => x.id.trim().toLowerCase() == selectedValues.trim().toLowerCase());
-                                        if (item) {
-                                            let option = new Option(item.text, item.id, true, true);
-                                            $('#DataTabPopup #' + selectId).append(option).trigger('change');
-                                            //$('#DataTabPopup #' + selectId).trigger('change');
-                                        }
-                                    }
-                                }
-                            }
-                        });
-                    }
-                }
-            } catch (e) {
-                console.error("Select2 AJAX Error:", e);
-            }
-            //$('#' + selectId).select2()
-            //console.log("Selected : " + $('#DataTabPopup #' + selectId).val());
-        }
-    });
-    function dropdownChange(ctr) {
-        var fieldname = $(ctr).attr('id') + "_Id";
-        //console.log(fieldname + " Select Change Event trigger");
-        var selctedval = $(ctr).val();
-        //$('#DataTabPopup ' + $(ctr).attr('id')).val(selctedval);
-        var selctedtext = $('#DataTabPopup #' + $(ctr).attr('id') + ' option:selected').text();
-        //console.log("Selcted Text :" + selctedtext);
-
-        if ($("#DataTabPopup #select2-" + $(ctr).attr('id') + "-container")) {
-            $("#DataTabPopup #select2-" + $(ctr).attr('id') + "-container").text(selctedtext);
-            $("#DataTabPopup #select2-" + $(ctr).attr('id') + "-container").attr("title", selctedtext);
-        }
-        if (($(ctr).attr("data-delay") != null && $(ctr).attr("data-delay").length > 0 && $(ctr).attr("data-delay") == "m_MastProduct_Master")
-            || ($(ctr).attr("data-bind") != null && $(ctr).attr("data-bind").length > 0 && $(ctr).attr("data-bind") == "ITCode")
-            || ($(ctr).attr("data-bind") != null && $(ctr).attr("data-bind").length > 0 && $(ctr).attr("data-bind") == "IT_Code")
-            || ($(ctr).attr("data-bind") != null && $(ctr).attr("data-bind").length > 0 && $(ctr).attr("data-bind") == "IT_CODE")
-        ) {
-            var itemId = parseInt($(ctr).val());
-            $("#hdnItemId").val(itemId);
-            BindDependencyData(fieldname, false);
-            var SerialNoAvailabe = '@IsStocWithkSerialNo.ToString()';
-            if (SerialNoAvailabe == 'True') {
-                $('#divStockSerial').empty();
-                if ($("#hdnPageActionDetail").val() == "A" && $("#txtISSerialNo").length > 0) {
-                    $("#txtISSerialNo").val(1);
-                    $("#txtISBatchLot").trigger("blur");
-                }
-                //else if ($("#hdnPageActionDetail").val() == "E" && $("#txtISSerialNo").length > 0) {
-                //    if ($("#tblItem_StockSerial tbody tr").length > 0 && $("#tblItem_StockSerial tbody tr td").length == 1) {
-                //        $("#txtISSerialNo").val(1);
-                //        $("#txtISBatchLot").trigger("blur");
-                //    }
-                //}
-                else {
-                    console.log("Call LoadItemStockSerial : 3");
-                    LoadItemStockSerial("View");
-                }
-            }
-        }
-        if (($(ctr).attr("data-delay") != null && $(ctr).attr("data-delay").length > 0 && $(ctr).attr("data-delay") == "m_MastLocation")
-            || ($(ctr).attr("data-bind") != null && $(ctr).attr("data-bind").length > 0 && $(ctr).attr("data-bind") == "Location")
-            || ($(ctr).attr("data-bind") != null && $(ctr).attr("data-bind").length > 0 && $(ctr).attr("data-bind") == "Location")
-            || ($(ctr).attr("data-bind") != null && $(ctr).attr("data-bind").length > 0 && $(ctr).attr("data-bind") == "Location")
-        ) {
-            var locationId = parseInt($(ctr).val());
-            if (locationId > 0) {
-                var SerialNoAvailabe = '@IsStocWithkSerialNo.ToString()';
-                if (SerialNoAvailabe == 'True') {
-                    $('#divStockSerial').empty();
-                    if ($("#hdnPageActionDetail").val() == "A" && $("#txtISSerialNo").length > 0) {
-                        $("#txtISSerialNo").val(1);
-                        $("#txtISBatchLot").trigger("blur");
-                    }
-                    //else if ($("#hdnPageActionDetail").val() == "E" && $("#txtISSerialNo").length > 0) {
-                    //    if ($("#tblItem_StockSerial tbody tr").length > 0 && $("#tblItem_StockSerial tbody tr td").length == 1) {
-                    //        $("#txtISSerialNo").val(1);
-                    //        $("#txtISBatchLot").trigger("blur");
-                    //    }
-                    //}
-                    else {
-                        console.log("Call LoadItemStockSerial : 2");
-                        LoadItemStockSerial("View");
-                    }
-                }
-            }
-        }
-        if ($("#hdnPageActionDetail").val() != "V") {
-            if (($(ctr).attr("data-delay") != null && $(ctr).attr("data-delay").length > 0 && $(ctr).attr("data-delay") == "m_MastProduct_Master")
-                || ($(ctr).attr("data-bind") != null && $(ctr).attr("data-bind").length > 0 && $(ctr).attr("data-bind") == "ITCode")
-                || ($(ctr).attr("data-bind") != null && $(ctr).attr("data-bind").length > 0 && $(ctr).attr("data-bind") == "IT_Code")
-                || ($(ctr).attr("data-bind") != null && $(ctr).attr("data-bind").length > 0 && $(ctr).attr("data-bind") == "IT_CODE")
-            ) {
-                if ($(ctr).val() != null) {
-                    var itemId = parseInt($(ctr).val());
-                    $("#hdnItemId").val(itemId);
-                    var otherChargesAvailabe = '@IsOtherCharges.ToString()';
-                    if (otherChargesAvailabe == 'True') {
-                        if ($(ctr).attr("Id") != "ChargesId") {
-                            /*LoadOtherCharges($(ctr));*/
-                            var fieldId = $(ctr).attr("data-container");
-                            var itemId = $(ctr).val();
-                            LoadOtherChargesNew(itemId, fieldId);
-                        }
-                    }
-                    var SpecificationAvailabe = '@IsSpecification.ToString()';
-                    if (SpecificationAvailabe == 'True') {
-                        LoadSpecification(itemId);
-                    }
-                    var DSAvailabe = '@IsDeliverySchedule.ToString()';
-                    if (DSAvailabe == 'True') {
-                        LoadDeliveryScheduled(itemId);
-                    }
-                    @*var SerialNoAvailabe = '@IsStocWithkSerialNo.ToString()';
-                    if (SerialNoAvailabe == 'True') {
-                        $('#divStockSerial').empty();
-                        if ($("#hdnPageActionDetail").val() == "A" && $("#txtISSerialNo").length > 0) {
-                            $("#txtISSerialNo").val(1);
-                            $("#txtISBatchLot").trigger("blur");
-                        }
-                        else if ($("#hdnPageActionDetail").val() == "E" && $("#txtISSerialNo").length > 0) {
-                            if ($("#tblItem_StockSerial tbody tr").length > 0 && $("#tblItem_StockSerial tbody tr td").length == 1) {
-                                $("#txtISSerialNo").val(1);
-                                $("#txtISBatchLot").trigger("blur");
-                            }
-                        }
-                        else {
-                            console.log("Call LoadItemStockSerial : 1");
-                            LoadItemStockSerial("New");
-                        }
-                    }*@
-                }
-            }
-            if (($(ctr).attr("data-delay") != null && $(ctr).attr("data-delay").length > 0 && $(ctr).attr("data-delay") == "m_MastLocation")
-                || ($(ctr).attr("data-bind") != null && $(ctr).attr("data-bind").length > 0 && $(ctr).attr("data-bind") == "Location")) {
-                var SerialNoAvailabe = '@IsStocWithkSerialNo.ToString()';
-                if (SerialNoAvailabe == 'True') {
-                    //$('#divStockSerial').empty();
-                    //if ($("#hdnPageActionDetail").val() == "A" && $("#txtISSerialNo").length > 0) {
-                    //    $("#txtISSerialNo").val(1);
-                    //    $("#txtISBatchLot").trigger("blur");
-                    //}
-                    //else if ($("#hdnPageActionDetail").val() == "E" && $("#txtISSerialNo").length > 0) {
-                    //    if ($("#tblItem_StockSerial tbody tr").length > 0 && $("#tblItem_StockSerial tbody tr td").length == 1) {
-                    //        $("#txtISSerialNo").val(1);
-                    //        $("#txtISBatchLot").trigger("blur");
-                    //    }
-                    //}
-                    //else {
-                    //    console.log("Call LoadItemStockSerial : 4");
-                    //    LoadItemStockSerial("New");
-                    //}
-                }
-            }
-            if (($(ctr).attr("data-delay") != null && $(ctr).attr("data-delay").length > 0 && $(ctr).attr("data-delay") == "m_MastAccountMaster"))
-            {
-                if ($(ctr).val() != null) {
-                    var otherChargesAvailabe = '@IsOtherCharges.ToString()';
-                    if (otherChargesAvailabe == 'True') {
-                        if ($(ctr).attr("Id") != "ChargesId") {
-                            var fieldId = $(ctr).attr("data-container");
-                            LoadOtherChargesNew(0, fieldId);
-                        }
-                    }
-                }
-            }
-            BindDependencyData(fieldname, false);
-        }
-        FieldFormulaCalculation();
-        //console.log("hdnItemId : " + $("#hdnItemId").val());
-        //console.log("ctrl : " + $(ctr).attr('id') + " - " + $(ctr).val());
-        //console.log("ctrl Text: " + $('#DataTabPopup #' + $(ctr).attr('id') + ' option:selected').text());
-    }
-    function LoadOtherCharges(ctrl) {
-        try {
-            let tableDropdown = $("#ChargesId");
-            $("#divChargeFields").empty();
-            var fieldId = $(ctrl).attr("data-container");
-            var itemId = $(ctrl).val();
-            var _accountId = 0;
-            var $accountElement = $("#HeaderTabs").find('[data-delay="m_MastAccountMaster"]');
-            var accountVal = $accountElement.val();
-            if ($accountElement.length > 0 && accountVal && accountVal !== "0") {
-                _accountId = parseInt(accountVal);
-            }
-            else if ($accountElement.length == 0) {
-                $accountElement = $("#DataTabPopup").find('[data-delay="m_MastAccountMaster"]');
-                accountVal = $accountElement.val();
-                if ($accountElement.length > 0 && accountVal && accountVal !== "0") {
-                    _accountId = parseInt(accountVal);
-                }
-            }
-            if (itemId > 0 || _accountId > 0) {
-                var headerFieldData = getPageHeaderFieldData();
-                var fieldData = getPageFieldData();
-                var model = {
-                    FieldId: fieldId,
-                    ItemId: itemId,
-                    AccId: _accountId,
-                    FormId: '@Model.Design.FormId',
-                    HeaderFieldData: headerFieldData,
-                    DetailFieldData: fieldData
-                };
-                tableDropdown.empty();
-                tableDropdown.append('<option value="">Other Charge Template</option>')
-                $.ajax({
-                    type: "POST", url: '@Url.Action("GetItemFieldOtherCharges", "Common")',
-                    contentType: "application/json;",
-                    data: JSON.stringify(model),
-                    dataType: "json",
-                    skipLoading: true, // <-- Custom flag
-                    async: true,
-                    success: function (tables) {
-                        tableDropdown.empty();
-                        tableDropdown.append('<option value="">Other Charge Template</option>')
-                        if (tables != null && tables.length > 0) {
-                            tables.forEach(table => {
-                                if (table.Value != "-1" && table.Value != null) {
-                                    if ($("#hdnChargesId").val() == "" || $("#hdnChargesId").val() == "0") {
-                                        tableDropdown.append(`<option selected value="${table.Value}">${table.Text}</option>`);
-                                    }
-                                    else {
-                                        tableDropdown.append(`<option value="${table.Value}">${table.Text}</option>`);
-                                    }
-                                }
-                            });
-                            if ($("#hdnChargesId").val() != "" && $("#hdnChargesId").val() != "0") {
-                                $('#ChargesId').val($("#hdnChargesId").val()).change();
-                            }
-                            else if ($("#ChargesId").val() != "" && $("#ChargesId").val() != "0") {
-                                $('#ChargesId').val($("#ChargesId").val()).change();
-                            }
-                            //else {
-                            //    $('#ChargesId').prop('selectedIndex', 1);
-                            //    $('#ChargesId').val($("#ChargesId").val()).change();
-                            //}
-                            if ($('#ChargesId option').length > 1) {
-                                var sel = $('#ChargesId')[0];
-                                if (sel.selectedIndex < 0 || sel.selectedIndex === 0) {
-                                    sel.selectedIndex = 1;
-                                    $('#ChargesId').val($("#ChargesId").val()).change();
-                                }
-                            }
-                        }
-                    },
-                    failure: function (response) { },
-                    error: function (xhr, status, error) {
-
-                        console.log("Status:", status);
-                        console.log("Error:", error);
-                        console.log("Response:", xhr.responseText);
-
-                    }
-                });
-            }
-        } catch (e) {
-        }
-    }
-
-    function LoadOtherChargesNew(itemId, fieldId) {
-        try {
-            let tableDropdown = $("#ChargesId");
-            $("#divChargeFields").empty();
-            //var fieldId = $(ctrl).attr("data-container");
-            //var itemId = $(ctrl).val();
-            var _accountId = 0;
-            var $accountElement = $("#HeaderTabs").find('[data-delay="m_MastAccountMaster"]');
-            var accountVal = $accountElement.val();
-            if ($accountElement.length > 0 && accountVal && accountVal !== "0") {
-                _accountId = parseInt(accountVal);
-            }
-            else if ($accountElement.length == 0) {
-                $accountElement = $("#DataTabPopup").find('[data-delay="m_MastAccountMaster"]');
-                accountVal = $accountElement.val();
-                if ($accountElement.length > 0 && accountVal && accountVal !== "0") {
-                    _accountId = parseInt(accountVal);
-                }
-            }
-            if (itemId == null) {
-                itemId = 0;
-                fieldId = "";
-            }
-            if (itemId > 0 || _accountId > 0) {
-                var headerFieldData = getPageHeaderFieldData();
-                var fieldData = getPageFieldData();
-                var model = {
-                    FieldId: fieldId,
-                    ItemId: itemId,
-                    AccId: _accountId,
-                    FormId: '@Model.Design.FormId',
-                    HeaderFieldData: headerFieldData,
-                    DetailFieldData: fieldData
-                };
-                tableDropdown.empty();
-                tableDropdown.append('<option value="">Other Charge Template</option>')
-                $.ajax({
-                    type: "POST", url: '@Url.Action("GetItemFieldOtherCharges", "Common")',
-                    contentType: "application/json;",
-                    data: JSON.stringify(model),
-                    skipLoading: true, // <-- Custom flag
-                    async: true,
-                    success: function (tables) {
-                        tableDropdown.empty();
-                        tableDropdown.append('<option value="">Other Charge Template</option>')
-                        if (tables != null && tables.length > 0) {
-                            tables.forEach(table => {
-                                if (table.Value != "-1" && table.Value != null) {
-                                    if (($("#hdnChargesId").val() == "" || $("#hdnChargesId").val() == "0") && itemId > 0) {
-                                        tableDropdown.append(`<option selected value="${table.Value}">${table.Text}</option>`);
-                                    }
-                                    else {
-                                        tableDropdown.append(`<option value="${table.Value}">${table.Text}</option>`);
-                                    }
-                                }
-                            });
-                            if ($("#hdnChargesId").val() != "" && $("#hdnChargesId").val() != "0") {
-                                $('#ChargesId').val($("#hdnChargesId").val()).change();
-                            }
-                            else if ($("#ChargesId").val() != "" && $("#ChargesId").val() != "0") {
-                                $('#ChargesId').val($("#ChargesId").val()).change();
-                            }
-                            //else {
-                            //    $('#ChargesId').prop('selectedIndex', 1);
-                            //    $('#ChargesId').val($("#ChargesId").val()).change();
-                            //}
-                            if ($('#ChargesId option').length > 1 && itemId > 0) {
-                                var sel = $('#ChargesId')[0];
-                                if (sel.selectedIndex < 0 || sel.selectedIndex === 0) {
-                                    sel.selectedIndex = 1;
-                                    $('#ChargesId').val($("#ChargesId").val()).change();
-                                }
-                            }
-                        }
-                    },
-                    failure: function (response) { },
-                    error: function (response) { }
-                });
-            }
-        } catch (e) {
-        }
-    }
-    function SaveSpecification(_detailId) {
-        if ($("#tblSpecification").length > 0) {
-
-            var itemId = $('select[data-delay="m_MastProduct_Master"]').val();
-            var specificationFields = [];
-            var IsValid = true;
-            $("#tblSpecification tbody tr").each(function () {
-                if (IsValid) {
-                    //$(this).find('td input.valueField').removeClass("input-validation-error");
-                    var fieldName = $(this).find('td input.valueField').attr("data-bind");
-                    var fieldValue = $(this).find('td input.valueField').val();
-                    var fieldRemarks = $(this).find('td input.remarkfield').val();
-                    var fieldcaption = $(this).find('td').find('label').text();
-                    specificationFields.push({
-                        FieldName: fieldName,
-                        FieldValue: fieldValue,
-                        FieldCaption: fieldcaption,
-                        FieldRemarks: fieldRemarks
-                    });
-                    //if (fieldValue == null || fieldValue == "" || fieldValue.length == 0) {
-                    //    IsValid = false;
-                    //    $(this).find('td input.valueField').focus();
-                    //    $(this).find('td input.valueField').addClass("input-validation-error");
-                    //    ShowToastNotification("error", "Please enter value in " + fieldcaption + "");
-                    //}
-                    //else {
-                    //    specificationFields.push({
-                    //        FieldName: fieldName,
-                    //        FieldValue: fieldValue,
-                    //        FieldCaption: fieldcaption,
-                    //        FieldRemarks: fieldRemarks
-                    //    });
-                    //}
-                }
-            });
-            try {
-                if (IsValid) {
-                    var model = {
-                        FormId: '@Model.Design.FormId',
-                        ItemId: itemId,
-                        DetailId: _detailId,
-                        ParentId: parseInt($("#hdnRecordId").val()),
-                        SpecificationFields: specificationFields
-                    }
-                    $.ajax({
-                        type: "POST", url: '@Url.Action("SaveItemSpecification", "Home")',
-                        contentType: "application/json;",
-                        data: JSON.stringify(model),
-                        async: false,
-                        success: function (response) {
-                            //if (response.IsSuccess == false) {
-                            //    ShowToastNotification("error", response.Response);
-                            //}
-                        },
-                        failure: function (response) { },
-                        error: function (response) { }
-                    });
-                }
-            } catch (e) {
-
-            }
-        }
-    }
-    function LoadSpecification(itemId) {
-        try {
-            var model = {
-                ItemId: itemId,
-                DetailId: '@Model.Id',
-                ParentId: parseInt($("#hdnRecordId").val()),
-                FormId: '@Model.Design.FormId',
-            }
-            $.ajax({
-                type: "POST", url: '@Url.Action("PartialItemSpecification", "Home")',
-                contentType: "application/json;",
-                data: JSON.stringify(model),
-                async: true,
-                skipLoading: true, // <-- Custom flag
-                success: function (response) {
-                    if (response != null) {
-                        $('#DIVItemSpecification').html(response)
-                        if ($("#tblSpecification").length) {
-                            const isViewMode = $("#hdnPageActionDetail").val() === "V";
-                            $("#tblSpecification tbody tr").each(function () {
-                                $(this).find('td input.valueField, td input.remarkfield')
-                                    .prop('disabled', isViewMode);
-                            });
-                        }
-                    }
-                },
-                failure: function (response) { },
-                error: function (response) { }
-            });
-        } catch (e) {
-
-        }
-    }
-    function loadPopupDropdown(_fieldId, dropdownId, fieldcap) {
-        try {
-            if (dropdownId != "ChargesId") {
-                var sourceType = $("#DataTabPopup #" + dropdownId).attr("data-sourcetype");
-                if (sourceType == "StoredProcedure") {
-                    var fieldname = $("#DataTabPopup #" + dropdownId).attr('id') + "_Id";
-                    /*console.log("Load Stored Procedure Bind for " + fieldname);*/
-                    BindDependencyData(fieldname, true);
-                }
-                else {
-                    $.ajax({
-                        url: '@Url.Action("getFieldSelection", "Common")',
-                        type: 'GET',
-                        data: { fieldId: _fieldId },
-                        success: function (data) {
-                            $('#' + dropdownId + '_select-loader').hide();
-                            var dropdown = $('#DataTabPopup #' + dropdownId);
-                            var fieldvalue = $('#DataTabPopup #' + dropdownId).attr("data-interval");
-                            dropdown.append('<option value="">Select ' + fieldcap + '</option>');
-                            var isData = false;
-                            $.each(data, function (i, item) {
-                                isData = true;
-                                if (fieldvalue != null && fieldvalue != "" && fieldvalue == item.Value) {
-                                    dropdown.append($('<option selected></option>').val(item.Value).text(item.Text));
-                                }
-                                else {
-                                    dropdown.append($('<option></option>').val(item.Value).text(item.Text));
-                                }
-                            });
-                            dropdown.off("change").on("change", function () {
-                            });
-                            if ($("#hdnPageActionDetail").val() == "V" || $("#hdnPageActionDetail").val() == "E") {
-                                BindDependencyData(dropdownId + "_Id", false);
-                            }
-                            $('#DataTabPopup #' + dropdownId + '_select-loader').hide();
-                            $("#pageLoader").hide();
-                        },
-                        error: function () {
-                            $('#DataTabPopup #' + dropdownId + '_select-loader').hide();
-                            $("#pageLoader").hide();
-                            console.log("Error loading dropdown: " + fieldcap);
-                        }
-                    });
-                }
-            }
-        } catch (e) {
-
-        }
-    }
-    function loadOtherChargesDefault() {
-        var otherChargesAvailabe = '@IsOtherCharges.ToString()';
-        if ($("#DataTabPopup select[data-delay='m_MastProduct_Master']").length == 0
-            || $("#DataTabPopup select[data-bind='ITCode']").length == 0
-            || $("#DataTabPopup select[data-bind='IT_Code']").length == 0
-            || $("#DataTabPopup select[data-bind='IT_CODE']").length == 0) {
-            if (otherChargesAvailabe === 'True') {
-                LoadOtherChargesNew(0, "");
-            }
-        }
-    }
-    $(document).ready(function () {
+                         /// Pre-load selected values (important when editing)
+                         if (selectedValues.length) {
+                             startPartialProcess("Load FillSelctionPaging-2");
+                             $.ajax({
+                                 url: '@Url.Action("FillSelctionPaging", "Common")',
+                                 type: 'GET',
+                                 skipLoading: true, // <-- Custom flag
+                                 data: { FieldId: _fieldId, searchTerm: firstFive, page: 1, fieldValue: '' },
+                                 success: function (data) {
+                                     var isMultiSelection = $(this).attr("data-multiselection");
+                                     if (isMultiSelection != undefined && isMultiSelection != "" && isMultiSelection == "True") {
+                                         selectedValues.forEach(function (val) {
+                                             let item = data.results.find(x => x.id.trim().toLowerCase() == val.trim().toLowerCase());
+                                             if (item) {
+                                                 let option = new Option(item.text, item.id, true, true);
+                                                 $('#DataTabPopup #' + selectId).append(option);
+                                                 $('#DataTabPopup #' + selectId).trigger('change');
+                                             }
+                                         });
+                                     }
+                                     else {
+                                         if (data != null && data.results != null) {
+                                             let item = data.results.find(x => x.id.trim().toLowerCase() == selectedValues.trim().toLowerCase());
+                                             if (item) {
+                                                 let option = new Option(item.text, item.id, true, true);
+                                                 $('#DataTabPopup #' + selectId).append(option).trigger('change');
+                                                 //$('#DataTabPopup #' + selectId).trigger('change');
+                                             }
+                                         }
+                                     }
+                                 },
+                                 complete: function () {
+                                     completePartialProcess("Load FillSelctionPaging-2");
+                                 }
+                             });
+                         }
+                     }
+                 } catch (e) {
+                     console.error("Select2 AJAX Error:", e);
+                 }
+                 //$('#' + selectId).select2()
+                 //console.log("Selected : " + $('#DataTabPopup #' + selectId).val());
+             }
+        });            
         //if ($('select[data-delay="m_MastProduct_Master"]').length == 0) {
         //    $("#divOtherCharge").hide()
         //}
@@ -1666,6 +1156,7 @@
                     DetailId: parseInt($("#hdnDetailId").val()),
                     FormId: '@Model.Design.FormId',
                 }
+                startPartialProcess("Load GetItemOtherCharges");
                 $.ajax({
                     type: "POST", url: '@Url.Action("GetItemOtherCharges", "Home")',
                     contentType: "application/json;",
@@ -1677,8 +1168,8 @@
                     },
                     complete: function () {
                         $('#ajaxLoader').hide();  // Hide loader after call finishes (success or fail)
+                        completePartialProcess("Load GetItemOtherCharges");
                     },
-                    async: false,
                     success: function (data) {
                         if (data != null) {
                             var rowcount = 0;
@@ -1752,7 +1243,7 @@
                         }
                     },
                     failure: function (response) { $('#ajaxLoader').hide(); },
-                    error: function (response) { $('#ajaxLoader').hide(); }
+                    error: function (response) { $('#ajaxLoader').hide(); },                    
                 });
             }
         });
@@ -1794,8 +1285,618 @@
                     }
                 });
             }
-        });
+        });        
     });
+    function showCopiedLabel(ctrl) {
+     $('#DataTabPopup #' + ctrl).before('<span class="my-label">Copied</span>');
+     // Remove the span after 5 seconds (5000 milliseconds)
+     setTimeout(function () {
+         $('#DataTabPopup #' + ctrl).prev('span.my-label').fadeOut(1000, function () {
+             $(this).remove(); // Remove after fade out
+         });
+     }, 5000);
+ }
+    function CopySelectedOptionItem(ctrl) {
+         const $select = $('#DataTabPopup #' + ctrl);
+         $('#DataTabPopup #' + ctrl).prev('span.my-label').remove();
+
+         let selectedValues = "";
+         const isMultiSelection = $select.attr("data-multiselection");
+
+         if (isMultiSelection === "True") {
+             selectedValues = $select.find('option:selected')
+                 .map(function () { return $(this).text(); })
+                 .get()
+                 .join(',');
+         } else {
+             selectedValues = $select.find('option:selected').text();
+         }
+
+         if (!selectedValues) return;
+
+         copyText(selectedValues, ctrl);
+     }
+
+    function copyText(text, ctrl) {
+         if (navigator.clipboard && window.isSecureContext) {
+             navigator.clipboard.writeText(text)
+                 .then(() => showCopiedLabel(ctrl))
+                 .catch(() => legacyCopy(text, ctrl));
+         } else {
+             legacyCopy(text, ctrl);
+         }
+     }
+
+    function legacyCopy(text, ctrl) {
+         const textarea = document.createElement("textarea");
+         textarea.value = text;
+         textarea.style.position = "fixed";
+         textarea.style.opacity = "0";
+         document.body.appendChild(textarea);
+         textarea.focus();
+         textarea.select();
+
+         try {
+             document.execCommand("copy");
+             showCopiedLabel(ctrl);
+         } catch (err) {
+             console.error("Copy failed", err);
+         }
+
+         document.body.removeChild(textarea);
+     }
+
+    function CopySelectedOptionItem1(ctrl) {
+         try {
+
+         var $select = $('#DataTabPopup #' + ctrl);
+         $('#DataTabPopup #' + ctrl).prev('span.my-label').remove();
+         // Make sure Select2 is initialized
+         if (!$select.hasClass('select2-hidden-accessible') && $("#hdnPageActionDetail").val() != "V") {
+             //alert('Select2 not initialized!');
+             return;
+         }
+         var selectedValues = "";
+         var isMultiSelection = $select.attr("data-multiselection");
+         if (isMultiSelection != undefined && isMultiSelection != "" && isMultiSelection == "True") {
+             var multiText = $select.find('option:selected').map(function () {
+                 return $(this).text(); // Use .val() if you want IDs
+             }).get().join(',');
+             selectedValues = multiText;
+         }
+         else {
+             selectedValues = $('#DataTabPopup #' + ctrl + ' option:selected').text();
+         }
+
+         if (selectedValues.length === 0) {
+             selectedValues = $('#DataTabPopup #' + ctrl + ' option:selected').text();
+             return;
+         }
+         var textToCopy = selectedValues;
+         // Use a fallback method if navigator.clipboard is not supported
+             if (navigator.clipboard && window.isSecureContext && navigator.clipboard.writeText) {
+             navigator.clipboard.writeText(textToCopy).then(function () {
+                 console.log('Copied: ' + textToCopy);
+                 $('#DataTabPopup #' + ctrl).before('<span class="my-label">Copied</span>');
+                 // Remove the span after 5 seconds (5000 milliseconds)
+                 setTimeout(function () {
+                     $('#DataTabPopup #' + ctrl).prev('span.my-label').fadeOut(1000, function () {
+                         $(this).remove(); // Remove after fade out
+                     });
+                 }, 5000);
+             }).catch(function (err) {
+                 console.error('Clipboard failed:', err);
+             });
+         } else {
+             // Fallback for insecure context
+             var textArea = document.createElement("textarea");
+             textArea.value = textToCopy;
+             document.body.appendChild(textArea);
+             textArea.focus();
+             textArea.select();
+             try {
+                 document.execCommand('copy');
+                 console.log('Copied: ' + textToCopy);
+                 $('#DataTabPopup #' + ctrl).before('<span class="my-label">Copied</span>');
+                 // Remove the span after 5 seconds (5000 milliseconds)
+                 setTimeout(function () {
+                     $('#DataTabPopup #' + ctrl).prev('span.my-label').fadeOut(1000, function () {
+                         $(this).remove(); // Remove after fade out
+                     });
+                 }, 5000);
+             } catch (err) {
+                 console.error('Fallback: Unable to copy', err);
+             }
+             document.body.removeChild(textArea);
+             // Fallback using temporary input element
+             //alert('Copied: ' + textToCopy);
+             }
+         } catch (e) {
+
+         }
+     }
+    function dropdownChange(ctr) {
+         var isloadingpage = false;
+         var $partial = $(ctr).closest("#tabModalData");
+        if ($partial.hasClass("partial-loading")) {
+            isloadingpage = true;
+             console.log("Partial is still loading");
+         }
+        if ($partial.hasClass("partial-loaded")) {            
+             console.log("Partial loaded / dropdown changed");
+         }
+         var fieldname = $(ctr).attr('id') + "_Id";
+         //console.log(fieldname + " Select Change Event trigger");
+         var selctedval = $(ctr).val();
+         //$('#DataTabPopup ' + $(ctr).attr('id')).val(selctedval);
+         var selctedtext = $('#DataTabPopup #' + $(ctr).attr('id') + ' option:selected').text();
+         //console.log("Selcted Text :" + selctedtext);
+         var isCalldedDependency = false;
+         if ($("#DataTabPopup #select2-" + $(ctr).attr('id') + "-container")) {
+             $("#DataTabPopup #select2-" + $(ctr).attr('id') + "-container").text(selctedtext);
+             $("#DataTabPopup #select2-" + $(ctr).attr('id') + "-container").attr("title", selctedtext);
+         }
+         if (($(ctr).attr("data-delay") != null && $(ctr).attr("data-delay").length > 0 && $(ctr).attr("data-delay") == "m_MastProduct_Master")
+             || ($(ctr).attr("data-bind") != null && $(ctr).attr("data-bind").length > 0 && $(ctr).attr("data-bind") == "ITCode")
+             || ($(ctr).attr("data-bind") != null && $(ctr).attr("data-bind").length > 0 && $(ctr).attr("data-bind") == "IT_Code")
+             || ($(ctr).attr("data-bind") != null && $(ctr).attr("data-bind").length > 0 && $(ctr).attr("data-bind") == "IT_CODE")
+         ) {
+             var itemId = parseInt($(ctr).val());
+             $("#hdnItemId").val(itemId);
+
+             isCalldedDependency = true;
+             BindDependencyData(fieldname, isloadingpage);
+             var SerialNoAvailabe = '@IsStocWithkSerialNo.ToString()';
+             if (SerialNoAvailabe == 'True') {
+                 $('#divStockSerial').empty();
+                 if ($("#hdnPageActionDetail").val() == "A" && $("#txtISSerialNo").length > 0) {
+                     $("#txtISSerialNo").val(1);
+                     $("#txtISBatchLot").trigger("blur");
+                 }
+                 //else if ($("#hdnPageActionDetail").val() == "E" && $("#txtISSerialNo").length > 0) {
+                 //    if ($("#tblItem_StockSerial tbody tr").length > 0 && $("#tblItem_StockSerial tbody tr td").length == 1) {
+                 //        $("#txtISSerialNo").val(1);
+                 //        $("#txtISBatchLot").trigger("blur");
+                 //    }
+                 //}
+                 else {
+                     console.log("Call LoadItemStockSerial : 3");
+                     LoadItemStockSerial("View");
+                 }
+             }
+         }
+         if (($(ctr).attr("data-delay") != null && $(ctr).attr("data-delay").length > 0 && $(ctr).attr("data-delay") == "m_MastLocation")
+             || ($(ctr).attr("data-bind") != null && $(ctr).attr("data-bind").length > 0 && $(ctr).attr("data-bind") == "Location")
+             || ($(ctr).attr("data-bind") != null && $(ctr).attr("data-bind").length > 0 && $(ctr).attr("data-bind") == "Location")
+             || ($(ctr).attr("data-bind") != null && $(ctr).attr("data-bind").length > 0 && $(ctr).attr("data-bind") == "Location")
+         ) {
+             var locationId = parseInt($(ctr).val());
+             if (locationId > 0) {
+                 var SerialNoAvailabe = '@IsStocWithkSerialNo.ToString()';
+                 if (SerialNoAvailabe == 'True') {
+                     $('#divStockSerial').empty();
+                     if ($("#hdnPageActionDetail").val() == "A" && $("#txtISSerialNo").length > 0) {
+                         $("#txtISSerialNo").val(1);
+                         $("#txtISBatchLot").trigger("blur");
+                     }
+                     //else if ($("#hdnPageActionDetail").val() == "E" && $("#txtISSerialNo").length > 0) {
+                     //    if ($("#tblItem_StockSerial tbody tr").length > 0 && $("#tblItem_StockSerial tbody tr td").length == 1) {
+                     //        $("#txtISSerialNo").val(1);
+                     //        $("#txtISBatchLot").trigger("blur");
+                     //    }
+                     //}
+                     else {
+                         console.log("Call LoadItemStockSerial : 2");
+                         LoadItemStockSerial("View");
+                     }
+                 }
+             }
+         }
+         if ($("#hdnPageActionDetail").val() != "V") {
+             if (($(ctr).attr("data-delay") != null && $(ctr).attr("data-delay").length > 0 && $(ctr).attr("data-delay") == "m_MastProduct_Master")
+                 || ($(ctr).attr("data-bind") != null && $(ctr).attr("data-bind").length > 0 && $(ctr).attr("data-bind") == "ITCode")
+                 || ($(ctr).attr("data-bind") != null && $(ctr).attr("data-bind").length > 0 && $(ctr).attr("data-bind") == "IT_Code")
+                 || ($(ctr).attr("data-bind") != null && $(ctr).attr("data-bind").length > 0 && $(ctr).attr("data-bind") == "IT_CODE")
+             ) {
+                 if ($(ctr).val() != null) {
+                     var itemId = parseInt($(ctr).val());
+                     $("#hdnItemId").val(itemId);
+                     var otherChargesAvailabe = '@IsOtherCharges.ToString()';
+                     if (otherChargesAvailabe == 'True') {
+                         if ($(ctr).attr("Id") != "ChargesId") {
+                             /*LoadOtherCharges($(ctr));*/
+                             var fieldId = $(ctr).attr("data-container");
+                             var itemId = $(ctr).val();
+                             LoadOtherChargesNew(itemId, fieldId);
+                         }
+                     }
+                     var SpecificationAvailabe = '@IsSpecification.ToString()';
+                     if (SpecificationAvailabe == 'True') {
+                         LoadSpecification(itemId);
+                     }
+                     var DSAvailabe = '@IsDeliverySchedule.ToString()';
+                     if (DSAvailabe == 'True') {
+                         LoadDeliveryScheduled(itemId);
+                     }
+                     @*var SerialNoAvailabe = '@IsStocWithkSerialNo.ToString()';
+                     if (SerialNoAvailabe == 'True') {
+                         $('#divStockSerial').empty();
+                         if ($("#hdnPageActionDetail").val() == "A" && $("#txtISSerialNo").length > 0) {
+                             $("#txtISSerialNo").val(1);
+                             $("#txtISBatchLot").trigger("blur");
+                         }
+                         else if ($("#hdnPageActionDetail").val() == "E" && $("#txtISSerialNo").length > 0) {
+                             if ($("#tblItem_StockSerial tbody tr").length > 0 && $("#tblItem_StockSerial tbody tr td").length == 1) {
+                                 $("#txtISSerialNo").val(1);
+                                 $("#txtISBatchLot").trigger("blur");
+                             }
+                         }
+                         else {
+                             console.log("Call LoadItemStockSerial : 1");
+                             LoadItemStockSerial("New");
+                         }
+                     }*@
+                 }
+             }
+             if (($(ctr).attr("data-delay") != null && $(ctr).attr("data-delay").length > 0 && $(ctr).attr("data-delay") == "m_MastLocation")
+                 || ($(ctr).attr("data-bind") != null && $(ctr).attr("data-bind").length > 0 && $(ctr).attr("data-bind") == "Location")) {
+                 var SerialNoAvailabe = '@IsStocWithkSerialNo.ToString()';
+                 if (SerialNoAvailabe == 'True') {
+                     //$('#divStockSerial').empty();
+                     //if ($("#hdnPageActionDetail").val() == "A" && $("#txtISSerialNo").length > 0) {
+                     //    $("#txtISSerialNo").val(1);
+                     //    $("#txtISBatchLot").trigger("blur");
+                     //}
+                     //else if ($("#hdnPageActionDetail").val() == "E" && $("#txtISSerialNo").length > 0) {
+                     //    if ($("#tblItem_StockSerial tbody tr").length > 0 && $("#tblItem_StockSerial tbody tr td").length == 1) {
+                     //        $("#txtISSerialNo").val(1);
+                     //        $("#txtISBatchLot").trigger("blur");
+                     //    }
+                     //}
+                     //else {
+                     //    console.log("Call LoadItemStockSerial : 4");
+                     //    LoadItemStockSerial("New");
+                     //}
+                 }
+             }
+             if (($(ctr).attr("data-delay") != null && $(ctr).attr("data-delay").length > 0 && $(ctr).attr("data-delay") == "m_MastAccountMaster"))
+             {
+                 if ($(ctr).val() != null) {
+                     var otherChargesAvailabe = '@IsOtherCharges.ToString()';
+                     if (otherChargesAvailabe == 'True') {
+                         if ($(ctr).attr("Id") != "ChargesId") {
+                             var fieldId = $(ctr).attr("data-container");
+                             LoadOtherChargesNew(0, fieldId);
+                         }
+                     }
+                 }
+             }
+             if (isCalldedDependency == false) {
+                 BindDependencyData(fieldname, isloadingpage);
+             }
+         }
+         FieldFormulaCalculation();
+         //console.log("hdnItemId : " + $("#hdnItemId").val());
+         //console.log("ctrl : " + $(ctr).attr('id') + " - " + $(ctr).val());
+         //console.log("ctrl Text: " + $('#DataTabPopup #' + $(ctr).attr('id') + ' option:selected').text());
+     }
+    function LoadOtherCharges(ctrl) {
+         try {
+             let tableDropdown = $("#ChargesId");
+             $("#divChargeFields").empty();
+             var fieldId = $(ctrl).attr("data-container");
+             var itemId = $(ctrl).val();
+             var _accountId = 0;
+             var $accountElement = $("#HeaderTabs").find('[data-delay="m_MastAccountMaster"]');
+             var accountVal = $accountElement.val();
+             if ($accountElement.length > 0 && accountVal && accountVal !== "0") {
+                 _accountId = parseInt(accountVal);
+             }
+             else if ($accountElement.length == 0) {
+                 $accountElement = $("#DataTabPopup").find('[data-delay="m_MastAccountMaster"]');
+                 accountVal = $accountElement.val();
+                 if ($accountElement.length > 0 && accountVal && accountVal !== "0") {
+                     _accountId = parseInt(accountVal);
+                 }
+             }
+             if (itemId > 0 || _accountId > 0) {
+                 var headerFieldData = getPageHeaderFieldData();
+                 var fieldData = getPageFieldData();
+                 var model = {
+                     FieldId: fieldId,
+                     ItemId: itemId,
+                     AccId: _accountId,
+                     FormId: '@Model.Design.FormId',
+                     HeaderFieldData: headerFieldData,
+                     DetailFieldData: fieldData
+                 };
+                 startPartialProcess("Load GetItemFieldOtherCharges");
+                 tableDropdown.empty();
+                 tableDropdown.append('<option value="">Other Charge Template</option>')
+                 $.ajax({
+                     type: "POST", url: '@Url.Action("GetItemFieldOtherCharges", "Common")',
+                     contentType: "application/json;",
+                     data: JSON.stringify(model),
+                     dataType: "json",
+                     skipLoading: true, // <-- Custom flag
+                     async: true,
+                     success: function (tables) {
+                         tableDropdown.empty();
+                         tableDropdown.append('<option value="">Other Charge Template</option>')
+                         if (tables != null && tables.length > 0) {
+                             tables.forEach(table => {
+                                 if (table.Value != "-1" && table.Value != null) {
+                                     if ($("#hdnChargesId").val() == "" || $("#hdnChargesId").val() == "0") {
+                                         tableDropdown.append(`<option selected value="${table.Value}">${table.Text}</option>`);
+                                     }
+                                     else {
+                                         tableDropdown.append(`<option value="${table.Value}">${table.Text}</option>`);
+                                     }
+                                 }
+                             });
+                             if ($("#hdnChargesId").val() != "" && $("#hdnChargesId").val() != "0") {
+                                 $('#ChargesId').val($("#hdnChargesId").val()).change();
+                             }
+                             else if ($("#ChargesId").val() != "" && $("#ChargesId").val() != "0") {
+                                 $('#ChargesId').val($("#ChargesId").val()).change();
+                             }
+                             //else {
+                             //    $('#ChargesId').prop('selectedIndex', 1);
+                             //    $('#ChargesId').val($("#ChargesId").val()).change();
+                             //}
+                             if ($('#ChargesId option').length > 1) {
+                                 var sel = $('#ChargesId')[0];
+                                 if (sel.selectedIndex < 0 || sel.selectedIndex === 0) {
+                                     sel.selectedIndex = 1;
+                                     $('#ChargesId').val($("#ChargesId").val()).change();
+                                 }
+                             }
+                         }
+                     },
+                     failure: function (response) { },
+                     error: function (xhr, status, error) {
+
+                         console.log("Status:", status);
+                         console.log("Error:", error);
+                         console.log("Response:", xhr.responseText);
+
+                     },
+                     complete: function () {
+                         completePartialProcess("Load GetItemFieldOtherCharges");
+                     }
+                 });
+             }
+         } catch (e) {
+         }
+     }
+    function LoadOtherChargesNew(itemId, fieldId) {
+         try {
+             let tableDropdown = $("#ChargesId");
+             $("#divChargeFields").empty();
+             //var fieldId = $(ctrl).attr("data-container");
+             //var itemId = $(ctrl).val();
+             var _accountId = 0;
+             var $accountElement = $("#HeaderTabs").find('[data-delay="m_MastAccountMaster"]');
+             var accountVal = $accountElement.val();
+             if ($accountElement.length > 0 && accountVal && accountVal !== "0") {
+                 _accountId = parseInt(accountVal);
+             }
+             else if ($accountElement.length == 0) {
+                 $accountElement = $("#DataTabPopup").find('[data-delay="m_MastAccountMaster"]');
+                 accountVal = $accountElement.val();
+                 if ($accountElement.length > 0 && accountVal && accountVal !== "0") {
+                     _accountId = parseInt(accountVal);
+                 }
+             }
+             if (itemId == null) {
+                 itemId = 0;
+                 fieldId = "";
+             }
+             if (itemId > 0 || _accountId > 0) {
+                 var headerFieldData = getPageHeaderFieldData();
+                 var fieldData = getPageFieldData();
+                 var model = {
+                     FieldId: fieldId,
+                     ItemId: itemId,
+                     AccId: _accountId,
+                     FormId: '@Model.Design.FormId',
+                     HeaderFieldData: headerFieldData,
+                     DetailFieldData: fieldData
+                 };
+                 startPartialProcess("Load GetItemFieldOtherCharges");
+                 tableDropdown.empty();
+                 tableDropdown.append('<option value="">Other Charge Template</option>')
+                 $.ajax({
+                     type: "POST", url: '@Url.Action("GetItemFieldOtherCharges", "Common")',
+                     contentType: "application/json;",
+                     data: JSON.stringify(model),
+                     skipLoading: true, // <-- Custom flag
+                     //async: true,
+                     success: function (tables) {
+                         tableDropdown.empty();
+                         tableDropdown.append('<option value="">Other Charge Template</option>')
+                         if (tables != null && tables.length > 0) {
+                             tables.forEach(table => {
+                                 if (table.Value != "-1" && table.Value != null) {
+                                     if (($("#hdnChargesId").val() == "" || $("#hdnChargesId").val() == "0") && itemId > 0) {
+                                         tableDropdown.append(`<option selected value="${table.Value}">${table.Text}</option>`);
+                                     }
+                                     else {
+                                         tableDropdown.append(`<option value="${table.Value}">${table.Text}</option>`);
+                                     }
+                                 }
+                             });
+                             if ($("#hdnChargesId").val() != "" && $("#hdnChargesId").val() != "0") {
+                                 $('#ChargesId').val($("#hdnChargesId").val()).change();
+                             }
+                             else if ($("#ChargesId").val() != "" && $("#ChargesId").val() != "0") {
+                                 $('#ChargesId').val($("#ChargesId").val()).change();
+                             }
+                             //else {
+                             //    $('#ChargesId').prop('selectedIndex', 1);
+                             //    $('#ChargesId').val($("#ChargesId").val()).change();
+                             //}
+                             if ($('#ChargesId option').length > 1 && itemId > 0) {
+                                 var sel = $('#ChargesId')[0];
+                                 if (sel.selectedIndex < 0 || sel.selectedIndex === 0) {
+                                     sel.selectedIndex = 1;
+                                     $('#ChargesId').val($("#ChargesId").val()).change();
+                                 }
+                             }
+                         }
+                     },
+                     failure: function (response) { },
+                     error: function (response) { },
+                     complete: function () {
+                         completePartialProcess("Load GetItemFieldOtherCharges");
+                     }
+                 });
+             }
+         } catch (e) {
+         }
+     }
+    function SaveSpecification(_detailId) {
+         if ($("#tblSpecification").length > 0) {
+
+             var itemId = $('select[data-delay="m_MastProduct_Master"]').val();
+             var specificationFields = [];
+             var IsValid = true;
+             $("#tblSpecification tbody tr").each(function () {
+                 if (IsValid) {
+                     //$(this).find('td input.valueField').removeClass("input-validation-error");
+                     var fieldName = $(this).find('td input.valueField').attr("data-bind");
+                     var fieldValue = $(this).find('td input.valueField').val();
+                     var fieldRemarks = $(this).find('td input.remarkfield').val();
+                     var fieldcaption = $(this).find('td').find('label').text();
+                     specificationFields.push({
+                         FieldName: fieldName,
+                         FieldValue: fieldValue,
+                         FieldCaption: fieldcaption,
+                         FieldRemarks: fieldRemarks
+                     });
+                 }
+             });
+             try {
+                 if (IsValid) {
+                     var model = {
+                         FormId: '@Model.Design.FormId',
+                         ItemId: itemId,
+                         DetailId: _detailId,
+                         ParentId: parseInt($("#hdnRecordId").val()),
+                         SpecificationFields: specificationFields
+                     }
+                     $.ajax({
+                         type: "POST", url: '@Url.Action("SaveItemSpecification", "Home")',
+                         contentType: "application/json;",
+                         data: JSON.stringify(model),
+                         async: false,
+                         success: function (response) {
+                             //if (response.IsSuccess == false) {
+                             //    ShowToastNotification("error", response.Response);
+                             //}
+                         },
+                         failure: function (response) { },
+                         error: function (response) { }
+                     });
+                 }
+             } catch (e) {
+
+             }
+         }
+     }
+    function LoadSpecification(itemId) {
+         try {
+             var model = {
+                 ItemId: itemId,
+                 DetailId: '@Model.Id',
+                 ParentId: parseInt($("#hdnRecordId").val()),
+                 FormId: '@Model.Design.FormId',
+             }
+             $.ajax({
+                 type: "POST", url: '@Url.Action("PartialItemSpecification", "Home")',
+                 contentType: "application/json;",
+                 data: JSON.stringify(model),
+                 async: true,
+                 skipLoading: true, // <-- Custom flag
+                 success: function (response) {
+                     if (response != null) {
+                         $('#DIVItemSpecification').html(response)
+                         if ($("#tblSpecification").length) {
+                             const isViewMode = $("#hdnPageActionDetail").val() === "V";
+                             $("#tblSpecification tbody tr").each(function () {
+                                 $(this).find('td input.valueField, td input.remarkfield')
+                                     .prop('disabled', isViewMode);
+                             });
+                         }
+                     }
+                 },
+                 failure: function (response) { },
+                 error: function (response) { }
+             });
+         } catch (e) {
+
+         }
+     }
+    function loadPopupDropdown(_fieldId, dropdownId, fieldcap) {
+         try {
+             if (dropdownId != "ChargesId") {
+                 var sourceType = $("#DataTabPopup #" + dropdownId).attr("data-sourcetype");
+                 if (sourceType == "StoredProcedure") {
+                     var fieldname = $("#DataTabPopup #" + dropdownId).attr('id') + "_Id";
+                     /*console.log("Load Stored Procedure Bind for " + fieldname);*/
+                     BindDependencyData(fieldname, true);
+                 }
+                 else {
+                     $.ajax({
+                         url: '@Url.Action("getFieldSelection", "Common")',
+                         type: 'GET',
+                         data: { fieldId: _fieldId },
+                         success: function (data) {
+                             $('#' + dropdownId + '_select-loader').hide();
+                             var dropdown = $('#DataTabPopup #' + dropdownId);
+                             var fieldvalue = $('#DataTabPopup #' + dropdownId).attr("data-interval");
+                             dropdown.append('<option value="">Select ' + fieldcap + '</option>');
+                             var isData = false;
+                             $.each(data, function (i, item) {
+                                 isData = true;
+                                 if (fieldvalue != null && fieldvalue != "" && fieldvalue == item.Value) {
+                                     dropdown.append($('<option selected></option>').val(item.Value).text(item.Text));
+                                 }
+                                 else {
+                                     dropdown.append($('<option></option>').val(item.Value).text(item.Text));
+                                 }
+                             });
+                             dropdown.off("change").on("change", function () {
+                             });
+                             if ($("#hdnPageActionDetail").val() == "V" || $("#hdnPageActionDetail").val() == "E") {
+                                 BindDependencyData(dropdownId + "_Id", true);
+                             }
+                             $('#DataTabPopup #' + dropdownId + '_select-loader').hide();
+                             $("#pageLoader").hide();
+                         },
+                         error: function () {
+                             $('#DataTabPopup #' + dropdownId + '_select-loader').hide();
+                             $("#pageLoader").hide();
+                             console.log("Error loading dropdown: " + fieldcap);
+                         }
+                     });
+                 }
+             }
+         } catch (e) {
+
+         }
+     }
+    function loadOtherChargesDefault() {
+         var otherChargesAvailabe = '@IsOtherCharges.ToString()';
+         if ($("#DataTabPopup select[data-delay='m_MastProduct_Master']").length == 0
+             || $("#DataTabPopup select[data-bind='ITCode']").length == 0
+             || $("#DataTabPopup select[data-bind='IT_Code']").length == 0
+             || $("#DataTabPopup select[data-bind='IT_CODE']").length == 0) {
+             if (otherChargesAvailabe === 'True') {
+                 LoadOtherChargesNew(0, "");
+             }
+         }
+     }
     function FieldFormulaCalculation() {
         if ($("#hdnPageActionDetail").val() != "V") {
             $("#DataTabPopup input").each(function () {
@@ -2577,19 +2678,20 @@
                 TabId: '@Model.Design.FormTabId',
                 FieldId: (Isload == true ? $("#DataTabPopup #" + loadname).attr("data-container"): "")
             }
+            startPartialProcess("Load getDependencyData");
              $.ajax({
                  type: "POST", url: '@Url.Action("getDependencyData", "Home")',
                  contentType: "application/json;",
                  skipLoading: true, // <-- Custom flag
                  data: JSON.stringify(model),
-                 async: true,
+                 //async: true,
                  beforeSend: function () {
                      $('#ajaxLoader').hide();  // Show loader before the call
                  },
                  complete: function () {
                      $('#ajaxLoader').hide();  // Hide loader after call finishes (success or fail)
                  },
-                 async: false,
+                 //async: false,
                  success: function (response) {
                      if (response != null && response != undefined && response.length > 0) {
                          $.each(response, function (index, item) {
@@ -2627,14 +2729,13 @@
                                              if (Dataitem.FieldValue != null && Dataitem.FieldValue.length > 0) {
                                                  if (element[0].type == "text") {
                                                      if (Dataitem.FieldValue != null && Dataitem.FieldValue != "" && Dataitem.FieldValue != "0") {
-                                                         if ($("#hdnPageActionDetail").val() != "V") {
+                                                         if ($("#hdnPageActionDetail").val() != "V" && Isload != true) {
                                                              $('#DataTabPopup #' + item.FieldName).val(Dataitem.FieldValue);
                                                          }
                                                      }
                                                  }
                                                  else if (element[0].type == "number") {
-                                                     ;
-                                                     if ($("#hdnPageActionDetail").val() != "V") {
+                                                     if ($("#hdnPageActionDetail").val() != "V" && Isload != true) {
                                                          $('#DataTabPopup #' + item.FieldName).val(
                                                              Dataitem.FieldValue == null || Dataitem.FieldValue === "" ? 0 : Dataitem.FieldValue
                                                          );
@@ -2722,7 +2823,7 @@
                                                  dropdown.trigger('select');
                                              }
                                              else {
-                                                 BindDependencyData(item.FieldName + "_Id", false);
+                                                 BindDependencyData(item.FieldName + "_Id", Isload);
                                                  if(item.FieldName == "ITCode")
 							                     {
 							                        var itemId = $("#"+ item.FieldName).val();
@@ -2738,7 +2839,7 @@
                                                  dropdown.trigger('select');
                                              }
                                              else {
-                                                 BindDependencyData(item.FieldName + "_Id", false);
+                                                 BindDependencyData(item.FieldName + "_Id", Isload);
                                                  if(item.FieldName == "ITCode"){
                                                     var itemId = $("#"+ item.FieldName).val();
                                                     var SpecificationAvailabe = '@IsSpecification.ToString()';
@@ -2768,7 +2869,10 @@
                      $('#' + loadname + '_select-loader').hide();
                  },
                  failure: function (response) { $('#' + loadname + '_select-loader').hide(); },
-                 error: function (response) { $('#' + loadname + '_select-loader').hide(); }
+                 error: function (response) { $('#' + loadname + '_select-loader').hide(); },
+                 complete: function () {
+                     completePartialProcess("Load getDependencyData");
+                 }
              });
         } catch (e) {
             $('#' + loadname + '_select-loader').hide();
@@ -3406,4 +3510,5 @@
             console.log("Exception:", e);
         }
     }
+
 </script>

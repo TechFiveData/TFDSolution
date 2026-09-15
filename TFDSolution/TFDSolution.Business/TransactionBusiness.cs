@@ -47,7 +47,7 @@ namespace TFDSolution.Business
             return null;
         }
 
-        public ResponseModel getPendingSelectedRecords(int formPendingId, string ItemSrNos, string userId)
+        public ResponseModel getPendingSelectedRecords(int formPendingId, string ItemSrNos, string userId, string formTabId)
         {
             ResponseModel response = new ResponseModel();
             try
@@ -59,7 +59,17 @@ namespace TFDSolution.Business
                         var param1 = new SqlParameter("@formPendingId", formPendingId);
                         var param2 = new SqlParameter("@ItemSrNos", ItemSrNos);
                         var param3 = new SqlParameter { ParameterName = "@UserId", Value = userId };
-                        response = context.Database.SqlQuery<ResponseModel>("EXEC get_PendingSelectedData @formPendingId, @ItemSrNos, @UserId", param1, param2, param3).FirstOrDefault();
+                        if (CodeHelper.HasParameter("m_ItemOtherCharges", "DetailFieldsData", context))
+                        {
+                            var param4 = new SqlParameter { ParameterName = "@FormTabId", Value = formTabId };
+                            response = context.Database.SqlQuery<ResponseModel>("EXEC get_PendingSelectedData @formPendingId, @ItemSrNos, @UserId, @FormTabId",
+                            param1, param2, param3, param4).FirstOrDefault();
+                        }
+                        else
+                        {
+                            response = context.Database.SqlQuery<ResponseModel>("EXEC get_PendingSelectedData @formPendingId, @ItemSrNos, @UserId",
+                            param1, param2, param3).FirstOrDefault();
+                        }
                     }
                 }
             }

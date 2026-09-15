@@ -25,4 +25,11 @@ namespace TFDSolution.Transport
         public string FormId { get; set; }
         public string CompanyName { get; set; }
     }
+
+    public class PendingSelectedRequest
+    {
+        public string FieldValues { get; set; }
+        public string FormTabId { get; set; }
+        public string TableName { get; set; }
+    }
 }
