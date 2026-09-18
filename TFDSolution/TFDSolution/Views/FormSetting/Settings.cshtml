@@ -2421,36 +2421,36 @@
         });
     }*@
     function loadDropdownTables(_OptionSource, defaultValue)
-{
-    let columnDropdown1 = $("#ddlSelectText");
-    let columnDropdown2 = $("#ddlSelectValue");
-    $("#divSPRequest").addClass("d-none");
-    columnDropdown1.empty();
-    columnDropdown2.empty();
-    $('#tblRequest tbody tr').remove();
-    return $.ajax({
-        url: "@Url.Action("GetFieldOptionSource", "FormSetting")",
-        type: "GET",
-        skipLoading: true,
-        data: { sourceType: _OptionSource },
-        success: function (tables) {
-            let tableDropdown = $("#ddlTables");
-            tableDropdown.empty();
-            tableDropdown.append('<option value="">Select ' + _OptionSource +'</option>');
-            tables.forEach(table => {
-                if (defaultValue != undefined && defaultValue != "" && defaultValue == table) {
-                    tableDropdown.append(`<option selected value="${table}">${table}</option>`);
+    {
+        let columnDropdown1 = $("#ddlSelectText");
+        let columnDropdown2 = $("#ddlSelectValue");
+        $("#divSPRequest").addClass("d-none");
+        columnDropdown1.empty();
+        columnDropdown2.empty();
+        $('#tblRequest tbody tr').remove();
+        return $.ajax({
+            url: "@Url.Action("GetFieldOptionSource", "FormSetting")",
+            type: "GET",
+            skipLoading: true,
+            data: { sourceType: _OptionSource },
+            success: function (tables) {
+                let tableDropdown = $("#ddlTables");
+                tableDropdown.empty();
+                tableDropdown.append('<option value="">Select ' + _OptionSource +'</option>');
+                tables.forEach(table => {                    
+                    if (defaultValue != undefined && defaultValue != "" && defaultValue == table) {                        
+                        tableDropdown.append(`<option selected value="${table}">${table}</option>`);
+                    }
+                    else {
+                        tableDropdown.append(`<option value="${table}">${table}</option>`);
+                    }
+                });
+                if (defaultValue != undefined && defaultValue != "") {
+                    tableDropdown.val(defaultValue);
                 }
-                else {
-                    tableDropdown.append(`<option value="${table}">${table}</option>`);
-                }
-            });
-            if (defaultValue != undefined && defaultValue != "") {
-                tableDropdown.val(defaultValue);
-            }
-         }
-    });
-}
+             }
+        });
+    }
     function loadTableColumns(_OptionSource, tableName, selectedText, selectedValu) {
         try {
 
@@ -3108,6 +3108,8 @@
             success: function (response) {
                 if (response != null) {
                     var FormField = response;
+                    /*DDLSourceType: ddlSource,*/
+                    
                     $("#v-pills-fieldstypetab #btn_" + FormField.FieldType).click();
                     showFieldControl(FormField.FieldTypeId, FormField.FieldType, true,true);
                     $("#v-pills-fieldstypecontent input").attr("disabled", true);
@@ -3125,15 +3127,7 @@
                     $("#chkStatus").prop("checked", (FormField.IsActive == null ? false : FormField.IsActive));
                     $("#hdnFieldTypeId").val(FormField.FieldTypeId);
                     $("#hdnFieldId").val(FormField.FieldId);
-                    /*DDLSourceType: ddlSource,*/
-                    if (FormField.DDLSourceType != "") {
-                        $("input[name=inline-radios][value='" + FormField.DDLSourceType +"']").prop("checked", true);
-                        loadDropdownTables(FormField.DDLSourceType, FormField.DDLSourceName).done(function () {
-                            loadTableColumns(FormField.DDLSourceType, FormField.DDLSourceName, FormField.DDLTextField, FormField.DDLValueField);
-                            $("#ddlSelectText").val(FormField.DDLTextField);
-                            $("#ddlSelectValue").val(FormField.DDLValueField);
-                        });
-                    }
+                    
                     $("#v-pills-fieldstypecontent select").attr("disabled", true);
                     $("#ddlFieldSize").val(FormField.FieldSize);
                     if (FormField.FieldType == "Button") {
@@ -3211,6 +3205,15 @@
                     }
                     else {
                         $("#fieldModalLabel").html("View Field : " + FormField.FieldType);
+                    } 
+                    if (FormField.DDLSourceType != "") {
+                        $("input[name=inline-radios][value='" + FormField.DDLSourceType + "']").prop("checked", true);
+                        loadDropdownTables(FormField.DDLSourceType, FormField.DDLSourceName).done(function () {
+                            loadTableColumns(FormField.DDLSourceType, FormField.DDLSourceName, FormField.DDLTextField, FormField.DDLValueField);
+                            $("#ddlTables").val(FormField.DDLSourceName);
+                            $("#ddlSelectText").val(FormField.DDLTextField);
+                            $("#ddlSelectValue").val(FormField.DDLValueField);
+                        });
                     }
                 }
                 else {

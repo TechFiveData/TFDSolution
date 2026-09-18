@@ -108,6 +108,7 @@ namespace TFDSolution.Transport.Master
         public string PageAction { get; set; }
         public int ReferenceFieldCounter { get; set; }
         public List<PageFieldData> FieldData { get; set; }
+        public List<PageFieldData> HeaderFieldData { get; set; }
         public int TemplateId { get; set; }
     }
     public class ItemDetailButtonModel

@@ -7454,6 +7454,7 @@ div.dataTables_filter, div.dataTables_length {
     border: 1px solid rgba(0, 0, 0, .125);
     margin-bottom: 11px;
 }
+
 .page-breaker-new {
     height: 1px;
     background: #fff;
@@ -7652,9 +7653,9 @@ table.dataTable.hover > tbody > tr.selected:hover > *, table.dataTable.display >
     }
 
     .custom-tab .nav-link {*/
-        /*background-color: skyblue !important;
+/*background-color: skyblue !important;
         border-bottom: 1px solid #ccc !important;*/
-        /*font-weight: 400;
+/*font-weight: 400;
         color: #555;
         height: 30px;
         padding: 4px 17px;
@@ -10128,4 +10129,132 @@ th:has(.selectAll) {
 .grid-button {
     padding: 2px 13px;
     font-size: 13px;
+}
+/* =========================================
+   ATTENDANCE SUMMARY
+   ========================================= */
+
+.summary-container {
+    width: 100%;
+    min-height: 35px;
+    display: flex;
+    align-items: center;
+    background: #ffffff;
+    border-radius: 8px;
+    padding: 0 0;
+    box-shadow: 0 1px 3px rgba(40, 35, 30, 0.04);
+}
+
+/* =========================================
+   SUMMARY ITEM
+   ========================================= */
+
+.summary-item {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-width: 0;
+}
+
+
+/* =========================================
+   LABEL
+   ========================================= */
+
+.summary-label {
+    color: currentColor;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.45px;
+    white-space: nowrap;
+}
+
+    .summary-label span {
+        display: inline;
+    }
+
+
+/* =========================================
+   VALUE
+   ========================================= */
+
+.summary-value {
+    color: #282522;
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+
+/* =========================================
+   DIVIDER
+   ========================================= */
+
+.summary-divider {
+    width: 1px;
+    height: 28px;
+    background: #e8e1d9;
+    flex-shrink: 0;
+}
+
+
+/* =========================================
+   HOVER
+   ========================================= */
+
+.summary-item {
+    transition: background-color 0.15s ease;
+}
+
+    .summary-item:hover {
+        background: #fcfaf7;
+    }
+
+
+/* =========================================
+   TABLET
+   ========================================= */
+
+@media (max-width: 991px) {
+
+    .summary-container {
+        padding: 0 12px;
+    }
+
+    .summary-item {
+        gap: 7px;
+    }
+
+    .summary-label {
+        font-size: 10px;
+    }
+
+    .summary-value {
+        font-size: 16px;
+    }
+}
+
+
+/* =========================================
+   MOBILE
+   ========================================= */
+
+@media (max-width: 767px) {
+
+    .summary-container {
+        flex-wrap: wrap;
+        padding: 10px 5px;
+    }
+
+    .summary-item {
+        flex: 0 0 50%;
+        min-height: 45px;
+    }
+
+    .summary-divider {
+        display: none;
+    }
 }

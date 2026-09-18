@@ -11,9 +11,14 @@ namespace TFDSolution.Transport.Master
         public IEnumerable<IDictionary<string, object>> Data { get; set; }
         public List<string> Columns { get; set; }
         public List<PageGridData> PageData { get; set; }
+        public List<SummaryItem> Summary { get; set; }
         public string IsNextButtonStoreProcedure { get; set; }
     }
-
+    public class SummaryItem
+    {
+        public string Label { get; set; }
+        public object Value { get; set; }
+    }
     public class FormData : ResponseModel
     {
         public IEnumerable<IDictionary<string, object>> Data { get; set; }

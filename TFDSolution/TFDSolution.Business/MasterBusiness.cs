@@ -4105,6 +4105,7 @@ namespace TFDSolution.Business
             List<Dictionary<string, object>> items = new List<Dictionary<string, object>>();
             List<PageGridData> pageGrids = new List<PageGridData>();
             List<string> itemCol = new List<string>();
+            List<SummaryItem> summary = new List<SummaryItem>();
             DataTable dtData = new DataTable("Data");
             try
             {
@@ -4117,6 +4118,18 @@ namespace TFDSolution.Business
                     foreach (var item in request.FieldData)
                     {
                         permissionTable.Rows.Add(item.FieldName, item.FieldValue, "");
+                    }
+                }
+                // Header Data
+                var headerTable = new DataTable();
+                headerTable.Columns.Add("FieldName", typeof(string));
+                headerTable.Columns.Add("FieldValue", typeof(string));
+                headerTable.Columns.Add("DataType", typeof(string));
+                if (request.HeaderFieldData != null && request.HeaderFieldData.Count > 0)
+                {
+                    foreach (var item in request.HeaderFieldData)
+                    {
+                        headerTable.Rows.Add(item.FieldName, item.FieldValue, "");
                     }
                 }
                 string storedProcedureName = "m_getTabDetailButtonData";
@@ -4139,6 +4152,14 @@ namespace TFDSolution.Business
                             TypeName = "dbo.Udt_FieldsData",
                             Value = permissionTable
                         });
+                        if (CodeHelper.HasParameter(storedProcedureName, "HeaderFieldsData", context))
+                        {
+                            command.Parameters.Add(new SqlParameter("@HeaderFieldsData", SqlDbType.Structured)
+                            {
+                                TypeName = "dbo.Udt_FieldsData",
+                                Value = headerTable
+                            });
+                        }
                         command.CommandText = storedProcedureName;
                         command.CommandType = CommandType.StoredProcedure;
                         DataTable dtSchema = new DataTable("Schema");
@@ -4157,66 +4178,146 @@ namespace TFDSolution.Business
                                 while (await reader.ReadAsync())
                                 {
                                     Dictionary<string, object> obj = new Dictionary<string, object>();
+
                                     for (int i = 0; i < reader.FieldCount; i++)
                                     {
                                         string columnName = reader.GetName(i);
                                         object columnValue = reader.GetValue(i);
-                                        if (columnValue == DBNull.Value || string.IsNullOrEmpty(columnValue.ToString()))
+                                        if (columnValue == DBNull.Value || string.IsNullOrEmpty(columnValue?.ToString()))
                                         {
                                             if (request.FieldData != null && request.FieldData.Count > 0)
                                             {
-                                                var _data = request.FieldData.Where(x => x.FieldName == columnName).FirstOrDefault();
+                                                var _data = request.FieldData.FirstOrDefault(x => x.FieldName == columnName);
                                                 if (_data != null)
                                                 {
                                                     columnValue = _data.FieldValue;
                                                 }
                                             }
-                                            // value is NULL or empty
                                         }
                                         obj[columnName] = columnValue;
                                     }
                                     items.Add(obj);
                                 }
                             }
-                            if (reader.NextResult())
+                            // ==========================================
+                            // Result 2 / Result 3
+                            // ==========================================
+                            while (await reader.NextResultAsync())
                             {
-                                while (reader.Read())
+                                // Check current result-set columns
+                                var columns = Enumerable.Range(0, reader.FieldCount)
+                                    .Select(i => reader.GetName(i))
+                                    .ToHashSet(StringComparer.OrdinalIgnoreCase);
+                                // ==========================================
+                                // SUMMARY
+                                // ==========================================
+                                if (columns.Contains("SummaryLabel") && columns.Contains("SummaryValue"))
                                 {
-                                    PageGridData grid = new PageGridData()
+                                    while (await reader.ReadAsync())
                                     {
-                                        ColumnName = reader["FieldName"] != DBNull.Value ? reader["FieldName"].ToString() : "",
-                                        ColumnTitle = reader["FieldCaption"] != DBNull.Value ? reader["FieldCaption"].ToString() : "",
-                                        ColumnType = reader["FieldType"] != DBNull.Value ? reader["FieldType"].ToString() : "",
-                                        ColumnLength = reader["FieldLength"] != DBNull.Value ? Convert.ToInt32(reader["FieldLength"]) : 0,
+                                        var item = new SummaryItem
+                                        {
+                                            Label = reader["SummaryLabel"] != DBNull.Value ? reader["SummaryLabel"].ToString(): "",
+                                            Value = reader["SummaryValue"] != DBNull.Value ? reader["SummaryValue"] : null
+                                        };
+                                        summary.Add(item);
+                                    }
+                                }
+                                // ==========================================
+                                // FIELD INFORMATION
+                                // ==========================================
+                                else if (columns.Contains("FieldId") && columns.Contains("FieldName") && columns.Contains("FieldCaption"))
+                                {
+                                    while (await reader.ReadAsync())
+                                    {
+                                        PageGridData grid = new PageGridData()
+                                        {
+                                            ColumnName = reader["FieldName"] != DBNull.Value
+                                                ? reader["FieldName"].ToString()
+                                                : "",
 
-                                        FieldId = reader["FieldId"] != DBNull.Value ? reader["FieldId"].ToString() : "",
-                                        ItemAdvanceId = reader["ItemAdvanceId"] != DBNull.Value ? Convert.ToInt32(reader["ItemAdvanceId"]) : 0,
-                                        FieldTypeId = reader["FieldTypeId"] != DBNull.Value ? reader["FieldTypeId"].ToString() : "",
-                                        IsActive = reader["IsActive"] != DBNull.Value ? Convert.ToBoolean(reader["IsActive"]) : false,
-                                        IsSummary = reader["IsSummary"] != DBNull.Value ? Convert.ToBoolean(reader["IsSummary"]) : false,
-                                        IsUnique = reader["IsUnique"] != DBNull.Value ? Convert.ToBoolean(reader["IsUnique"]) : false,
-                                        IsReadOnly = reader["IsReadOnly"] != DBNull.Value ? Convert.ToBoolean(reader["IsReadOnly"]) : false,
-                                        FieldName = reader["FieldName"] != DBNull.Value ? reader["FieldName"].ToString() : "",
-                                        FieldCaption = reader["FieldCaption"] != DBNull.Value ? reader["FieldCaption"].ToString() : "",
-                                        FieldFormula = reader["FieldFormula"] != DBNull.Value ? reader["FieldFormula"].ToString() : "",
+                                            ColumnTitle = reader["FieldCaption"] != DBNull.Value
+                                                ? reader["FieldCaption"].ToString()
+                                                : "",
 
-                                        FieldLength = reader["FieldLength"] != DBNull.Value ? Convert.ToInt32(reader["FieldLength"]) : 0,
-                                        FieldDecimal = reader["FieldDecimal"] != DBNull.Value ? Convert.ToInt32(reader["FieldDecimal"]) : 0,
-                                        FieldType = reader["FieldType"] != DBNull.Value ? reader["FieldType"].ToString() : "",
+                                            ColumnType = reader["FieldType"] != DBNull.Value
+                                                ? reader["FieldType"].ToString()
+                                                : "",
 
-                                        DDLTextField = reader["DDLTextField"] != DBNull.Value ? reader["DDLTextField"].ToString() : "",
-                                        DDLValueField = reader["DDLValueField"] != DBNull.Value ? reader["DDLValueField"].ToString() : "",
-                                        DDLSourceType = reader["DDLSourceType"] != DBNull.Value ? reader["DDLSourceType"].ToString() : "",
-                                        DDLSourceName = reader["DDLSourceName"] != DBNull.Value ? reader["DDLSourceName"].ToString() : "",
+                                            ColumnLength = reader["FieldLength"] != DBNull.Value
+                                                ? Convert.ToInt32(reader["FieldLength"])
+                                                : 0,
 
-                                        FieldSize = reader["FieldSize"] != DBNull.Value ? reader["FieldSize"].ToString() : "",
-                                        FieldPlaceHolder = reader["FieldPlaceHolder"] != DBNull.Value ? reader["FieldPlaceHolder"].ToString() : "",
-                                        FieldHelpText = reader["FieldHelpText"] != DBNull.Value ? reader["FieldHelpText"].ToString() : "",
+                                            FieldId = reader["FieldId"] != DBNull.Value
+                                                ? reader["FieldId"].ToString()
+                                                : "",
 
-                                        //FieldValue = reader["FieldValue"] != DBNull.Value ? reader["FieldValue"].ToString() : "",
-                                        //FieldRemarks = reader["FieldRemarks"] != DBNull.Value ? reader["FieldRemarks"].ToString() : ""
-                                    };
-                                    pageGrids.Add(grid);
+                                            ItemAdvanceId = reader["ItemAdvanceId"] != DBNull.Value
+                                                ? Convert.ToInt32(reader["ItemAdvanceId"])
+                                                : 0,
+
+                                            FieldTypeId = reader["FieldTypeId"] != DBNull.Value
+                                                ? reader["FieldTypeId"].ToString()
+                                                : "",
+
+                                            IsActive = reader["IsActive"] != DBNull.Value
+                                                && Convert.ToBoolean(reader["IsActive"]),
+
+                                            IsSummary = reader["IsSummary"] != DBNull.Value
+                                                && Convert.ToBoolean(reader["IsSummary"]),
+
+                                            IsUnique = reader["IsUnique"] != DBNull.Value
+                                                && Convert.ToBoolean(reader["IsUnique"]),
+
+                                            IsReadOnly = reader["IsReadOnly"] != DBNull.Value
+                                                && Convert.ToBoolean(reader["IsReadOnly"]),
+
+                                            FieldName = reader["FieldName"] != DBNull.Value
+                                                ? reader["FieldName"].ToString()
+                                                : "",
+
+                                            FieldCaption = reader["FieldCaption"] != DBNull.Value
+                                                ? reader["FieldCaption"].ToString()
+                                                : "",
+
+                                            FieldFormula = reader["FieldFormula"] != DBNull.Value
+                                                ? reader["FieldFormula"].ToString()
+                                                : "",
+
+                                            FieldDecimal = reader["FieldDecimal"] != DBNull.Value
+                                                ? Convert.ToInt32(reader["FieldDecimal"])
+                                                : 0,
+
+                                            DDLTextField = reader["DDLTextField"] != DBNull.Value
+                                                ? reader["DDLTextField"].ToString()
+                                                : "",
+
+                                            DDLValueField = reader["DDLValueField"] != DBNull.Value
+                                                ? reader["DDLValueField"].ToString()
+                                                : "",
+
+                                            DDLSourceType = reader["DDLSourceType"] != DBNull.Value
+                                                ? reader["DDLSourceType"].ToString()
+                                                : "",
+
+                                            DDLSourceName = reader["DDLSourceName"] != DBNull.Value
+                                                ? reader["DDLSourceName"].ToString()
+                                                : "",
+
+                                            FieldSize = reader["FieldSize"] != DBNull.Value
+                                                ? reader["FieldSize"].ToString()
+                                                : "",
+
+                                            FieldPlaceHolder = reader["FieldPlaceHolder"] != DBNull.Value
+                                                ? reader["FieldPlaceHolder"].ToString()
+                                                : "",
+
+                                            FieldHelpText = reader["FieldHelpText"] != DBNull.Value
+                                                ? reader["FieldHelpText"].ToString()
+                                                : ""
+                                        };
+                                        pageGrids.Add(grid);
+                                    }
                                 }
                             }
                         }
@@ -4232,6 +4333,7 @@ namespace TFDSolution.Business
             response.Data = items;
             response.PageData = pageGrids;
             response.Columns = itemCol;
+            response.Summary = summary;
             return response;
         }
 

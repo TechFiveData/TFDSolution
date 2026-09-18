@@ -24,6 +24,18 @@
             vertical-align: middle;
             accent-color: #27a9d7;
         }
+    .form-control:disabled, .form-control[readonly] {
+        background-color: aliceblue !important;
+        opacity: 1;
+    }
+    .form-select:disabled, .form-select[readonly] {
+        background-color: aliceblue !important;
+        opacity: 1;
+    }
+    .select2-container--default.select2-container--disabled .select2-selection--single {
+        background-color: aliceblue !important;
+        cursor: default;
+    }
 </style>
 <input id="DetailButtonId" value="@Model.DetailId" type="hidden" />
 <input id="DetailButtonSrNo" value="@Model.ItemSrNo" type="hidden" />
@@ -41,20 +53,19 @@
     }
 }
 <input type="hidden" name="hdnItemAmount" value="@totalAmount" />
-<idv class="row">
+<div class="row">
     <div class="col-md-12 form-group">
         <table id="@tabGrid" class="table table-bordered InlineForm" cellspacing="0" width="100%" style="border:1px solid #ccc;">
             <thead>
                 <tr>
                     @if (Model.PageAction != "V" && Model.TemplateId != 2)
                     {
-                        <th></th>
+                        <th>Action</th>
                     }
-                        <th class="grid-action-item-bg text-center">#</th>
-                        <th class="grid-action-item-bg text-center select-all-header">
-                            <span>Select All</span>
-                            <input type="checkbox" id="chkSelectAllButton" />
-                        </th>
+                    <th class="text-center">#</th>
+                    <th class="text-center select-all-header">
+                        <input type="checkbox" id="chkSelectAllButton" />
+                    </th>
                     @{
                         List<string> commongcol = new List<string>();
                     }
@@ -88,7 +99,8 @@
                                  && Convert.ToString(column) != "CompanyId" && Convert.ToString(column) != "CreatedBy"
                                  && Convert.ToString(column) != "CreatedOn" && Convert.ToString(column) != "UpdatedBy"
                                  && Convert.ToString(column) != "UpdatedOn" && Convert.ToString(column) != "URNNo"
-                                 && Convert.ToString(column) != "FiancialYearId" && Convert.ToString(column) != "FinancialYearId")
+                                 && Convert.ToString(column) != "FiancialYearId" && Convert.ToString(column) != "FinancialYearId"
+                                 && Convert.ToString(column) != "RowColor" && Convert.ToString(column) != "RowDisable")
                             {
                                 bool fieldExists = false;
                                 foreach (var field in Model.Data.PageData.Where(x => x.ColumnName != "SrNo" && x.ColumnName != "ItemSrNo").ToList())
@@ -117,11 +129,23 @@
                         {
                             object srvalue;
                             dyncSerNo = dyncSerNo + 1;
-                            string srNumber = dyncSerNo.ToString(), _Id = "";
-
+                            string srNumber = dyncSerNo.ToString(), _Id = "", RowColor = "";
+                            bool RowDisabled = false;
                             if (_it.TryGetValue("SrNo", out srvalue))
                             {
                                 srNumber = Convert.ToString(srvalue);
+                            }
+                            if (_it.TryGetValue("RowDisable", out srvalue))
+                            {
+                                RowDisabled = Convert.ToBoolean(srvalue);
+                            }
+                            if (_it.TryGetValue("RowColor", out srvalue))
+                            {
+                                RowColor = Convert.ToString(srvalue);
+                                if (!string.IsNullOrEmpty(RowColor))
+                                {
+                                    RowColor = RowColor + " !important";
+                                }
                             }
                             if (_it.TryGetValue("Id", out srvalue))
                             {
@@ -130,43 +154,67 @@
                             <tr data-id="@_Id" tabindex="@srNumber">
                                 @if (Model.PageAction != "V" && Model.TemplateId != 2)
                                 {
-                                    <td class="text-center" style="vertical-align:middle">
+                                    <td class="text-center" style="vertical-align:middle;background:@RowColor">
                                         @*<a title='Save Record' data-content="@_Id" class="text-success btn-save"
                                                href='javascript:void(0)'>
                                                 <i class="fa fa-save"></i>
                                             </a>&nbsp;*@
-                                        <a title='Delete Record'
-                                           data-content="@_Id" class="text-danger btn-delete" href='javascript:void(0)'>
-                                            <i class="fa fa-trash"></i>
-                                        </a>
-                                    </td>
-                                }
-                                <td style="background: aliceblue !important; text-align: center; vertical-align: middle;">
-                                    <label tabindex="-1" for="ItemSrNo" class="form-control-label">@srNumber</label>
-                                    <input style="display:none" value="@srNumber" id="ItemSrNo" data-bind="SrNo" data_content="TextBox" di bled class="form-control w-25" />
-                                </td>
-                                <td>
-                                    @{
-                                        if (Model.PageAction != "V")
+                                        @if (RowDisabled)
                                         {
-                                            <input type="checkbox" id="chk" @srNumber class="form-check rowSelectChk" />
+                                            <span style="color:red;">
+                                                <i class="fa fa-trash"></i>
+                                            </span>
                                         }
                                         else
                                         {
-                                            <input type="checkbox" checked="checked" id="chk" @srNumber class="form-check rowSelectChk" disabled="disabled" />
+                                            <a title='Delete Record'
+                                               data-content="@_Id" class="text-danger btn-delete" href='javascript:void(0)'>
+                                                <i class="fa fa-trash"></i>
+                                            </a>
+                                        }
+                                    </td>
+                                }
+                                <td style="background: @(string.IsNullOrWhiteSpace(RowColor) ? "aliceblue !important" : RowColor); text-align: center; vertical-align: middle;">
+                                    <label tabindex="-1" for="ItemSrNo" class="form-control-label">@srNumber</label>
+                                    <input style="display:none"
+                                           value="@srNumber"
+                                           id="ItemSrNo"
+                                           data-bind="SrNo"
+                                           data_content="TextBox"
+                                           disabled
+                                           class="form-control w-25" />
+                                </td>
+                                <td style="background:@RowColor">
+                                    @{
+                                        if (Model.PageAction != "V")
+                                        {
+                                            if (RowDisabled)
+                                            {
+                                                <input type="checkbox" disabled="disabled" checked="checked" id="chk" @srNumber class="form-check rowSelectChk" />
+                                            }
+                                            else
+                                            {
+                                                <input type="checkbox" id="chk" @srNumber class="form-check rowSelectChk" />
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" id="chk" @srNumber class="form-check rowSelectChk" />
                                         }
                                     }
                                 </td>
-                                @foreach (var field in Model.Data.PageData.Where(x => x.ColumnName != "SrNo" && x.ColumnName != "ItemSrNo").ToList())
+                                @foreach (var field in Model.Data.PageData.Where(x => x.ColumnName != "SrNo" && x.ColumnName != "RowColor" && x.ColumnName != "RowDisabled").ToList())
                                 {
                                     bool IsDisabled = false;
                                     bool isReadOnlyOrDisabled = (field.IsReadOnly ?? false) || (field.IsDisable ?? false);
+                                    if (RowDisabled)
+                                    { isReadOnlyOrDisabled = RowDisabled; }
                                     string fieldName = Convert.ToString(field.FieldName).ToUpper();
                                     if (_it.TryGetValue(field.ColumnName, out srvalue))
                                     {
                                         srvalue = Convert.ToString(srvalue);
                                     }
-                                    if (Convert.ToString(srvalue).Length <=0)
+                                    if (Convert.ToString(srvalue).Length <= 0)
                                     {
                                         srvalue = "0";
                                     }
@@ -185,37 +233,47 @@
                                     string ctrlId = "ctrl_" + Convert.ToString(field.ColumnName) + "_" + srNumber;
                                     string isButtonClass = field.FieldType == "Button" ? "text-center" : "";
                                     string tabIndexAttr = isReadOnlyOrDisabled ? "-1" : null;
-                                    <td tabindex="0">
+                                    <td tabindex="0" style="background:@RowColor">
                                         @switch (field.ColumnType)
                                         {
                                             case "Label":
-                                                <label tabindex="-1" data-bind="@field.ColumnName" class="view">@srvalue</label>
+                                                <label style="background:@RowColor" tabindex="-1" data-bind="@field.ColumnName" class="view">@srvalue</label>
                                                 break;
                                             case "nvarchar":
                                                 if (Model.PageAction != "V" && field.ColumnName == "Reading")
                                                 {
-                                                    <input type="text" id="@ctrlId" value="@srvalue" data-bind="@field.ColumnName" tabindex="@srNumber" class="form-control" />
+                                                    <input style="background:@RowColor" type="text" id="@ctrlId" value="@srvalue" data-bind="@field.ColumnName" tabindex="@srNumber" class="form-control" />
                                                 }
                                                 else
                                                 {
-                                                    <label tabindex="-1" data-bind="@field.ColumnName" class="view">@srvalue</label>
+                                                    <label style="background:@RowColor" tabindex="-1" data-bind="@field.ColumnName" class="view">@srvalue</label>
                                                 }
                                                 break;
                                             case "TimeField":
+                                                string timeValue = "";
+                                                if (DateTime.TryParse(field.FieldValue?.ToString(), out DateTime parsedTime))
+                                                {
+                                                    timeValue = parsedTime.ToString("HH:mm");
+                                                }
+                                                timeValue = timeValue.Replace(".", ":").Replace("AM", "").Replace("PM", "");
                                                 if (Model.PageAction != "V")
                                                 {
                                                     if (isReadOnlyOrDisabled)
                                                     {
-                                                        <input type="time" id="@ctrlId" value="@field.FieldValue" readonly="readonly" tabindex="-1" class="form-control edit" data-content="@field.FieldType" @(field.IsRequired == true ? "required" : null) data-html="@field.FieldCaption" data-bind="@field.FieldName" />
+                                                        <input style="background:@RowColor" type="time" id="@ctrlId" value="@timeValue" readonly="readonly" disabled="disabled" tabindex="-1" class="form-control edit" data-content="@field.FieldType" @(field.IsRequired == true ? "required" : null) data-html="@field.FieldCaption" data-bind="@field.FieldName" />
                                                     }
                                                     else
                                                     {
-                                                        <input type="time" id="@ctrlId" value="@field.FieldValue" class="form-control edit" data-content="@field.FieldType" @(field.IsRequired == true ? "required" : null) data-html="@field.FieldCaption" data-bind="@field.FieldName" />
+                                                        <input style="background:@RowColor" type="time" id="@ctrlId" value="@timeValue" class="form-control edit" data-content="@field.FieldType" @(field.IsRequired == true ? "required" : null) data-html="@field.FieldCaption" data-bind="@field.FieldName" />
                                                     }
                                                 }
                                                 else
                                                 {
-                                                    <label tabindex="-1" class="view">@field.FieldValue</label>
+                                                    if (DateTime.TryParse(field.FieldValue?.ToString(), out DateTime parsedTime1))
+                                                    {
+                                                        timeValue = parsedTime1.ToString("HH:mm tt");
+                                                    }
+                                                    <label style="background:@RowColor" tabindex="-1" class="view">@timeValue</label>
                                                 }
                                                 break;
                                             case "TextBox":
@@ -223,15 +281,15 @@
                                                 {
                                                     if (field.IsRequired)
                                                     {
-                                                        @Html.TextBox(field.FieldName, field.FieldValue, new { data_path = @field.FieldFormula, data_decimal = field.FieldDecimal, @class = "form-control", data_html = @field.FieldCaption, data_content = field.FieldType, data_bind = field.FieldName, @maxlength = field.FieldLength, @required = field.IsRequired == true ? "required" : null })
+                                                        @Html.TextBox(field.FieldName, field.FieldValue, new { @style = "background:" + @RowColor, data_path = @field.FieldFormula, data_decimal = field.FieldDecimal, @class = "form-control", data_html = @field.FieldCaption, data_content = field.FieldType, data_bind = field.FieldName, @maxlength = field.FieldLength, @required = field.IsRequired == true ? "required" : null })
                                                     }
                                                     else if (field.IsReadOnly == true)
                                                     {
-                                                        @Html.TextBox(field.FieldName, field.FieldValue, new { data_path = @field.FieldFormula, data_decimal = field.FieldDecimal, @class = "form-control", data_html = @field.FieldCaption, data_content = field.FieldType, data_bind = field.FieldName, @maxlength = field.FieldLength, @readonly = "readonly" })
+                                                        @Html.TextBox(field.FieldName, field.FieldValue, new { @style = "background:" + @RowColor, data_path = @field.FieldFormula, data_decimal = field.FieldDecimal, @class = "form-control", data_html = @field.FieldCaption, data_content = field.FieldType, data_bind = field.FieldName, @maxlength = field.FieldLength, @readonly = "readonly" })
                                                     }
                                                     else
                                                     {
-                                                        @Html.TextBox(field.FieldName, field.FieldValue, new { data_path = @field.FieldFormula, data_decimal = field.FieldDecimal, @class = "form-control", data_html = @field.FieldCaption, data_content = field.FieldType, data_bind = field.FieldName, @maxlength = field.FieldLength })
+                                                        @Html.TextBox(field.FieldName, field.FieldValue, new { @style = "background:" + @RowColor, data_path = @field.FieldFormula, data_decimal = field.FieldDecimal, @class = "form-control", data_html = @field.FieldCaption, data_content = field.FieldType, data_bind = field.FieldName, @maxlength = field.FieldLength })
                                                     }
                                                 }
                                                 else
@@ -257,14 +315,14 @@
                                                 }
                                                 break;
                                             case "CheckBox":
-                                                bool isChecked = field.FieldValue == "1" || string.Equals(field.FieldValue, "true", StringComparison.OrdinalIgnoreCase); 
+                                                bool isChecked = field.FieldValue == "1" || string.Equals(field.FieldValue, "true", StringComparison.OrdinalIgnoreCase);
                                                 bool isDisabled = field.IsReadOnly == true;
                                                 if (Model.PageAction != "V")
                                                 {
-                                                    <input type="checkbox" id="@ctrlId" data-bind="@field.FieldName" value="1" class="form-check edit" data-content="@field.FieldType" data-html="@field.FieldCaption" @(field.IsRequired == true ? "required" : null) @(isChecked ? "checked" : null) @(isDisabled ? "disabled tabindex=\"-1\"" : "") /> }
+                                                    <input style="background:@RowColor" type="checkbox" id="@ctrlId" data-bind="@field.FieldName" value="1" class="form-check edit" data-content="@field.FieldType" data-html="@field.FieldCaption" @(field.IsRequired == true ? "required" : null) @(isChecked ? "checked" : null) @(isDisabled ? "disabled tabindex=\"-1\"" : "") /> }
                                                 else
-                                                { 
-                                                    <label tabindex="-1" data-bind="@field.FieldName" class="view"> @(isChecked ? "Yes" : "No") </label>
+                                                {
+                                                    <label style="background:@RowColor" tabindex="-1" data-bind="@field.FieldName" class="view"> @(isChecked ? "Yes" : "No") </label>
                                                 }
                                                 break;
                                             case "Numeric":
@@ -284,23 +342,23 @@
                                                 {
                                                     if (field.IsRequired)
                                                     {
-                                                        @Html.TextBox(field.FieldName, field.FieldValue, new { max = field.FieldValue, data_dependency = @field.IsDependencyField, data_path = @field.FieldFormula, @class = "form-control", data_decimal = field.FieldDecimal, data_html = @field.FieldCaption, data_content = field.FieldType, data_bind = field.FieldName, @type = "number", @required = field.IsRequired == true ? "required" : null })
+                                                        @Html.TextBox(field.FieldName, field.FieldValue, new { @style = "background:" + @RowColor, max = field.FieldValue, data_dependency = @field.IsDependencyField, data_path = @field.FieldFormula, @class = "form-control", data_decimal = field.FieldDecimal, data_html = @field.FieldCaption, data_content = field.FieldType, data_bind = field.FieldName, @type = "number", @required = field.IsRequired == true ? "required" : null })
                                                     }
-                                                    else if (field.IsReadOnly == true)
+                                                    else if (field.IsReadOnly == true || isReadOnlyOrDisabled)
                                                     {
-                                                        @Html.TextBox(field.FieldName, field.FieldValue, new { max = field.FieldValue, data_dependency = @field.IsDependencyField, data_path = @field.FieldFormula, @class = "form-control", data_decimal = field.FieldDecimal, data_html = @field.FieldCaption, data_content = field.FieldType, data_bind = field.FieldName, @type = "number", @readonly = "readonly" })
+                                                        @Html.TextBox(field.FieldName, field.FieldValue, new { @style = "background:" + @RowColor, max = field.FieldValue, data_dependency = @field.IsDependencyField, data_path = @field.FieldFormula, @class = "form-control", data_decimal = field.FieldDecimal, data_html = @field.FieldCaption, data_content = field.FieldType, data_bind = field.FieldName, @type = "number", @readonly = "readonly" })
                                                     }
                                                     else
                                                     {
-                                                        @Html.TextBox(field.FieldName, field.FieldValue, new { max = field.FieldValue, data_dependency = @field.IsDependencyField, data_path = @field.FieldFormula, @class = "form-control", data_decimal = field.FieldDecimal, data_html = @field.FieldCaption, data_content = field.FieldType, data_bind = field.FieldName, @type = "number" })
+                                                        @Html.TextBox(field.FieldName, field.FieldValue, new { @style = "background:" + @RowColor, max = field.FieldValue, data_dependency = @field.IsDependencyField, data_path = @field.FieldFormula, @class = "form-control", data_decimal = field.FieldDecimal, data_html = @field.FieldCaption, data_content = field.FieldType, data_bind = field.FieldName, @type = "number" })
                                                     }
                                                 }
                                                 else
                                                 {
                                                     <label tabindex="-1" data-bind="@field.FieldName" class="view">@field.FieldValue</label>
                                                     @*<label tabindex="-1" data-bind="@field.FieldName" class="view">
-                        @(decimal.TryParse(Convert.ToString(field.FieldValue), out decimal amount) ? "₹" + amount.ToString("#,##,##0.00"): field.FieldValue)
-                    </label>*@
+                                                            @(decimal.TryParse(Convert.ToString(field.FieldValue), out decimal amount) ? "₹" + amount.ToString("#,##,##0.00"): field.FieldValue)
+                                                        </label>*@
                                                 }
                                                 break;
                                             case "Selection":
@@ -370,31 +428,31 @@
                                                 {
                                                     if (field.IsRequired)
                                                     {
-                                                        @Html.TextBox(field.FieldName, field.FieldValue, new { @class = "form-control", @placeholder = "dd-MM-yyyy", data_html = @field.FieldCaption, data_content = field.FieldType, data_bind = field.FieldName, @type = "date", @required = field.IsRequired == true ? "required" : null })
+                                                        @Html.TextBox(field.FieldName, field.FieldValue, new { @style = "background:" + @RowColor, @class = "form-control", @placeholder = "dd-MM-yyyy", data_html = @field.FieldCaption, data_content = field.FieldType, data_bind = field.FieldName, @type = "date", @required = field.IsRequired == true ? "required" : null })
                                                     }
                                                     else if (field.IsReadOnly == true)
                                                     {
-                                                        @Html.TextBox(field.FieldName, field.FieldValue, new { @class = "form-control", @placeholder = "dd-MM-yyyy", data_html = @field.FieldCaption, data_content = field.FieldType, data_bind = field.FieldName, @type = "date", @readonly = "readonly" })
+                                                        @Html.TextBox(field.FieldName, field.FieldValue, new { @style = "background:" + @RowColor, @class = "form-control", @placeholder = "dd-MM-yyyy", data_html = @field.FieldCaption, data_content = field.FieldType, data_bind = field.FieldName, @type = "date", @readonly = "readonly" })
                                                     }
                                                     else
                                                     {
-                                                        @Html.TextBox(field.FieldName, field.FieldValue, new { @class = "form-control", @placeholder = "dd-MM-yyyy", data_html = @field.FieldCaption, data_content = field.FieldType, data_bind = field.FieldName, @type = "date" })
+                                                        @Html.TextBox(field.FieldName, field.FieldValue, new { @style = "background:" + @RowColor, @class = "form-control", @placeholder = "dd-MM-yyyy", data_html = @field.FieldCaption, data_content = field.FieldType, data_bind = field.FieldName, @type = "date" })
                                                     }
                                                     @Html.ValidationMessage(field.FieldName, "", new { @class = "text-danger" })
                                                 }
                                                 else
                                                 {
-                                                    <label tabindex="-1" data-bind="@field.FieldName" class="view">@field.FieldValue</label>
+                                                    <label style="background:@RowColor" tabindex="-1" data-bind="@field.FieldName" class="view">@field.FieldValue</label>
                                                 }
                                                 break;
                                             default:
                                                 if (Model.PageAction != "V")
                                                 {
-                                                    <input type="text" id="@ctrlId" value="@srvalue" data-bind="@field.ColumnName" class="form-control" />
+                                                    <input style="background:@RowColor" type="text" id="@ctrlId" value="@srvalue" data-bind="@field.ColumnName" class="form-control" />
                                                 }
                                                 else
                                                 {
-                                                    <label tabindex="-1" class="view" data-bind="@field.ColumnName">@srvalue</label>
+                                                    <label style="background:@RowColor" tabindex="-1" class="view" data-bind="@field.ColumnName">@srvalue</label>
                                                 }
                                                 break;
                                         }
@@ -406,7 +464,8 @@
                                         if (cell.Key != "SrNo" && cell.Key != "ItemSrNo" && cell.Key != "FormId" && cell.Key != "Id" && cell.Key != "ParentId" && cell.Key != "DetailId"
                                         && cell.Key != "CompanyId" && cell.Key != "CreatedBy" && cell.Key != "CreatedOn"
                                         && cell.Key != "UpdatedBy" && cell.Key != "UpdatedOn" && cell.Key != "UpdatedBy"
-                                        && cell.Key != "URNNo" && cell.Key != "FiancialYearId" && cell.Key != "FinancialYearId")
+                                        && cell.Key != "URNNo" && cell.Key != "FiancialYearId" && cell.Key != "FinancialYearId"
+                                         && cell.Key != "RowColor" && cell.Key != "RowDisable")
                                         {
                                             bool fieldExists = false;
                                             foreach (var field in Model.Data.PageData.Where(x => x.ColumnName != "SrNo" && x.ColumnName != "ItemSrNo").ToList())
@@ -442,7 +501,32 @@
             </tbody>
         </table>
     </div>
-</idv>
+</div>
+@if (Model.Data.Summary != null && Model.Data.Summary.Any())
+{
+    <div class="row">
+        <div class="col-md-12 form-group">
+            <div class="summary-container d-flex justify-content-end">
+                @if (Model.Data.Summary != null)
+                {
+                    foreach (var item in Model.Data.Summary)
+                    {
+                        <div class="col-md-3">
+                            <div class="summary-item">
+                                <div class="summary-label">
+                                    @Html.Raw(item.Label)
+                                </div>
+                                <div class="summary-value">
+                                    @Html.Raw(item.Value)
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+}
 <script type="text/javascript">
     function InitalizeSelect($select) {
         let selectId = $($select).attr('id');
@@ -534,25 +618,21 @@
             }
         }
     }
-    var table = new DataTable('#@tabGrid', {
+   var table = new DataTable('#@tabGrid', {
         searching: false,
         paging: false,
         info: false,
+
         scrollY: '400px',
         scrollX: true,
         scrollCollapse: true,
-        autoWidth: false
+
+        autoWidth: true
     });
 
-    table.columns.adjust().draw();
-    // setTimeout(function () {
-    //     table.columns.adjust().draw();
-    // }, 100);
     setTimeout(function () {
-        table.columns.adjust();
-        // $('.dataTables_scrollHeadInner').css('width', '100%');
-        // $('.dataTables_scrollHeadInner table').css('width', '100%');
-    }, 200);
+        table.columns.adjust().draw(false);
+    }, 100);
     function autoSelect() {
 
         let remainingAmount = parseFloat(@totalAmount) || 0;
@@ -665,9 +745,56 @@
         //        calculateTotalAdjustAmt();
         //    }
         //});
-        $(document).on('input blur', '#tblDetailButton tbody input[type="number"]', function () {
-            calculateTotalAdjustAmt();
-        });
+        $(document).on('input','#tblDetailButton tbody input[type="number"]',function () {
+        var pageAction = '@Model.PageAction';
+        if (pageAction !== 'V') {
+            var inputField = $(this).attr('id');
+            $("#tblDetailButton input").each(function () {
+                var $field = $(this);
+                var fieldId = $field.attr("id");
+                var fieldFormula = $field.attr("data-path");
+                var fieldDecimal = $field.attr("data-decimal");
+                // No formula
+                if (!fieldFormula) {
+                    return;
+                }
+                // Don't calculate the field which user is currently editing
+                if (inputField === fieldId) {
+                    return;
+                }
+                // Replace {FieldId} with current field values
+                $("#tblDetailButton input").each(function () {
+                    var replaceFieldId = $(this).attr("id");
+                    var replaceValue = $(this).val();
+                    if (replaceValue === undefined || replaceValue === null || replaceValue === "") {
+                        replaceValue = 0;
+                    }
+                    fieldFormula = fieldFormula.replaceAll("{" + replaceFieldId + "}",replaceValue);
+                });
+                try {
+                    var decimalPoint = 2;
+                    if (fieldDecimal !== undefined && fieldDecimal !== null && fieldDecimal !== "") {
+                        decimalPoint = parseInt(fieldDecimal);
+                    }
+                    debugger;
+                    var result = eval(fieldFormula);
+                    if (!isNaN(result) && isFinite(result)) {
+                        $field.val(parseFloat(result).toFixed(decimalPoint));
+                    }
+                    else {
+                        $field.val(0);
+                    }
+                }
+                catch (e) {
+                    console.error("Formula Error:", fieldId, fieldFormula, e);
+                    $field.val(0);
+                }
+            });
+        }
+
+        calculateTotalAdjustAmt();
+    }
+);
         calculateTotalAdjustAmt();
     })
     function selectInlinChange(ctrl) {

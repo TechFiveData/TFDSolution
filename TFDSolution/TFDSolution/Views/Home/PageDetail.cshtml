@@ -693,9 +693,9 @@
                             </div>
                         }
                     }
-                    <button type="button" class="btn btn-track" data-toggle="modal" title="Record Tracking" data-target="#userTrackingModal">
+                    @*<button type="button" class="btn btn-track" data-toggle="modal" title="Record Tracking" data-target="#userTrackingModal">
                         <i class="fa fa-history"></i>
-                    </button>
+                    </button>*@
                     <a class="btn btn-sm pl-0" title="Back" href="@Url.Action("MyPage","Home", new { @pagename = Model.Design.FormName})">
                         <i class="fa fa-arrow-circle-left font16"></i>
                     </a>
@@ -4678,6 +4678,7 @@
                 FieldId: fieldId,
                 ButtonCaption: fieldcaption,
                 FieldData: PageFieldData,
+                HeaderFieldData: getMasterFieldData(),
                 DetailId: detailId,
                 ParentId: parseInt($("#hdnRecordId").val()),
                 FormId: '@Model.Design.FormId',
@@ -4770,68 +4771,81 @@
             var tableColumn = JSON.parse(JSON.stringify(dataset.Columns));
             var tableColumnNew = JSON.parse(JSON.stringify(dataset.PageData));
             if (tableColumnNew.length > 0) {
-            columnNames = tableColumnNew;
-            for (var i in columnNames) {
-                var dataVal = columnNames[i].ColumnName;
-                if (columnNames[i].ColumnName != "Status" && columnNames[i].ColumnName != "FiancialYearId" && columnNames[i].ColumnName != "Id"
-                    && columnNames[i].ColumnName != "CompanyId"
-                    && columnNames[i].ColumnName != "RowIndex"
-                    && columnNames[i].ColumnName != "CreatedBy" && columnNames[i].ColumnName != "UpdatedBy" && columnNames[i].ColumnName != "CreatedOn"
-                    && columnNames[i].ColumnName != "UpdatedOn" && columnNames[i].ColumnType != "Button"
-                    /*&& columnNames[i].ColumnName.indexOf("Date") < 0*/
-                ) {
-                    if (columnNames[i].ColumnName.toLowerCase() == "amount") {
+                columnNames = tableColumnNew;
+                for (var i in columnNames) {
+                    var dataVal = columnNames[i].ColumnName;
+                    if (columnNames[i].ColumnName != "Status" && columnNames[i].ColumnName != "FiancialYearId" && columnNames[i].ColumnName != "Id"
+                        && columnNames[i].ColumnName != "CompanyId"
+                        && columnNames[i].ColumnName != "RowIndex"
+                        && columnNames[i].ColumnName != "CreatedBy" && columnNames[i].ColumnName != "UpdatedBy" && columnNames[i].ColumnName != "CreatedOn"
+                        && columnNames[i].ColumnName != "UpdatedOn" && columnNames[i].ColumnType != "Button"
+                        /*&& columnNames[i].ColumnName.indexOf("Date") < 0*/
+                    ) {
+                        if (columnNames[i].ColumnName.toLowerCase() == "amount") {
+                            columns.push({
+                                className: "text-right",
+                                title: columnNames[i].ColumnTitle,
+                                orderable: false,
+                                render: function (data, type, row, meta) {
+                                    return row["Amount"];
+                                },
+                            });
+                        }
+                        else {
+                            if (columnNames[i].ColumnType == "Numeric") {
+                                columns.push({
+                                    className: "rowReorder",
+                                    orderable: false,
+                                    data: columnNames[i].ColumnName,
+                                    title: columnNames[i].ColumnTitle
+                                });
+                            }
+                            else {
+                                columns.push({
+                                    className: "rowReorder",
+                                    orderable: false,
+                                    data: columnNames[i].ColumnName,
+                                    title: columnNames[i].ColumnTitle
+                                });
+                            }
+                        }
+                    }
+                    else if (columnNames[i].ColumnName != "UpdatedBy" && columnNames[i].ColumnName != "UpdatedOn"
+                        && columnNames[i].ColumnName.toLowerCase().indexOf("date") >= 0 && columnNames[i].ColumnType != "Button") {
+                        const datafield = columnNames[i].ColumnName;
                         columns.push({
                             title: columnNames[i].ColumnTitle,
                             orderable: false,
                             render: function (data, type, row, meta) {
-                                return row["Amount"];
+                                if (row[datafield] != null) {
+                                    var editlink = row[datafield];
+                                    return "<span>" + editlink + "</span>";
+                                }
+                                else {
+                                    return "<span></span>";
+                                }
                             },
                         });
                     }
-                    else {
+                    else if (columnNames[i].ColumnType == "Button") {
+                        console.log("button" + columnNames[i].ColumnTitle);
+                        const datafield = columnNames[i].ColumnTitle;
+                        const _fieldId = columnNames[i].FieldId;
+                        const _templateId = columnNames[i].TemplateId;
+                        const colName = columnNames[i].ColumnName;
                         columns.push({
-                            className: "rowReorder",
+                            data: null,  // no direct data for this column
                             orderable: false,
-                            data: columnNames[i].ColumnName,
-                            title: columnNames[i].ColumnTitle
-                        });
-                    }
-                }
-                else if (columnNames[i].ColumnName != "UpdatedBy" && columnNames[i].ColumnName != "UpdatedOn"
-                    && columnNames[i].ColumnName.toLowerCase().indexOf("date") >= 0 && columnNames[i].ColumnType != "Button") {
-                    var datafield = columnNames[i].ColumnName;
-                    columns.push({
-                        title: columnNames[i].ColumnTitle,
-                        orderable: false,
-                        render: function (data, type, row, meta) {
-                            if (row[datafield] != null) {
-                                var editlink = row[datafield];
-                                return "<span>" + editlink + "</span>";
-                            }
-                            else {
-                                return "<span></span>";
-                            }
-                        },
-                    });
-                }
-                else if (columnNames[i].ColumnType == "Button") {
-                    console.log("button" + columnNames[i].ColumnTitle);
-                    var datafield = columnNames[i].ColumnTitle;
-                    var _fieldId = columnNames[i].FieldId;
-                    var _templateId = columnNames[i].TemplateId;
-                    columns.push({
-                        data: null,  // no direct data for this column
-                        orderable: false,
-                        title: columnNames[i].ColumnTitle,
-                        render: function (data, type, row, meta) {
-                            const rowData = encodeURIComponent(JSON.stringify(row));
-                            return `<a class="btn btn-primary grid-button" href="javascript:void(0);"
+                            title: columnNames[i].ColumnTitle,
+                            render: function (data, type, row, meta) {
+                                const rowData = encodeURIComponent(JSON.stringify(row));
+                                var editlink = row[colName];
+                                return `<a class="btn btn-primary grid-button" href="javascript:void(0);"
     onclick="DetailButtonViewModel('${tbId}','${rowData}','${_fieldId}','${datafield}',${row.Id},'${_templateId}')">
     Click Here</a>`;
-                        },
-                    });
-                }
+                            },
+                        });
+                    }
                 }
             }
             //// Add footer inside table
@@ -6680,7 +6694,8 @@
             var model = {
                 FieldId: fieldId,
                 ButtonCaption: fieldcaption,
-                FieldData: PageFieldData(),
+                FieldData: PageFieldData(),                
+                HeaderFieldData: getMasterFieldData(),
                 DetailId: detailId,
                 ParentId: parseInt($("#hdnRecordId").val()),
                 FormId: '@Model.Design.FormId',
